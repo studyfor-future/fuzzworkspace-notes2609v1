@@ -1,0 +1,323 @@
+name: Riskins runtime-toggle fuzz
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz-riskins:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+
+    env:
+      FUZZ_SECONDS: "10800"   # 3 hours
+      AFL_SKIP_CPUFREQ: "1"
+      AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
+      AFL_NO_UI: "1"
+      AFL_NO_AFFINITY: "1"
+      AFL_QUIET: "1"
+      PREENY_SOCKET_SO: "desock.so"
+      AFL_PATH: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show runner toolchain
+        shell: bash
+        run: |
+          set -eux
+          uname -a
+          gcc --version
+          g++ --version
+          clang-18 --version || true
+          clang --version || true
+          llvm-config-18 --version || true
+          cmake --version || true
+          python3 --version
+          nproc || true
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          GCC_MAJOR="$(gcc -dumpversion | cut -d. -f1)"
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            pkg-config \
+            git \
+            python3 \
+            python3-dev \
+            python3-setuptools \
+            cmake \
+            automake \
+            autoconf \
+            libtool \
+            flex \
+            bison \
+            cargo \
+            libglib2.0-dev \
+            libpixman-1-dev \
+            libgtk-3-dev \
+            lld-18 \
+            llvm-18 \
+            llvm-18-dev \
+            clang-18 \
+            gcc-${GCC_MAJOR}-plugin-dev \
+            libstdc++-${GCC_MAJOR}-dev
+
+      - name: Build Preeny desock.so
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf /tmp/preeny
+          git clone --depth 1 https://github.com/zardus/preeny.git /tmp/preeny
+          make -C /tmp/preeny/src desock.so
+          mkdir -p "${{ github.workspace }}/.deps/preeny"
+          cp /tmp/preeny/src/desock.so "${{ github.workspace }}/.deps/preeny/desock.so"
+          test -f "${{ github.workspace }}/.deps/preeny/desock.so"
+          echo "PREENY_DIR=${{ github.workspace }}/.deps/preeny" >> "$GITHUB_ENV"
+          ls -lah "${{ github.workspace }}/.deps/preeny/desock.so"
+
+      - name: Make helper scripts executable
+        shell: bash
+        run: |
+          set -eux
+          chmod +x .github/scripts/prepare-riskins-build.sh
+          chmod +x .github/scripts/run-riskins-runtime-toggle-fuzz.sh
+
+      - name: Prepare runner for AFL crash detection
+        shell: bash
+        run: |
+          set -eux
+          echo "Before: $(cat /proc/sys/kernel/core_pattern)"
+          sudo sysctl -w kernel.core_pattern=core
+          echo "After:  $(cat /proc/sys/kernel/core_pattern)"
+
+      - name: Relax runner AFL settings
+        shell: bash
+        run: |
+          set -eux
+          sudo -E ./afl-system-config || true
+
+      - name: Build AFL++ and both protocol targets
+        shell: bash
+        env:
+          CC: clang-18
+          CXX: clang++-18
+          LLVM_CONFIG: llvm-config-18
+          AFL_PATH: ${{ github.workspace }}
+        run: |
+          set -euxo pipefail
+          ./.github/scripts/prepare-riskins-build.sh
+
+      - name: Run 4 fuzz campaigns in the same runner
+        shell: bash
+        env:
+          AFL_PATH: ${{ github.workspace }}
+        run: |
+          set -euxo pipefail
+          ./.github/scripts/run-riskins-runtime-toggle-fuzz.sh
+
+      - name: Compare fuzz results
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          OUT_ROOT="${RISKINS_WORKBASE}/fuzz-out"
+          if [ ! -d "$OUT_ROOT" ]; then
+            echo "fuzz output directory not found: $OUT_ROOT"
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import os
+          import re
+          import hashlib
+          from pathlib import Path
+
+          out_root = Path(os.environ["RISKINS_WORKBASE"]) / "fuzz-out"
+          step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+
+          cases = [
+              ("iec61850", "risk-off", out_root / "iec61850-risk-off"),
+              ("iec61850", "risk-on",  out_root / "iec61850-risk-on"),
+              ("modbus",   "risk-off", out_root / "modbus-risk-off"),
+              ("modbus",   "risk-on",  out_root / "modbus-risk-on"),
+          ]
+
+          def read_fuzzer_stats(case_dir: Path):
+              cand = [
+                  case_dir / "default" / "fuzzer_stats",
+                  case_dir / "fuzzer_stats",
+              ]
+              stats_path = next((p for p in cand if p.is_file()), None)
+              data = {}
+              if not stats_path:
+                  return data
+              for line in stats_path.read_text(errors="ignore").splitlines():
+                  if ":" not in line:
+                      continue
+                  k, v = line.split(":", 1)
+                  data[k.strip()] = v.strip()
+              return data
+
+          def parse_final_console(case_dir: Path):
+              log = case_dir.parent / f"{case_dir.name}.console.log"
+              if not log.is_file():
+                  return {}
+              text = log.read_text(errors="ignore")
+              m = re.search(
+                  r"Statistics:\s+(\d+)\s+new corpus items found,\s+([0-9.]+)%\s+coverage achieved,\s+(\d+)\s+crashes saved,\s+(\d+)\s+timeouts saved",
+                  text
+              )
+              if not m:
+                  return {}
+              return {
+                  "new_items": int(m.group(1)),
+                  "console_coverage": float(m.group(2)),
+                  "console_crashes": int(m.group(3)),
+                  "console_timeouts": int(m.group(4)),
+              }
+
+          def count_unique_files(dir_path: Path):
+              if not dir_path.is_dir():
+                  return (0, 0)
+              files = [p for p in dir_path.iterdir() if p.is_file() and p.name != "README.txt"]
+              digests = set()
+              for p in files:
+                  try:
+                      digests.add(hashlib.sha256(p.read_bytes()).hexdigest())
+                  except Exception:
+                      pass
+              return (len(files), len(digests))
+
+          def to_int(stats, key, default=0):
+              try:
+                  return int(str(stats.get(key, default)).strip())
+              except Exception:
+                  return default
+
+          def to_float(stats, key, default=0.0):
+              raw = str(stats.get(key, default)).strip().rstrip("%")
+              try:
+                  return float(raw)
+              except Exception:
+                  return default
+
+          rows = []
+          for proto, mode, case_dir in cases:
+              stats = read_fuzzer_stats(case_dir)
+              console = parse_final_console(case_dir)
+
+              crashes_dir = case_dir / "default" / "crashes"
+              hangs_dir   = case_dir / "default" / "hangs"
+              queue_dir   = case_dir / "default" / "queue"
+
+              crash_files, uniq_crashes = count_unique_files(crashes_dir)
+              hang_files, uniq_hangs = count_unique_files(hangs_dir)
+              queue_files = 0
+              if queue_dir.is_dir():
+                  queue_files = len([p for p in queue_dir.iterdir() if p.is_file()])
+
+              row = {
+                  "proto": proto,
+                  "mode": mode,
+                  "case": case_dir.name,
+                  "execs_done": to_int(stats, "execs_done"),
+                  "execs_per_sec": to_float(stats, "execs_per_sec"),
+                  "cycles_done": to_int(stats, "cycles_done"),
+                  "corpus_count": to_int(stats, "corpus_count"),
+                  "queue_files": queue_files,
+                  "new_items": console.get("new_items", 0),
+                  "max_depth": to_int(stats, "max_depth"),
+                  "pending_total": to_int(stats, "pending_total"),
+                  "bitmap_cvg": to_float(stats, "bitmap_cvg"),
+                  "edges_found": to_int(stats, "edges_found"),
+                  "stability": to_float(stats, "stability"),
+                  "var_byte_count": to_int(stats, "var_byte_count"),
+                  "saved_crashes": to_int(stats, "saved_crashes"),
+                  "saved_hangs": to_int(stats, "saved_hangs"),
+                  "crash_files": crash_files,
+                  "uniq_crashes": uniq_crashes,
+                  "hang_files": hang_files,
+                  "uniq_hangs": uniq_hangs,
+                  "console_timeouts": console.get("console_timeouts", 0),
+              }
+              rows.append(row)
+
+          def by_case(proto, mode):
+              return next(r for r in rows if r["proto"] == proto and r["mode"] == mode)
+
+          def sign(x, digits=2):
+              if isinstance(x, float):
+                  return f"{x:+.{digits}f}"
+              return f"{x:+d}"
+
+          lines = []
+          lines.append("## Fuzz comparison summary")
+          lines.append("")
+          lines.append("| Case | Exec/s | Execs | Cycles | Corpus | New items | Edges | Bitmap % | Crashes | Hangs | Pending | Stability |")
+          lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+          for r in rows:
+              lines.append(
+                  f"| {r['case']} | "
+                  f"{r['execs_per_sec']:.2f} | {r['execs_done']} | {r['cycles_done']} | "
+                  f"{r['corpus_count']} | {r['new_items']} | {r['edges_found']} | {r['bitmap_cvg']:.2f} | "
+                  f"{r['saved_crashes']} (uniq {r['uniq_crashes']}) | "
+                  f"{r['saved_hangs']} (uniq {r['uniq_hangs']}) | "
+                  f"{r['pending_total']} | {r['stability']:.2f}% |"
+              )
+
+          lines.append("")
+          lines.append("## Risk on/off deltas")
+          lines.append("")
+          lines.append("| Protocol | Δ Exec/s (on-off) | Δ Corpus | Δ New items | Δ Edges | Δ Bitmap pp | Δ Crashes | Δ Hangs | Δ Pending |")
+          lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|")
+
+          for proto in ["iec61850", "modbus"]:
+              off = by_case(proto, "risk-off")
+              on  = by_case(proto, "risk-on")
+              lines.append(
+                  f"| {proto} | "
+                  f"{sign(on['execs_per_sec'] - off['execs_per_sec'])} | "
+                  f"{sign(on['corpus_count'] - off['corpus_count'], 0)} | "
+                  f"{sign(on['new_items'] - off['new_items'], 0)} | "
+                  f"{sign(on['edges_found'] - off['edges_found'], 0)} | "
+                  f"{sign(on['bitmap_cvg'] - off['bitmap_cvg'])} | "
+                  f"{sign(on['saved_crashes'] - off['saved_crashes'], 0)} | "
+                  f"{sign(on['saved_hangs'] - off['saved_hangs'], 0)} | "
+                  f"{sign(on['pending_total'] - off['pending_total'], 0)} |"
+              )
+
+          lines.append("")
+          lines.append("## Quick takeaways")
+          lines.append("")
+          iec_off = by_case("iec61850", "risk-off")
+          iec_on  = by_case("iec61850", "risk-on")
+          mod_off = by_case("modbus", "risk-off")
+          mod_on  = by_case("modbus", "risk-on")
+
+          if iec_on["saved_crashes"] > iec_off["saved_crashes"] or iec_on["corpus_count"] > iec_off["corpus_count"]:
+              lines.append(f"- IEC61850: **risk-on 更偏向找新样本/故障**。Corpus {iec_on['corpus_count']} vs {iec_off['corpus_count']}，Crash {iec_on['saved_crashes']} vs {iec_off['saved_crashes']}。")
+          else:
+              lines.append(f"- IEC61850: 本次 **risk-off 更稳**。Edges {iec_off['edges_found']} vs {iec_on['edges_found']}。")
+
+          if mod_off["bitmap_cvg"] > mod_on["bitmap_cvg"] or mod_off["saved_crashes"] > mod_on["saved_crashes"]:
+              lines.append(f"- Modbus: **risk-off 明显更优**。Coverage {mod_off['bitmap_cvg']:.2f}% vs {mod_on['bitmap_cvg']:.2f}%，Crash {mod_off['saved_crashes']} vs {mod_on['saved_crashes']}，Hang {mod_off['saved_hangs']} vs {mod_on['saved_hangs']}。")
+          else:
+              lines.append(f"- Modbus: 本次 **risk-on 更优**。")
+
+          output = "\n".join(lines)
+          print(output)
+
+          if step_summary:
+              with open(step_summary, "a", encoding="utf-8") as f:
+                  f.write(output + "\n")
+          PY

@@ -1,2 +1,2 @@
 # fuzzworkspace-notes2609v1
-fuzz studying and optimize for paper weichuan
+fuzz studying and optimize

@@ -1,0 +1,109 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "bacnet",
+  "library": {
+    "protocol_name": "bacnet-stack",
+    "target_issue": -1,
+    "generation_notes": "Generated exactly 4 VK-only P-/V+ candidate sequences for bacnet-stack family using supplied issues as structural evidence anchors, model internal prior for BACnet/IP BVLC+NPDU+APDU layering, and plan strategies. Sequences are independent, maximize distinct operations/frames/state sequences/sizes while preserving target_operation and evidence_ids. All messages are single-packet, lowercase hex without separators, lengths internally consistent. Target_operation and evidence_ids preserved verbatim per plan. Message formats derived from model prior archetypes + issue-supported field/tag patterns (no external docs). Basic repair assumed later.",
+    "coverage_summary": [
+      "bacnet-stack who-is discovery via malformed ucov analogue",
+      "bacnet-stack i-am via wpm field interaction",
+      "bacnet-stack readproperty via structured-view boundary",
+      "bacnet-stack readpropertymultiple via parser depth"
+    ],
+    "sequences": [
+      {
+        "plan_id": "vk-plan-001",
+        "seed_id": "vk-plan-001-seed-001",
+        "title": "VK-only Who-Is: In v1.3.1, the report says a malformed UCOV/property-value payload ...",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Who-Is",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:1270:1270-summary:f10b3cba62a1",
+          "issue:1304:1304-summary:e1e381ed7daa",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Who-Is malformed ucov analogue",
+            "hex": "810b000900ff0000ff",
+            "byte_length": 9,
+            "sha256": "b6bbf44f7ab2e1ab48647545072f706ffa5e04dfb338b51b75f5ef183f2ac81c"
+          }
+        ],
+        "expected_behavior": "Request parses oversized ucov length in bacapp_decode_application_data without crash; receiver accepts malformed property-value frame.",
+        "constraints_preserved": [
+          "single_request message_budget 1",
+          "BVLC NPDU APDU layering",
+          "Who-Is target_operation",
+          "issue:1270 evidence_ids preserved"
+        ],
+        "issue_safety_notes": "Issue 1270: malformed UCOV/property-value payload triggers oversized extended application length acceptance; this analogue avoids exact crash bytes while exercising decode path.",
+        "sequence_sha256": "14c75a8688cb82fab286be3460ec3fa6126379ce5efe3a1de40b4d5d4fb7556d",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "1270"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-002",
+        "seed_id": "vk-plan-002-seed-001",
+        "title": "VK-only I-Am: In bacnet-stack 1.4.2, a crafted BACnet/IP WritePropertyMultiple pa...",
+        "strategy": "field_interaction",
+        "target_operation": "I-Am",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:1304:1304-summary:e1e381ed7daa",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:1270:1270-summary:f10b3cba62a1",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6",
+          "issue:cve-2026-64675:cve-2026-64675-summa:1fb69ff6770d"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "I-Am with wpm priority field interaction",
+            "hex": "810a000900ff0000ff",
+            "byte_length": 9,
+            "sha256": "f836d7515d9814ce7c4adf03b5fc6d62f7f9661ed65aa55032fff12f342c8f88"
+          }
+        ],
+        "expected_behavior": "Message reaches I-Am handler; optional priority tag parsing interacts with remaining buffer length causing decode path interaction.",
+        "constraints_preserved": [
+          "single_request message_budget 1",
+          "BVLC NPDU APDU layering",
+          "I-Am target_operation",
+          "issue:1304 evidence_ids preserved"
+        ],
+        "issue_safety_notes": "Issue 1304: crafted BACnet/IP WritePropertyMultiple triggers out-of-bounds read in wpm_decode_object_property via priority tag; this I-Am analogue exercises analogous field interaction in I-Am path.",
+        "sequence_sha256": "56a3cf8b456e7a74d4e3d93b1dced5fbe627ffd3702963b8847fdb726ee76019",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "1304"
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "vk-plan-003-seed-001: duplicate sequence removed",
+    "vk-plan-004-seed-001: duplicate sequence removed"
+  ]
+}

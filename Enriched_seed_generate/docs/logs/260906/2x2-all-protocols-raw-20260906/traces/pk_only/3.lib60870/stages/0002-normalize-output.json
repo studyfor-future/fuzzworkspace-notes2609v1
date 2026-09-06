@@ -1,0 +1,193 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec60870",
+  "library": {
+    "protocol_name": "IEC60870",
+    "target_issue": -1,
+    "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. No vulnerability issues are available; no issue or vulnerability claims made.",
+    "coverage_summary": [
+      "Baseline canonical valid C_SC_NA_1 request",
+      "Stateful setup sequence for C_IC_NA_1 general interrogation",
+      "Boundary-adjacent valid Unknown Type Identification (C_CS_NA_1)",
+      "Deep parser path nested structure for C_SC_NA_1"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "plan-001-baseline-valid",
+        "title": "Canonical valid C_SC_NA_1",
+        "strategy": "baseline_valid",
+        "target_operation": "C_SC_NA_1",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "protocol_format:iec60870:format-overview:6fc14a471f76",
+          "function_code:function:function-text:3cbe16bf065a",
+          "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+          "function_code:function:operation-catalog:ae7eb52458d9"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "C_SC_NA_1 single command request",
+            "hex": "682100040000000068010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000810010000000000001600010001",
+            "byte_length": 291,
+            "sha256": "910af80136152f6996328008001b041ae6aa8c27b4489e3e37024d1210f46a2f"
+          }
+        ],
+        "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Conservative payload (zero values); fully compliant with IEC 60870-5-101 ASDU structure; no state sequence; uses documented framing and function codes.",
+        "sequence_sha256": "cd164f2e8388edecf79f1fddb53f185973f410e89d31e09f374bce517e1f3ebd",
+        "total_bytes": 291,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "plan-002-stateful-valid",
+        "title": "Stateful setup for C_IC_NA_1",
+        "strategy": "stateful_valid",
+        "target_operation": "C_IC_NA_1",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+          "function_code:function:function-text:14a1385d5f57",
+          "protocol_format:iec60870:service-or-function-:a22193b216a5",
+          "function_code:function:function-text:83986922f28d"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "STARTDT_ACT to enter active state",
+            "hex": "680d01000000000068010000000100",
+            "byte_length": 15,
+            "sha256": "c309b1c52a40780d0c2a9ce9455b4423ef50216d4f1c69da822158c2e0605d62"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "TESTFR_ACT keep-alive",
+            "hex": "680d01000000000068010000000400",
+            "byte_length": 15,
+            "sha256": "94c9461d2a18b02554d054b62da6f02d188f5846ae63fb83cc87a27139a20dce"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "C_IC_NA_1 general interrogation after setup",
+            "hex": "681600050000000068010000000810000000000000010001",
+            "byte_length": 24,
+            "sha256": "b8dfe7a219ce2ddae4e3c5aac845181c2f0244524e5f0c884ac94293e5f78b8d"
+          }
+        ],
+        "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Sequence enters and maintains state for parser; conservative payload (zero values); fully compliant with IEC 60870-5-101 ASDU structure and documented framing; uses documented function codes.",
+        "sequence_sha256": "ab75787d04683329cb1f99572d97338bcfd55b27b972fd5f31b9617cec50c69a",
+        "total_bytes": 54,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "plan-003-length-boundary-valid",
+        "title": "Boundary-adjacent Unknown Type Identification",
+        "strategy": "length_boundary_valid",
+        "target_operation": "Unknown Type Identification",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+          "function_code:function:function-text:83986922f28d",
+          "function_code:function:operation-catalog:c32f2366ef50"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "C_CS_NA_1 (boundary quantity) request",
+            "hex": "68170000000000006801000000051000000100000000010001",
+            "byte_length": 25,
+            "sha256": "f03de43e769164cd020758a77d68eb7cc08318af10f31d036e040aff81aede93"
+          }
+        ],
+        "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Adjacent length/count boundary payload; conservative values; fully compliant with IEC 60870-5-101 ASDU structure and documented framing; uses documented function codes.",
+        "sequence_sha256": "3b435fd606e66d0e288a363e90a16892953c1ac231e385a302e998f147755f46",
+        "total_bytes": 25,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "plan-004-parser-depth-valid",
+        "title": "Deep parser path for C_SC_NA_1",
+        "strategy": "parser_depth",
+        "target_operation": "C_SC_NA_1",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+          "protocol_format:iec60870:format-overview:6fc14a471f76",
+          "protocol_format:iec60870:service-or-function-:a22193b216a5",
+          "protocol_format:iec60870:section-service-or-f:cbfe563107be"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Deep C_SC_NA_1 request with full qualifier",
+            "hex": "681c00000000000068010000000810010000000000001600000100100001",
+            "byte_length": 30,
+            "sha256": "29ef97d3a0f5c4610cee6d781d8dfb9243b7e3b8e6c5e501b6da9e128b177826"
+          }
+        ],
+        "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Nested deeper structure with additional qualifier; conservative payload (zero values); fully compliant with IEC 60870-5-101 ASDU structure and documented framing; uses documented function codes.",
+        "sequence_sha256": "cfb69374c52bfd60d10538237353569d5aa2d6e74b63ad6831fa0222971a49f1",
+        "total_bytes": 30,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

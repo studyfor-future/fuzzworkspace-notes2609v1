@@ -1,0 +1,102 @@
+{
+  "call_index": 2,
+  "api_mode": "chat",
+  "model": "gpt-5.4-xhigh",
+  "schema_name": "base_candidate_review",
+  "max_output_tokens": 7000,
+  "system_prompt": "You are a strict reviewer for a Base (P-/V-) fuzzing-seed channel.\n\nNo external protocol knowledge or vulnerability issue evidence is available.\nJudge internal consistency, likely protocol plausibility, structural and\noperation diversity, hexadecimal well-formedness, and usefulness for mutation.\nTreat model-prior claims as uncertain and enforce the supplied base constraints.\nReturn JSON only.",
+  "user_prompt": "Review the Base (P-/V-) candidate library for 4 final seeds.\n\nProtocol: modbustcp\nFamily: modbus\n\nPrioritize likely protocol plausibility under model internal knowledge, built-in\nconstraint compliance, complete framing, operation/frame/state diversity,\nmutation utility, and hexadecimal correctness. No external documentation or\nissues exist, so reject invented citations and vulnerability claims. Prefer\nstructurally different seeds over cosmetic variants.\n\n<deterministic_errors>\n[]\n</deterministic_errors>\n<plans>\n{\n  \"protocol_name\": \"modbustcp\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"strategy\": \"baseline_valid\",\n      \"title\": \"Base Read Coils variant 1\",\n      \"target_operation\": \"Read Coils\",\n      \"objective\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base Read Discrete Inputs variant 1\",\n      \"target_operation\": \"Read Discrete Inputs\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base Read Holding Registers variant 1\",\n      \"target_operation\": \"Read Holding Registers\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-004\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base Read Input Registers variant 1\",\n      \"target_operation\": \"Read Input Registers\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:0cd5de02ccdf kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: modbustcp\nProtocol family selected for built-in constraints: modbus\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer Modbus/TCP ADUs with a 7-byte MBAP header.\n- Use protocol identifier 0x0000 and keep MBAP length consistent.\n- Diversify unit identifiers, read/write/diagnostic and file-record functions.\n[/SOURCE]\n</base_constraints>\n<candidate_library>\n{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated using model internal prior and built-in base constraints only. No external protocol documents or vulnerability issues were used.\",\n  \"coverage_summary\": [\n    \"base-plan-001 baseline_valid Read Coils\",\n    \"base-plan-002 function_code_coverage Read Discrete Inputs\",\n    \"base-plan-003 stateful_valid Read Holding Registers\",\n    \"base-plan-004 length_boundary_valid Read Input Registers\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"seed_id\": \"b001-s001\",\n      \"title\": \"Base Read Coils variant 1\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Read Coils\",\n      \"purpose\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Coils Request\",\n          \"hex\": \"000000000006010100020001\"\n        }\n      ],\n      \"expected_behavior\": \"Server returns coil status data starting at address 0x0002 with quantity 0x0001.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header with protocol identifier 0x0000\",\n        \"Unit identifier 0x01\",\n        \"Function code 0x01\",\n        \"Starting address 0x0002\",\n        \"Quantity 0x0001\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues available; issue_safety_notes explicit as per base constraints.\"\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"seed_id\": \"b002-s001\",\n      \"title\": \"Base Read Discrete Inputs variant 1\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Read Discrete Inputs\",\n      \"purpose\": \"Cover a distinct likely operation or service family.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Discrete Inputs Request\",\n          \"hex\": \"000000000006010200020001\"\n        }\n      ],\n      \"expected_behavior\": \"Server returns discrete input status data starting at address 0x0002 with quantity 0x0001.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header with protocol identifier 0x0000\",\n        \"Unit identifier 0x01\",\n        \"Function code 0x02\",\n        \"Starting address 0x0002\",\n        \"Quantity 0x0001\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues available; issue_safety_notes explicit as per base constraints.\"\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"seed_id\": \"b003-s001\",\n      \"title\": \"Base Read Holding Registers variant 1\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Read Holding Registers\",\n      \"purpose\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Holding Registers Request\",\n          \"hex\": \"000000000006010300020001\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"Read Holding Registers Response\",\n          \"hex\": \"0000000000080103000200010002\"\n        }\n      ],\n      \"expected_behavior\": \"Server returns holding register data starting at address 0x0002 with quantity 0x0001.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header with protocol identifier 0x0000\",\n        \"Unit identifier 0x01\",\n        \"Function code 0x03\",\n        \"Starting address 0x0002\",\n        \"Quantity 0x0001\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues available; issue_safety_notes explicit as per base constraints.\"\n    },\n    {\n      \"plan_id\": \"base-plan-004\",\n      \"seed_id\": \"b004-s001\",\n      \"title\": \"Base Read Input Registers variant 1\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"Read Input Registers\",\n      \"purpose\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Input Registers Request\",\n          \"hex\": \"000000000006010400000001\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"Read Input Registers Response\",\n          \"hex\": \"0000000000080104000000010001\"\n        }\n      ],\n      \"expected_behavior\": \"Server returns input register data starting at address 0x0000 with quantity 0x0001.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header with protocol identifier 0x0000\",\n        \"Unit identifier 0x01\",\n        \"Function code 0x04\",\n        \"Starting address 0x0000\",\n        \"Quantity 0x0001\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues available; issue_safety_notes explicit as per base constraints.\"\n    }\n  ]\n}\n</candidate_library>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "overall_score",
+      "needs_revision",
+      "protocol_validity_score",
+      "seed_utility_score",
+      "diversity_score",
+      "issue_enhancement_score",
+      "global_feedback",
+      "sequence_feedback",
+      "coverage_gaps"
+    ],
+    "properties": {
+      "overall_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "needs_revision": {
+        "type": "boolean"
+      },
+      "protocol_validity_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "seed_utility_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "diversity_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "issue_enhancement_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "global_feedback": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "sequence_feedback": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "seed_id",
+            "score",
+            "keep",
+            "problems",
+            "recommended_action"
+          ],
+          "properties": {
+            "seed_id": {
+              "type": "string"
+            },
+            "score": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "keep": {
+              "type": "boolean"
+            },
+            "problems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "recommended_action": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "coverage_gaps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

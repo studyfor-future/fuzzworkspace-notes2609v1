@@ -1,0 +1,233 @@
+{
+  "input_trace": "0003-normalize-input",
+  "protocol_family": "iec60870",
+  "library": {
+    "protocol_name": "IEC60870",
+    "target_issue": -1,
+    "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+    "coverage_summary": [
+      "C_IC_NA_1 for stateful setup",
+      "Unknown Type Identification for length boundary",
+      "C_SC_NA_1 for baseline and parser depth",
+      "C_TS_NA_1 for isolated TESTFR activation"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-002",
+        "seed_id": "seedi",
+        "title": "Stateful setup for C_IC_NA_1",
+        "strategy": "stateful_valid",
+        "target_operation": "C_IC_NA_1",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "issue:197:197-summary:287854ab1555",
+          "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+          "issue:200:200-summary:348db1f37fe8",
+          "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+          "issue:175:175-summary:1d1910f22105",
+          "issue:201:201-summary:798beefc9cab"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "STARTDT ACT",
+            "hex": "6806010000010000",
+            "byte_length": 8,
+            "sha256": "f511ba2058451fedb7293175e646621f4b6285a3c1370ae7aeeb00ed177bde47"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "STOPDT ACT",
+            "hex": "6806010000010000",
+            "byte_length": 8,
+            "sha256": "f511ba2058451fedb7293175e646621f4b6285a3c1370ae7aeeb00ed177bde47"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "C_IC_NA_1",
+            "hex": "6809000000000000000083",
+            "byte_length": 11,
+            "sha256": "f4470e19053b160a7c8b400ca17a5ff2fe3b2a2a87859ac402a95a167a3463bb"
+          }
+        ],
+        "expected_behavior": "Parser accepts the stateful sequence and reaches deeper valid ASDU processing without crash.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+        "sequence_sha256": "0095780b758812721cc1600f535d6c907439ed0c73faed9e4658bceef4b6bfd4",
+        "total_bytes": 27,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "seedj",
+        "title": "Boundary-adjacent Unknown Type Identification",
+        "strategy": "length_boundary_valid",
+        "target_operation": "Unknown Type Identification",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "issue:197:197-summary:287854ab1555",
+          "issue:201:201-summary:798beefc9cab",
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "function_code:function:operation-catalog:c32f2366ef50",
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+          "function_code:function:operation-catalog:b50efabd0022"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Unknown Type Id ASDU",
+            "hex": "680e0000000000000000000000000000",
+            "byte_length": 16,
+            "sha256": "6a8e6ff7f0147140981808ee4606e950ed8ca15531a60a45127de4dbf8172bfc"
+          }
+        ],
+        "expected_behavior": "Parser accepts the boundary-adjacent length and count while remaining valid.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+        "sequence_sha256": "1f09f30dbeb6979fdbb3d40dd43217d48599f3f4ea337d297f104679007dc3f8",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-001",
+        "seed_id": "seedk",
+        "title": "Canonical valid C_SC_NA_1",
+        "strategy": "baseline_valid",
+        "target_operation": "C_SC_NA_1",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "issue:201:201-summary:798beefc9cab",
+          "issue:200:200-summary:348db1f37fe8",
+          "issue:197:197-summary:287854ab1555",
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+          "protocol_format:iec60870:format-overview:6fc14a471f76",
+          "issue:13:13-summary:187d3c5ead6c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "C_SC_NA_1",
+            "hex": "680e0000000000000000838000010000",
+            "byte_length": 16,
+            "sha256": "2136756fe65c213189ddd9e164c4094f03c7039aeb8c674ceeeaa71ec2f83e12"
+          }
+        ],
+        "expected_behavior": "Parser accepts the canonical ASDU with full documentation.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+        "sequence_sha256": "8f3fb2418a1ecdc834c2b5efd514cdc9cb8615c32ad8392da754afdcdeb048cd",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "seedl",
+        "title": "Deep parser path for C_SC_NA_1",
+        "strategy": "parser_depth",
+        "target_operation": "C_SC_NA_1",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+          "protocol_format:iec60870:format-overview:6fc14a471f76",
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+          "protocol_format:iec60870:service-or-function-:a22193b216a5",
+          "issue:197:197-summary:287854ab1555"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "C_SC_NA_1 Deep",
+            "hex": "681300000000000000008380000100000000000000",
+            "byte_length": 21,
+            "sha256": "0a1378a2f16291888f922760a77c562854bd4c2c94d2e9dc3f73c1aba8a7cbe9"
+          }
+        ],
+        "expected_behavior": "Parser accepts the deeper nested structure.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+        "sequence_sha256": "11b5e5a5666359482b15465134479d9e3629ef3d94c41943dd7ca825660d1623",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "",
+        "seed_id": "seedm",
+        "title": "Pure TESTFR activation",
+        "strategy": "function_code_coverage",
+        "target_operation": "TESTFR activation",
+        "purpose": "Provide isolated link-control coverage for the TESTFR archetype path.",
+        "evidence_ids": [
+          "issue:13:13-summary:187d3c5ead6c",
+          "protocol_format:iec60870:format-overview:6fc14a471f76",
+          "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+          "function_code:function:operation-catalog:c32f2366ef50",
+          "issue:197:197-summary:287854ab1555",
+          "protocol_format:iec60870:template-catalog:b7a05fead4b5"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "TESTFR ACT",
+            "hex": "6806010000010000",
+            "byte_length": 8,
+            "sha256": "f511ba2058451fedb7293175e646621f4b6285a3c1370ae7aeeb00ed177bde47"
+          }
+        ],
+        "expected_behavior": "Parser accepts the isolated TESTFR activation as a standalone link-control frame.",
+        "constraints_preserved": [
+          "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+          "Keep 0x68 length octets consistent with the selected frame size.",
+          "Diversify link control, interrogation, command and measurement paths."
+        ],
+        "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+        "sequence_sha256": "2e88d4fc47efcd583b6920dd98f3172acf83c5dacd1185493fb10dfa2e0997c5",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "sequence[4] has unknown plan_id"
+  ]
+}

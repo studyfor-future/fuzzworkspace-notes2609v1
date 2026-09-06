@@ -1,0 +1,80 @@
+{
+  "seed_id": "seedi",
+  "title": "Stateful setup for C_IC_NA_1",
+  "strategy": "stateful_valid",
+  "target_operation": "C_IC_NA_1",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT ACT",
+      "hex": "6806010000010000",
+      "byte_length": 8,
+      "sha256": "f511ba2058451fedb7293175e646621f4b6285a3c1370ae7aeeb00ed177bde47"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "STOPDT ACT",
+      "hex": "6806010000010000",
+      "byte_length": 8,
+      "sha256": "f511ba2058451fedb7293175e646621f4b6285a3c1370ae7aeeb00ed177bde47"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1",
+      "hex": "6809000000000000000083",
+      "byte_length": 11,
+      "sha256": "f4470e19053b160a7c8b400ca17a5ff2fe3b2a2a87859ac402a95a167a3463bb"
+    }
+  ],
+  "expected_behavior": "Parser accepts the stateful sequence and reaches deeper valid ASDU processing without crash.",
+  "constraints_preserved": [
+    "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+    "Keep 0x68 length octets consistent with the selected frame size.",
+    "Diversify link control, interrogation, command and measurement paths."
+  ],
+  "issue_safety_notes": "Safe test sequence avoiding any structural analogue of historical crash payloads",
+  "sequence_sha256": "0095780b758812721cc1600f535d6c907439ed0c73faed9e4658bceef4b6bfd4",
+  "total_bytes": 27,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e349427994e385d7787389c1c326e00805e883a86a4876f68bac253c3747a1ce",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 8,
+        "payload_offset": 8,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

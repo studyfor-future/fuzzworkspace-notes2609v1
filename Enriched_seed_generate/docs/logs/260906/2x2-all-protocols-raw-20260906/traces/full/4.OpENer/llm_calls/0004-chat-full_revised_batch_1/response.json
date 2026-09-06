@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-28d7af60337e6ea0aac93c13",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"coverage_summary\":[\"RegisterSession baseline (plan-001)\",\"Stateful RegisterSession sequence (plan-002)\",\"Boundary-adjacent SendRRData (plan-003)\",\"Deep parser path SendRRData (plan-004)\"],\"generation_notes\":\"Deterministically synthesized per plans from protocol templates (Common Packet Format, Encapsulation Header), function code reference, and issue evidence (e.g. path length 430 bytes, class 0x04/0x97 segments). Conservatively inferred 24-byte encapsulation header (little-endian length per prior guardrails), 8-bit path segments (valid baseline), RegisterSession session handle 0x00000001, Get_Attributes_All CIP payload. Diversity across single vs. setup-then-request, length= minimal valid, path length=valid. No exact copy of issue payloads.\",\"protocol_name\":\"ETHERNETIP\",\"sequences\":[{\"constraints_preserved\":[\"24-byte encapsulation header (little-endian length)\",\"Minimal valid payload per documented framing\",\"Little-endian fields throughout\"],\"evidence_ids\":[\"issue:565:565-summary:9f823d95b613\",\"issue:564:564-summary:6b535e1b37b6\",\"issue:575:575-summary:e8df4ac3993c\",\"issue:576:576-summary:bc3710455616\",\"issue:574:574-summary:860cad928179\",\"issue:577:577-summary:f41c11d4b1b8\"],\"expected_behavior\":\"Valid session registration; server responds with success status\",\"issue_safety_notes\":\"Structural analogue to session handle paths; payload is canonical valid (not copied from crash)\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"0100080000000000000000000000000000000000000000000000000000000000\",\"index\":0,\"label\":\"RegisterSession request\"}],\"plan_id\":\"plan-001\",\"purpose\":\"Canonical documented valid request with correct framing and conservative payload\",\"seed_id\":\"s001\",\"strategy\":\"baseline_valid\",\"target_operation\":\"RegisterSession\",\"title\":\"Canonical valid RegisterSession\"},{\"constraints_preserved\":[\"Multiple requests per sequence budget\",\"Stateful sequence_shape setup_then_request\",\"Encapsulation header consistency\"],\"evidence_ids\":[\"issue:564:564-summary:6b535e1b37b6\",\"issue:574:574-summary:ec096521bf63\",\"issue:576:576-summary:bc3710455616\",\"issue:575:575-summary:e8df4ac3993c\",\"issue:582:582-summary:a17fd2adbb9f\",\"issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2\"],\"expected_behavior\":\"Deeper valid parser state for final RegisterSession; success response\",\"issue_safety_notes\":\"Sequence avoids exact historical payloads; session hijack risk analogue noted but payload canonical\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"0300080000000000000000000000000000000000000000000000000000000000\",\"index\":0,\"label\":\"ListIdentity setup\"},{\"direction\":\"client_to_server\",\"hex\":\"0400080000000000000000000000000000000000000000000000000000000000\",\"index\":1,\"label\":\"ListServices setup\"},{\"direction\":\"client_to_server\",\"hex\":\"0100080000000000000000000000000000000000000000000000000000000000\",\"index\":2,\"label\":\"RegisterSession request\"}],\"plan_id\":\"plan-002\",\"purpose\":\"Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state\",\"seed_id\":\"s002\",\"strategy\":\"stateful_valid\",\"target_operation\":\"RegisterSession\",\"title\":\"Stateful setup for RegisterSession\"},{\"constraints_preserved\":[\"Single-request shape\",\"Encapsulation header with length=15 (boundary)\",\"Little-endian order preserved\"],\"evidence_ids\":[\"issue:562:562-summary:96e1239066fb\",\"issue:577:577-summary:f41c11d4b1b8\",\"issue:576:576-summary:bc3710455616\",\"issue:571:571-summary:fe57e1bf0770\",\"issue:574:574-summary:ec096521bf63\",\"issue:574:574-summary:860cad928179\"],\"expected_behavior\":\"Valid boundary-adjacent length still parses; success response\",\"issue_safety_notes\":\"Analogue to length fields in crash path; payload minimal valid\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"000f080000000000000000000000000000000000000000000000000000000000\",\"index\":0,\"label\":\"SendRRData request\"}],\"plan_id\":\"plan-003\",\"purpose\":\"Keep the message valid while using a documented boundary-adjacent length, count, or quantity field\",\"seed_id\":\"s003\",\"strategy\":\"length_boundary_valid\",\"target_operation\":\"SendRRData\",\"title\":\"Boundary-adjacent SendRRData\"},{\"constraints_preserved\":[\"Nested or deep valid structure\",\"Encapsulation header consistency\",\"Little-endian fields throughout\"],\"evidence_ids\":[\"issue:570:570-summary:0b4cbe808107\",\"issue:565:565-summary:9f823d95b613\",\"issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121\",\"issue:576:576-summary:bc3710455616\",\"issue:564:564-summary:6b535e1b37b6\",\"issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2\"],\"expected_behavior\":\"Deeper valid parser state for final SendRRData; success response\",\"issue_safety_notes\":\"Structural analogue to nested path parsing; payload canonical valid (not copied from crash)\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"000f080000000000000000000000000000000000000000000000000000000000\",\"index\":0,\"label\":\"SendRRData request\"},{\"direction\":\"client_to_server\",\"hex\":\"000f080000000000000000000000000000000000000000000000000000000000\",\"index\":1,\"label\":\"SendRRData request\"}],\"plan_id\":\"plan-004\",\"purpose\":\"Choose a structurally deeper valid request shape that increases nested field or list parsing\",\"seed_id\":\"s004\",\"strategy\":\"parser_depth\",\"target_operation\":\"SendRRData\",\"title\":\"Deep parser path for SendRRData\"}],\"target_issue\":-1}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788705685,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2016,
+    "prompt_tokens": 5270,
+    "total_tokens": 7286,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 73
+    }
+  }
+}

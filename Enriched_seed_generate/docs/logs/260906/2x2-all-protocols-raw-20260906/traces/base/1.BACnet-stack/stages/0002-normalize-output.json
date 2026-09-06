@@ -1,0 +1,170 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "bacnet",
+  "library": {
+    "protocol_name": "bacnet-stack",
+    "target_issue": -1,
+    "generation_notes": "4 candidate seed sequences generated via model internal prior only. Each follows plan_id, target_operation and sequence_shape exactly. Messages use conservative common BACnet/IP layering, full BVLC length consistency and lowercase hex. No external protocol or vulnerability data used. safety_notes note unavailability of external issue knowledge.",
+    "coverage_summary": [
+      "base-plan-001 - single-request Who-Is with canonical BVLC/NPDU/APDU headers",
+      "base-plan-002 - single-request I-Am with distinct service family",
+      "base-plan-003 - setup-then-request ReadProperty sequence",
+      "base-plan-004 - single-request ReadPropertyMultiple at length boundary"
+    ],
+    "sequences": [
+      {
+        "plan_id": "base-plan-001",
+        "seed_id": "base-plan-001",
+        "title": "Base Who-Is variant 1",
+        "strategy": "baseline_valid",
+        "target_operation": "Who-Is",
+        "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+        "evidence_ids": [
+          "base_model_prior:constraints:aceb70a59893"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Who-Is request",
+            "hex": "810000080004000c",
+            "byte_length": 8,
+            "sha256": "280d969c195c54ad92138a16c7fb806a861f2318c1f680896c71a5cab714b0bb"
+          }
+        ],
+        "expected_behavior": "Server responds with matching I-Am messages.",
+        "constraints_preserved": [
+          "BVLC total length consistent",
+          "NPDU/APDU layering standard",
+          "discovery service"
+        ],
+        "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+        "sequence_sha256": "0809bc5f836474d1e24d30a023f47d27932cc8751f5ea85819871103fa5a15f7",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-002",
+        "seed_id": "base-plan-002",
+        "title": "Base I-Am variant 1",
+        "strategy": "function_code_coverage",
+        "target_operation": "I-Am",
+        "purpose": "Cover a distinct likely operation or service family.",
+        "evidence_ids": [
+          "base_model_prior:constraints:aceb70a59893"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "I-Am response",
+            "hex": "810000140004000c000000010000000000000000",
+            "byte_length": 20,
+            "sha256": "a50d3a3d455f3613d3f027cb06de8b8f8fd831ee5a8b7825b0428af2e8777a06"
+          }
+        ],
+        "expected_behavior": "Client receives device identification.",
+        "constraints_preserved": [
+          "BVLC total length consistent",
+          "NPDU/APDU layering standard",
+          "I-Am service family"
+        ],
+        "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+        "sequence_sha256": "48f0857e258e2f3da4a4271996a6068e5338435630804bf5dc8921d2f9550ca9",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-003",
+        "seed_id": "base-plan-003",
+        "title": "Base ReadProperty variant 1",
+        "strategy": "stateful_valid",
+        "target_operation": "ReadProperty",
+        "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+        "evidence_ids": [
+          "base_model_prior:constraints:aceb70a59893"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Who-Is setup",
+            "hex": "810000080004000c",
+            "byte_length": 8,
+            "sha256": "280d969c195c54ad92138a16c7fb806a861f2318c1f680896c71a5cab714b0bb"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "ReadProperty request",
+            "hex": "810000170004000c000000010000000000000001000000",
+            "byte_length": 23,
+            "sha256": "3becd2d23e9436ba9169468652dc18f0d15f260eb550a482b160e83da308a6be"
+          }
+        ],
+        "expected_behavior": "Server replies with property value.",
+        "constraints_preserved": [
+          "BVLC total length consistent",
+          "NPDU/APDU layering standard",
+          "setup-then-request shape"
+        ],
+        "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+        "sequence_sha256": "8e4bbd440a6d6c03378b24bbd823ab57c422c6f0f8bdf14d49a7c356da865195",
+        "total_bytes": 31,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-004",
+        "seed_id": "base-plan-004",
+        "title": "Base ReadPropertyMultiple variant 1",
+        "strategy": "length_boundary_valid",
+        "target_operation": "ReadPropertyMultiple",
+        "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+        "evidence_ids": [
+          "base_model_prior:constraints:aceb70a59893"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReadPropertyMultiple request",
+            "hex": "810000160004000c0000000100000000000000000000",
+            "byte_length": 22,
+            "sha256": "cd06e625d17a28f2564609221c2817dce4d5c18d40a630e3f8748a54e5e274a5"
+          }
+        ],
+        "expected_behavior": "Server replies with requested properties.",
+        "constraints_preserved": [
+          "BVLC total length consistent",
+          "NPDU/APDU layering standard",
+          "length boundary exercised"
+        ],
+        "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+        "sequence_sha256": "f1998dc2e1390be86682568af2cc0c502b19bc23194162b895b1a5215794ac3d",
+        "total_bytes": 22,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,80 @@
+{
+  "seed_id": "vk-only-opener-532-001",
+  "title": "VK-only UnregisterSession: During Peach fuzzing of the OpENer protocol implementation, the end...",
+  "strategy": "parser_depth",
+  "target_operation": "UnregisterSession",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:532:532-summary:1a523aa7a5f5",
+    "issue:563:563-summary:46d0a567a1d5",
+    "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+    "issue:563:563-summary:b783074fb0e0",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "006500000000000000000000",
+      "byte_length": 12,
+      "sha256": "beb614ca8a558ef33ea0f0a583f3897bb8a214a1a1ff10ba7332dc06ab2770be"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSessionResponse",
+      "hex": "0065000000000000000000000000",
+      "byte_length": 14,
+      "sha256": "35b48c82f5497ef8fd9556cb8b106b44b17ca21ec737a2c4618eab0969acb482"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnregisterSession",
+      "hex": "006600000000000000000000",
+      "byte_length": 12,
+      "sha256": "157975f34b43e4b35d0b4e9164a272acfca8035ff32317f04749fd9c2b02a295"
+    }
+  ],
+  "expected_behavior": "server processes UnregisterSession request; parser depth exercised",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when selected",
+    "Diversify discovery, session and explicit-message paths"
+  ],
+  "issue_safety_notes": "No crash payload copied; only parser depth used; safe for testing per issue evidence",
+  "sequence_sha256": "2cff021508b7e7e0a546c0cb0d341ceab234d5a6bad6ea6b8b28bfdc620115a7",
+  "total_bytes": 38,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d769c61239568c28eb2c0ae37f76f670da9ba6774159d25a9200493f59289be3",
+    "encoded_bytes": 38,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 26,
+        "payload_offset": 26,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

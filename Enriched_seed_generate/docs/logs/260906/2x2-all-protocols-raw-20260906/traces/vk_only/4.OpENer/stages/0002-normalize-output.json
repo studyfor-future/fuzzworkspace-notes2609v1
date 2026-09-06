@@ -1,0 +1,214 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "opener",
+  "library": {
+    "protocol_name": "OpENer",
+    "target_issue": -1,
+    "generation_notes": "Generated 4 VK-only P-/V+ candidate sequences for plan_id vk-plan-001 (issue_structural_analogue), vk-plan-002 (field_interaction), vk-plan-003 (length_boundary_valid), vk-plan-004 (parser_depth) using model internal protocol prior and issue evidence only; no external protocol documents used.",
+    "coverage_summary": [
+      "issue_structural_analogue: ListIdentity with structural analogue to HandleReceivedSendRequestResponseDataCommand assignment",
+      "field_interaction: ListServices with CPF field interactions from stack-overflow report",
+      "length_boundary_valid: RegisterSession with boundary in RegisterSession path",
+      "parser_depth: UnregisterSession with parser_depth on CPF and endian structures"
+    ],
+    "sequences": [
+      {
+        "plan_id": "vk-plan-001",
+        "seed_id": "vk-only-opener-314-001",
+        "title": "VK-only ListIdentity: In OpENer V2.3, the function `HandleReceivedSendRequestResponseDataCommand` in `encape.c` is declared to return `EipStatus`, but the reported code assigns `send_size` from `Noti... | payload_messages=2",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ListIdentity",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:314:314-summary:3abfe4f839d0",
+          "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+          "issue:571:571-summary:fe57e1bf0770",
+          "issue:565:565-summary:9f823d95b613",
+          "issue:562:562-summary:96e1239066fb",
+          "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession",
+            "hex": "006500000000000000000000",
+            "byte_length": 12,
+            "sha256": "beb614ca8a558ef33ea0f0a583f3897bb8a214a1a1ff10ba7332dc06ab2770be"
+          },
+          {
+            "index": 1,
+            "direction": "server_to_client",
+            "label": "RegisterSessionResponse",
+            "hex": "0065000000000000000000000000",
+            "byte_length": 14,
+            "sha256": "35b48c82f5497ef8fd9556cb8b106b44b17ca21ec737a2c4618eab0969acb482"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "ListIdentity",
+            "hex": "007400000000000000000000",
+            "byte_length": 12,
+            "sha256": "750f5b43d2a21d36f4f0cb6e1d7d322cebe2c75ecebebd7a44d8087e2dc76888"
+          }
+        ],
+        "expected_behavior": "server processes ListIdentity request; demonstrates stateful session handling with conservative model-prior form",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header when selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No crash payload copied; only structural analogue used; safe for testing per issue evidence",
+        "sequence_sha256": "55af5a2561b62c5491f79c02bf441537b08e79a04c4fe76bc989600eed436444",
+        "total_bytes": 38,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "314"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-002",
+        "seed_id": "vk-only-opener-374-001",
+        "title": "VK-only ListServices: No affected version is documented. Issue 374 reports a stack overfl...",
+        "strategy": "field_interaction",
+        "target_operation": "ListServices",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:374:374-summary:3d44e552a6bc",
+          "issue:445:445-summary:c1784b774e94",
+          "issue:577:577-summary:f41c11d4b1b8",
+          "issue:314:314-summary:3abfe4f839d0",
+          "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+          "issue:582:582-summary:a17fd2adbb9f"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListServices",
+            "hex": "007800000000000000000000",
+            "byte_length": 12,
+            "sha256": "2ef1220018052d3acc117bf78e79d383f80d262a4e9f969a5d90f32e36354837"
+          }
+        ],
+        "expected_behavior": "server processes ListServices request; exercises CPF field interactions for stack-overflow analogue",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header when selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No crash payload copied; only field interactions used; safe for testing per issue evidence",
+        "sequence_sha256": "b163069f2aaea132cdaf25e5dc81b9b4ae22288d2175ac3f249f0cd2abe2fe51",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "374"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-003",
+        "seed_id": "vk-only-opener-445-001",
+        "title": "VK-only RegisterSession: No affected version is identified in the report. The report states ...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:445:445-summary:c1784b774e94",
+          "issue:374:374-summary:3d44e552a6bc",
+          "issue:577:577-summary:f41c11d4b1b8",
+          "issue:575:575-summary:e8df4ac3993c",
+          "issue:582:582-summary:a17fd2adbb9f",
+          "issue:568:568-summary:6fa072929d36"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession",
+            "hex": "006500000000000000000000",
+            "byte_length": 12,
+            "sha256": "beb614ca8a558ef33ea0f0a583f3897bb8a214a1a1ff10ba7332dc06ab2770be"
+          }
+        ],
+        "expected_behavior": "server processes RegisterSession request; length boundary validated",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header when selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No crash payload copied; only boundary used; safe for testing per issue evidence",
+        "sequence_sha256": "86e8ae027d45b070a8b035276dc41c19b38050042de20770bd9780369eb342d8",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "445"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-004",
+        "seed_id": "vk-only-opener-532-001",
+        "title": "VK-only UnregisterSession: During Peach fuzzing of the OpENer protocol implementation, the end...",
+        "strategy": "parser_depth",
+        "target_operation": "UnregisterSession",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:532:532-summary:1a523aa7a5f5",
+          "issue:563:563-summary:46d0a567a1d5",
+          "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+          "issue:563:563-summary:b783074fb0e0",
+          "issue:575:575-summary:e8df4ac3993c",
+          "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession",
+            "hex": "006500000000000000000000",
+            "byte_length": 12,
+            "sha256": "beb614ca8a558ef33ea0f0a583f3897bb8a214a1a1ff10ba7332dc06ab2770be"
+          },
+          {
+            "index": 1,
+            "direction": "server_to_client",
+            "label": "RegisterSessionResponse",
+            "hex": "0065000000000000000000000000",
+            "byte_length": 14,
+            "sha256": "35b48c82f5497ef8fd9556cb8b106b44b17ca21ec737a2c4618eab0969acb482"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "UnregisterSession",
+            "hex": "006600000000000000000000",
+            "byte_length": 12,
+            "sha256": "157975f34b43e4b35d0b4e9164a272acfca8035ff32317f04749fd9c2b02a295"
+          }
+        ],
+        "expected_behavior": "server processes UnregisterSession request; parser depth exercised",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header when selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No crash payload copied; only parser depth used; safe for testing per issue evidence",
+        "sequence_sha256": "2cff021508b7e7e0a546c0cb0d341ceab234d5a6bad6ea6b8b28bfdc620115a7",
+        "total_bytes": 38,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "532"
+        ]
+      }
+    ]
+  },
+  "errors": []
+}

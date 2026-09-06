@@ -1,0 +1,80 @@
+{
+  "seed_id": "stateful_valid",
+  "title": "Stateful setup for Initiate-Request-PDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+    "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+    "function_code:function:function-text:1a3220f52e74",
+    "function_code:function:function-text:57072a10e041",
+    "function_code:function:function-text:d319479344be",
+    "protocol_format:iec61850:message-templates-ac:c3531731edbe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Connect request (TPKT version 0x03)",
+      "hex": "00030000000100",
+      "byte_length": 7,
+      "sha256": "70685b3bc2add9849f8cd184b37a75e2ab312845b0acc472d2b93b05f8bb8d36"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "COTP connection request",
+      "hex": "00000000000100",
+      "byte_length": 7,
+      "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Initiate-Request-PDU",
+      "hex": "00000000000100",
+      "byte_length": 7,
+      "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+    }
+  ],
+  "expected_behavior": "Parser reaches deeper valid state after setup sequence; final message accepted as valid.",
+  "constraints_preserved": [
+    "TPKT header beginning with version 0x03",
+    "TPKT total-length field consistent with complete message",
+    "Stateful sequence for deeper parser path"
+  ],
+  "issue_safety_notes": "All messages are documented valid MMS/ACSE sequences",
+  "sequence_sha256": "b86b4bcf48cc43ff375664d3167b70d199cb6c32f905a9ac8fd06821907a820d",
+  "total_bytes": 21,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "faa936b6a37fafb0e6a6d43bcf069c574a6c5f8c46583afcb1ae11fcc2838e60",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

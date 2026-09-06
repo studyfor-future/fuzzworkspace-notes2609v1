@@ -1,0 +1,102 @@
+{
+  "call_index": 3,
+  "api_mode": "chat",
+  "model": "gpt-5.4",
+  "schema_name": "base_candidate_review",
+  "max_output_tokens": 7000,
+  "system_prompt": "You are a strict reviewer for a Base (P-/V-) fuzzing-seed channel.\n\nNo external protocol knowledge or vulnerability issue evidence is available.\nJudge internal consistency, likely protocol plausibility, structural and\noperation diversity, hexadecimal well-formedness, and usefulness for mutation.\nTreat model-prior claims as uncertain and enforce the supplied base constraints.\nReturn JSON only.",
+  "user_prompt": "Review the Base (P-/V-) candidate library for 4 final seeds.\n\nProtocol: bacnet-stack\nFamily: bacnet\n\nPrioritize likely protocol plausibility under model internal knowledge, built-in\nconstraint compliance, complete framing, operation/frame/state diversity,\nmutation utility, and hexadecimal correctness. No external documentation or\nissues exist, so reject invented citations and vulnerability claims. Prefer\nstructurally different seeds over cosmetic variants.\n\n<deterministic_errors>\n[]\n</deterministic_errors>\n<plans>\n{\n  \"protocol_name\": \"bacnet-stack\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"strategy\": \"baseline_valid\",\n      \"title\": \"Base Who-Is variant 1\",\n      \"target_operation\": \"Who-Is\",\n      \"objective\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base I-Am variant 1\",\n      \"target_operation\": \"I-Am\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base ReadProperty variant 1\",\n      \"target_operation\": \"ReadProperty\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-004\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base ReadPropertyMultiple variant 1\",\n      \"target_operation\": \"ReadPropertyMultiple\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:aceb70a59893 kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: bacnet-stack\nProtocol family selected for built-in constraints: bacnet\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer common BACnet/IP BVLC, NPDU and APDU layering.\n- For BVLC messages, keep the four-byte BVLC total length consistent.\n- Diversify discovery, property access, file and subscription services.\n[/SOURCE]\n</base_constraints>\n<candidate_library>\n{\n  \"protocol_name\": \"bacnet-stack\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"4 candidate seed sequences generated via model internal prior only. Each follows plan_id, target_operation and sequence_shape exactly. Messages use conservative common BACnet/IP layering, full BVLC length consistency and lowercase hex. No external protocol or vulnerability data used. safety_notes note unavailability of external issue knowledge.\",\n  \"coverage_summary\": [\n    \"base-plan-001 - single-request Who-Is with canonical BVLC/NPDU/APDU headers\",\n    \"base-plan-002 - single-request I-Am with distinct service family\",\n    \"base-plan-003 - setup-then-request ReadProperty sequence\",\n    \"base-plan-004 - single-request ReadPropertyMultiple at length boundary\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"seed_id\": \"base-plan-001\",\n      \"title\": \"Base Who-Is variant 1\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Who-Is\",\n      \"purpose\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Who-Is request\",\n          \"hex\": \"810000080004000c\"\n        }\n      ],\n      \"expected_behavior\": \"Server responds with matching I-Am messages.\",\n      \"constraints_preserved\": [\n        \"BVLC total length consistent\",\n        \"NPDU/APDU layering standard\",\n        \"discovery service\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.\"\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"seed_id\": \"base-plan-002\",\n      \"title\": \"Base I-Am variant 1\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"I-Am\",\n      \"purpose\": \"Cover a distinct likely operation or service family.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"I-Am response\",\n          \"hex\": \"810000140004000c000000010000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"Client receives device identification.\",\n      \"constraints_preserved\": [\n        \"BVLC total length consistent\",\n        \"NPDU/APDU layering standard\",\n        \"I-Am service family\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.\"\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"seed_id\": \"base-plan-003\",\n      \"title\": \"Base ReadProperty variant 1\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"ReadProperty\",\n      \"purpose\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Who-Is setup\",\n          \"hex\": \"810000080004000c\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"ReadProperty request\",\n          \"hex\": \"810000170004000c000000010000000000000001000000\"\n        }\n      ],\n      \"expected_behavior\": \"Server replies with property value.\",\n      \"constraints_preserved\": [\n        \"BVLC total length consistent\",\n        \"NPDU/APDU layering standard\",\n        \"setup-then-request shape\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.\"\n    },\n    {\n      \"plan_id\": \"base-plan-004\",\n      \"seed_id\": \"base-plan-004\",\n      \"title\": \"Base ReadPropertyMultiple variant 1\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"ReadPropertyMultiple\",\n      \"purpose\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"ReadPropertyMultiple request\",\n          \"hex\": \"810000160004000c0000000100000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"Server replies with requested properties.\",\n      \"constraints_preserved\": [\n        \"BVLC total length consistent\",\n        \"NPDU/APDU layering standard\",\n        \"length boundary exercised\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.\"\n    }\n  ]\n}\n</candidate_library>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "overall_score",
+      "needs_revision",
+      "protocol_validity_score",
+      "seed_utility_score",
+      "diversity_score",
+      "issue_enhancement_score",
+      "global_feedback",
+      "sequence_feedback",
+      "coverage_gaps"
+    ],
+    "properties": {
+      "overall_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "needs_revision": {
+        "type": "boolean"
+      },
+      "protocol_validity_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "seed_utility_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "diversity_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "issue_enhancement_score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "global_feedback": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "sequence_feedback": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "seed_id",
+            "score",
+            "keep",
+            "problems",
+            "recommended_action"
+          ],
+          "properties": {
+            "seed_id": {
+              "type": "string"
+            },
+            "score": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "keep": {
+              "type": "boolean"
+            },
+            "problems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "recommended_action": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "coverage_gaps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "opener",
+  "library": {
+    "protocol_name": "ETHERNETIP",
+    "target_issue": -1,
+    "generation_notes": "Deterministically synthesized per plans from protocol templates (Common Packet Format, Encapsulation Header), function code reference, and issue evidence (e.g. path length 430 bytes, class 0x04/0x97 segments). Conservatively inferred 24-byte encapsulation header (little-endian length per prior guardrails), 8-bit path segments (valid baseline), RegisterSession session handle 0x00000001, Get_Attributes_All CIP payload. Diversity across single vs. setup-then-request, length= minimal valid, path length=valid. No exact copy of issue payloads.",
+    "coverage_summary": [
+      "RegisterSession baseline (plan-001)",
+      "Stateful RegisterSession sequence (plan-002)",
+      "Boundary-adjacent SendRRData (plan-003)",
+      "Deep parser path SendRRData (plan-004)"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "s001",
+        "title": "Canonical valid RegisterSession",
+        "strategy": "baseline_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Canonical documented valid request with correct framing and conservative payload",
+        "evidence_ids": [
+          "issue:565:565-summary:9f823d95b613",
+          "issue:564:564-summary:6b535e1b37b6",
+          "issue:575:575-summary:e8df4ac3993c",
+          "issue:576:576-summary:bc3710455616",
+          "issue:574:574-summary:860cad928179",
+          "issue:577:577-summary:f41c11d4b1b8"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession request",
+            "hex": "0100080000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8"
+          }
+        ],
+        "expected_behavior": "Valid session registration; server responds with success status",
+        "constraints_preserved": [
+          "24-byte encapsulation header (little-endian length)",
+          "Minimal valid payload per documented framing",
+          "Little-endian fields throughout"
+        ],
+        "issue_safety_notes": "Structural analogue to session handle paths; payload is canonical valid (not copied from crash)",
+        "sequence_sha256": "27fc848ba784f97ff3896fc676313bbfd06decfdd2012a342604631537ab0dd0",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "s002",
+        "title": "Stateful setup for RegisterSession",
+        "strategy": "stateful_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+        "evidence_ids": [
+          "issue:564:564-summary:6b535e1b37b6",
+          "issue:574:574-summary:ec096521bf63",
+          "issue:576:576-summary:bc3710455616",
+          "issue:575:575-summary:e8df4ac3993c",
+          "issue:582:582-summary:a17fd2adbb9f",
+          "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListIdentity setup",
+            "hex": "0300080000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "6c60b8ed489b3b75d828b463bdb267632a513353888de769a220ee19b4e3a1ac"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "ListServices setup",
+            "hex": "0400080000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "8422585e78c9ecb49628c9e3456b4c11c3ba1a6c6689f424d8c3a3a8533fb220"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "RegisterSession request",
+            "hex": "0100080000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8"
+          }
+        ],
+        "expected_behavior": "Deeper valid parser state for final RegisterSession; success response",
+        "constraints_preserved": [
+          "Multiple requests per sequence budget",
+          "Stateful sequence_shape setup_then_request",
+          "Encapsulation header consistency"
+        ],
+        "issue_safety_notes": "Sequence avoids exact historical payloads; session hijack risk analogue noted but payload canonical",
+        "sequence_sha256": "e66f8544246948eb392792225368a46c96f29b3107410861561282f3e3444111",
+        "total_bytes": 96,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "s003",
+        "title": "Boundary-adjacent SendRRData",
+        "strategy": "length_boundary_valid",
+        "target_operation": "SendRRData",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field",
+        "evidence_ids": [
+          "issue:562:562-summary:96e1239066fb",
+          "issue:577:577-summary:f41c11d4b1b8",
+          "issue:576:576-summary:bc3710455616",
+          "issue:571:571-summary:fe57e1bf0770",
+          "issue:574:574-summary:ec096521bf63",
+          "issue:574:574-summary:860cad928179"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData request",
+            "hex": "000f080000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "5b4fef5ff31ea9f1093c74b36354b22dd7ea37791fda5fcb2486ffe21faba9ad"
+          }
+        ],
+        "expected_behavior": "Valid boundary-adjacent length still parses; success response",
+        "constraints_preserved": [
+          "Single-request shape",
+          "Encapsulation header with length=15 (boundary)",
+          "Little-endian order preserved"
+        ],
+        "issue_safety_notes": "Analogue to length fields in crash path; payload minimal valid",
+        "sequence_sha256": "4dc0d3efcd94c79f52a63a034bbd764a4cd7f5f17b9ab0349679a6ebfcf03650",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "s004: duplicate sequence removed"
+  ]
+}

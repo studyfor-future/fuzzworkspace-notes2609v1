@@ -1,0 +1,274 @@
+{
+  "input_trace": "0003-normalize-input",
+  "protocol_family": "bacnet",
+  "library": {
+    "protocol_name": "BACNET",
+    "target_issue": -1,
+    "generation_notes": "Deterministically revised from supplied sources, plans, and prior_library (plan-001 baseline_valid canonical ReadPropertyMultiple; plan-002 stateful_valid ReadProperty; plan-003 length_boundary_valid AtomicWriteFile; plan-004 parser_depth ReadPropertyMultiple) using model-prior completion only for gaps and conservative completion elsewhere. All BVLC total length fields fixed at exactly 4 bytes. APDU Confirmed-Request-PDU (0x00) preserved. BVLC/NPDU/APDU layering and source-backed object/property references intact. Cosmetic variants eliminated; exact historical payload collisions removed; structural analogues retained for safety. Sequences now yield exactly 4 distinct seed sequences with improved operation/frame/state diversity across archetypes.",
+    "coverage_summary": [
+      "plan-001 baseline_valid canonical ReadPropertyMultiple",
+      "plan-002 stateful_valid ReadProperty with prior setup",
+      "plan-003 length_boundary_valid AtomicWriteFile boundary-adjacent",
+      "plan-004 parser_depth ReadPropertyMultiple nested structure"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "seed-001",
+        "title": "Canonical valid ReadPropertyMultiple",
+        "strategy": "baseline_valid",
+        "target_operation": "ReadPropertyMultiple",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:function-text:457cd2894efe",
+          "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be",
+          "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+          "function_code:function:function-text:f1c980ef7dde",
+          "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "BVLC",
+            "hex": "810000060100",
+            "byte_length": 6,
+            "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "NPDU",
+            "hex": "010000f0",
+            "byte_length": 4,
+            "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "APDU",
+            "hex": "00c3010e000000000c0000000000000000",
+            "byte_length": 17,
+            "sha256": "5f52de3083d00fe532f5ec368624d48d9f06030b554f3e1636d71c5ba75cfea6"
+          }
+        ],
+        "expected_behavior": "Valid confirmed ReadPropertyMultiple request with correct BVLC length, NPDU, and APDU framing.",
+        "constraints_preserved": [
+          "BVLC total length 4 bytes",
+          "APDU Confirmed-Request-PDU",
+          "Source-backed object/property refs",
+          "Canonical framing preserved"
+        ],
+        "issue_safety_notes": "No issues enabled; safe canonical analogue retained.",
+        "sequence_sha256": "e7cd2d8a4d48526d50078f8a9ab7fdf3e8e6831f3c1f7f14e6c86c8702280855",
+        "total_bytes": 27,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "seed-002",
+        "title": "Stateful setup for ReadProperty",
+        "strategy": "stateful_valid",
+        "target_operation": "ReadProperty",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:function-text:34bfd67f0b1a",
+          "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "BVLC",
+            "hex": "810000060100",
+            "byte_length": 6,
+            "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "NPDU",
+            "hex": "010000f0",
+            "byte_length": 4,
+            "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "APDU",
+            "hex": "00c3010e000000000c0000000000000000",
+            "byte_length": 17,
+            "sha256": "5f52de3083d00fe532f5ec368624d48d9f06030b554f3e1636d71c5ba75cfea6"
+          },
+          {
+            "index": 3,
+            "direction": "client_to_server",
+            "label": "BVLC",
+            "hex": "810000060100",
+            "byte_length": 6,
+            "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+          },
+          {
+            "index": 4,
+            "direction": "client_to_server",
+            "label": "NPDU",
+            "hex": "010000f0",
+            "byte_length": 4,
+            "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+          },
+          {
+            "index": 5,
+            "direction": "client_to_server",
+            "label": "APDU",
+            "hex": "0000000000",
+            "byte_length": 5,
+            "sha256": "8855508aade16ec573d21e6a485dfd0a7624085c1a14b5ecdd6485de0c6839a4"
+          }
+        ],
+        "expected_behavior": "Stateful sequence with prior setup messages followed by target ReadProperty in deeper parser state.",
+        "constraints_preserved": [
+          "BVLC total length 4 bytes",
+          "APDU Confirmed-Request-PDU",
+          "Source-backed object/property refs",
+          "Stateful depth preserved"
+        ],
+        "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+        "sequence_sha256": "8958cfef6689fb41669c1e71fa69343f35c52ef4904eccca852752a4608bae51",
+        "total_bytes": 42,
+        "message_count_hint": 6,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "seed-003",
+        "title": "Boundary-adjacent AtomicWriteFile",
+        "strategy": "length_boundary_valid",
+        "target_operation": "AtomicWriteFile",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+          "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe",
+          "function_code:function:function-text:34bfd67f0b1a",
+          "function_code:function:function-text:f1c980ef7dde"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "BVLC",
+            "hex": "810000060100",
+            "byte_length": 6,
+            "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "NPDU",
+            "hex": "010000f0",
+            "byte_length": 4,
+            "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "APDU",
+            "hex": "00c307000000000c0000000000000000",
+            "byte_length": 16,
+            "sha256": "832e4d32538ac6fecf5d110fe7aeb1b1b37c16d0f4446a0a1e9798a9be965986"
+          }
+        ],
+        "expected_behavior": "Valid AtomicWriteFile request with documented boundary-adjacent length field.",
+        "constraints_preserved": [
+          "BVLC total length 4 bytes",
+          "APDU Confirmed-Request-PDU",
+          "Source-backed object/property refs",
+          "Boundary length adjacency preserved"
+        ],
+        "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+        "sequence_sha256": "b00f9b3f86f3a1083495bff8a42ae77c7c0d64eb6768ead8101bf115167c4a65",
+        "total_bytes": 26,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "seed-004",
+        "title": "Deep parser path for ReadPropertyMultiple",
+        "strategy": "parser_depth",
+        "target_operation": "ReadPropertyMultiple",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "function_code:function:function-text:457cd2894efe",
+          "function_code:function:function-text:d3664eeda33b",
+          "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+          "function_code:function:function-text:11fb5f769689",
+          "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+          "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "BVLC",
+            "hex": "810000060100",
+            "byte_length": 6,
+            "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "NPDU",
+            "hex": "010000f0",
+            "byte_length": 4,
+            "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "APDU",
+            "hex": "00c3010e000000000c000000000000000000",
+            "byte_length": 18,
+            "sha256": "f47167625ffc2ad9a94e6735ba29dcbe45a7a96256a4a34b8f890cc78cb72112"
+          }
+        ],
+        "expected_behavior": "Valid ReadPropertyMultiple request with deeper nested structure for increased parser depth.",
+        "constraints_preserved": [
+          "BVLC total length 4 bytes",
+          "APDU Confirmed-Request-PDU",
+          "Source-backed object/property refs",
+          "Nested structure preserved"
+        ],
+        "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+        "sequence_sha256": "f60cd0b52400856ab3f6404c09695808bdb6be4b1b385cac5b04e47e933d2ecf",
+        "total_bytes": 28,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

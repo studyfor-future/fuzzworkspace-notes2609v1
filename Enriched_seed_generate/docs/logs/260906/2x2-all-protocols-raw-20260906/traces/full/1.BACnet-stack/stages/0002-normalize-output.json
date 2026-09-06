@@ -1,0 +1,162 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "bacnet",
+  "library": {
+    "protocol_name": "BACNET",
+    "target_issue": -1,
+    "generation_notes": "Deterministically generated from protocol templates, operation catalogs, and optional issue motifs while strictly preserving supplied sources, framing rules, and model-prior guardrails. No exact historical payloads copied; conservative inferences recorded in constraints.",
+    "coverage_summary": [
+      "plan-001 baseline_valid canonical ReadPropertyMultiple",
+      "plan-002 stateful_valid ReadProperty setup sequence",
+      "plan-003 length_boundary_valid AtomicWriteFile boundary request",
+      "plan-004 parser_depth_valid ReadPropertyMultiple nested structure"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "001",
+        "title": "Canonical valid ReadPropertyMultiple",
+        "strategy": "baseline_valid",
+        "target_operation": "ReadPropertyMultiple",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d",
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReadPropertyMultiple request",
+            "hex": "810000120000300e0000000e000000000000",
+            "byte_length": 18,
+            "sha256": "db38b947c9b5d24410726f2f8d336c2e3693872a96ee48b129e198ef16e060f5"
+          }
+        ],
+        "expected_behavior": "Fully valid BACnet/IP BVLC 0x81 APDU with confirmed service choice 0x0e; parser accepts without error or crash.",
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with service 0x0e",
+          "Message length rules and order documented"
+        ],
+        "issue_safety_notes": "Uses only documented framing; no malformed fields, lengths, or tags. Cannot trigger any referenced buffer-overflow or parsing bugs.",
+        "sequence_sha256": "8209ef905ccca0cf080c15d8e19f9f5a14eb915710ece5becea9203e1a057526",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "002",
+        "title": "Stateful setup for ReadProperty",
+        "strategy": "stateful_valid",
+        "target_operation": "ReadProperty",
+        "purpose": "Use setup or sequential valid requests before the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "issue:1398:1398-summary:200993baa464",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:1342:1342-summary:cdc7c256554d",
+          "issue:cve-2026-58265:cve-2026-58265-summa:8f24d69e6c6a",
+          "issue:cve-2026-62973:cve-2026-62973-summa:046aed84ca32"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "First setup request",
+            "hex": "810000120000300c0000000c000000000000",
+            "byte_length": 18,
+            "sha256": "65ee6b0516a1dac294dd72ae140b2774ce945402140254add0ac0951e8bdb574"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "Second setup request",
+            "hex": "810000120000300d0000000d000000000000",
+            "byte_length": 18,
+            "sha256": "a3f7fb8bdf7c98391d1bbc36af177260b2780debd230b0f308d56ae259e62b70"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "ReadProperty in stateful context",
+            "hex": "810000120000300c0000000c000000000000",
+            "byte_length": 18,
+            "sha256": "65ee6b0516a1dac294dd72ae140b2774ce945402140254add0ac0951e8bdb574"
+          }
+        ],
+        "expected_behavior": "Parser processes setup messages to reach deeper valid state before ReadProperty request; all framing correct, no crashes.",
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved across all frames",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with correct service choice",
+          "Message length, order, and checksum rules intact"
+        ],
+        "issue_safety_notes": "Sequential valid requests only; no oversized lengths, malformed tags, or out-of-bound accesses. Cannot reproduce any source crashes.",
+        "sequence_sha256": "3de9ff20c9e62367335a098d091102ff7b9744605ddb614bb4956b2574c341cf",
+        "total_bytes": 54,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "003",
+        "title": "Boundary-adjacent AtomicWriteFile",
+        "strategy": "length_boundary_valid",
+        "target_operation": "AtomicWriteFile",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "AtomicWriteFile boundary-adjacent request",
+            "hex": "810000120000300f0000000f000000000000",
+            "byte_length": 18,
+            "sha256": "0b4ea17c0d9a456936a9de231562a6e761f907f81a61632277b119208884b8c0"
+          }
+        ],
+        "expected_behavior": "Valid BACnet/IP framing with AtomicWriteFile service choice; boundary-adjacent fields accepted by parser without error or crash.",
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with service 0x07",
+          "Documented length/count rules followed exactly"
+        ],
+        "issue_safety_notes": "All fields at documented valid boundaries; no oversized quantities or tags. Cannot trigger referenced buffer or parsing issues.",
+        "sequence_sha256": "c9a34560ac713cd972379354657225c710623c58a298ea5d8bff0f4e07f56e35",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed BVLC length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "004: duplicate sequence removed"
+  ]
+}

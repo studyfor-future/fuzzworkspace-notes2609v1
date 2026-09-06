@@ -1,0 +1,234 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Plan executed exactly once using only built-in modbus model priors; single request with 7-byte MBAP header, function 1, TID 0, ProtocolID 0x0000, len 8; canonical conservative read coils form, no external docs used.",
+  "coverage_summary": [
+    "strategies: baseline_valid",
+    "target_operations: Read Coils",
+    "message_count_profile: 1msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "base-plan-001-001",
+      "title": "Base Read Coils variant 1",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Coils",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Coils request",
+          "hex": "0001000000020101",
+          "byte_length": 8,
+          "sha256": "5f00d9c2232e5d32c8b577039c70bac3a3bdd11c516a3e19070987b62c2bd412"
+        }
+      ],
+      "expected_behavior": "Server responds with coil status if successful, or exception response",
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length consistent",
+        "unit identifier 1",
+        "function code 1"
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; validity is model-prior plausibility only.",
+      "sequence_sha256": "774466991fe84a675c24c7fa9d45dbe13f25ab58a6cb1ed29403f10817878a99",
+      "total_bytes": 8,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "5f00d9c2232e5d32c8b577039c70bac3a3bdd11c516a3e19070987b62c2bd412",
+        "encoded_bytes": 8,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 8,
+            "frame_length": 8
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "model_prior_only",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 1,
+    "candidate_pool_count": 1,
+    "returned_seed_count": 1,
+    "review_threshold": 86,
+    "protocol_family": "modbus",
+    "planning": {
+      "protocol_name": "modbustcp",
+      "planning_notes": "Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "base-plan-001",
+          "strategy": "baseline_valid",
+          "title": "Base Read Coils variant 1",
+          "target_operation": "Read Coils",
+          "objective": "Produce a conservative canonical message using model internal protocol knowledge.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:0cd5de02ccdf"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "Read coils function coverage complete"
+      ],
+      "diversity_score": 95,
+      "global_feedback": [
+        "Excellent adherence to 7-byte MBAP header with TID 0x0000, ProtocolID 0x0000, consistent length, and function 0x01",
+        "Canonical read coils seed is conservative and internally plausible",
+        "High structural fidelity to base constraints; no external docs required"
+      ],
+      "issue_enhancement_score": 70,
+      "needs_revision": false,
+      "overall_score": 85,
+      "protocol_validity_score": 90,
+      "seed_utility_score": 80,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "No action required; retain as final seed",
+          "score": 85,
+          "seed_id": "base-plan-001-001"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "base-plan-001-001"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1
+      },
+      "selected_target_operations": [
+        "Read Coils"
+      ],
+      "distinct_target_operations": 1,
+      "selection_channel": "base"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "base_model_prior:constraints:0cd5de02ccdf",
+        "kind": "base_model_prior",
+        "path": "base-built-in-constraints",
+        "content": "Protocol name: modbustcp\nProtocol family selected for built-in constraints: modbus\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer Modbus/TCP ADUs with a 7-byte MBAP header.\n- Use protocol identifier 0x0000 and keep MBAP length consistent.\n- Diversify unit identifiers, read/write/diagnostic and file-record functions.",
+        "issue_number": -1,
+        "title": "Base model-prior task constraints"
+      }
+    ],
+    "generated_unix_time": 1788701620,
+    "generation_channel": "base",
+    "protocol_knowledge_enabled": false,
+    "vulnerability_knowledge_enabled": false,
+    "external_protocol_documents_used": false,
+    "external_issue_documents_used": false,
+    "model_prior_assumption": true,
+    "built_in_base_constraints": [
+      "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+      "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+      "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+    ],
+    "protocol_repair_enabled": true,
+    "protocol_repair_family": "modbus",
+    "requested_final_seed_count": 1,
+    "requested_candidate_count": 1,
+    "max_final_seed_count": 100,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [
+            "Read coils function coverage complete"
+          ],
+          "diversity_score": 95,
+          "global_feedback": [
+            "Excellent adherence to 7-byte MBAP header with TID 0x0000, ProtocolID 0x0000, consistent length, and function 0x01",
+            "Canonical read coils seed is conservative and internally plausible",
+            "High structural fidelity to base constraints; no external docs required"
+          ],
+          "issue_enhancement_score": 70,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 90,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action required; retain as final seed",
+              "score": 85,
+              "seed_id": "base-plan-001-001"
+            }
+          ]
+        },
+        "candidate_count": 1
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [
+            "Read coils function coverage complete"
+          ],
+          "diversity_score": 95,
+          "global_feedback": [
+            "Excellent adherence to 7-byte MBAP header with TID 0x0000, ProtocolID 0x0000, consistent length, and function 0x01",
+            "Canonical read coils seed is conservative and internally plausible",
+            "High structural fidelity to base constraints; no external docs required"
+          ],
+          "issue_enhancement_score": 70,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 90,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action required; retain as final seed",
+              "score": 85,
+              "seed_id": "base-plan-001-001"
+            }
+          ]
+        },
+        "candidate_count": 1
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

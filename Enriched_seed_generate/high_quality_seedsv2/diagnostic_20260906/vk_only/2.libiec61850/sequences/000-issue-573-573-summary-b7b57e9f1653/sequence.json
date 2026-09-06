@@ -1,0 +1,47 @@
+{
+  "seed_id": "issue-573-573-summary-b7b57e9f1653",
+  "title": "VK-only GetNameList: In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not chec...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:573:573-summary:b7b57e9f1653"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "GetNameList request",
+      "hex": "0300001002f000010001000600010000",
+      "byte_length": 16,
+      "sha256": "75e7f89a342d6922b833a804ff988491527ecbca2b847d42945c85658ac41919"
+    }
+  ],
+  "expected_behavior": "Successful parse with UBSan at ModelNode_getChild",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total-length consistent with complete message",
+    "IEC 61850 MMS over RFC1006"
+  ],
+  "issue_safety_notes": "Safe issue analogue; no exact payload collision; built-in family constraints enforced",
+  "sequence_sha256": "7961172720db21b8ef3dd323f57d9c6882ceb1dedbfacdeb4b31a2c4074093c5",
+  "total_bytes": 16,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "75e7f89a342d6922b833a804ff988491527ecbca2b847d42945c85658ac41919",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

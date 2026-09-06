@@ -1,0 +1,142 @@
+{
+  "coverage_summary": [
+    "plan-001 canonical valid Read Holding Registers",
+    "plan-002 stateful valid Read/Write Multiple Registers",
+    "plan-003 boundary-adjacent valid Read File Record",
+    "plan-004 deep nested valid Encapsulated Interface Transport"
+  ],
+  "generation_notes": "Deterministically synthesized from supplied protocol templates and operation catalogs to maximize diversity across operations, frame structures, sizes, directions and nested parser paths while strictly preserving MBAP header rules, length/count/checksum/order, and all listed constraints.",
+  "protocol_name": "MODBUSTCP",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:869721545c59",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:c093c4ea4f67",
+        "protocol_format:modbustcp:service-or-function-:6b0c20f56925"
+      ],
+      "expected_behavior": "Valid client-to-server request parsed as standard read registers operation",
+      "issue_safety_notes": "PK-only candidate; no vulnerability issues available; not used for any security or issue claims",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000000000060003000100000002",
+          "index": 0,
+          "label": "Read Holding Registers Request"
+        }
+      ],
+      "plan_id": "plan-001",
+      "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+      "seed_id": "seed-001",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Holding Registers",
+      "title": "Canonical valid Read Holding Registers"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:feea6cf87ab2",
+        "function_code:function:function-text:83ed41e3afda",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:c093c4ea4f67"
+      ],
+      "expected_behavior": "Valid stateful multi-step sequence; final request parsed in deeper valid parser state",
+      "issue_safety_notes": "PK-only candidate; no vulnerability issues available; not used for any security or issue claims",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000000000060006000100000001",
+          "index": 0,
+          "label": "Write Single Register Setup"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000a00001700010002000100000002",
+          "index": 1,
+          "label": "Read/Write Multiple Registers Request"
+        }
+      ],
+      "plan_id": "plan-002",
+      "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+      "seed_id": "seed-002",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "title": "Stateful setup for Read/Write Multiple Registers"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:869721545c59",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:feea6cf87ab2",
+        "protocol_format:modbustcp:template-catalog:e27899722475",
+        "function_code:function:function-text:83ed41e3afda"
+      ],
+      "expected_behavior": "Valid client-to-server request with boundary-adjacent length field",
+      "issue_safety_notes": "PK-only candidate; no vulnerability issues available; not used for any security or issue claims",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000000000080000140001000100010001",
+          "index": 0,
+          "label": "Read File Record Boundary Request"
+        }
+      ],
+      "plan_id": "plan-003",
+      "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+      "seed_id": "seed-003",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read File Record",
+      "title": "Boundary-adjacent Read File Record"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:operation-catalog:b024bf223809",
+        "function_code:function:function-text:83ed41e3afda",
+        "function_code:function:function-text:c093c4ea4f67",
+        "protocol_format:modbustcp:template-catalog:e27899722475",
+        "protocol_format:modbustcp:common-headers-mbap-:e7fb1d134948"
+      ],
+      "expected_behavior": "Valid client-to-server request with deeper nested parser path",
+      "issue_safety_notes": "PK-only candidate; no vulnerability issues available; not used for any security or issue claims",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000700002b0001000001",
+          "index": 0,
+          "label": "Encapsulated Interface Transport Request"
+        }
+      ],
+      "plan_id": "plan-004",
+      "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+      "seed_id": "seed-004",
+      "strategy": "parser_depth",
+      "target_operation": "Encapsulated Interface Transport",
+      "title": "Deep parser path for Encapsulated Interface Transport"
+    }
+  ],
+  "target_issue": 0
+}

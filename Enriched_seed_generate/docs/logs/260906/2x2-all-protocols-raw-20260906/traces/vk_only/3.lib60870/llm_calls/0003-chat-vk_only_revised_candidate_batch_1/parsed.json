@@ -1,0 +1,137 @@
+{
+  "coverage_summary": [
+    "parser_depth with STARTDT activation (issue 178)",
+    "field_interaction with STOPDT activation (issue 178)",
+    "length_boundary_valid with TESTFR activation (issue 178)",
+    "parser_depth with General Interrogation (issue 178)"
+  ],
+  "generation_notes": "4 VK-only P-/V+ candidate sequences generated per plan. Each sequence is a single-request iec60870 I-frame using model-prior framing, consistent 68 length octets, and issue-supported trigger relations without copying crash bytes. Maximizes distinct frame structures, sizes, and state sequences while preserving target_operation. Hex lowercase no separators. Internally consistent visible lengths/counts.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "parser accepts STARTDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050800000000",
+          "index": 0,
+          "label": "STARTDT activation"
+        }
+      ],
+      "plan_id": "vk-plan-001",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+      "seed_id": "ghsa-g3w7-x5rx-83xm",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "STARTDT activation",
+      "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak..."
+    },
+    {
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "expected_behavior": "parser accepts STOPDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68051300000000",
+          "index": 0,
+          "label": "STOPDT activation"
+        }
+      ],
+      "plan_id": "vk-plan-002",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+      "seed_id": "ghsa-7v97-jmwv-w5j7",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-..."
+    },
+    {
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "parser accepts TESTFR_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050802000000",
+          "index": 0,
+          "label": "TESTFR activation"
+        }
+      ],
+      "plan_id": "vk-plan-003",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+      "seed_id": "13",
+      "strategy": "length_boundary_valid",
+      "target_operation": "TESTFR activation",
+      "title": "VK-only TESTFR activation: No affected version is specified. The report shows that `./test/iec..."
+    },
+    {
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "parser accepts General Interrogation control message (pure control, no ASDU body or VSQ parsing)",
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050803000000",
+          "index": 0,
+          "label": "General Interrogation"
+        }
+      ],
+      "plan_id": "vk-plan-004",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+      "seed_id": "53",
+      "strategy": "parser_depth",
+      "target_operation": "General Interrogation",
+      "title": "VK-only General Interrogation: Against the latest source from /mz-automation/lib60870/ (exact rele..."
+    }
+  ],
+  "target_issue": -1
+}

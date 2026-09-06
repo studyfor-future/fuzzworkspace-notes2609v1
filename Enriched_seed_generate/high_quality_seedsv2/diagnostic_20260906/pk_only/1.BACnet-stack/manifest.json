@@ -1,0 +1,804 @@
+{
+  "protocol_name": "BACNET",
+  "target_issue": -1,
+  "generation_notes": "Deterministically revised from supplied sources, plans, and prior_library (plan-001 baseline_valid canonical ReadPropertyMultiple; plan-002 stateful_valid ReadProperty; plan-003 length_boundary_valid AtomicWriteFile; plan-004 parser_depth ReadPropertyMultiple) using model-prior completion only for gaps and conservative completion elsewhere. All BVLC total length fields fixed at exactly 4 bytes. APDU Confirmed-Request-PDU (0x00) preserved. BVLC/NPDU/APDU layering and source-backed object/property references intact. Cosmetic variants eliminated; exact historical payload collisions removed; structural analogues retained for safety. Sequences now yield exactly 4 distinct seed sequences with improved operation/frame/state diversity across archetypes.",
+  "coverage_summary": [
+    "strategies: baseline_valid, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: AtomicWriteFile, ReadProperty, ReadPropertyMultiple",
+    "message_count_profile: 3msg=3, 6msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "seed-001",
+      "title": "Canonical valid ReadPropertyMultiple",
+      "strategy": "baseline_valid",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+      "evidence_ids": [
+        "function_code:function:function-text:11fb5f769689",
+        "function_code:function:function-text:457cd2894efe",
+        "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be",
+        "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+        "function_code:function:function-text:f1c980ef7dde",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BVLC",
+          "hex": "810000060100",
+          "byte_length": 6,
+          "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "NPDU",
+          "hex": "010000f0",
+          "byte_length": 4,
+          "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "APDU",
+          "hex": "00c3010e000000000c0000000000000000",
+          "byte_length": 17,
+          "sha256": "5f52de3083d00fe532f5ec368624d48d9f06030b554f3e1636d71c5ba75cfea6"
+        }
+      ],
+      "expected_behavior": "Valid confirmed ReadPropertyMultiple request with correct BVLC length, NPDU, and APDU framing.",
+      "constraints_preserved": [
+        "BVLC total length 4 bytes",
+        "APDU Confirmed-Request-PDU",
+        "Source-backed object/property refs",
+        "Canonical framing preserved"
+      ],
+      "issue_safety_notes": "No issues enabled; safe canonical analogue retained.",
+      "sequence_sha256": "e7cd2d8a4d48526d50078f8a9ab7fdf3e8e6831f3c1f7f14e6c86c8702280855",
+      "total_bytes": 27,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "325ed904290b8290bd1489776d0c9dcbe75d87521a9cf39c580ba5d2309bab6f",
+        "encoded_bytes": 27,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 6,
+            "frame_length": 6
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 6,
+            "payload_offset": 6,
+            "payload_length": 4,
+            "frame_length": 4
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 10,
+            "payload_offset": 10,
+            "payload_length": 17,
+            "frame_length": 17
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "seed-002",
+      "title": "Stateful setup for ReadProperty",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+        "function_code:function:function-text:11fb5f769689",
+        "function_code:function:function-text:34bfd67f0b1a",
+        "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+        "function_code:function:function-text:457cd2894efe"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BVLC",
+          "hex": "810000060100",
+          "byte_length": 6,
+          "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "NPDU",
+          "hex": "010000f0",
+          "byte_length": 4,
+          "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "APDU",
+          "hex": "00c3010e000000000c0000000000000000",
+          "byte_length": 17,
+          "sha256": "5f52de3083d00fe532f5ec368624d48d9f06030b554f3e1636d71c5ba75cfea6"
+        },
+        {
+          "index": 3,
+          "direction": "client_to_server",
+          "label": "BVLC",
+          "hex": "810000060100",
+          "byte_length": 6,
+          "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+        },
+        {
+          "index": 4,
+          "direction": "client_to_server",
+          "label": "NPDU",
+          "hex": "010000f0",
+          "byte_length": 4,
+          "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+        },
+        {
+          "index": 5,
+          "direction": "client_to_server",
+          "label": "APDU",
+          "hex": "0000000000",
+          "byte_length": 5,
+          "sha256": "8855508aade16ec573d21e6a485dfd0a7624085c1a14b5ecdd6485de0c6839a4"
+        }
+      ],
+      "expected_behavior": "Stateful sequence with prior setup messages followed by target ReadProperty in deeper parser state.",
+      "constraints_preserved": [
+        "BVLC total length 4 bytes",
+        "APDU Confirmed-Request-PDU",
+        "Source-backed object/property refs",
+        "Stateful depth preserved"
+      ],
+      "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+      "sequence_sha256": "8958cfef6689fb41669c1e71fa69343f35c52ef4904eccca852752a4608bae51",
+      "total_bytes": 42,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "65f7679d01f2d6e172b54e7c4cf335ae1e1d0f5df5aa3d870d587d523eaaea58",
+        "encoded_bytes": 42,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 6,
+            "frame_length": 6
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 6,
+            "payload_offset": 6,
+            "payload_length": 4,
+            "frame_length": 4
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 10,
+            "payload_offset": 10,
+            "payload_length": 17,
+            "frame_length": 17
+          },
+          {
+            "message_index": 3,
+            "frame_offset": 27,
+            "payload_offset": 27,
+            "payload_length": 6,
+            "frame_length": 6
+          },
+          {
+            "message_index": 4,
+            "frame_offset": 33,
+            "payload_offset": 33,
+            "payload_length": 4,
+            "frame_length": 4
+          },
+          {
+            "message_index": 5,
+            "frame_offset": 37,
+            "payload_offset": 37,
+            "payload_length": 5,
+            "frame_length": 5
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "seed-003",
+      "title": "Boundary-adjacent AtomicWriteFile",
+      "strategy": "length_boundary_valid",
+      "target_operation": "AtomicWriteFile",
+      "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:34bfd67f0b1a",
+        "function_code:function:function-text:f1c980ef7dde"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BVLC",
+          "hex": "810000060100",
+          "byte_length": 6,
+          "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "NPDU",
+          "hex": "010000f0",
+          "byte_length": 4,
+          "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "APDU",
+          "hex": "00c307000000000c0000000000000000",
+          "byte_length": 16,
+          "sha256": "832e4d32538ac6fecf5d110fe7aeb1b1b37c16d0f4446a0a1e9798a9be965986"
+        }
+      ],
+      "expected_behavior": "Valid AtomicWriteFile request with documented boundary-adjacent length field.",
+      "constraints_preserved": [
+        "BVLC total length 4 bytes",
+        "APDU Confirmed-Request-PDU",
+        "Source-backed object/property refs",
+        "Boundary length adjacency preserved"
+      ],
+      "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+      "sequence_sha256": "b00f9b3f86f3a1083495bff8a42ae77c7c0d64eb6768ead8101bf115167c4a65",
+      "total_bytes": 26,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f5b7a48eb8355d7941bbd3e0592ade48d609821ce5d1e008fb66476263dd0771",
+        "encoded_bytes": 26,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 6,
+            "frame_length": 6
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 6,
+            "payload_offset": 6,
+            "payload_length": 4,
+            "frame_length": 4
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 10,
+            "payload_offset": 10,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "seed-004",
+      "title": "Deep parser path for ReadPropertyMultiple",
+      "strategy": "parser_depth",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+      "evidence_ids": [
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:d3664eeda33b",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+        "function_code:function:function-text:11fb5f769689",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BVLC",
+          "hex": "810000060100",
+          "byte_length": 6,
+          "sha256": "4fc8811ba14ca6ff068d465eb5e598992a72dd3d0c225d224a14876b8a098b44"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "NPDU",
+          "hex": "010000f0",
+          "byte_length": 4,
+          "sha256": "74e9312548fa99118d0b151396e57e9f4632d76556771867d012077511debf36"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "APDU",
+          "hex": "00c3010e000000000c000000000000000000",
+          "byte_length": 18,
+          "sha256": "f47167625ffc2ad9a94e6735ba29dcbe45a7a96256a4a34b8f890cc78cb72112"
+        }
+      ],
+      "expected_behavior": "Valid ReadPropertyMultiple request with deeper nested structure for increased parser depth.",
+      "constraints_preserved": [
+        "BVLC total length 4 bytes",
+        "APDU Confirmed-Request-PDU",
+        "Source-backed object/property refs",
+        "Nested structure preserved"
+      ],
+      "issue_safety_notes": "No issues enabled; safe structural analogue retained.",
+      "sequence_sha256": "f60cd0b52400856ab3f6404c09695808bdb6be4b1b385cac5b04e47e933d2ecf",
+      "total_bytes": 28,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "d5d5493480eeea047cf3c4ea3096fddbc4a9ca33a3664329d4db31dbfc78c062",
+        "encoded_bytes": 28,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 6,
+            "frame_length": 6
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 6,
+            "payload_offset": 6,
+            "payload_length": 4,
+            "frame_length": 4
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 10,
+            "payload_offset": 10,
+            "payload_length": 18,
+            "frame_length": 18
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_plus_model_prior",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "bacnet",
+    "planning": {
+      "protocol_name": "BACNET",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid ReadPropertyMultiple",
+          "target_operation": "ReadPropertyMultiple",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "function_code:function:function-text:11fb5f769689",
+            "function_code:function:function-text:457cd2894efe",
+            "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be",
+            "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+            "function_code:function:function-text:f1c980ef7dde",
+            "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for ReadProperty",
+          "target_operation": "ReadProperty",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "function_code:function:function-text:f1c980ef7dde",
+            "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+            "function_code:function:function-text:11fb5f769689",
+            "function_code:function:function-text:34bfd67f0b1a",
+            "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+            "function_code:function:function-text:457cd2894efe"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent AtomicWriteFile",
+          "target_operation": "AtomicWriteFile",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+            "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+            "function_code:function:function-text:d3664eeda33b",
+            "function_code:function:function-text:457cd2894efe",
+            "function_code:function:function-text:34bfd67f0b1a",
+            "function_code:function:function-text:f1c980ef7dde"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for ReadPropertyMultiple",
+          "target_operation": "ReadPropertyMultiple",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "function_code:function:function-text:457cd2894efe",
+            "function_code:function:function-text:d3664eeda33b",
+            "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+            "function_code:function:function-text:11fb5f769689",
+            "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+            "protocol_format:bacnet-stack:message-templates-ap:9c2b2991e8be"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "Missing unconfirmed discovery archetype (Who-Is/I-Am)",
+        "Missing property-access archetype (ReadProperty, WriteProperty)",
+        "Missing subscription archetype (SubscribeCOV)",
+        "Missing control archetype (DeviceCommunicationControl)",
+        "Missing file archetype (AtomicReadFile)"
+      ],
+      "diversity_score": 90,
+      "global_feedback": [
+        "BVLC length consistently 6 bytes (correct 4-byte field) with source-compliant layering; all service choices and framing aligned to confirmed templates.",
+        "Structural diversity achieved via canonical single, stateful setup, boundary-adjacent length, and nested parser path across distinct archetypes.",
+        "Mutation utility present in ReadPropertyMultiple and AtomicWriteFile sequences; parser-depth strategy adds valid nesting without contradicting sources."
+      ],
+      "issue_enhancement_score": 75,
+      "needs_revision": false,
+      "overall_score": 82,
+      "protocol_validity_score": 95,
+      "seed_utility_score": 80,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as canonical baseline",
+          "score": 90,
+          "seed_id": "seed-001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as stateful sequence",
+          "score": 85,
+          "seed_id": "seed-002"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as boundary-adjacent",
+          "score": 85,
+          "seed_id": "seed-003"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as nested deep path",
+          "score": 80,
+          "seed_id": "seed-004"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "seed-001",
+        "seed-002",
+        "seed-003",
+        "seed-004"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "length_boundary_valid": 1,
+        "parser_depth": 1
+      },
+      "selected_target_operations": [
+        "ReadPropertyMultiple",
+        "ReadProperty",
+        "AtomicWriteFile",
+        "ReadPropertyMultiple"
+      ],
+      "distinct_target_operations": 3,
+      "selection_channel": "pk-only"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"bacnet-stack\",\n    \"profile\": \"auto\",\n    \"protocol\": \"BACNET\",\n    \"rule_family\": \"bacnet\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"link\": [\n      \"BVLC Header\"\n    ],\n    \"payload\": [\n      \"APDU\",\n      \"Application-Data\",\n      \"Secure-Connect-Binding\"\n    ],\n    \"session\": [\n      \"NPDU Header\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 0,\n    \"message_count\": 3,\n    \"non_header_templates\": 3,\n    \"real_strong_templates\": 3,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "Section: Common Headers\nTemplates: BVLC Header, NPDU Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:common-headers-bvlc-:3d62be5aaa8a",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "Section: Common Headers\nTemplate: BVLC Header\n- Field: bvlc_type\n  Description: Protocol field 'bvlc_type'. Layer: link. Role: type. Inferred-from: protocol-template.\n  Length: 8 bits\n- Field: bvlc_function\n  Description: Protocol field 'bvlc_function'. Layer: link. Role: type. Inferred-from: protocol-template.\n  Length: 8 bits\n- Field: bvlc_length\n  Description: Protocol field 'bvlc_length'. Layer: link. Role: length. Inferred-from: protocol-template.\n  Length: 16 bits",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:f1c980ef7dde",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "BACnet Function Code and Service Choice Reference\n=================================================\n\nScope\n-----\nThis file contains standardized BACnet protocol operation identifiers:\n\n1. BACnet APDU PDU Type\n2. Confirmed Service Choice\n3. Unconfirmed Service Choice\n4. BACnet/IP BVLC Function\n5. BACnet/IP BVLC Result Code\n6. BACnet Network Layer Message Type\n7. Reject Reason\n8. Abort Reason\n9. Error Class\n\nThe values marked RESERVED must not be interpreted as currently defined\nstandard operations.\n\n================================================================\n1. BACnet APDU PDU TYPE\n================================================================\n\nThe APDU type is stored in the high nibble of the first APDU octet.\n\n0x00 = Confirmed-Request-PDU\n0x10 = Unconfirmed-Request-PDU\n0x20 = SimpleACK-PDU\n0x30 = ComplexACK-PDU\n0x40 = SegmentACK-PDU\n0x50 = Error-PDU\n0x60 = Reject-PDU\n0x70 = Abort-PDU\n\nPDU type numeric value before shifting:\n\n0 = Confirmed-Request-PDU\n1 = Unconfirmed-Request-PDU\n2 = SimpleACK-PDU\n3 = ComplexACK-PDU\n4 = SegmentACK-PDU\n5 = Error-PDU\n6 = Reject-PDU\n7 = Abort-PDU\n\n================================================================\n2. BACnet CONFIRMED SERVICE CHOICE\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:d3664eeda33b",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "mentACK-PDU\n5 = Error-PDU\n6 = Reject-PDU\n7 = Abort-PDU\n\n================================================================\n2. BACnet CONFIRMED SERVICE CHOICE\n================================================================\n\n0x00 = AcknowledgeAlarm\n0x01 = ConfirmedCOVNotification\n0x02 = ConfirmedEventNotification\n0x03 = GetAlarmSummary\n0x04 = GetEnrollmentSummary\n0x05 = SubscribeCOV\n0x06 = AtomicReadFile\n0x07 = AtomicWriteFile\n0x08 = AddListElement\n0x09 = RemoveListElement\n0x0A = CreateObject\n0x0B = DeleteObject\n0x0C = ReadProperty\n0x0D = ReadPropertyConditional\n0x0E = ReadPropertyMultiple\n0x0F = WriteProperty\n0x10 = WritePropertyMultiple\n0x11 = DeviceCommunicationControl\n0x12 = ConfirmedPrivateTransfer\n0x13 = ConfirmedTextMessage\n0x14 = ReinitializeDevice\n0x15 = VT-Open\n0x16 = VT-Close\n0x17 = VT-Data\n0x18 = Authenticate\n0x19 = RequestKey\n0x1A = ReadRange\n0x1B = LifeSafetyOperation\n0x1C = SubscribeCOVProperty\n0x1D = GetEventInformation\n0x1E = SubscribeCOVPropertyMultiple\n0x1F = ConfirmedCOVNotificationMultiple\n0x20 = ConfirmedAuditNotification\n0x21 = AuditLogQuery\n\n0x22-0xFF = Reserved or future standard services\n\nConfirmed service summary:\n\nAcknowledgeAlarm\n    Acknowledge an alarm or event transition.\n\nConfirmedCOVNotification\n    Confirmed change-of-value notification.\n\nConfirmedEventNotification\n    Confirmed alarm or event notification.\n\nGetAlarmSummary\n    Retrieve summary information for active alarms.\n\nGetEnrollmentSummary\n    Retrieve enrollment summary information.\n\nSubscribeCOV\n    Create, renew, or cancel an object-level COV subscription.\n\nAtomicReadFile\n    Read a BACnet File object in stream or record mode.\n\nAtomicWriteFile\n    Write a BACnet File object in stream or record mode.\n\nAddListElement\n    Add one or more elements to a list property.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:457cd2894efe",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "cription.\n\nAtomicReadFile\n    Read a BACnet File object in stream or record mode.\n\nAtomicWriteFile\n    Write a BACnet File object in stream or record mode.\n\nAddListElement\n    Add one or more elements to a list property.\n\nRemoveListElement\n    Remove one or more elements from a list property.\n\nCreateObject\n    Create a BACnet object instance.\n\nDeleteObject\n    Delete a BACnet object instance.\n\nReadProperty\n    Read one property of one object.\n\nReadPropertyConditional\n    Conditionally read properties.\n\nReadPropertyMultiple\n    Read multiple properties from one or more objects.\n\nWriteProperty\n    Write one property.\n\nWritePropertyMultiple\n    Write multiple properties.\n\nDeviceCommunicationControl\n    Enable, disable, or partially disable device communication.\n\nConfirmedPrivateTransfer\n    Vendor-specific confirmed service.\n\nConfirmedTextMessage\n    Confirmed text-message delivery.\n\nReinitializeDevice\n    Request device warm start, cold start, or supported reinitialization.\n\nVT-Open\n    Open virtual-terminal connection.\n\nVT-Close\n    Close virtual-terminal connection.\n\nVT-Data\n    Transfer virtual-terminal data.\n\nAuthenticate\n    Legacy BACnet authentication service.\n\nRequestKey\n    Legacy BACnet key request service.\n\nReadRange\n    Read a range of list, array, log, or record data.\n\nLifeSafetyOperation\n    Perform a life-safety operation.\n\nSubscribeCOVProperty\n    Subscribe to change-of-value for one property.\n\nGetEventInformation\n    Retrieve active event information.\n\nSubscribeCOVPropertyMultiple\n    Subscribe to multiple COV properties.\n\nConfirmedCOVNotificationMultiple\n    Confirmed notification containing multiple changed values.\n\nConfirmedAuditNotification\n    Confirmed audit notification.\n\nAuditLogQuery\n    Query BACnet audit log information.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:template-catalog:f9b7ab4957b4",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "Protocol: BACNET\nTemplate catalog:\n- Common Headers :: BVLC Header -> bvlc_type, bvlc_function, bvlc_length\n- Common Headers :: NPDU Header -> npdu_version, npdu_control\n- Message Templates :: APDU -> apdu_type, invoke_id, service_choice, service_request_payload, segmented_message_flag, more_follows_flag, segmented_response_accepted_flag, max_segments\n- Message Templates :: Application-Data -> bacnet_application_data\n- Object or Data Templates :: Secure-Connect-Binding -> bacnet_sc_primary_hub_uri, bacnet_sc_failover_hub_uri, max_bvlc_length_accepted, max_npdu_length_accepted",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:message-templates-ap:4950331156a2",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "Section: Message Templates\nTemplate: Application-Data\n- Field: bacnet_application_data\n  Description: Protocol field 'bacnet_application_data'. Layer: asdu. Role: payload. Type: variable. Inferred-from: wire. Binding-strength: tag_parse. Evidence-type: length_check.\n  Length: variable\n  Implementation constraints: Payload length must not exceed remaining APDU bytes, Encoded as a BACnet Application Tag (Tag Number + Length/Value Type) followed by the tag payload, Length of the tag payload is determined by bacnet_application_data_length(tag.number, tag.len_value_type)",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed",
+        "kind": "protocol_format",
+        "path": "protocol_format/bacnet-stack.json",
+        "content": "Section: Object or Data Templates\nTemplate: Secure-Connect-Binding\n- Field: bacnet_sc_primary_hub_uri\n  Description: Protocol field 'bacnet_sc_primary_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: valid URI syntax, terminating NULL required, separator character ('|') splits URI from optional port number. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: BACNET_CHARACTER_STRING internal capacity ≤ ~128 chars, no explicit UTF-8/ASCII tag in wire encoding, port suffix parsed in-place by sc_binding_parse(), exactly one URI string per ASDU, separator '|' must precede decimal port number\n- Field: bacnet_sc_failover_hub_uri\n  Description: Protocol field 'bacnet_sc_failover_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: max length imposed by BACnet character-string encoding (up to 255 bytes payload plus length octet), must be null-terminated when used in local stack storage. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: stack buffers sized to accomodate 255-byte string plus null terminator, parser stops at first null byte in local copy, BACnet character-string type requires first octet to hold length (max 255 octets), no padding required beyond length octet\n- Field: max_bvlc_length_accepted\n  Description: Protocol field 'max_bvlc_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: semantic_inference. Evidence-type: unknown.\n  Length: 32 bits\n- Field: max_npdu_length_accepted\n  Description: Protocol field 'max_npdu_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:00f4c0ca11c4",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0D = Request-Key-Update\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0E = Update-Key-Set\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0F = Update-Distribution-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x10 = Request-Master-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x11 = Set-Master-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x12 = What-Is-Network-Number\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x13 = Network-Number-Is\n- 7. BACnet REJECT REASON :: 0x00 = Other\n- 7. BACnet REJECT REASON :: 0x01 = Buffer-Overflow\n- 7. BACnet REJECT REASON :: 0x02 = Inconsistent-Parameters\n- 7. BACnet REJECT REASON :: 0x03 = Invalid-Parameter-Data-Type\n- 7. BACnet REJECT REASON :: 0x04 = Invalid-Tag\n- 7. BACnet REJECT REASON :: 0x05 = Missing-Required-Parameter\n- 7. BACnet REJECT REASON :: 0x06 = Parameter-Out-Of-Range\n- 7. BACnet REJECT REASON :: 0x07 = Too-Many-Arguments\n- 7. BACnet REJECT REASON :: 0x08 = Undefined-Enumeration\n- 7. BACnet REJECT REASON :: 0x09 = Unrecognized-Service\n- 8. BACnet ABORT REASON :: 0x00 = Other\n- 8. BACnet ABORT REASON :: 0x01 = Buffer-Overflow\n- 8. BACnet ABORT REASON :: 0x02 = Invalid-APDU-In-This-State\n- 8. BACnet ABORT REASON :: 0x03 = Preempted-By-Higher-Priority-Task\n- 8. BACnet ABORT REASON :: 0x04 = Segmentation-Not-Supported\n- 8. BACnet ABORT REASON :: 0x05 = Security-Error\n- 8. BACnet ABORT REASON :: 0x06 = Insufficient-Security\n- 8. BACnet ABORT REASON :: 0x07 = Window-Size-Out-Of-Range\n- 8. BACnet ABORT REASON :: 0x08 = Application-Exceeded-Reply-Time\n- 8. BACnet ABORT REASON :: 0x09 = Out-Of-Resources\n- 8. BACnet ABORT REASON :: 0x0A = TSM-Timeout\n- 8. BACnet ABORT REASON :: 0x0B = APDU-Too-Long\n- 9. BACnet ERROR CLASS :: 0x00 = Device\n- 9. BACnet ERROR CLASS :: 0x01 = Object\n- 9. BACnet ERROR C",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:dc31a6cdc731",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "Original-Broadcast-NPDU\n- 4. BACnet/IP BVLC FUNCTION :: 0x0C = Secure-BVLL\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0000 = Successful-Completion\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0010 = Write-Broadcast-Distribution-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0020 = Read-Broadcast-Distribution-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0030 = Register-Foreign-Device-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0040 = Read-Foreign-Device-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0050 = Delete-Foreign-Device-Table-Entry-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0060 = Distribute-Broadcast-To-Network-NAK\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x00 = Who-Is-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x01 = I-Am-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x02 = I-Could-Be-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x03 = Reject-Message-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x04 = Router-Busy-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x05 = Router-Available-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x06 = Initialize-Routing-Table\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x07 = Initialize-Routing-Table-Ack\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x08 = Establish-Connection-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x09 = Disconnect-Connection-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0A = Challenge-Request\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0B = Security-Payload\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0C = Security-Response\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0D = Request-Key-Update\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0E = Update-Key-Set\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0F = Update-Distribution-Key\n- 6. BACnet NETWO",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:30d3483f070c",
+        "kind": "function_code",
+        "path": "function_code/1.BACnet-stack/function.txt",
+        "content": "bject\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0C = ReadProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0D = ReadPropertyConditional\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0E = ReadPropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0F = WriteProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x10 = WritePropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x11 = DeviceCommunicationControl\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x12 = ConfirmedPrivateTransfer\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x13 = ConfirmedTextMessage\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x14 = ReinitializeDevice\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x15 = VT-Open\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x16 = VT-Close\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x17 = VT-Data\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x18 = Authenticate\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x19 = RequestKey\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1A = ReadRange\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1B = LifeSafetyOperation\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1C = SubscribeCOVProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1D = GetEventInformation\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1E = SubscribeCOVPropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1F = ConfirmedCOVNotificationMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x20 = ConfirmedAuditNotification\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x21 = AuditLogQuery\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x00 = I-Am\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x01 = I-Have\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x02 = UnconfirmedCOVNotification\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x03 = UnconfirmedEventNotification\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x04 = UnconfirmedPrivateTransfer\n- 3. BACnet",
+        "issue_number": -1,
+        "title": ""
+      }
+    ],
+    "generated_unix_time": 1788704372,
+    "generation_channel": "pk-only",
+    "protocol_knowledge_enabled": true,
+    "vulnerability_knowledge_enabled": false,
+    "model_prior_gap_completion_enabled": true,
+    "built_in_prior_guardrails": [
+      "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+      "For BVLC messages, keep the four-byte BVLC total length consistent.",
+      "Diversify discovery, property access, file and subscription services."
+    ],
+    "protocol_repair_enabled": true,
+    "requested_final_seed_count": 4,
+    "requested_candidate_count": 4,
+    "max_final_seed_count": 100,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "bacnet-stack-protocol_format-bacnet-stack-format-overview-d904ae1e3d82: exceeds max messages 8",
+          "function_code-function-function-text-f1c980ef7dde: exceeds max messages 8",
+          "protocol_format-bacnet-stack-message-templates-ap-4950331156a2: exceeds max messages 8",
+          "protocol_format-bacnet-stack-message-templates-ap-fa1d6282b99e: exceeds max messages 8"
+        ],
+        "review": {
+          "coverage_gaps": [],
+          "diversity_score": 80,
+          "global_feedback": [
+            "Canonical ReadPropertyMultiple provides source-backed framing.",
+            "Stateful ReadProperty setup enables deeper parser state.",
+            "Boundary AtomicWriteFile uses documented length adjacency.",
+            "Deep nested ReadPropertyMultiple increases structure parsing.",
+            "All BVLC lengths kept consistent at 4 bytes.",
+            "Target archetypes and services diversified across confirmed/unconfirmed.",
+            "BVLC NPDU APDU layering preserved per sources.",
+            "Payloads use standard object/property refs from function_code sources.",
+            "No contradictions with protocol templates.",
+            "Deterministic synthesis maintains stability.",
+            "Model-prior fills minor gaps conservatively.",
+            "Stateful depth and mutation utility enhanced.",
+            "Issue grounding absent in this run."
+          ],
+          "issue_enhancement_score": 90,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 90,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Use as-is for baseline.",
+              "score": 90,
+              "seed_id": "plan-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Use as-is for stateful.",
+              "score": 85,
+              "seed_id": "plan-002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Use as-is for boundary.",
+              "score": 80,
+              "seed_id": "plan-003"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Use as-is for nested.",
+              "score": 85,
+              "seed_id": "plan-004"
+            }
+          ]
+        },
+        "candidate_count": 0
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [
+            "Missing unconfirmed discovery archetype (Who-Is/I-Am)",
+            "Missing property-access archetype (ReadProperty, WriteProperty)",
+            "Missing subscription archetype (SubscribeCOV)",
+            "Missing control archetype (DeviceCommunicationControl)",
+            "Missing file archetype (AtomicReadFile)"
+          ],
+          "diversity_score": 90,
+          "global_feedback": [
+            "BVLC length consistently 6 bytes (correct 4-byte field) with source-compliant layering; all service choices and framing aligned to confirmed templates.",
+            "Structural diversity achieved via canonical single, stateful setup, boundary-adjacent length, and nested parser path across distinct archetypes.",
+            "Mutation utility present in ReadPropertyMultiple and AtomicWriteFile sequences; parser-depth strategy adds valid nesting without contradicting sources."
+          ],
+          "issue_enhancement_score": 75,
+          "needs_revision": false,
+          "overall_score": 82,
+          "protocol_validity_score": 95,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as canonical baseline",
+              "score": 90,
+              "seed_id": "seed-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as stateful sequence",
+              "score": 85,
+              "seed_id": "seed-002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as boundary-adjacent",
+              "score": 85,
+              "seed_id": "seed-003"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as nested deep path",
+              "score": 80,
+              "seed_id": "seed-004"
+            }
+          ]
+        },
+        "candidate_count": 4
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

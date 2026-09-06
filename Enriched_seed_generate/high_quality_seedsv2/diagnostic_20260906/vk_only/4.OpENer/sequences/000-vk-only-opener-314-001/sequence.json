@@ -1,0 +1,80 @@
+{
+  "seed_id": "vk-only-opener-314-001",
+  "title": "VK-only ListIdentity: In OpENer V2.3, the function `HandleReceivedSendRequestResponseDataCommand` in `encape.c` is declared to return `EipStatus`, but the reported code assigns `send_size` from `Noti... | payload_messages=2",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "ListIdentity",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:565:565-summary:9f823d95b613",
+    "issue:562:562-summary:96e1239066fb",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "006500000000000000000000",
+      "byte_length": 12,
+      "sha256": "beb614ca8a558ef33ea0f0a583f3897bb8a214a1a1ff10ba7332dc06ab2770be"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSessionResponse",
+      "hex": "0065000000000000000000000000",
+      "byte_length": 14,
+      "sha256": "35b48c82f5497ef8fd9556cb8b106b44b17ca21ec737a2c4618eab0969acb482"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "ListIdentity",
+      "hex": "007400000000000000000000",
+      "byte_length": 12,
+      "sha256": "750f5b43d2a21d36f4f0cb6e1d7d322cebe2c75ecebebd7a44d8087e2dc76888"
+    }
+  ],
+  "expected_behavior": "server processes ListIdentity request; demonstrates stateful session handling with conservative model-prior form",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when selected",
+    "Diversify discovery, session and explicit-message paths"
+  ],
+  "issue_safety_notes": "No crash payload copied; only structural analogue used; safe for testing per issue evidence",
+  "sequence_sha256": "55af5a2561b62c5491f79c02bf441537b08e79a04c4fe76bc989600eed436444",
+  "total_bytes": 38,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ea84cb4cf024fe21638884886cdcd949c69ad878ea9274466ae656877ec1952e",
+    "encoded_bytes": 38,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 26,
+        "payload_offset": 26,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

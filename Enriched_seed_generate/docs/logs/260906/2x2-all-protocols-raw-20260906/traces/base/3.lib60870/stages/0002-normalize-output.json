@@ -1,0 +1,58 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec60870",
+  "library": {
+    "protocol_name": "iec60870",
+    "target_issue": -1,
+    "generation_notes": "Using only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Exactly 4 conservative candidate seed sequences produced via diversification of operations, frame shapes, sizes, directions and stateful sequences.",
+    "coverage_summary": [
+      "baseline_valid: STARTDT activation variant 1 (setup_then_request)",
+      "function_code_coverage: STOPDT activation variant 1 (single_request)",
+      "stateful_valid: TESTFR activation variant 1 (setup_then_request)",
+      "length_boundary_valid: General Interrogation variant 1 (single_request)"
+    ],
+    "sequences": [
+      {
+        "plan_id": "base-plan-001",
+        "seed_id": "baseline_valid-seed",
+        "title": "Base STARTDT activation variant 1",
+        "strategy": "baseline_valid",
+        "target_operation": "STARTDT activation",
+        "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+        "evidence_ids": [
+          "base_model_prior:constraints:623b2f3a6db7"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "STARTDT activation request",
+            "hex": "6806680004000000",
+            "byte_length": 8,
+            "sha256": "c1febe788a728d803e401e6f450539ede4db0aa04796e1808d481ca01664fe79"
+          }
+        ],
+        "expected_behavior": "Link layer activation request is accepted and protocol state transitions to active.",
+        "constraints_preserved": [
+          "Widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+          "0x68 length octets consistent with frame size",
+          "Internal length/count/checksum/order relationships preserved"
+        ],
+        "issue_safety_notes": "Issue knowledge is unavailable; validity is model-prior plausibility only.",
+        "sequence_sha256": "b51022d82b4134b552f39fdf0b6914f51742f9c45c549fb8ab9f9b0ac3c107a5",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "function_code_coverage-seed: duplicate sequence removed",
+    "stateful_valid-seed: duplicate sequence removed",
+    "length_boundary_valid-seed: duplicate sequence removed"
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec61850",
+  "library": {
+    "protocol_name": "IEC61850",
+    "target_issue": -1,
+    "generation_notes": "Deterministic synthesis from IEC61850 MMS templates in sources, prioritising documented framing, length rules and no cosmetic variants.",
+    "coverage_summary": [
+      "plan-001: canonical valid GetNameList via baseline_valid with single documented request",
+      "plan-002: stateful Initiate-Request-PDU setup using 3-message sequence",
+      "plan-003: boundary-adjacent GetVariableAccessAttributes via length_boundary_valid",
+      "plan-004: deep parser path GetNameList via parser_depth"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "baseline_valid",
+        "title": "Canonical valid GetNameList",
+        "strategy": "baseline_valid",
+        "target_operation": "GetNameList",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-ac:5ded12d121c7",
+          "function_code:function:function-text:172dea3d1d5a",
+          "protocol_format:iec61850:service-or-function-:8856d57218cc",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "protocol_format:iec61850:error-or-exception-t:b7dc7753ab53",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Canonical GetNameList request",
+            "hex": "00000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 190,
+            "sha256": "b83e8f1c61212786468e53b4bf7dd284ee2017d42fa12a54b544b16f0ffff061"
+          }
+        ],
+        "expected_behavior": "Valid MMS GetNameList request per protocol templates; libiec61850 parser accepts with no error.",
+        "constraints_preserved": [
+          "MMS PDU type 0xA0 confirmed-request",
+          "Complete documented framing without changing length/count rules",
+          "Target IEC61850 GetNameList service"
+        ],
+        "issue_safety_notes": "Fully valid request only; no malformed or divergent elements",
+        "sequence_sha256": "d2aa4791f83e344387e8664f42ba6108cbfcead306262473ac592c3594847e66",
+        "total_bytes": 190,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "stateful_valid",
+        "title": "Stateful setup for Initiate-Request-PDU",
+        "strategy": "stateful_valid",
+        "target_operation": "Initiate-Request-PDU",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:function-text:57072a10e041",
+          "function_code:function:function-text:d319479344be",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Connect request (TPKT version 0x03)",
+            "hex": "00030000000100",
+            "byte_length": 7,
+            "sha256": "70685b3bc2add9849f8cd184b37a75e2ab312845b0acc472d2b93b05f8bb8d36"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "COTP connection request",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "Initiate-Request-PDU",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Parser reaches deeper valid state after setup sequence; final message accepted as valid.",
+        "constraints_preserved": [
+          "TPKT header beginning with version 0x03",
+          "TPKT total-length field consistent with complete message",
+          "Stateful sequence for deeper parser path"
+        ],
+        "issue_safety_notes": "All messages are documented valid MMS/ACSE sequences",
+        "sequence_sha256": "b86b4bcf48cc43ff375664d3167b70d199cb6c32f905a9ac8fd06821907a820d",
+        "total_bytes": 21,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "length_boundary_valid",
+        "title": "Boundary-adjacent GetVariableAccessAttributes",
+        "strategy": "length_boundary_valid",
+        "target_operation": "GetVariableAccessAttributes",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:d3f8d07ee099",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Boundary-adjacent GetVariableAccessAttributes request",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Valid request that uses the documented maximum boundary length; accepted by parser.",
+        "constraints_preserved": [
+          "Complete documented framing preserved",
+          "Boundary length/count field at documented limit but still valid",
+          "IEC61850 GetVariableAccessAttributes service"
+        ],
+        "issue_safety_notes": "Boundary-adjacent length kept within valid range; no issue",
+        "sequence_sha256": "9be101850a1aba82e143c9058da61ffdf89efb55a662a347d2b104c26d8f4b09",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "parser_depth",
+        "title": "Deep parser path for GetNameList",
+        "strategy": "parser_depth",
+        "target_operation": "GetNameList",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:172dea3d1d5a",
+          "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+          "protocol_format:iec61850:error-or-exception-t:b7dc7753ab53"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Deep parser path GetNameList request (2 messages)",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "Nested GetNameList payload",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Increased nested list/field parsing depth; parser processes full structure.",
+        "constraints_preserved": [
+          "Complete documented framing preserved",
+          "Target IEC61850 GetNameList service",
+          "Nested structure for deeper parser path"
+        ],
+        "issue_safety_notes": "All nested fields remain valid per templates",
+        "sequence_sha256": "a6d21ff141249b81417c7bc6511e180eb7be9b7ff032babe68340b9780b68cf9",
+        "total_bytes": 14,
+        "message_count_hint": 2,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

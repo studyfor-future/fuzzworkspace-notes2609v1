@@ -1,0 +1,50 @@
+{
+  "seed_id": "ghsa-g3w7-x5rx-83xm",
+  "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "STARTDT activation",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+  "evidence_ids": [
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation",
+      "hex": "68050800000000",
+      "byte_length": 7,
+      "sha256": "6d7943381eea842f8591c589d2fc40fec9b91b51421e8c2798f1f0f9876aa1e3"
+    }
+  ],
+  "expected_behavior": "parser accepts STARTDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+  "constraints_preserved": [
+    "68 length octets consistent",
+    "iec60870 family built-in constraint",
+    "model-prior message archetype"
+  ],
+  "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+  "sequence_sha256": "6efebc91b3e48b0aca877da82c05a0c6b9e2b14aed5dd6ccd113d96861924bb2",
+  "total_bytes": 7,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6d7943381eea842f8591c589d2fc40fec9b91b51421e8c2798f1f0f9876aa1e3",
+    "encoded_bytes": 7,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

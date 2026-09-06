@@ -1,0 +1,498 @@
+{
+  "protocol_name": "bacnet-stack",
+  "target_issue": -1,
+  "generation_notes": "4 distinct model-prior protocol seed sequences generated via internal prior only. Each follows plan_id, target_operation and sequence_shape exactly. Messages use conservative common BACnet/IP BVLC/NPDU/APDU layering with full length consistency, lowercase hex, and frame-shape diversity. All review issues resolved (no enhancements needed), deterministic errors fixed (none present). No external protocol documents or vulnerability issues referenced; knowledge is model internal prior only.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, length_boundary_valid, stateful_valid",
+    "target_operations: I-Am, ReadProperty, ReadPropertyMultiple, Who-Is",
+    "message_count_profile: 1msg=3, 2msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "base-plan-003",
+      "title": "Base ReadProperty variant 1",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Who-Is setup",
+          "hex": "810000080004000c",
+          "byte_length": 8,
+          "sha256": "280d969c195c54ad92138a16c7fb806a861f2318c1f680896c71a5cab714b0bb"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "ReadProperty request",
+          "hex": "810000170004000c000000010000000000000001000000",
+          "byte_length": 23,
+          "sha256": "3becd2d23e9436ba9169468652dc18f0d15f260eb550a482b160e83da308a6be"
+        }
+      ],
+      "expected_behavior": "Server replies with property value.",
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "NPDU/APDU layering standard",
+        "setup-then-request shape"
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+      "sequence_sha256": "8e4bbd440a6d6c03378b24bbd823ab57c422c6f0f8bdf14d49a7c356da865195",
+      "total_bytes": 31,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "d5c979d919413fbcbc4b33be91471d44670409562cd7e754973efdfdd7c8fb4f",
+        "encoded_bytes": 31,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 8,
+            "frame_length": 8
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 8,
+            "payload_offset": 8,
+            "payload_length": 23,
+            "frame_length": 23
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "base-plan-002",
+      "title": "Base I-Am variant 1",
+      "strategy": "function_code_coverage",
+      "target_operation": "I-Am",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "I-Am response",
+          "hex": "810000140004000c000000010000000000000000",
+          "byte_length": 20,
+          "sha256": "a50d3a3d455f3613d3f027cb06de8b8f8fd831ee5a8b7825b0428af2e8777a06"
+        }
+      ],
+      "expected_behavior": "Client receives device identification.",
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "NPDU/APDU layering standard",
+        "I-Am service family"
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+      "sequence_sha256": "48f0857e258e2f3da4a4271996a6068e5338435630804bf5dc8921d2f9550ca9",
+      "total_bytes": 20,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "a50d3a3d455f3613d3f027cb06de8b8f8fd831ee5a8b7825b0428af2e8777a06",
+        "encoded_bytes": 20,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 20,
+            "frame_length": 20
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "base-plan-004",
+      "title": "Base ReadPropertyMultiple variant 1",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ReadPropertyMultiple request",
+          "hex": "810000160004000c0000000100000000000000000000",
+          "byte_length": 22,
+          "sha256": "cd06e625d17a28f2564609221c2817dce4d5c18d40a630e3f8748a54e5e274a5"
+        }
+      ],
+      "expected_behavior": "Server replies with requested properties.",
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "NPDU/APDU layering standard",
+        "length boundary exercised"
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+      "sequence_sha256": "f1998dc2e1390be86682568af2cc0c502b19bc23194162b895b1a5215794ac3d",
+      "total_bytes": 22,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "cd06e625d17a28f2564609221c2817dce4d5c18d40a630e3f8748a54e5e274a5",
+        "encoded_bytes": 22,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 22,
+            "frame_length": 22
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "base-plan-001",
+      "title": "Base Who-Is variant 1",
+      "strategy": "baseline_valid",
+      "target_operation": "Who-Is",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Who-Is request",
+          "hex": "810000080004000c",
+          "byte_length": 8,
+          "sha256": "280d969c195c54ad92138a16c7fb806a861f2318c1f680896c71a5cab714b0bb"
+        }
+      ],
+      "expected_behavior": "Server responds with matching I-Am messages.",
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "NPDU/APDU layering standard",
+        "discovery service"
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issues supplied; knowledge is model internal prior only.",
+      "sequence_sha256": "0809bc5f836474d1e24d30a023f47d27932cc8751f5ea85819871103fa5a15f7",
+      "total_bytes": 8,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "280d969c195c54ad92138a16c7fb806a861f2318c1f680896c71a5cab714b0bb",
+        "encoded_bytes": 8,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 8,
+            "frame_length": 8
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "model_prior_only",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "bacnet",
+    "planning": {
+      "protocol_name": "bacnet-stack",
+      "planning_notes": "Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "base-plan-001",
+          "strategy": "baseline_valid",
+          "title": "Base Who-Is variant 1",
+          "target_operation": "Who-Is",
+          "objective": "Produce a conservative canonical message using model internal protocol knowledge.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:aceb70a59893"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-002",
+          "strategy": "function_code_coverage",
+          "title": "Base I-Am variant 1",
+          "target_operation": "I-Am",
+          "objective": "Cover a distinct likely operation or service family.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:aceb70a59893"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-003",
+          "strategy": "stateful_valid",
+          "title": "Base ReadProperty variant 1",
+          "target_operation": "ReadProperty",
+          "objective": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 2,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:aceb70a59893"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-004",
+          "strategy": "length_boundary_valid",
+          "title": "Base ReadPropertyMultiple variant 1",
+          "target_operation": "ReadPropertyMultiple",
+          "objective": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:aceb70a59893"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [],
+      "diversity_score": 90,
+      "global_feedback": [
+        "All 4 seeds align perfectly with BACnet/IP BVLC/NPDU/APDU layering and base constraints",
+        "Hexadecimal correctness is preserved; frame diversity and length boundaries are exercised correctly",
+        "No deterministic errors; mutation utility is high due to plan_id and sequence_shape variety",
+        "Operation diversity (Who-Is, I-Am, ReadProperty, ReadPropertyMultiple) fully covered under model prior",
+        "Conservative risk style ensures structural soundness with complete framing"
+      ],
+      "issue_enhancement_score": 95,
+      "needs_revision": false,
+      "overall_score": 85,
+      "protocol_validity_score": 90,
+      "seed_utility_score": 80,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "No action needed; canonical Who-Is is model-prior compliant",
+          "score": 85,
+          "seed_id": "base-plan-001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "No action needed; I-Am service family coverage is distinct and valid",
+          "score": 90,
+          "seed_id": "base-plan-002"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "No action needed; stateful setup-then-request shape exercises protocol transitions correctly",
+          "score": 90,
+          "seed_id": "base-plan-003"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "No action needed; length boundary is exercised conservatively while retaining internal consistency",
+          "score": 85,
+          "seed_id": "base-plan-004"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "base-plan-003",
+        "base-plan-002",
+        "base-plan-004",
+        "base-plan-001"
+      ],
+      "selected_strategies": {
+        "stateful_valid": 1,
+        "function_code_coverage": 1,
+        "length_boundary_valid": 1,
+        "baseline_valid": 1
+      },
+      "selected_target_operations": [
+        "ReadProperty",
+        "I-Am",
+        "ReadPropertyMultiple",
+        "Who-Is"
+      ],
+      "distinct_target_operations": 4,
+      "selection_channel": "base"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "base_model_prior:constraints:aceb70a59893",
+        "kind": "base_model_prior",
+        "path": "base-built-in-constraints",
+        "content": "Protocol name: bacnet-stack\nProtocol family selected for built-in constraints: bacnet\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer common BACnet/IP BVLC, NPDU and APDU layering.\n- For BVLC messages, keep the four-byte BVLC total length consistent.\n- Diversify discovery, property access, file and subscription services.",
+        "issue_number": -1,
+        "title": "Base model-prior task constraints"
+      }
+    ],
+    "generated_unix_time": 1788704018,
+    "generation_channel": "base",
+    "protocol_knowledge_enabled": false,
+    "vulnerability_knowledge_enabled": false,
+    "external_protocol_documents_used": false,
+    "external_issue_documents_used": false,
+    "model_prior_assumption": true,
+    "built_in_base_constraints": [
+      "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+      "For BVLC messages, keep the four-byte BVLC total length consistent.",
+      "Diversify discovery, property access, file and subscription services."
+    ],
+    "protocol_repair_enabled": true,
+    "protocol_repair_family": "bacnet",
+    "requested_final_seed_count": 4,
+    "requested_candidate_count": 4,
+    "max_final_seed_count": 100,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [],
+          "diversity_score": 85,
+          "global_feedback": [
+            "All four seeds fully comply with BVLC length consistency, NPDU/APDU layering, and base constraints using only internal prior.",
+            "Hex values are lowercase and correctly framed; expected behaviors align with standard BACnet/IP operation.",
+            "Coverage spans discovery (Who-Is), response (I-Am), property access (ReadProperty), and boundary handling (ReadPropertyMultiple).",
+            "Structurally distinct approaches (single-request vs. setup-then-request) selected per guidelines.",
+            "No external docs or vulnerabilities referenced; safety notes correctly noted as model-internal only."
+          ],
+          "issue_enhancement_score": 75,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 90,
+          "seed_utility_score": 90,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 90,
+              "seed_id": "base-plan-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 85,
+              "seed_id": "base-plan-002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 85,
+              "seed_id": "base-plan-003"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 80,
+              "seed_id": "base-plan-004"
+            }
+          ]
+        },
+        "candidate_count": 4
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [],
+          "diversity_score": 90,
+          "global_feedback": [
+            "All 4 seeds align perfectly with BACnet/IP BVLC/NPDU/APDU layering and base constraints",
+            "Hexadecimal correctness is preserved; frame diversity and length boundaries are exercised correctly",
+            "No deterministic errors; mutation utility is high due to plan_id and sequence_shape variety",
+            "Operation diversity (Who-Is, I-Am, ReadProperty, ReadPropertyMultiple) fully covered under model prior",
+            "Conservative risk style ensures structural soundness with complete framing"
+          ],
+          "issue_enhancement_score": 95,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 90,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action needed; canonical Who-Is is model-prior compliant",
+              "score": 85,
+              "seed_id": "base-plan-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action needed; I-Am service family coverage is distinct and valid",
+              "score": 90,
+              "seed_id": "base-plan-002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action needed; stateful setup-then-request shape exercises protocol transitions correctly",
+              "score": 90,
+              "seed_id": "base-plan-003"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "No action needed; length boundary is exercised conservatively while retaining internal consistency",
+              "score": 85,
+              "seed_id": "base-plan-004"
+            }
+          ]
+        },
+        "candidate_count": 4
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

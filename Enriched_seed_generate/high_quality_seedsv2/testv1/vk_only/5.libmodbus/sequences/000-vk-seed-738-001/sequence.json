@@ -1,0 +1,82 @@
+{
+  "seed_id": "vk-seed-738-001",
+  "title": "VK-only Read Holding Registers: In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:743:743-summary:1fc7e97d059a",
+    "issue:466:466-summary:691a17c4c14a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "initial_read_holding_registers_mbap",
+      "hex": "00000000000603",
+      "byte_length": 7,
+      "sha256": "3059218b1d538d81fff0c3bf82077ef6352ffdb4cb85665753f3282e39dea2b3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "read_holding_registers_mbap",
+      "hex": "00000000000603",
+      "byte_length": 7,
+      "sha256": "3059218b1d538d81fff0c3bf82077ef6352ffdb4cb85665753f3282e39dea2b3"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "read_holding_registers_response",
+      "hex": "0301000006ff03",
+      "byte_length": 7,
+      "sha256": "3a40bdd8993eda669fea40a62be869a48725f0f9d7c0da478c745fdb49d9c1ec"
+    }
+  ],
+  "expected_behavior": "Issue 738 intermittent crash in read_registers() (modbus.c:1313) reached via modbus_read_input_registers with quantity 7. The sequence is designed to trigger the same heap-allocation failure pattern and backtrace point using Read Holding Registers (0x03) as the target operation.",
+  "constraints_preserved": [
+    "Modbus/TCP ADU with exactly 7-byte MBAP header",
+    "protocol identifier 0x0000 and consistent MBAP length",
+    "diversify read function codes",
+    "multi-step stateful sequence shape",
+    "conservative model-prior Read Holding Registers archetype",
+    "visible internal lengths and counts consistent",
+    "no external protocol documents used"
+  ],
+  "issue_safety_notes": "No crash bytes from issue 738 copied; structural analogue only. Sequence uses minimal valid MBAP + Read Holding Registers (0x03) for safe parsing-depth exploration without copying crash payloads.",
+  "sequence_sha256": "2b5baa0286a045c4819d80c75039651a05e30378f95ea78c20fc6a699383adf6",
+  "total_bytes": 21,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "40bc90bbf0a8541532b88e3ed2e7f2c05693347f517764cf0378c1457ff7cfd7",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

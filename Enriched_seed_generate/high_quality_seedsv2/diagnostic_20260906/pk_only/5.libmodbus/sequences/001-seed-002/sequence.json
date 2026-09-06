@@ -1,0 +1,67 @@
+{
+  "seed_id": "seed-002",
+  "title": "Stateful setup for Read/Write Multiple Registers",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "function_code:function:function-text:48ef3b4dd565",
+    "function_code:function:function-text:8c5aec6d88bd",
+    "function_code:function:function-text:feea6cf87ab2",
+    "function_code:function:function-text:83ed41e3afda",
+    "function_code:function:function-text:388a9f8cf2ff",
+    "function_code:function:function-text:c093c4ea4f67"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Single Register Setup",
+      "hex": "0000000000080006000100000001",
+      "byte_length": 14,
+      "sha256": "f8c84908a308ceddeb75a15968cb71e471658f9f7fa07259f2ff3a555a11c539"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read/Write Multiple Registers Request",
+      "hex": "00000000000d00001700010002000100000002",
+      "byte_length": 19,
+      "sha256": "20f4e0218eb13ee1911e927c19500e8d39eafc0f06b0134783e62e29c98a858d"
+    }
+  ],
+  "expected_behavior": "Valid stateful multi-step sequence; final request parsed in deeper valid parser state",
+  "constraints_preserved": [
+    "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+  ],
+  "issue_safety_notes": "PK-only candidate; no vulnerability issues available; not used for any security or issue claims",
+  "sequence_sha256": "a0c73e51f62fbf11a3b2f21bd9c1f1db0e989557d1a83f185e59fd9ad6685928",
+  "total_bytes": 33,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4801285aae3e6d4562f1e7116ed49cc70536e18729863dbc143673aed4a182a7",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ]
+  }
+}

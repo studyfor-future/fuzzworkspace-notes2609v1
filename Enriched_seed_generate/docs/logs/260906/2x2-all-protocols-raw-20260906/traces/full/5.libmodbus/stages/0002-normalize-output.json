@@ -1,0 +1,190 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "modbus",
+  "library": {
+    "protocol_name": "MODBUSTCP",
+    "target_issue": -1,
+    "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and issue motifs (evidencing connection timeout after repeated writes). Conservative model-prior completion for missing fields; all messages fully documented, length/count/order/checksum rules preserved. Diversity maximized across operations, frame structures, sizes, directions, state sequences, and nested parser paths.",
+    "coverage_summary": [
+      "Reads Coils via Read Holding Registers",
+      "Stateful Read/Write Multiple Registers",
+      "Boundary-adjacent Read File Record",
+      "Deep parser Encapsulated Interface Transport"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "plan-001-baseline-001",
+        "title": "Canonical valid Read Holding Registers",
+        "strategy": "baseline_valid",
+        "target_operation": "Read Holding Registers",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload",
+        "evidence_ids": [
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:48ef3b4dd565",
+          "issue:738:738-summary:a2fd51730f5d",
+          "issue:867:867-summary:58115ace3a65",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "client request",
+            "hex": "000000000006030400020001",
+            "byte_length": 12,
+            "sha256": "bb61cc596ce0e2bda31207965192c1ad6f7f002d4738007d3a5408eacdbdbc5b"
+          }
+        ],
+        "expected_behavior": "Successful server response with 4-byte data field; confirms full ADU framing, checksum, and parser acceptance",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and length rules preserved",
+          "Conservative payload for valid Read Holding Registers"
+        ],
+        "issue_safety_notes": "Baseline valid; no timeout or malformed behavior",
+        "sequence_sha256": "e30747e95140ec774b5a7e2142ba1842c5ad70802858ba4bcbe09ca415b2bde7",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "plan-002-stateful-001",
+        "title": "Stateful setup for Read/Write Multiple Registers",
+        "strategy": "stateful_valid",
+        "target_operation": "Read/Write Multiple Registers",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+        "evidence_ids": [
+          "issue:738:738-summary:a2fd51730f5d",
+          "function_code:function:function-text:48ef3b4dd565",
+          "issue:867:867-summary:58115ace3a65",
+          "issue:810:810-summary:da5167fd5137",
+          "issue:837:837-summary:c4fb6d28cc16",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "first write register",
+            "hex": "00000000000a00060000000200000000",
+            "byte_length": 16,
+            "sha256": "2ce34c8f25c7ab795e0cbe81a55f19b9fa7098b548e3d8406a6fb32d90de0232"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "read/write multiple registers",
+            "hex": "0000000000110017000000020000000006000200000000",
+            "byte_length": 23,
+            "sha256": "3f6edf3b5f3a06c3eb5d0570e5c0c78513b316971a8053dbd933b039e10c2661"
+          }
+        ],
+        "expected_behavior": "Complete successful state transition; final request accepted with full parser depth",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and length rules preserved",
+          "Conservative payload for valid Read/Write Multiple Registers"
+        ],
+        "issue_safety_notes": "Stateful valid sequence; no timeout or malformed behavior",
+        "sequence_sha256": "d06ed1da6a36d0480f8ff2818168f3628fc36dbb94b82b4be5b58dcab3452561",
+        "total_bytes": 39,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed MBAP length",
+          "recomputed Modbus read/write byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "plan-003-boundary-001",
+        "title": "Boundary-adjacent Read File Record",
+        "strategy": "length_boundary_valid",
+        "target_operation": "Read File Record",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field",
+        "evidence_ids": [
+          "issue:867:867-summary:58115ace3a65",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:c093c4ea4f67",
+          "issue:466:466-summary:691a17c4c14a",
+          "function_code:function:function-text:48ef3b4dd565",
+          "issue:810:810-summary:da5167fd5137"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "read file record boundary",
+            "hex": "00000000000c001409000000000000000000",
+            "byte_length": 18,
+            "sha256": "4df958432847a84a73bc5635643ebcb07ea34f0a4db982be8b194031ec860eac"
+          }
+        ],
+        "expected_behavior": "Valid boundary-adjacent response accepted; full framing and parser path confirmed",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and length rules preserved",
+          "Conservative payload for valid Read File Record"
+        ],
+        "issue_safety_notes": "Boundary-adjacent but valid; no timeout or malformed behavior",
+        "sequence_sha256": "ff201f7d9f624f16f531efec089ecfb53ea2517e6e172dd3ff9b7bd81048cb8e",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length",
+          "recomputed Modbus file-record byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "plan-004-deep-001",
+        "title": "Deep parser path for Encapsulated Interface Transport",
+        "strategy": "parser_depth",
+        "target_operation": "Encapsulated Interface Transport",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "issue:867:867-summary:58115ace3a65",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:c093c4ea4f67",
+          "issue:837:837-summary:c4fb6d28cc16"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "encapsulated interface transport",
+            "hex": "00000000000b002b000100000000000100",
+            "byte_length": 17,
+            "sha256": "b1ee98d9133cab2fb29ec248b3cbe897c8792aa223cc2680341f5a3fa33a4462"
+          }
+        ],
+        "expected_behavior": "Deep nested parsing succeeds; full ADU framing and order rules preserved",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and length rules preserved",
+          "Conservative payload for valid Encapsulated Interface Transport"
+        ],
+        "issue_safety_notes": "Deep parser path; no timeout or malformed behavior",
+        "sequence_sha256": "e2fdf3cf98ce5ccd82639531f7b6e345f2dd7ff45dc9ce91d1a3bf43761cef8d",
+        "total_bytes": 17,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

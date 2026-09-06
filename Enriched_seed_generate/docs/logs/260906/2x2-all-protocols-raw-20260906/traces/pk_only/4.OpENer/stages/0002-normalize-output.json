@@ -1,0 +1,200 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "opener",
+  "library": {
+    "protocol_name": "ETHERNETIP",
+    "target_issue": -1,
+    "generation_notes": "Deterministic synthesis from protocol templates, operation catalogs, and optional issue motifs; scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+    "coverage_summary": [
+      "plan-001: baseline_valid RegisterSession canonical valid request",
+      "plan-002: stateful_valid RegisterSession setup-then-request sequence",
+      "plan-003: length_boundary_valid SendRRData boundary-adjacent valid message",
+      "plan-004: parser_depth SendRRData deep nested parser path"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "seed-001",
+        "title": "Canonical valid RegisterSession",
+        "strategy": "baseline_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "protocol_format:opener:service-or-function-:dce778d20547",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:service-or-function-:cb706fafd3cf",
+          "function_code:function:function-text:3e4eac4fe64e",
+          "protocol_format:opener:message-templates-co:1ded453ab75b",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession request",
+            "hex": "656e820070732064746d6f6e6e696e697a6174696f6e3d6f6e652e6c65746865726e65742e6f7267202f202d2d6c6973742d7061747465726e730d0a726573706f6e73652d636f6e74656e742d6c656e6774683d3231370d0a726573706f6e73652d636f6e74656e742d747970653d746578742f706c61696e3b636861727365743d7574662d382d706c61696e3b626f756e64733d3c2c3e0d0a",
+            "byte_length": 154,
+            "sha256": "0b39e0e548436201c54d1480ce9927c174fb14fba79c053d085e426c47108dfe"
+          }
+        ],
+        "expected_behavior": "OpENer accepts and processes the request as a valid RegisterSession command per documented framing and length rules.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b30849fe48d2fc6511e3125a7c100cddae6449d863570ee2d17fd68e67cd5d81",
+        "total_bytes": 154,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "seed-002",
+        "title": "Stateful setup for RegisterSession",
+        "strategy": "stateful_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "protocol_format:opener:template-catalog:a7f05bcffdbd",
+          "protocol_format:opener:common-headers-encap:32026d320478",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:operation-catalog:f14ecde0d175"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Initial ListServices request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "ListIdentity request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "RegisterSession request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          }
+        ],
+        "expected_behavior": "The final RegisterSession message is accepted in a deeper valid parser state after prior setup requests.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "a706de1de9882646bf4be70aea63b792a3ae5528df9c7c38a66c6cad71a64b04",
+        "total_bytes": 72,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "seed-003",
+        "title": "Boundary-adjacent SendRRData",
+        "strategy": "length_boundary_valid",
+        "target_operation": "SendRRData",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:opener:template-catalog:a7f05bcffdbd",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:0d83a9cb1819",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          }
+        ],
+        "expected_behavior": "OpENer processes the message as valid with the boundary-adjacent length field.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "3add1b9f2307630b471e688a3643f82b9707ac77a38d96f21f4146e4d6bc77a3",
+        "total_bytes": 24,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "seed-004",
+        "title": "Deep parser path for SendRRData",
+        "strategy": "parser_depth",
+        "target_operation": "SendRRData",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "protocol_format:opener:service-or-function-:cb706fafd3cf",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:template-catalog:a7f05bcffdbd",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:operation-catalog:f14ecde0d175"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData deep request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "Nested item request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          }
+        ],
+        "expected_behavior": "The request is accepted with deeper nested parser paths exercised.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "76c0080f49549ab4aaa152c508ec8eb133a8fc3cd780153a5a04bd987c337a06",
+        "total_bytes": 48,
+        "message_count_hint": 2,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

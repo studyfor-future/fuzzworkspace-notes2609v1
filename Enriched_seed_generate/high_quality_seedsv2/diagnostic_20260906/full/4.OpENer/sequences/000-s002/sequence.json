@@ -1,0 +1,80 @@
+{
+  "seed_id": "s002",
+  "title": "Stateful setup for RegisterSession",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+  "evidence_ids": [
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:576:576-summary:bc3710455616",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity setup",
+      "hex": "0300080000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "6c60b8ed489b3b75d828b463bdb267632a513353888de769a220ee19b4e3a1ac"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ListServices setup",
+      "hex": "0400080000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "8422585e78c9ecb49628c9e3456b4c11c3ba1a6c6689f424d8c3a3a8533fb220"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "0100080000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8"
+    }
+  ],
+  "expected_behavior": "Deeper valid parser state for final RegisterSession; success response",
+  "constraints_preserved": [
+    "Multiple requests per sequence budget",
+    "Stateful sequence_shape setup_then_request",
+    "Encapsulation header consistency"
+  ],
+  "issue_safety_notes": "Sequence avoids exact historical payloads; session hijack risk analogue noted but payload canonical",
+  "sequence_sha256": "e66f8544246948eb392792225368a46c96f29b3107410861561282f3e3444111",
+  "total_bytes": 96,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "712ac28fe857869569878cd137380cdd301c804e24d79459900d977a461a5d19",
+    "encoded_bytes": 96,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 64,
+        "payload_offset": 64,
+        "payload_length": 32,
+        "frame_length": 32
+      }
+    ]
+  }
+}

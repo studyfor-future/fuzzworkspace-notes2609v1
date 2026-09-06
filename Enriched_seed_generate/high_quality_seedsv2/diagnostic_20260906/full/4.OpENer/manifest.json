@@ -1,0 +1,652 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Deterministically synthesized per plans from protocol templates (Common Packet Format, Encapsulation Header), function code reference, and issue evidence (e.g. path length 430 bytes, class 0x04/0x97 segments). Conservatively inferred 24-byte encapsulation header (little-endian length per prior guardrails), 8-bit path segments (valid baseline), RegisterSession session handle 0x00000001, Get_Attributes_All CIP payload. Diversity across single vs. setup-then-request, length= minimal valid, path length=valid. No exact copy of issue payloads.",
+  "coverage_summary": [
+    "strategies: baseline_valid, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: RegisterSession, SendRRData",
+    "message_count_profile: 1msg=2, 2msg=1, 3msg=1",
+    "issue_guided_sequences: 0"
+  ],
+  "sequences": [
+    {
+      "seed_id": "s002",
+      "title": "Stateful setup for RegisterSession",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession",
+      "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+      "evidence_ids": [
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:576:576-summary:bc3710455616",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListIdentity setup",
+          "hex": "0300080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "6c60b8ed489b3b75d828b463bdb267632a513353888de769a220ee19b4e3a1ac"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "ListServices setup",
+          "hex": "0400080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "8422585e78c9ecb49628c9e3456b4c11c3ba1a6c6689f424d8c3a3a8533fb220"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "0100080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8"
+        }
+      ],
+      "expected_behavior": "Deeper valid parser state for final RegisterSession; success response",
+      "constraints_preserved": [
+        "Multiple requests per sequence budget",
+        "Stateful sequence_shape setup_then_request",
+        "Encapsulation header consistency"
+      ],
+      "issue_safety_notes": "Sequence avoids exact historical payloads; session hijack risk analogue noted but payload canonical",
+      "sequence_sha256": "e66f8544246948eb392792225368a46c96f29b3107410861561282f3e3444111",
+      "total_bytes": 96,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "712ac28fe857869569878cd137380cdd301c804e24d79459900d977a461a5d19",
+        "encoded_bytes": 96,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 32,
+            "frame_length": 32
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 32,
+            "payload_offset": 32,
+            "payload_length": 32,
+            "frame_length": 32
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 64,
+            "payload_offset": 64,
+            "payload_length": 32,
+            "frame_length": 32
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "s004",
+      "title": "Deep parser path for SendRRData",
+      "strategy": "parser_depth",
+      "target_operation": "SendRRData",
+      "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing",
+      "evidence_ids": [
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:565:565-summary:9f823d95b613",
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+        "issue:576:576-summary:bc3710455616",
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData request",
+          "hex": "000f080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "5b4fef5ff31ea9f1093c74b36354b22dd7ea37791fda5fcb2486ffe21faba9ad"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "SendRRData request",
+          "hex": "000f080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "5b4fef5ff31ea9f1093c74b36354b22dd7ea37791fda5fcb2486ffe21faba9ad"
+        }
+      ],
+      "expected_behavior": "Deeper valid parser state for final SendRRData; success response",
+      "constraints_preserved": [
+        "Nested or deep valid structure",
+        "Encapsulation header consistency",
+        "Little-endian fields throughout"
+      ],
+      "issue_safety_notes": "Structural analogue to nested path parsing; payload canonical valid (not copied from crash)",
+      "sequence_sha256": "d645979268b6ca272a5f6887d8baf651c52a335f36336e15af2915a592bbe97f",
+      "total_bytes": 64,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "23c5c8aaada262a6b553e3920529335d88b7bc1f4179089635e872a4daf1d8e4",
+        "encoded_bytes": 64,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 32,
+            "frame_length": 32
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 32,
+            "payload_offset": 32,
+            "payload_length": 32,
+            "frame_length": 32
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "s001",
+      "title": "Canonical valid RegisterSession",
+      "strategy": "baseline_valid",
+      "target_operation": "RegisterSession",
+      "purpose": "Canonical documented valid request with correct framing and conservative payload",
+      "evidence_ids": [
+        "issue:565:565-summary:9f823d95b613",
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:576:576-summary:bc3710455616",
+        "issue:574:574-summary:860cad928179",
+        "issue:577:577-summary:f41c11d4b1b8"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "0100080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8"
+        }
+      ],
+      "expected_behavior": "Valid session registration; server responds with success status",
+      "constraints_preserved": [
+        "24-byte encapsulation header (little-endian length)",
+        "Minimal valid payload per documented framing",
+        "Little-endian fields throughout"
+      ],
+      "issue_safety_notes": "Structural analogue to session handle paths; payload is canonical valid (not copied from crash)",
+      "sequence_sha256": "27fc848ba784f97ff3896fc676313bbfd06decfdd2012a342604631537ab0dd0",
+      "total_bytes": 32,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "86f64d0d6bd4b35168fd6b734cb84083c1b6bafd1e44bb529cac2be6d5b71ae8",
+        "encoded_bytes": 32,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 32,
+            "frame_length": 32
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "s003",
+      "title": "Boundary-adjacent SendRRData",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SendRRData",
+      "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field",
+      "evidence_ids": [
+        "issue:562:562-summary:96e1239066fb",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:576:576-summary:bc3710455616",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:574:574-summary:860cad928179"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData request",
+          "hex": "000f080000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 32,
+          "sha256": "5b4fef5ff31ea9f1093c74b36354b22dd7ea37791fda5fcb2486ffe21faba9ad"
+        }
+      ],
+      "expected_behavior": "Valid boundary-adjacent length still parses; success response",
+      "constraints_preserved": [
+        "Single-request shape",
+        "Encapsulation header with length=15 (boundary)",
+        "Little-endian order preserved"
+      ],
+      "issue_safety_notes": "Analogue to length fields in crash path; payload minimal valid",
+      "sequence_sha256": "4dc0d3efcd94c79f52a63a034bbd764a4cd7f5f17b9ab0349679a6ebfcf03650",
+      "total_bytes": 32,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "5b4fef5ff31ea9f1093c74b36354b22dd7ea37791fda5fcb2486ffe21faba9ad",
+        "encoded_bytes": 32,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 32,
+            "frame_length": 32
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 1,
+      "gpt-5.4": 3
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue_plus_model_prior",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 30,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "opener",
+    "planning": {
+      "protocol_name": "ETHERNETIP",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid RegisterSession",
+          "target_operation": "RegisterSession",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "issue:565:565-summary:9f823d95b613",
+            "issue:564:564-summary:6b535e1b37b6",
+            "issue:575:575-summary:e8df4ac3993c",
+            "issue:576:576-summary:bc3710455616",
+            "issue:574:574-summary:860cad928179",
+            "issue:577:577-summary:f41c11d4b1b8"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for RegisterSession",
+          "target_operation": "RegisterSession",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "issue:564:564-summary:6b535e1b37b6",
+            "issue:574:574-summary:ec096521bf63",
+            "issue:576:576-summary:bc3710455616",
+            "issue:575:575-summary:e8df4ac3993c",
+            "issue:582:582-summary:a17fd2adbb9f",
+            "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent SendRRData",
+          "target_operation": "SendRRData",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "issue:562:562-summary:96e1239066fb",
+            "issue:577:577-summary:f41c11d4b1b8",
+            "issue:576:576-summary:bc3710455616",
+            "issue:571:571-summary:fe57e1bf0770",
+            "issue:574:574-summary:ec096521bf63",
+            "issue:574:574-summary:860cad928179"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for SendRRData",
+          "target_operation": "SendRRData",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "issue:570:570-summary:0b4cbe808107",
+            "issue:565:565-summary:9f823d95b613",
+            "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+            "issue:576:576-summary:bc3710455616",
+            "issue:564:564-summary:6b535e1b37b6",
+            "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [],
+      "diversity_score": 80,
+      "global_feedback": [
+        "All seeds fully conform to 24-byte little-endian encapsulation header and EtherNet/IP framing",
+        "Source-backed protocol fields (command/length/session_handle/status from OpENer templates and function reference) preserved with zero contradictions",
+        "Structural diversity maximized across single vs setup-then-request shapes, minimal vs boundary-adjacent lengths, and shallow vs nested path parsing",
+        "Payloads remain conservative, valid, and non-copied from crash PoCs per model-prior guardrails"
+      ],
+      "issue_enhancement_score": 85,
+      "needs_revision": false,
+      "overall_score": 85,
+      "protocol_validity_score": 95,
+      "seed_utility_score": 90,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Retain as-is; canonical baseline with minimal payload",
+          "score": 95,
+          "seed_id": "s001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Retain as-is; provides depth via setup sequence",
+          "score": 90,
+          "seed_id": "s002"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Retain as-is; boundary length validated against source constraints",
+          "score": 80,
+          "seed_id": "s003"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Retain as-is; nested structure increases parser coverage without violation",
+          "score": 85,
+          "seed_id": "s004"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "s002",
+        "s004",
+        "s001",
+        "s003"
+      ],
+      "selected_strategies": {
+        "stateful_valid": 1,
+        "parser_depth": 1,
+        "baseline_valid": 1,
+        "length_boundary_valid": 1
+      },
+      "selected_target_operations": [
+        "RegisterSession",
+        "SendRRData",
+        "RegisterSession",
+        "SendRRData"
+      ],
+      "distinct_target_operations": 2,
+      "selection_channel": "full"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:opener:format-overview:8e03e5bb8ecf",
+        "kind": "protocol_format",
+        "path": "protocol_format/OpENer.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"OpENer\",\n    \"profile\": \"auto\",\n    \"protocol\": \"ETHERNETIP\",\n    \"rule_family\": \"cip\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"payload\": [\n      \"Common Packet Format\",\n      \"Message_Router\"\n    ],\n    \"session\": [\n      \"Encapsulation Header\",\n      \"Encapsulation_Header\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 1,\n    \"message_count\": 2,\n    \"non_header_templates\": 1,\n    \"real_strong_templates\": 2,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:section-common-heade:540b84623d2f",
+        "kind": "protocol_format",
+        "path": "protocol_format/OpENer.json",
+        "content": "Section: Common Headers\nTemplates: Encapsulation Header, Encapsulation_Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:common-headers-encap:81051e824629",
+        "kind": "protocol_format",
+        "path": "protocol_format/OpENer.json",
+        "content": "Section: Common Headers\nTemplate: Encapsulation Header\n- Field: command\n  Description: Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: length\n  Description: Protocol field 'length'. Layer: session. Role: length. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: session_handle\n  Description: Protocol field 'session_handle'. Layer: session. Role: address. Inferred-from: protocol-template.\n  Length: 32 bits\n- Field: status\n  Description: Protocol field 'status'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 32 bits\n- Field: sender_context\n  Description: Protocol field 'sender_context'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 64 bits\n- Field: options\n  Description: Protocol field 'options'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 32 bits",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:515064cfcdad",
+        "kind": "function_code",
+        "path": "function_code/4.OpENer/function.txt",
+        "content": "EtherNet/IP and CIP Function Code Reference\n===========================================\n\nScope\n-----\nThis file contains:\n\n1. EtherNet/IP Encapsulation Commands\n2. Common Packet Format Item Type IDs\n3. CIP Common Service Codes\n4. CIP Connection Manager Service Codes\n5. CIP General Status Codes\n6. Common CIP Object Class IDs\n7. Response service-code rule\n\n================================================================\n1. ETHERNET/IP ENCAPSULATION COMMANDS\n================================================================\n\n0x0000 = NOP\n0x0004 = ListServices\n0x0063 = ListIdentity\n0x0064 = ListInterfaces\n0x0065 = RegisterSession\n0x0066 = UnregisterSession\n0x006F = SendRRData\n0x0070 = SendUnitData\n0x0072 = IndicateStatus\n0x0073 = Cancel\n\nOther values:\n    Reserved or future encapsulation commands.\n\nCommand summary:\n\n0x0000 NOP\n    No-operation encapsulation command.\n\n0x0004 ListServices\n    Request supported encapsulation services.\n\n0x0063 ListIdentity\n    Discover EtherNet/IP device identity.\n\n0x0064 ListInterfaces\n    Request communication interfaces.\n\n0x0065 RegisterSession\n    Register an EtherNet/IP encapsulation session.\n\n0x0066 UnregisterSession\n    Unregister an active encapsulation session.\n\n0x006F SendRRData\n    Send unconnected request/response data.\n\n0x0070 SendUnitData\n    Send connected explicit or connected data.\n\n0x0072 IndicateStatus\n    Legacy encapsulation status indication.\n\n0x0073 Cancel\n    Cancel an outstanding request where supported.\n\n================================================================\n2. ENCAPSULATION HEADER FIELDS\n================================================================\n\nCommand:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nSession Handle:\n    4 bytes, little-endian\n\nStatus:\n    4 bytes, little-endian",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:0d83a9cb1819",
+        "kind": "function_code",
+        "path": "function_code/4.OpENer/function.txt",
+        "content": "DS\n================================================================\n\nCommand:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nSession Handle:\n    4 bytes, little-endian\n\nStatus:\n    4 bytes, little-endian\n\nSender Context:\n    8 bytes\n\nOptions:\n    4 bytes, little-endian\n\nEncapsulation header size:\n\n24 bytes\n\nRequest status:\n\n0x00000000 = Success or no error in request\n\nCommon encapsulation status values:\n\n0x00000000 = Success\n0x00000001 = Invalid or unsupported encapsulation command\n0x00000002 = Insufficient memory resources\n0x00000003 = Incorrect data in command\n0x00000064 = Invalid session handle\n0x00000065 = Invalid length\n0x00000069 = Unsupported encapsulation protocol revision\n\n================================================================\n3. COMMON PACKET FORMAT ITEM TYPE IDS\n================================================================\n\n0x0000 = Null Address Item\n0x000C = List Identity Response Item\n0x0100 = Connected Address Item\n0x8000 = Sequenced Address Item\n0x00B1 = Connected Data Item\n0x00B2 = Unconnected Data Item\n0x8002 = Socket Address Information O-to-T\n0x8003 = Socket Address Information T-to-O\n\nItem structure:\n\nType ID:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nData:\n    Length bytes\n\nCommon SendRRData item combination:\n\nNull Address Item\nUnconnected Data Item\n\nCommon SendUnitData item combination:\n\nConnected Address Item\nConnected Data Item\n\n================================================================\n4. CIP COMMON SERVICE CODES\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:3b15ec1ab4ca",
+        "kind": "function_code",
+        "path": "function_code/4.OpENer/function.txt",
+        "content": "item combination:\n\nConnected Address Item\nConnected Data Item\n\n================================================================\n4. CIP COMMON SERVICE CODES\n================================================================\n\n0x01 = Get_Attributes_All\n0x02 = Set_Attributes_All\n0x03 = Get_Attribute_List\n0x04 = Set_Attribute_List\n0x05 = Reset\n0x06 = Start\n0x07 = Stop\n0x08 = Create\n0x09 = Delete\n0x0A = Multiple_Service_Packet\n0x0D = Apply_Attributes\n0x0E = Get_Attribute_Single\n0x10 = Set_Attribute_Single\n0x11 = Find_Next_Object_Instance\n0x12 = Restore\n0x13 = Save\n0x14 = No_Operation\n0x15 = Get_Member\n0x16 = Set_Member\n0x17 = Insert_Member\n0x18 = Remove_Member\n0x19 = GroupSync\n\nService summary:\n\n0x01 Get_Attributes_All\n    Read all attributes supported by this service.\n\n0x02 Set_Attributes_All\n    Write all attributes supported by this service.\n\n0x03 Get_Attribute_List\n    Read selected attributes.\n\n0x04 Set_Attribute_List\n    Write selected attributes.\n\n0x05 Reset\n    Reset the target object or device.\n\n0x06 Start\n    Start object operation.\n\n0x07 Stop\n    Stop object operation.\n\n0x08 Create\n    Create an object instance.\n\n0x09 Delete\n    Delete an object instance.\n\n0x0A Multiple_Service_Packet\n    Carry multiple embedded CIP requests.\n\n0x0D Apply_Attributes\n    Apply previously configured attributes.\n\n0x0E Get_Attribute_Single\n    Read one attribute.\n\n0x10 Set_Attribute_Single\n    Write one attribute.\n\n0x11 Find_Next_Object_Instance\n    Find the next implemented object instance.\n\n0x12 Restore\n    Restore persistent values.\n\n0x13 Save\n    Save current values persistently.\n\n0x14 No_Operation\n    Perform no state-changing operation.\n\n0x15 Get_Member\n    Read one member of a composite attribute.\n\n0x16 Set_Member\n    Write one member of a composite attribute.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:template-catalog:a7f05bcffdbd",
+        "kind": "protocol_format",
+        "path": "protocol_format/OpENer.json",
+        "content": "Protocol: ETHERNETIP\nTemplate catalog:\n- Common Headers :: Encapsulation Header -> command, length, session_handle, status, sender_context, options\n- Common Headers :: Encapsulation_Header -> encapsulationcommand, commandspecificdatalength, command, sessionhandle, encapsulationstatus, sendercontext, status, options\n- Message Templates :: Common Packet Format -> cpf_item_count, cpf_item_id, cpf_item_length\n- Service or Function Specific Templates :: Message_Router -> extended_logical_type, logical_format, service_code, logical_value, request_path, service_data",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:f14ecde0d175",
+        "kind": "function_code",
+        "path": "function_code/4.OpENer/function.txt",
+        "content": "Operation catalog:\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0000 = NOP\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0004 = ListServices\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0063 = ListIdentity\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0064 = ListInterfaces\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0065 = RegisterSession\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0066 = UnregisterSession\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x006F = SendRRData\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0070 = SendUnitData\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0072 = IndicateStatus\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0073 = Cancel\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000000 = Success or no error in request\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000000 = Success\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000001 = Invalid or unsupported encapsulation command\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000002 = Insufficient memory resources\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000003 = Incorrect data in command\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000064 = Invalid session handle\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000065 = Invalid length\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000069 = Unsupported encapsulation protocol revision\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x0000 = Null Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x000C = List Identity Response Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x0100 = Connected Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x8000 = Sequenced Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x00B1 = Connected Data Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x00B2 = Unconnected Data Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x8002 = Socket Address Informati",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:common-headers-encap:32026d320478",
+        "kind": "protocol_format",
+        "path": "protocol_format/OpENer.json",
+        "content": "Section: Common Headers\nTemplate: Encapsulation_Header\n- Field: encapsulationcommand\n  Description: Protocol field 'encapsulationcommand'. Layer: session. Role: type. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.\n  Length: 16 bits\n  Protocol constraints: must be one of the defined EtherNet/IP encapsulation command codes\n- Field: commandspecificdatalength\n  Description: Protocol field 'commandspecificdatalength'. Layer: session. Role: length. Type: uint16. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: length_check.\n  Length: 16 bits\n  Implementation constraints: used as immediate length for payload serialization in GenerateEncapsulationHeader, must be even byte size of command specific data\n- Field: command\n  Description: Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: sessionhandle\n  Description: Protocol field 'sessionhandle'. Layer: session. Role: address. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 32 bits\n  Implementation constraints: coded as CipSessionHandle which is typedef'd from CipUdint, must be 0 in ListServices command, is echoed back in responses\n- Field: encapsulationstatus\n  Description: Protocol field 'encapsulationstatus'. Layer: session. Role: control. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.\n  Length: 32 bits\n  Implementation constraints: 0 = success, non-zero = specific error code from EncapsulationProtocolErrorCode enum\n- Field: sendercontext\n  Description: Protocol field 'sendercontext'. Layer: session. Role: meta. Type: bytes. Infe",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:40a9289da660",
+        "kind": "function_code",
+        "path": "function_code/4.OpENer/function.txt",
+        "content": "Originator Serial Number\nConnection Path Size\nConnection Path\n\n================================================================\n7. CIP GENERAL STATUS CODES\n================================================================\n\n0x00 = Success\n0x01 = Connection Failure\n0x02 = Resource Unavailable\n0x03 = Invalid Parameter Value\n0x04 = Path Segment Error\n0x05 = Path Destination Unknown\n0x06 = Partial Transfer\n0x07 = Connection Lost\n0x08 = Service Not Supported\n0x09 = Invalid Attribute Value\n0x0A = Attribute List Error\n0x0B = Already In Requested Mode or State\n0x0C = Object State Conflict\n0x0D = Object Already Exists\n0x0E = Attribute Not Settable\n0x0F = Privilege Violation\n0x10 = Device State Conflict\n0x11 = Reply Data Too Large\n0x12 = Fragmentation Of A Primitive Value\n0x13 = Not Enough Data\n0x14 = Attribute Not Supported\n0x15 = Too Much Data\n0x16 = Object Does Not Exist\n0x17 = Service Fragmentation Sequence Not In Progress\n0x18 = No Stored Attribute Data\n0x19 = Store Operation Failure\n0x1A = Routing Failure Request Packet Too Large\n0x1B = Routing Failure Response Packet Too Large\n0x1C = Missing Attribute List Entry Data\n0x1D = Invalid Attribute Value List\n0x1E = Embedded Service Error\n0x1F = Vendor-Specific Error\n0x20 = Invalid Parameter\n0x21 = Write-Once Value Or Medium Already Written\n0x22 = Invalid Reply Received\n0x23 = Buffer Overflow\n0x24 = Message Format Error\n0x25 = Key Failure In Path\n0x26 = Path Size Invalid\n0x27 = Unexpected Attribute In List\n0x28 = Invalid Member ID\n0x29 = Member Not Settable\n0x2A = Group 2 Only Server General Failure\n0x2B = Unknown Modbus Error\n0x2C = Attribute Not Gettable\n\n================================================================\n8. COMMON CIP OBJECT CLASS IDS\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "issue:577:577-summary:f41c11d4b1b8",
+        "kind": "issue",
+        "path": "distilled_issue/4.OpENer/#577.txt",
+        "content": "Issue: 577\nSummary: OpENer v2.3 / master branch up to commit 76b95cf is reported vulnerable in the TCP explicit-messaging path (RegisterSession -> SendRRData). A crafted EtherNet/IP SendRRData request can reach the Connection Manager instance services ForwardClose (0x4E), GetConnectionData (0x56), or SearchConnectionData (0x57) and trigger a stack-buffer-overflow read. The report attributes this to missing minimum request-body length validation in these handlers after Message Router path decoding: a long but syntactically acceptable padded EPath can consume the remaining CIP payload, leave request_data_size == 0, and the handlers still call GetUintFromMessage() / GetUdintFromMessage() on message_router_request->data. The reported result is an out-of-bounds read past the stack receive buffer, with stated impact of at least remote unauthenticated denial of service.\nReproduce: Prerequisite: an affected OpENer target on TCP port 44818; the report says no ForwardOpen or special build options are required. Use the provided Python 3 PoC (host argument or OPENER_HOST, default 127.0.0.1). It opens a TCP connection, sends RegisterSession (encapsulation 0x0065) to obtain a session handle, then sends SendRRData (0x006F) with CPF item count 2, a null address item, and unconnected-data item 0x00B2 carrying a CIP request for one target service: forwardclose=0x4E, getconn=0x56, or searchconn=0x57. Build the CIP request as the service byte plus a path with path_size_words=235, Class 0x06, Instance 0x01, and Member ID segment 0x28 0x00 repeated 233 times, so no request body bytes remain after path decoding. Run one of the documented commands: `python3 poc.py forwardclose 192.168.153.128`, `python3 poc.py getconn 192.168.153.128`, or `python3 poc.py searchconn 192.168.153.128`. The script",
+        "issue_number": 577,
+        "title": "OpENer v2.3 / master branch up to commit 76b95cf is reported vulnerable in the TCP explicit-messaging path (RegisterSession -> SendRRData). A crafted EtherNe..."
+      },
+      {
+        "chunk_id": "issue:563:563-summary:b783074fb0e0",
+        "kind": "issue",
+        "path": "distilled_issue/4.OpENer/#563.txt",
+        "content": "Issue: 563\nSummary: OpENer 2.3.0 (commit 76b95cf) is reported vulnerable during incoming CIP packet parsing because `source/src/cip/cipmessagerouter.c` uses inconsistent length types and missing bounds checks: `NotifyMessageRouter(..., int data_length, ...)` passes the length to `CreateMessageRouterRequestStructure(..., EipInt16 data_length, ...)`. The report says crafted length fields can make the value negative, bypass the `if(number_of_decoded_bytes > data_length)` check, and underflow `request_data_size = data_length - number_of_decoded_bytes` before the value reaches `DecodePaddedEPath`. The supplied PoC sends crafted CIP traffic, including a `SendUnitData` packet with `ITEM_CONN_DATA` length `1`, and the shown output reports a runtime error in `source/src/enet_encap/endianconv.c:101` followed by an AddressSanitizer stack-buffer-overflow read in `DecodePaddedEPath` that overruns the stack `incoming_message` buffer and aborts.\nReproduce: Run the provided Python PoC against an OpENer 2.3.0 (commit 76b95cf) POSIX run instrumented as shown in the `ASan` section; the PoC defaults are `--host 127.0.0.1 --port 44818 --attempts 5 --timeout 1.5`. For each attempt, the client opens a TCP connection, sends `RegisterSession`, sends `SendRRData` with a UCMM `Forward Open` request, parses the response, and extracts the returned consumed connection ID. It then sends `SendUnitData` with three CPF items: `ITEM_CONN_ADDR` containing that connection ID, `ITEM_CONN_DATA` with length `1` and payload `0x00`, and a crafted tail of `512 - 45` bytes (the PoC comment says this aligns with the default receive buffer size) starting with `0x41, 0x0E, 250` and then repeated `0x20 0x02` bytes; the loop repeats up to 5 times with 0.15 s delays. Expected result: the PoC may report `trigger sent, n",
+        "issue_number": 563,
+        "title": "OpENer 2.3.0 (commit 76b95cf) is reported vulnerable during incoming CIP packet parsing because `source/src/cip/cipmessagerouter.c` uses inconsistent length ..."
+      }
+    ],
+    "generated_unix_time": 1788705713,
+    "generation_channel": "full",
+    "protocol_knowledge_enabled": true,
+    "vulnerability_knowledge_enabled": true,
+    "model_prior_gap_completion_enabled": true,
+    "built_in_prior_guardrails": [
+      "Prefer EtherNet/IP encapsulation headers with little-endian payload length.",
+      "Use a 24-byte encapsulation header when that form is selected.",
+      "Diversify discovery, session and explicit-message paths."
+    ],
+    "protocol_repair_enabled": true,
+    "requested_final_seed_count": 4,
+    "requested_candidate_count": 4,
+    "max_final_seed_count": 100,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "s004: duplicate sequence removed"
+        ],
+        "review": {
+          "coverage_gaps": [
+            "Missing explicit ForwardOpen, UnconnectedSend, and UnregisterSession seeds",
+            "No issue-grounded paths with long EPath segments (e.g., 430-byte CVE examples)",
+            "No additional deep parser or mutation-heavy frames for SendRRData",
+            "Missing UnregisterSession and ListServices as standalone seeds"
+          ],
+          "diversity_score": 70,
+          "global_feedback": [
+            "Seed s004 removed due to duplicate sequence; only three unique seeds returned.",
+            "Source-backed protocol validity is solid with correct EtherNet/IP encapsulation (little-endian, 24-byte header) and CIP path framing.",
+            "Stateful depth and mutation utility demonstrated only in plan-002 sequence.",
+            "Issue grounding present but limited (no CVE paths or full 430-byte segment examples)."
+          ],
+          "issue_enhancement_score": 75,
+          "needs_revision": true,
+          "overall_score": 78,
+          "protocol_validity_score": 85,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as baseline",
+              "score": 85,
+              "seed_id": "s001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as stateful",
+              "score": 80,
+              "seed_id": "s002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as boundary-adjacent",
+              "score": 75,
+              "seed_id": "s003"
+            }
+          ]
+        },
+        "candidate_count": 3
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [],
+          "diversity_score": 80,
+          "global_feedback": [
+            "All seeds fully conform to 24-byte little-endian encapsulation header and EtherNet/IP framing",
+            "Source-backed protocol fields (command/length/session_handle/status from OpENer templates and function reference) preserved with zero contradictions",
+            "Structural diversity maximized across single vs setup-then-request shapes, minimal vs boundary-adjacent lengths, and shallow vs nested path parsing",
+            "Payloads remain conservative, valid, and non-copied from crash PoCs per model-prior guardrails"
+          ],
+          "issue_enhancement_score": 85,
+          "needs_revision": false,
+          "overall_score": 85,
+          "protocol_validity_score": 95,
+          "seed_utility_score": 90,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as-is; canonical baseline with minimal payload",
+              "score": 95,
+              "seed_id": "s001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as-is; provides depth via setup sequence",
+              "score": 90,
+              "seed_id": "s002"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as-is; boundary length validated against source constraints",
+              "score": 80,
+              "seed_id": "s003"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Retain as-is; nested structure increases parser coverage without violation",
+              "score": 85,
+              "seed_id": "s004"
+            }
+          ]
+        },
+        "candidate_count": 4
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

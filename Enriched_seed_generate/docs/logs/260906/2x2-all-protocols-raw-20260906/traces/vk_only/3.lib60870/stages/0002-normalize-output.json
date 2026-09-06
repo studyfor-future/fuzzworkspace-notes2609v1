@@ -1,0 +1,190 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec60870",
+  "library": {
+    "protocol_name": "iec60870",
+    "target_issue": -1,
+    "generation_notes": "4 VK-only P-/V+ candidate sequences generated per plan. Each sequence is a single-request iec60870 I-frame using model-prior framing, consistent 68 length octets, and issue-supported trigger relations without copying crash bytes. Maximizes distinct frame structures, sizes, and state sequences while preserving target_operation. Hex lowercase no separators. Internally consistent visible lengths/counts.",
+    "coverage_summary": [
+      "parser_depth with STARTDT activation (issue 178)",
+      "field_interaction with STOPDT activation (issue 178)",
+      "length_boundary_valid with TESTFR activation (issue 178)",
+      "parser_depth with General Interrogation (issue 178)"
+    ],
+    "sequences": [
+      {
+        "plan_id": "vk-plan-001",
+        "seed_id": "ghsa-g3w7-x5rx-83xm",
+        "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "STARTDT activation",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+        "evidence_ids": [
+          "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+          "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+          "vk_task_context:task-contract:e5a446a8785a",
+          "issue:200:200-summary:348db1f37fe8",
+          "issue:201:201-summary:798beefc9cab",
+          "issue:197:197-summary:287854ab1555"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "STARTDT activation",
+            "hex": "68050800000000",
+            "byte_length": 7,
+            "sha256": "6d7943381eea842f8591c589d2fc40fec9b91b51421e8c2798f1f0f9876aa1e3"
+          }
+        ],
+        "expected_behavior": "parser accepts STARTDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+        "constraints_preserved": [
+          "68 length octets consistent",
+          "iec60870 family built-in constraint",
+          "model-prior message archetype"
+        ],
+        "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+        "sequence_sha256": "6efebc91b3e48b0aca877da82c05a0c6b9e2b14aed5dd6ccd113d96861924bb2",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "GHSA-G3W7-X5RX-83XM"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-002",
+        "seed_id": "ghsa-7v97-jmwv-w5j7",
+        "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+        "strategy": "field_interaction",
+        "target_operation": "STOPDT activation",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+        "evidence_ids": [
+          "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+          "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+          "issue:200:200-summary:348db1f37fe8",
+          "vk_task_context:task-contract:e5a446a8785a",
+          "issue:201:201-summary:798beefc9cab",
+          "issue:55:55-summary:bc272cfe2177"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "STOPDT activation",
+            "hex": "68051300000000",
+            "byte_length": 7,
+            "sha256": "1bf72c9ebeb38de1ed1de7cfbc8236613c23785bdc521dc8e1c0c9ee9c93f512"
+          }
+        ],
+        "expected_behavior": "parser accepts STOPDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+        "constraints_preserved": [
+          "68 length octets consistent",
+          "iec60870 family built-in constraint",
+          "model-prior message archetype"
+        ],
+        "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+        "sequence_sha256": "8c10eb940a7ccf747eb7fb85639c9819403d5015d291737bd84ccc87ea3a8110",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "GHSA-7V97-JMWV-W5J7"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-003",
+        "seed_id": "13",
+        "title": "VK-only TESTFR activation: No affected version is specified. The report shows that `./test/iec...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "TESTFR activation",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+        "evidence_ids": [
+          "issue:13:13-summary:187d3c5ead6c",
+          "issue:54:54-summary:bed996ddfd18",
+          "issue:53:53-summary:9148432dbf39",
+          "issue:55:55-summary:bc272cfe2177",
+          "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+          "issue:197:197-summary:287854ab1555"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "TESTFR activation",
+            "hex": "68050802000000",
+            "byte_length": 7,
+            "sha256": "a8cba234e659092d66f73b4c3f291920cf81a2057a252b03fb3fd37a9906969a"
+          }
+        ],
+        "expected_behavior": "parser accepts TESTFR_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+        "constraints_preserved": [
+          "68 length octets consistent",
+          "iec60870 family built-in constraint",
+          "model-prior message archetype"
+        ],
+        "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+        "sequence_sha256": "5363c1157a86e039929e085944062632b9d8f2dcb58fc0ab749af3175f44c402",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "13"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-004",
+        "seed_id": "53",
+        "title": "VK-only General Interrogation: Against the latest source from /mz-automation/lib60870/ (exact rele...",
+        "strategy": "parser_depth",
+        "target_operation": "General Interrogation",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+        "evidence_ids": [
+          "issue:53:53-summary:9148432dbf39",
+          "issue:54:54-summary:bed996ddfd18",
+          "issue:55:55-summary:bc272cfe2177",
+          "issue:13:13-summary:187d3c5ead6c",
+          "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+          "issue:200:200-summary:348db1f37fe8"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "General Interrogation",
+            "hex": "68050803000000",
+            "byte_length": 7,
+            "sha256": "51ae2e265b49d25427bdd05525ba0dd55b4a1389df545cac5696384122d77bcb"
+          }
+        ],
+        "expected_behavior": "parser accepts General Interrogation control message (pure control, no ASDU body or VSQ parsing)",
+        "constraints_preserved": [
+          "68 length octets consistent",
+          "iec60870 family built-in constraint",
+          "model-prior message archetype"
+        ],
+        "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+        "sequence_sha256": "bf9fa82bd96511a343a1e6c384682c3ff83dd97f9663be8b1ffb30a131adead5",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed CS104 APCI length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "53"
+        ]
+      }
+    ]
+  },
+  "errors": []
+}

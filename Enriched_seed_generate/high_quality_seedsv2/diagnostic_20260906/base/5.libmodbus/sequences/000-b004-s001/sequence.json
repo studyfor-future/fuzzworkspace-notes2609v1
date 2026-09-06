@@ -1,0 +1,64 @@
+{
+  "seed_id": "b004-s001",
+  "title": "Base Read Input Registers variant 1",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Input Registers",
+  "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Input Registers Request",
+      "hex": "000000000006010400000001",
+      "byte_length": 12,
+      "sha256": "5c44e269e83ddc55c82a924f110948bad143241eefb1e292b20310e96a1a17c8"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Input Registers Response",
+      "hex": "0000000000080104000000010001",
+      "byte_length": 14,
+      "sha256": "024db7e6273186d0ab6dd6c1ca97998fa498f1e004d5f1f8303feb7c71c8f5a5"
+    }
+  ],
+  "expected_behavior": "Server returns input register data starting at address 0x0000 with quantity 0x0001.",
+  "constraints_preserved": [
+    "7-byte MBAP header with protocol identifier 0x0000",
+    "Unit identifier 0x01",
+    "Function code 0x04",
+    "Starting address 0x0000",
+    "Quantity 0x0001"
+  ],
+  "issue_safety_notes": "No external vulnerability issues available; issue_safety_notes explicit as per base constraints.",
+  "sequence_sha256": "dd626c9faf8d06b63788adf4ceb507d9be8830579cfd1ab576a19678d2f621aa",
+  "total_bytes": 26,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d15e075738df27686ff7c12ea103aed38797c6a834a6f868d836d3025ddcc3d9",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

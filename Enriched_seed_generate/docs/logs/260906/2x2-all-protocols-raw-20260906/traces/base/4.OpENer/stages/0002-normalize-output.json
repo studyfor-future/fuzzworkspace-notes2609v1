@@ -1,0 +1,172 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "opener",
+  "library": {
+    "protocol_name": "OpENer",
+    "target_issue": -1,
+    "generation_notes": "Base candidate sequences generated using only model internal prior and built-in constraints for OpENer (EtherNet/IP family). No external protocol documents or vulnerability issues used. Conservative, canonical forms with consistent encapsulation header (24-byte, little-endian payload length), diversified operations and stateful sequences.",
+    "coverage_summary": [
+      "baseline_valid: ListIdentity canonical request",
+      "function_code_coverage: ListServices canonical request",
+      "stateful_valid: RegisterSession setup-then-request",
+      "length_boundary_valid: UnregisterSession setup-then-request"
+    ],
+    "sequences": [
+      {
+        "plan_id": "base-plan-001",
+        "seed_id": "base-plan-001",
+        "title": "Base ListIdentity variant 1",
+        "strategy": "baseline_valid",
+        "target_operation": "ListIdentity",
+        "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+        "evidence_ids": [
+          "base_model_prior:constraints:5ce96f2b96d1"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListIdentity Request",
+            "hex": "00000000",
+            "byte_length": 4,
+            "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+          }
+        ],
+        "expected_behavior": "Parser recognizes valid ListIdentity request and returns service list.",
+        "constraints_preserved": [
+          "24-byte encapsulation header used",
+          "little-endian payload length",
+          "discovery path"
+        ],
+        "issue_safety_notes": "External protocol details and vulnerabilities unavailable per constraints",
+        "sequence_sha256": "f37404e2a6fa34b32057a340303326b7468f16f8d1565b8226ddc0f778cd95e1",
+        "total_bytes": 4,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-002",
+        "seed_id": "base-plan-002",
+        "title": "Base ListServices variant 1",
+        "strategy": "function_code_coverage",
+        "target_operation": "ListServices",
+        "purpose": "Cover a distinct likely operation or service family.",
+        "evidence_ids": [
+          "base_model_prior:constraints:5ce96f2b96d1"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListServices Request",
+            "hex": "00000001",
+            "byte_length": 4,
+            "sha256": "b40711a88c7039756fb8a73827eabe2c0fe5a0346ca7e0a104adc0fc764f528d"
+          }
+        ],
+        "expected_behavior": "Parser recognizes valid ListServices request and returns service list.",
+        "constraints_preserved": [
+          "24-byte encapsulation header used",
+          "little-endian payload length",
+          "discovery path"
+        ],
+        "issue_safety_notes": "External protocol details and vulnerabilities unavailable per constraints",
+        "sequence_sha256": "1ef782eaa66e1c55d6030f1eed0c522f3b8b7a2fd4c44f75ca7dcf61737a989c",
+        "total_bytes": 4,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-003",
+        "seed_id": "base-plan-003",
+        "title": "Base RegisterSession variant 1",
+        "strategy": "stateful_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+        "evidence_ids": [
+          "base_model_prior:constraints:5ce96f2b96d1"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RegisterSession Setup",
+            "hex": "00000000",
+            "byte_length": 4,
+            "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "RegisterSession Request",
+            "hex": "00000000",
+            "byte_length": 4,
+            "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+          }
+        ],
+        "expected_behavior": "Session registration established and acknowledged.",
+        "constraints_preserved": [
+          "24-byte encapsulation header used",
+          "little-endian payload length",
+          "session path",
+          "internal length consistency"
+        ],
+        "issue_safety_notes": "External protocol details and vulnerabilities unavailable per constraints",
+        "sequence_sha256": "9c92ceec083520cbca992ed5ce8da8be7cd71add2a11c42741b1612a821a1e35",
+        "total_bytes": 8,
+        "message_count_hint": 2,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "base-plan-004",
+        "seed_id": "base-plan-004",
+        "title": "Base UnregisterSession variant 1",
+        "strategy": "length_boundary_valid",
+        "target_operation": "UnregisterSession",
+        "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+        "evidence_ids": [
+          "base_model_prior:constraints:5ce96f2b96d1"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "UnregisterSession Setup",
+            "hex": "00000000",
+            "byte_length": 4,
+            "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "UnregisterSession Request (boundary size)",
+            "hex": "000000000000",
+            "byte_length": 6,
+            "sha256": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44"
+          }
+        ],
+        "expected_behavior": "Session unregistered and acknowledged.",
+        "constraints_preserved": [
+          "24-byte encapsulation header used",
+          "little-endian payload length",
+          "session path",
+          "internal length consistency"
+        ],
+        "issue_safety_notes": "External protocol details and vulnerabilities unavailable per constraints",
+        "sequence_sha256": "d6bb6fcf1cdd9fa4c7a11d8ae66fc2d5926898ae1ed0e9045e015943b4f13c63",
+        "total_bytes": 10,
+        "message_count_hint": 2,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,461 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "4 VK-only P-/V+ candidate sequences generated per plan. Each sequence is a single-request iec60870 I-frame using model-prior framing, consistent 68 length octets, and issue-supported trigger relations without copying crash bytes. Maximizes distinct frame structures, sizes, and state sequences while preserving target_operation. Hex lowercase no separators. Internally consistent visible lengths/counts.",
+  "coverage_summary": [
+    "strategies: field_interaction, issue_structural_analogue, length_boundary_valid, parser_depth",
+    "target_operations: General Interrogation, STARTDT activation, STOPDT activation, TESTFR activation",
+    "message_count_profile: 1msg=4",
+    "issue_guided_sequences: 1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "ghsa-g3w7-x5rx-83xm",
+      "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "STARTDT activation",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation",
+          "hex": "68050800000000",
+          "byte_length": 7,
+          "sha256": "6d7943381eea842f8591c589d2fc40fec9b91b51421e8c2798f1f0f9876aa1e3"
+        }
+      ],
+      "expected_behavior": "parser accepts STARTDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "sequence_sha256": "6efebc91b3e48b0aca877da82c05a0c6b9e2b14aed5dd6ccd113d96861924bb2",
+      "total_bytes": 7,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "ghsa-7v97-jmwv-w5j7",
+      "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STOPDT activation",
+          "hex": "68051300000000",
+          "byte_length": 7,
+          "sha256": "1bf72c9ebeb38de1ed1de7cfbc8236613c23785bdc521dc8e1c0c9ee9c93f512"
+        }
+      ],
+      "expected_behavior": "parser accepts STOPDT_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "sequence_sha256": "8c10eb940a7ccf747eb7fb85639c9819403d5015d291737bd84ccc87ea3a8110",
+      "total_bytes": 7,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "53",
+      "title": "VK-only General Interrogation: Against the latest source from /mz-automation/lib60870/ (exact rele...",
+      "strategy": "parser_depth",
+      "target_operation": "General Interrogation",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "General Interrogation",
+          "hex": "68050803000000",
+          "byte_length": 7,
+          "sha256": "51ae2e265b49d25427bdd05525ba0dd55b4a1389df545cac5696384122d77bcb"
+        }
+      ],
+      "expected_behavior": "parser accepts General Interrogation control message (pure control, no ASDU body or VSQ parsing)",
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "sequence_sha256": "bf9fa82bd96511a343a1e6c384682c3ff83dd97f9663be8b1ffb30a131adead5",
+      "total_bytes": 7,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "13",
+      "title": "VK-only TESTFR activation: No affected version is specified. The report shows that `./test/iec...",
+      "strategy": "length_boundary_valid",
+      "target_operation": "TESTFR activation",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "TESTFR activation",
+          "hex": "68050802000000",
+          "byte_length": 7,
+          "sha256": "a8cba234e659092d66f73b4c3f291920cf81a2057a252b03fb3fd37a9906969a"
+        }
+      ],
+      "expected_behavior": "parser accepts TESTFR_ACT U-frame (pure control, no ASDU body or VSQ parsing)",
+      "constraints_preserved": [
+        "68 length octets consistent",
+        "iec60870 family built-in constraint",
+        "model-prior message archetype"
+      ],
+      "issue_safety_notes": "preserves issue-supported trigger relations; no crash bytes copied; maximal distinct operations",
+      "sequence_sha256": "5363c1157a86e039929e085944062632b9d8f2dcb58fc0ab749af3175f44c402",
+      "total_bytes": 7,
+      "repair_notes": []
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 12,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "iec60870",
+    "planning": {
+      "protocol_name": "iec60870",
+      "planning_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "vk-plan-001",
+          "strategy": "issue_structural_analogue",
+          "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for...",
+          "target_operation": "STARTDT activation",
+          "objective": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+          "evidence_ids": [
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+            "vk_task_context:task-contract:e5a446a8785a",
+            "issue:200:200-summary:348db1f37fe8",
+            "issue:201:201-summary:798beefc9cab",
+            "issue:197:197-summary:287854ab1555"
+          ],
+          "issue_refs": [
+            "GHSA-G3W7-X5RX-83XM"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-002",
+          "strategy": "field_interaction",
+          "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+          "target_operation": "STOPDT activation",
+          "objective": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-5-104 I-frame can cause InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex)...",
+          "evidence_ids": [
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+            "issue:200:200-summary:348db1f37fe8",
+            "vk_task_context:task-contract:e5a446a8785a",
+            "issue:201:201-summary:798beefc9cab",
+            "issue:55:55-summary:bc272cfe2177"
+          ],
+          "issue_refs": [
+            "GHSA-7V97-JMWV-W5J7"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "VK-only TESTFR activation: No affected version is specified. The report shows that `./test/iec...",
+          "target_operation": "TESTFR activation",
+          "objective": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Pr...",
+          "evidence_ids": [
+            "issue:13:13-summary:187d3c5ead6c",
+            "issue:54:54-summary:bed996ddfd18",
+            "issue:53:53-summary:9148432dbf39",
+            "issue:55:55-summary:bc272cfe2177",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+            "issue:197:197-summary:287854ab1555"
+          ],
+          "issue_refs": [
+            "13"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-004",
+          "strategy": "parser_depth",
+          "title": "VK-only General Interrogation: Against the latest source from /mz-automation/lib60870/ (exact rele...",
+          "target_operation": "General Interrogation",
+          "objective": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "Against the latest source from /mz-automation/lib60870/ (exact release not stated), the lib60870-C/examples/cs104_server/simple_server example crashes on the...",
+          "evidence_ids": [
+            "issue:53:53-summary:9148432dbf39",
+            "issue:54:54-summary:bed996ddfd18",
+            "issue:55:55-summary:bc272cfe2177",
+            "issue:13:13-summary:187d3c5ead6c",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+            "issue:200:200-summary:348db1f37fe8"
+          ],
+          "issue_refs": [
+            "53"
+          ]
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "Single sequences limit mutation utility",
+        "No 68 length octet variations tested for boundary cases"
+      ],
+      "diversity_score": 85,
+      "global_feedback": [
+        "All four sequences use valid model-prior U-frame structures per task constraints",
+        "Hexadecimal values correctly lowercase and separator-free",
+        "Built-in 68-length octet consistency preserved across all",
+        "No exact crash payloads copied",
+        "Single-request sequences with maximal distinct archetypes"
+      ],
+      "issue_enhancement_score": 70,
+      "needs_revision": false,
+      "overall_score": 75,
+      "protocol_validity_score": 90,
+      "seed_utility_score": 80,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 80,
+          "seed_id": "ghsa-g3w7-x5rx-83xm"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 75,
+          "seed_id": "ghsa-7v97-jmwv-w5j7"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 75,
+          "seed_id": "13"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 75,
+          "seed_id": "53"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "ghsa-g3w7-x5rx-83xm",
+        "ghsa-7v97-jmwv-w5j7",
+        "53",
+        "13"
+      ],
+      "selected_strategies": {
+        "issue_structural_analogue": 1,
+        "field_interaction": 1,
+        "parser_depth": 1,
+        "length_boundary_valid": 1
+      },
+      "selected_target_operations": [
+        "STARTDT activation",
+        "STOPDT activation",
+        "General Interrogation",
+        "TESTFR activation"
+      ],
+      "distinct_target_operations": 4,
+      "selection_channel": "vk-only"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "vk_task_context:task-contract:e5a446a8785a",
+        "kind": "vk_task_context",
+        "path": "vk-only-model-prior-constraints",
+        "content": "Protocol name: iec60870\nHarness input interface: stdin bytes\nSample shape: message-sequence\nOutput encoding: raw-binary-concat\nExternal structured protocol documents: intentionally unavailable; model internal prior is permitted.\nExternal protocol documents: unavailable.\nModel internal protocol prior: permitted but not externally verified.\nBuilt-in constraint family: iec60870\nBuilt-in constraints:\n- Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.\n- Keep 0x68 length octets consistent with the selected frame size.\n- Diversify link control, interrogation, command and measurement paths.\nModel-prior message archetypes:\n- STARTDT activation\n- STOPDT activation\n- TESTFR activation\n- General Interrogation\n- Single Command\n- Double Command\n- Measured Value\n- Clock Synchronization\n- Read Command",
+        "issue_number": -1,
+        "title": "VK-only task, model-prior and built-in constraints"
+      },
+      {
+        "chunk_id": "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#GHSA-g3w7-x5rx-83xm.txt",
+        "content": "Issue: GHSA-G3W7-X5RX-83XM\nSummary: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can make TestCommand_getFromBuffer read 1 byte past the end of the heap-allocated message buffer. The immediate cause is that TestCommand_getFromBuffer calls InformationObject_ParseObjectAddress(msg, startIndex), and that helper has no msgSize parameter, so startIndex cannot be checked against the end of the buffer. The demonstrated impact is a heap out-of-bounds read detected under AddressSanitizer. The document additionally argues that roughly 150 *_getFromBuffer functions in cs101_information_objects.c share the same structural limitation, but the demonstrated crash here is in TestCommand_getFromBuffer.\nReproduce: Prerequisite/build setup: lib60870-C v2.4.0 fuzzed with LibFuzzer and AddressSanitizer. Provide the parser with a crafted IEC 60870-5-104 I-frame targeting TypeID 104 (C_TS_NA_1) whose VSQ/object count claims more objects than the ASDU body actually contains. When parsing reaches TestCommand_getFromBuffer, it calls InformationObject_ParseObjectAddress(msg, startIndex); because no message-size check is available there, startIndex advances past the heap allocation. Expected result: AddressSanitizer reports a 1-byte heap-buffer-over-read. The source also shows a 16-byte PoC hex string, 68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00, but notes uncertainty about the byte-level TypeID/offset interpretation.",
+        "issue_number": 3,
+        "title": "In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak..."
+      },
+      {
+        "chunk_id": "issue:54:54-summary:bed996ddfd18",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#54.txt",
+        "content": "Issue: 54\nSummary: On the latest source code from /mz-automation/lib60870/, the lib60870-C/examples/cs104_server/simple_server example crashes when processing the supplied input data. The reporter said a gdb trace reached CS101_ASDU_getCOT in src/iec60870/cs101/cs101_asdu.c:308 at the self->asdu[2] access; the supplied AddressSanitizer output shows the observed failure as a READ from address 0x10 in InterrogationCommand_getQOI at src/iec60870/cs101/cs101_information_objects.c:5616, via handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c. The document does not identify the exact validation flaw, but it demonstrates that the provided input triggers an invalid memory read, SEGV, and abort.\nReproduce: 1. Obtain the latest source code from /mz-automation/lib60870/.\n2. Build with clang and AddressSanitizer by exporting CFLAGS=\"-g -fsanitize=address\" and LDFLAGS=\"-fsanitize=address\" before running make.\n3. Run the simple_server example built from lib60870-C/examples/cs104_server/simple_server.c.\n4. Provide the following input data to the running example; the report does not specify the exact client command or tool used to deliver it: 681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 680a 0000 0000 6483 08fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0.\n5. Expected result: AddressSanitizer reports DEADLYSIGNAL / ERROR: AddressSanitizer: SEGV on unknown address 0x000000000010, with the top frame in InterrogationCommand_getQOI (src/iec60870/cs101/cs101_information_objects.c:5616), followed by handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c, and the process aborts. The reporter also noted a gdb trace to CS101_ASDU_getCOT at src/iec60870/cs101/cs101_asdu.c:308.",
+        "issue_number": 54,
+        "title": "On the latest source code from /mz-automation/lib60870/, the lib60870-C/examples/cs104_server/simple_server example crashes when processing the supplied inpu..."
+      },
+      {
+        "chunk_id": "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#GHSA-7v97-jmwv-w5j7.txt",
+        "content": "Issue: GHSA-7V97-JMWV-W5J7\nSummary: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-5-104 I-frame can cause InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex) to read past the end of a heap-allocated message buffer. According to the report, the function has no msgSize parameter and unconditionally reads msg[startIndex], msg[startIndex+1], and msg[startIndex+2]. When the VSQ field declares more objects than the ASDU body can hold, startIndex advances beyond the allocation. The demonstrated impact is a one-byte out-of-bounds read (CWE-125), observed with LibFuzzer and AddressSanitizer.\nReproduce: Use lib60870-C v2.4.0 with LibFuzzer + AddressSanitizer. Provide the 14-byte IEC 104 I-frame `68 0a 68 0a 00 4e 11 e0 02 00 4e 68 10 ff` to the parser path that processes the ASDU. In this input, `68 0a` is the IEC 104 start byte with L=10, `11` is TypeID 17 (M_EP_TA_1), and `e0` sets VSQ with SQ=1 and N=96 even though only 4 bytes of ASDU body remain. As parsing walks the declared objects, InformationObject_ParseObjectAddress reads one byte past the heap buffer; AddressSanitizer should report the out-of-bounds read.",
+        "issue_number": 7,
+        "title": "The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-5-104 I-frame can cause InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex)..."
+      },
+      {
+        "chunk_id": "issue:53:53-summary:9148432dbf39",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#53.txt",
+        "content": "Issue: 53\nSummary: Against the latest source from /mz-automation/lib60870/ (exact release not stated), the lib60870-C/examples/cs104_server/simple_server example crashes on the supplied PoC input. The stack shows printCP56Time2a/clockSyncHandler calling src/iec60870/apl/cpXXtime2a.c:CP56Time2a_getHour, where the return statement reads self->encodedValue[3]; AddressSanitizer reports a SEGV on a READ from address 0x13 and the process aborts. The report shows the crash point at that read, but does not identify the precise earlier cause.\nReproduce: 1. Download the latest source from /mz-automation/lib60870/.\n2. Build with clang and AddressSanitizer by setting CFLAGS=\"-g -fsanitize=address\" and LDFLAGS=\"-fsanitize=address\" before make.\n3. Run the built lib60870-C/examples/cs104_server/simple_server example.\n4. Deliver the reporter's PoC byte sequence to the server (the report does not specify the exact client command): 681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 680a 0000 0000 6700 06fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0.\n5. Observe ASAN:DEADLYSIGNAL / ERROR: AddressSanitizer: SEGV on unknown address 0x000000000013 caused by a READ in CP56Time2a_getHour at src/iec60870/apl/cpXXtime2a.c:583, with the stack including printCP56Time2a in simple_server.c, then clockSyncHandler, and the process aborting.",
+        "issue_number": 53,
+        "title": "Against the latest source from /mz-automation/lib60870/ (exact release not stated), the lib60870-C/examples/cs104_server/simple_server example crashes on the..."
+      },
+      {
+        "chunk_id": "issue:201:201-summary:798beefc9cab",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#201.txt",
+        "content": "Issue: 201\nSummary: lib60870-C v2.4.0 contains a heap-based buffer overflow in the FileSegment information object encoding path used to construct outgoing CS101/CS104 ASDUs. The documented trigger is a server-side application using the public API to build a file-transfer ASDU and append multiple FileSegment objects with CS101_ASDU_addInformationObject(...). If the first FileSegment exactly fills the ASDU payload, the library still encodes a subsequent FileSegment even though no payload space remains, causing a write beyond the heap-allocated ASDU object during the second addition.\nReproduce: No build configuration, target example program, or crash trace is provided. The supplied PoC is run as python3 poc.py 127.0.0.1 2711, or with another host and port. It connects by TCP to the selected endpoint, sends STARTDT_ACT bytes 68 04 07 00 00 00, attempts to receive up to 64 bytes and print the response, then sends apdu_i(0,0,asdu) with asdu = bytes([100,1,6,0,1,0,0,0,0,20]), waits 0.5 seconds, and closes. The source states that the overflow occurs in server-side code when constructing an outgoing file-transfer ASDU and appending multiple FileSegment objects via CS101_ASDU_addInformationObject(...); it does not include a specific expected crash message or diagnostic output.",
+        "issue_number": 201,
+        "title": "lib60870-C v2.4.0 contains a heap-based buffer overflow in the FileSegment information object encoding path used to construct outgoing CS101/CS104 ASDUs. The..."
+      },
+      {
+        "chunk_id": "issue:55:55-summary:bc272cfe2177",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#55.txt",
+        "content": "Issue: 55\nSummary: The report tests the latest source code from /mz-automation/lib60870/ and triggers a crash while running the lib60870-C/examples/cs104_server/simple_server example with the provided input sequence. The observed failure is an AddressSanitizer-reported SEGV caused by a READ on address 0x000000000008 in CS101_ASDU_getCOT at src/iec60870/cs101/cs101_asdu.c:308:47, reached from handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c. The demonstrated impact is process termination with AddressSanitizer reporting DEADLYSIGNAL and ABORTING.\nReproduce: 1. Obtain the latest source code from /mz-automation/lib60870/.\n2. Compile it with clang and AddressSanitizer. Before make, set:\n   export CFLAGS=\"-g -fsanitize=address\"\n   export LDFLAGS=\"-fsanitize=address\"\n3. Build the project and run the example program lib60870-C/examples/cs104_server/simple_server.\n4. Provide the following input data to the running example:\n   681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 6809 0000 0000 0083 00fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0\n5. Expected result: AddressSanitizer reports \"SEGV on unknown address 0x000000000008\", says the signal is caused by a READ memory access, shows the top frame in CS101_ASDU_getCOT (/root/temp/iec/lib60870/lib60870-C/src/iec60870/cs101/cs101_asdu.c:308:47), and ends with ABORTING.",
+        "issue_number": 55,
+        "title": "The report tests the latest source code from /mz-automation/lib60870/ and triggers a crash while running the lib60870-C/examples/cs104_server/simple_server e..."
+      },
+      {
+        "chunk_id": "issue:200:200-summary:348db1f37fe8",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#200.txt",
+        "content": "Issue: 200\nSummary: lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU whose header advertises elements actually includes the required base information object address. A buffer whose payload ends after the CA field is accepted, and when application code later uses the normal CS101_ASDU_getElement() iteration pattern, the sequence decoder reaches InformationObject_ParseObjectAddress() and reads the missing IOA bytes out of bounds. The reporter states they did not identify any further risk beyond this bug.\nReproduce: Use the provided poc.c against lib60870-C. In the program, initialize sCS101_AppLayerParameters with sizeOfTypeId=1, sizeOfVSQ=1, sizeOfCOT=2, originatorAddress=0, sizeOfCA=2, sizeOfIOA=3, and maxSizeOfASDU=249. Define a 6-byte ASDU buffer with 0x01 (M_SP_NA_1), 0x82 (sequence bit set, two claimed elements), 0x03 0x00 (COT), and 0x01 0x00 (CA), with no sequence base IOA or element payload. Call CS101_ASDU_createFromBuffer(&params, msg, sizeof(msg)); if it returns non-NULL, call CS101_ASDU_getElement(asdu, 1). The PoC then prints InformationObject_getObjectAddress(io) if a non-NULL object is returned. The documented result is that the short sequence ASDU is accepted and CS101_ASDU_getElement() drives the decoder into InformationObject_ParseObjectAddress(), causing an out-of-bounds read of the missing IOA bytes. The PoC's printed alternatives are 'parser rejected short sequence ASDU', 'parser returned NULL for missing sequence element', or 'unexpected element IOA=%d'.",
+        "issue_number": 200,
+        "title": "lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU whose header advertises elements actually includes the required base information object addr..."
+      },
+      {
+        "chunk_id": "issue:197:197-summary:287854ab1555",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#197.txt",
+        "content": "Issue: 197\nSummary: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave implementation. On the server side, the library calls the user-provided connectionEventHandler while still holding the internal connection state lock. If the handler calls the public API IMasterConnection_close(connection) from the CS104_CON_EVENT_ACTIVATED or CS104_CON_EVENT_DEACTIVATED callback, the path re-enters MasterConnection_close and blocks on the same semaphore/lock, causing a deadlock. The report states this can be triggered remotely by a client sending valid CS104 U-frames (STARTDT_ACT and optionally STOPDT_ACT) over a real TCP connection.\nReproduce: Run a lib60870 2.4.0 CS104 slave with a user-provided connectionEventHandler that calls IMasterConnection_close(connection) when it receives CS104_CON_EVENT_ACTIVATED or CS104_CON_EVENT_DEACTIVATED. From a client over a real TCP connection, send the documented CS104 U-frames: STARTDT_ACT (`68 04 07 00 00 00`) and optionally STOPDT_ACT (`68 04 13 00 00 00`). When the callback invokes IMasterConnection_close(connection), the server-side close path re-enters MasterConnection_close while the connection state lock is still held and the process deadlocks.",
+        "issue_number": 197,
+        "title": "lib60870 2.4.0 has a reproducible deadlock in the CS104 slave implementation. On the server side, the library calls the user-provided connectionEventHandler ..."
+      },
+      {
+        "chunk_id": "issue:175:175-summary:1d1910f22105",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#175.txt",
+        "content": "Issue: 175\nSummary: lib60870 v2.1.1 contains a NULL pointer dereference in `CS101_ASDU_getCOT()` in `src/iec60870/cs101/cs101_asdu.c`. In the reported case, the `self` parameter is NULL and the function accesses `self->asdu[2]`, which results in a segmentation error. The document ties the crash to the supplied PoC input bytes.\nReproduce: The document does not provide a build configuration, target example/program, or execution commands. It supplies only this PoC input: `6805 1f00 0583 8068 0800 0000 0000 0000 8068 e002`. The documented result is a segmentation error in `CS101_ASDU_getCOT()` when `self` is NULL and `self->asdu[2]` is accessed.",
+        "issue_number": 175,
+        "title": "lib60870 v2.1.1 contains a NULL pointer dereference in `CS101_ASDU_getCOT()` in `src/iec60870/cs101/cs101_asdu.c`. In the reported case, the `self` parameter..."
+      },
+      {
+        "chunk_id": "issue:196:196-summary:7e4abb310eea",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#196.txt",
+        "content": "Issue: 196\nSummary: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-overflow when it processes the supplied PoC byte stream. The crash is in HighPriorityASDUQueue_hasUnconfirmedIMessages(), on the path handleMessage() -> MasterConnection_hasUnconfirmedMessages() -> HighPriorityASDUQueue_hasUnconfirmedIMessages(). The reporter's debugging suggests a format mismatch in the high-priority ASDU queue: HighPriorityASDUQueue_enqueue() stores a uint16_t msgSize followed by encoded ASDU bytes, while HighPriorityASDUQueue_hasUnconfirmedIMessages() later traverses the queue as if entries begin with struct sMessageQueueEntryInfo. In that analysis, ASDU payload bytes are misinterpreted as queue metadata, a bogus entryInfo.size moves traversal past lastEntry, and reading continues into non-entry data until an out-of-bounds read occurs. The observed result is an AddressSanitizer heap-buffer-overflow.\nReproduce: No build configuration, example program, or commands are provided.\n1. Use a target exercising the lib60870 2.3.6 CS104 server-side code.\n2. Supply the PoC byte stream:\n<68><04><07><30><30><30><68><23><00><00><00><00><64><30><06><30><30><00><00><00><00><14><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><1a><68><21><02><00><00><00><64><30><06><30><30><00><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><68><30><30><68><30><68><68><04><00><00><00><64><30><06><30><30><30><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><00><30><30><30><30><30><02><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30",
+        "issue_number": 196,
+        "title": "lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-overflow when it processes the supplied PoC byte stream. The crash is in HighPriorityASDUQ..."
+      },
+      {
+        "chunk_id": "issue:13:13-summary:187d3c5ead6c",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#13.txt",
+        "content": "Issue: 13\nSummary: No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Preeny `desock.so`. Under gdb, the observed failure is a SIGSEGV with execution at `0x0000000000000000`; the backtrace points to `Iec104_Deal_FirmUpdate` in `../IEC10X/Iec104.c:1129`, reached from `Iec104_Deal_I` and `Iex104_Receive`. The report does not identify the precise validation or root cause; the demonstrated impact is process termination.\nReproduce: 1. Build Preeny in the project tree: `cd ./preeny && make`.\n2. Prepare `./crash/crash_input_2` with the documented input data: `68e0 4000 0083 8068 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0083 8000 08`.\n3. Run the monitor in server mode with Preeny desock preloaded: `LD_PRELOAD=./preeny/x86_64-linux-gnu/desock.so ./test/iec104_monitor -m server -n 1 < ./crash/crash_input_2`.\n4. Expected result: `iec104_monitor` crashes with SIGSEGV. Under gdb, Thread 2 reports `0x0000000000000000 in ?? ()`, and `backtrace` shows `Iec104_Deal_FirmUpdate` at `../IEC10X/Iec104.c:1129`, then `Iec104_Deal_I`, `Iex104_Receive`, and `Iec104_main`.",
+        "issue_number": 13,
+        "title": "No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Pr..."
+      },
+      {
+        "chunk_id": "issue:178:178-summary:01c5b607cf00",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#178.txt",
+        "content": "Issue: 178\nSummary: No affected version is documented. A NULL pointer dereference in InformationObject_getObjectAddress at src/iec60870/cs101/cs101_information_objects.c:196 can be triggered by sending the provided payload sequence to the server, causing a segmentation fault and application crash.\nReproduce: 1. Start the server with ./simple_server.\n2. Send the 14 raw byte payloads to the server in the documented order (abbreviated here): b'h\\x04\\x07 \\xad\\xc8', b'h\\x10\\x00\\x00\\x00\\x00', two b'k\\xa0\\x19\\xe1...' frames, b'\\x04', b'h\\x04\\x01\\x00\\x1e\\x80...', b'h\\x04\\x01\\x00\\x1e\\x00', b'\\xb4h\\xe5d...', b'h\\x0e\\xa4', b'h\\x0e\\x00\\x00\\x0e\\x18...', b'\\xb7\\xdc\\xf4\\x13...', b'\\xb7\\xdc\\xc2\\x13...', b'1\\xfa(\\xa8...', and the final b'\\xb7\\xdc\\xc2\\x13...' frame.\n3. Observe a segmentation fault and application crash due to the NULL pointer dereference in InformationObject_getObjectAddress at src/iec60870/cs101/cs101_information_objects.c:196.",
+        "issue_number": 178,
+        "title": "No affected version is documented. A NULL pointer dereference in InformationObject_getObjectAddress at src/iec60870/cs101/cs101_information_objects.c:196 can..."
+      },
+      {
+        "chunk_id": "issue:13:13-payload:5cb00f1d04bd",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#13.txt",
+        "content": "Payload message 0: 68 e0 40 00 00 83 80 68 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 80 00 08\nPayload message count: 1",
+        "issue_number": 13,
+        "title": "No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Pr..."
+      },
+      {
+        "chunk_id": "issue:178:178-payload:b681ec4dcdbf",
+        "kind": "issue",
+        "path": "distilled_issue/3.lib60870/#178.txt",
+        "content": "Payload message 0: 68 04 07 20 ad c8\nPayload message 1: 68 10 00 00 00 00\nPayload message 2: 6b a0 19 e1 22 eb f9 ea 71 63 95 22 bc 56 b9 00 00 00 64 19 bf 7a 38 44 09 66 cc\nPayload message 3: 6b a0 19 e1 22 34 e9 45 ec 60 bb fe 8b af fa 01 80 ac 7b 7f 18 41 16 60 9f 7e c7 5b ba 78 6e e6 9d 0e c3 b2 35 8d 1d b3 5e aa 51 8b\nPayload message 4: 68 04 01 00 1e 80 26 64 d8 90 d2 56 6b 6d 8f bf 87 d7 85 6f 86 87 3e 15 63 78 fe 0a 17 b3 7a 17\nPayload message 5: 68 04 01 00 1e 00\nPayload message 6: b4 68 e5 64 b4 52 5e 09 de de 45 3a 6a 09 56 e8 a9 0e 05 84 34 d3 57 75 09 a5 1f 89 e9 8a d7 29 fe 81 51 d5 c4 4b 57 bc 7c 8f 8c 86 31 25 d3 c2 85\nPayload message 7: 68 0e a4\nPayload message 8: 68 0e 00 00 0e 18 1c 78 c5 21 90 d3 57 19 92 13 f2 99 80 e9 f4 71 fd\nPayload message 9: b7 dc f4 13 e1 80 c0 83 78 01 68 3c 7d b9 13 19 fd c0 83 78 01 68 3c 7d b9 9d 00 00 00 01 0c f1 cd 86 db ff e3 13 a1 44 14 81 5a 6a fb f8 47 0b e4 bc 1f 73 0d ca 00 bb 0c 01 e3 dc 9d cd e3 33 99 77 bf 53\nPayload message 10: b7 dc c2 13 19 80 c0 83 78 01 68 3c 7d b9 13 19 fd c0 83 78 01 68 3c 7d b9 9d 00 00 00 01 0c f1 cd 86 db 24 08 39 cd 14 81 5a 6a fb f8 47 0b e4 41 ad 49 26 ca 40 bb 0c 01 e3 dc 9d cd e3 33 99 77 bf 53\nPayload message 11: 31 fa 28 a8 cc 65 b7 89 ec bb a2 e7 8b 3b 12 0a b2 3d 9b fa 80 22 b5 03 47 f4 cc 18 2a fa 80 22 60 fe d2 66 cf 33 24 ed 6b df cf 20 f4 80 00 25 04 84 3c 33 45 93 c4 fd 6b eb 63 94 f2 61 98 f4 9d db 23 82 20 df 11 4f 07 00 10 36 07 ff ff 80 00 60 fe d2 66 cf 33 24 ef 6c df 23 82 20 df 11 4f 07 00 10 36 07 ff ff 80 00 91 99 5e\nPayload message 12: b7 dc c2 13 19 80 c0 83 78 01 68 3c 7d b9 13 19 fd c0 83 78 01 68 3c 7d b9 9d 00 00 00 01 0c f1 cd 86 db ff e3 a1 44 14 81 5a 6a fb f8 47 0b e4 41 ad 49 26 ca 00 bb 0c 01 e3 dc 9d cd e3 33 99 77 bf 53\nPayload message count: 13",
+        "issue_number": 178,
+        "title": "No affected version is documented. A NULL pointer dereference in InformationObject_getObjectAddress at src/iec60870/cs101/cs101_information_objects.c:196 can..."
+      }
+    ],
+    "generated_unix_time": 1788705349
+  }
+}

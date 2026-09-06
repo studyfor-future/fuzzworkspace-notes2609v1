@@ -1,0 +1,50 @@
+{
+  "seed_id": "plan-003-length-boundary-valid",
+  "title": "Boundary-adjacent Unknown Type Identification",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Unknown Type Identification",
+  "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+  "evidence_ids": [
+    "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+    "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+    "function_code:function:function-text:83986922f28d",
+    "function_code:function:operation-catalog:c32f2366ef50"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "C_CS_NA_1 (boundary quantity) request",
+      "hex": "68170000000000006801000000051000000100000000010001",
+      "byte_length": 25,
+      "sha256": "f03de43e769164cd020758a77d68eb7cc08318af10f31d036e040aff81aede93"
+    }
+  ],
+  "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+  "constraints_preserved": [
+    "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+    "Keep 0x68 length octets consistent with the selected frame size.",
+    "Diversify link control, interrogation, command and measurement paths."
+  ],
+  "issue_safety_notes": "Adjacent length/count boundary payload; conservative values; fully compliant with IEC 60870-5-101 ASDU structure and documented framing; uses documented function codes.",
+  "sequence_sha256": "3b435fd606e66d0e288a363e90a16892953c1ac231e385a302e998f147755f46",
+  "total_bytes": 25,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f03de43e769164cd020758a77d68eb7cc08318af10f31d036e040aff81aede93",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ]
+  }
+}

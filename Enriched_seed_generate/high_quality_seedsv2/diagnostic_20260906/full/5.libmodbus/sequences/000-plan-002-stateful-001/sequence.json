@@ -1,0 +1,68 @@
+{
+  "seed_id": "plan-002-stateful-001",
+  "title": "Stateful setup for Read/Write Multiple Registers",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+  "evidence_ids": [
+    "issue:738:738-summary:a2fd51730f5d",
+    "function_code:function:function-text:48ef3b4dd565",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:810:810-summary:da5167fd5137",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "function_code:function:function-text:388a9f8cf2ff"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "first write register",
+      "hex": "00000000000a00060000000200000000",
+      "byte_length": 16,
+      "sha256": "2ce34c8f25c7ab795e0cbe81a55f19b9fa7098b548e3d8406a6fb32d90de0232"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "read/write multiple registers",
+      "hex": "0000000000110017000000020000000006000200000000",
+      "byte_length": 23,
+      "sha256": "3f6edf3b5f3a06c3eb5d0570e5c0c78513b316971a8053dbd933b039e10c2661"
+    }
+  ],
+  "expected_behavior": "Complete successful state transition; final request accepted with full parser depth",
+  "constraints_preserved": [
+    "7-byte MBAP header with protocol identifier 0x0000",
+    "Complete documented framing and length rules preserved",
+    "Conservative payload for valid Read/Write Multiple Registers"
+  ],
+  "issue_safety_notes": "Stateful valid sequence; no timeout or malformed behavior",
+  "sequence_sha256": "d06ed1da6a36d0480f8ff2818168f3628fc36dbb94b82b4be5b58dcab3452561",
+  "total_bytes": 39,
+  "repair_notes": [
+    "recomputed MBAP length",
+    "recomputed Modbus read/write byte count"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "56ab288a5f16a6f371a823c3edd736cb4d32bf299339288800736aa11e9c7a8a",
+    "encoded_bytes": 39,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ]
+  }
+}

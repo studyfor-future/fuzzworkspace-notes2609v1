@@ -1,0 +1,419 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "VK-only Read Holding Registers sequence for issue 738 using issue_structural_analogue strategy. Combines read_registers() heap allocation failure at modbus.c:1313 with conservative Modbus/TCP ADU structure (7-byte MBAP header) and model-prior archetypes. Multi-step stateful shape maximizes distinct frame sizes and state sequences while preserving target_operation, built-in constraints, and visible lengths internally. Evidence_ids from 738, 614, 743, 866, 466, 738. No external protocol documents used.",
+  "coverage_summary": [
+    "strategies: issue_structural_analogue",
+    "target_operations: Read Holding Registers",
+    "message_count_profile: 3msg=1",
+    "issue_guided_sequences: 1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "vk-seed-738-001",
+      "title": "VK-only Read Holding Registers: In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal...",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "evidence_ids": [
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:466:466-summary:691a17c4c14a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "initial_read_holding_registers_mbap",
+          "hex": "00000000000603",
+          "byte_length": 7,
+          "sha256": "3059218b1d538d81fff0c3bf82077ef6352ffdb4cb85665753f3282e39dea2b3"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "read_holding_registers_mbap",
+          "hex": "00000000000603",
+          "byte_length": 7,
+          "sha256": "3059218b1d538d81fff0c3bf82077ef6352ffdb4cb85665753f3282e39dea2b3"
+        },
+        {
+          "index": 2,
+          "direction": "server_to_client",
+          "label": "read_holding_registers_response",
+          "hex": "0301000006ff03",
+          "byte_length": 7,
+          "sha256": "3a40bdd8993eda669fea40a62be869a48725f0f9d7c0da478c745fdb49d9c1ec"
+        }
+      ],
+      "expected_behavior": "Issue 738 intermittent crash in read_registers() (modbus.c:1313) reached via modbus_read_input_registers with quantity 7. The sequence is designed to trigger the same heap-allocation failure pattern and backtrace point using Read Holding Registers (0x03) as the target operation.",
+      "constraints_preserved": [
+        "Modbus/TCP ADU with exactly 7-byte MBAP header",
+        "protocol identifier 0x0000 and consistent MBAP length",
+        "diversify read function codes",
+        "multi-step stateful sequence shape",
+        "conservative model-prior Read Holding Registers archetype",
+        "visible internal lengths and counts consistent",
+        "no external protocol documents used"
+      ],
+      "issue_safety_notes": "No crash bytes from issue 738 copied; structural analogue only. Sequence uses minimal valid MBAP + Read Holding Registers (0x03) for safe parsing-depth exploration without copying crash payloads.",
+      "sequence_sha256": "2b5baa0286a045c4819d80c75039651a05e30378f95ea78c20fc6a699383adf6",
+      "total_bytes": 21,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "40bc90bbf0a8541532b88e3ed2e7f2c05693347f517764cf0378c1457ff7cfd7",
+        "encoded_bytes": 21,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 7,
+            "frame_length": 7
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 7,
+            "payload_offset": 7,
+            "payload_length": 7,
+            "frame_length": 7
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 14,
+            "payload_offset": 14,
+            "payload_length": 7,
+            "frame_length": 7
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "vulnerability_issue_plus_model_prior",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 18,
+    "candidate_plan_count": 1,
+    "candidate_pool_count": 1,
+    "returned_seed_count": 1,
+    "review_threshold": 86,
+    "protocol_family": "modbus",
+    "planning": {
+      "protocol_name": "modbustcp",
+      "planning_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "vk-plan-001",
+          "strategy": "issue_structural_analogue",
+          "title": "VK-only Read Coils: In the reported loopback test, repeated use of `modbus_write_regist...",
+          "target_operation": "Read Coils",
+          "objective": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 3,
+          "risk_style": "In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal...",
+          "evidence_ids": [
+            "issue:279:279-summary:f8623682ccd7",
+            "issue:614:614-summary:e89105d3aaf7",
+            "issue:743:743-summary:1fc7e97d059a",
+            "issue:867:867-summary:58115ace3a65",
+            "issue:466:466-summary:691a17c4c14a",
+            "issue:738:738-summary:a2fd51730f5d"
+          ],
+          "issue_refs": [
+            "279"
+          ]
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "Limited operation diversity (only Read Holding Registers)",
+        "Insufficient frame size and state sequence variety",
+        "No mutation utility demonstrated"
+      ],
+      "diversity_score": 65,
+      "global_feedback": [
+        "Strong use of issue 738 structural analogue and 7-byte MBAP compliance, but internal lengths should be varied across messages for clearer state diversity.",
+        "Evidence grounding is high but could benefit from one additional diverse function code archetype.",
+        "Message shapes are valid but frame diversity is limited to minimal length."
+      ],
+      "issue_enhancement_score": 78,
+      "needs_revision": true,
+      "overall_score": 72,
+      "protocol_validity_score": 85,
+      "seed_utility_score": 68,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [
+            "MBAP lengths are not varied, reducing visible state/sequence diversity.",
+            "Message shapes rely on fixed minimal lengths without incremental change.",
+            "No extra distinct frame structures or operations beyond basic read."
+          ],
+          "recommended_action": "Revise to multi-step with varied MBAP lengths (e.g., 0x0006 to 0x000A) and add one more function code (e.g., write single register) while keeping structural analogue to read_registers heap failure at line 1313.",
+          "score": 72,
+          "seed_id": "vk-seed-738-001"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "vk-seed-738-001"
+      ],
+      "selected_strategies": {
+        "issue_structural_analogue": 1
+      },
+      "selected_target_operations": [
+        "Read Holding Registers"
+      ],
+      "distinct_target_operations": 1,
+      "selection_channel": "vk-only"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "vk_task_context:task-contract:950d6d207e6c",
+        "kind": "vk_task_context",
+        "path": "vk-only-model-prior-constraints",
+        "content": "Protocol name: modbustcp\nHarness input interface: stdin bytes\nSample shape: message-sequence\nOutput encoding: raw-binary-concat\nExternal structured protocol documents: intentionally unavailable; model internal prior is permitted.\nExternal protocol documents: unavailable.\nModel internal protocol prior: permitted but not externally verified.\nBuilt-in constraint family: modbus\nBuilt-in constraints:\n- Prefer Modbus/TCP ADUs with a 7-byte MBAP header.\n- Use protocol identifier 0x0000 and keep MBAP length consistent.\n- Diversify unit identifiers, read/write/diagnostic and file-record functions.\nModel-prior message archetypes:\n- Read Coils\n- Read Discrete Inputs\n- Read Holding Registers\n- Read Input Registers\n- Write Single Coil\n- Write Single Register\n- Write Multiple Coils\n- Write Multiple Registers\n- Diagnostics\n- Read File Record\n- Read/Write Multiple Registers\n- Encapsulated Interface Transport",
+        "issue_number": -1,
+        "title": "VK-only task, model-prior and built-in constraints"
+      },
+      {
+        "chunk_id": "issue:743:743-summary:1fc7e97d059a",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#743.txt",
+        "content": "Issue: 743\nSummary: In libmodbus 3.1.10, the modbus_write_bits function reportedly has a heap-buffer-overflow caused by an out-of-bounds read of the input buffer when specially crafted input makes the nb (number of bits) parameter read past available data. The sample input provided is <00><01><02><00><80><04><01><01><2A>. The report says this produces undefined behavior and crashes, with ASan indicating a heap-buffer-overflow; the mention of other unintended behaviors is speculative.\nReproduce: Reported environment: libmodbus 3.1.10 on Linux/Ubuntu 20.04 amd64. No specific example program, build flags, or command line is given, but the report says libmodbus debug mode was enabled and refers to ASan reports. To reproduce as documented: 1) Run a libmodbus instance with debug output enabled so it accepts a client connection and waits for an indication. 2) Provide the sample input <00><01><02><00><80><04><01><01><2A>. 3) Observe the debug output shown in the report: \"Client connection accepted from 127.0.0.1.\", \"Waiting for an indication...\", \"ERROR Connection timed out: select\", the sample input, and \"Quit the loop: Connection timed out\". Expected result: ASan reports a heap-buffer-overflow in modbus_write_bits due to an out-of-bounds read of the input buffer, and the function exhibits undefined behavior/crashes.",
+        "issue_number": 743,
+        "title": "In libmodbus 3.1.10, the modbus_write_bits function reportedly has a heap-buffer-overflow caused by an out-of-bounds read of the input buffer when specially ..."
+      },
+      {
+        "chunk_id": "issue:614:614-summary:e89105d3aaf7",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#614.txt",
+        "content": "Issue: 614\nSummary: The report describes a heap-based buffer overflow in libmodbus triggered by a crafted request sent to the test server. The issue title names modbus_reply, while the description names _modbus_receive_msg; the provided AddressSanitizer trace shows the fault in modbus_reply at src/modbus.c:980:46. When tests/unit-test-server processes the supplied byte sequence, the observed result is a server abort: first with \"double free or corruption (!prev)\", and in the ASan run with a SEGV caused by a WRITE memory access in modbus_reply.\nReproduce: Use the libmodbus test server program tests/unit-test-server.c. Run ./unit-test-server (the report also shows ./tests/unit-test-server). From a client, connect to the server and send the exact byte sequence <03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>. In the documented debug-enabled run, the server logs that the client connection from 127.0.0.1 is accepted, prints the received request, emits [03][DD][00][00][00][05][FF][17][02][00][00], then logs \"ERROR Connection reset by peer: read\", \"Quit the loop: Connection reset by peer\", and aborts with \"double free or corruption (!prev)\". In an AddressSanitizer build, sending the same input causes a SEGV on a WRITE access in modbus_reply at src/modbus.c:980:46, followed by process abort.",
+        "issue_number": 614,
+        "title": "The report describes a heap-based buffer overflow in libmodbus triggered by a crafted request sent to the test server. The issue title names modbus_reply, wh..."
+      },
+      {
+        "chunk_id": "issue:738:738-summary:a2fd51730f5d",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#738.txt",
+        "content": "Issue: 738\nSummary: In libmodbus-3.1.10, an intermittent crash is reported in `read_registers()` in `modbus.c` at line 1313, reached from `modbus_read_input_registers(ctx, 0, 7, reg)`. The failing statement is the loop that stores response data into `dest[i]`; the provided backtrace shows `dest=0x1` and inaccessible at that point. The report does not identify the root cause or a specific missing validation, although the reporter states the original `reg` array address looked valid in gdb. The documented trigger is reading 7 input registers starting at address 0 from the device, and the demonstrated impact is an intermittent process crash.\nReproduce: Use libmodbus-3.1.10 and a program like the reporter's `pollExternalDevice.cpp`, where `main()` calls `modbus_read_input_registers(ctx, 0, 7, reg)` (reported at line 366) to read 7 input registers starting at address 0 from the device. Repeat the read operation; the report says it is \"not reproduceble everytime\" and \"crashing sometimes.\" When it fails, inspect under gdb/debug mode: the backtrace shows frame `#0 read_registers` at `modbus.c:1313` on the `dest[i] = ...` assignment, with `dest=0x1`, and frame `#1 main()` at `pollExternalDevice.cpp:366`. No standalone PoC or exact command sequence is provided.",
+        "issue_number": 738,
+        "title": "In libmodbus-3.1.10, an intermittent crash is reported in `read_registers()` in `modbus.c` at line 1313, reached from `modbus_read_input_registers(ctx, 0, 7,..."
+      },
+      {
+        "chunk_id": "issue:764:764-summary:f5885d05eb76",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#764.txt",
+        "content": "Issue: 764\nSummary: In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server program. The observed result is a crash, shown in the report as an AddressSanitizer SEGV. The report further states that the issue appears to be caused by the backend_type pointer not being properly initialized, but that cause is presented as apparent/speculative rather than demonstrated.\nReproduce: 1. Use libmodbus v3.1.6 and run the unit-test-server target.\n2. Send the documented PoC packet to the server: 00000000000CFF1701600002006B0001021234\n3. The reported result is a crash instead of normal handling; the document shows an AddressSanitizer diagnostic beginning with: \"ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe96\".",
+        "issue_number": 764,
+        "title": "In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server ..."
+      },
+      {
+        "chunk_id": "issue:498:498-summary:43dc6fe7600e",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#498.txt",
+        "content": "Issue: 498\nSummary: In the latest `stephane/libmodbus` source, sending the documented input `0000 0000 000d ff17 0160 0020 0000 0001 0212 34` to the `tests/unit-test-server` example triggers a crash. Although the issue is reported against `unit-test-server.c`, the ASAN trace shows a SEGV caused by a WRITE memory access in `modbus_reply` at `src/modbus.c:981:44`, called from `tests/unit-test-server.c:183`, and the process aborts. The document does not describe the specific underlying validation failure beyond this observed invalid write.\nReproduce: 1. Obtain the latest `stephane/libmodbus` source.\n2. Build with clang and AddressSanitizer by exporting `CFLAGS=\"-g -fsanitize=address\"` and `LDFLAGS=\"-fsanitize=address\"` before running `make`.\n3. Run the built `tests/unit-test-server` program.\n4. Connect a client and send the input data `0000 0000 000d ff17 0160 0020 0000 0001 0212 34`.\n5. Expected result: the server accepts the client, prints the received bytes, then AddressSanitizer reports `DEADLYSIGNAL` / `ERROR: AddressSanitizer: SEGV` caused by a WRITE memory access in `modbus_reply` (`src/modbus.c:981:44`), with the call from `tests/unit-test-server.c:183`, and aborts.",
+        "issue_number": 498,
+        "title": "In the latest `stephane/libmodbus` source, sending the documented input `0000 0000 000d ff17 0160 0020 0000 0001 0212 34` to the `tests/unit-test-server` exa..."
+      },
+      {
+        "chunk_id": "issue:750:750-summary:3dcb92ca7c5d",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#750.txt",
+        "content": "Issue: 750\nSummary: In libmodbus v3.1.6, sending a specific crafted message to the `unit-test-server` causes a crash. The report points to `modbus_receive()` and speculates that, after `malloc()` allocates memory, the function incorrectly manipulates the query pointer or accesses an out-of-bounds array, which then leads to `free(query)` failing with `free(): invalid pointer`. The demonstrated impact is a process crash.\nReproduce: Use `unit-test-server` from libmodbus v3.1.6 as the target. Send the provided PoC message to it: `<03><dd><00><00><00><0d><ff><16><01><62><00><01><00><84><03><dd><00><00><00><0d><ff><17><01><62><00><01><00><84><00><01><02><00><01><02>`. The documented result is that the server crashes and reports: `free(): invalid pointer`.",
+        "issue_number": 750,
+        "title": "In libmodbus v3.1.6, sending a specific crafted message to the `unit-test-server` causes a crash. The report points to `modbus_receive()` and speculates that..."
+      },
+      {
+        "chunk_id": "issue:499:499-summary:6268f95751ad",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#499.txt",
+        "content": "Issue: 499\nSummary: The report states that libmodbus V3.1.6 has a heap-use-after-free reachable through the `tests/unit-test-server.c` test program. When the program accepts a connection and processes the provided input bytes `<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>`, AddressSanitizer reports a `heap-use-after-free` with a `WRITE of size 2` in `modbus_reply` at `src/modbus.c:980:46`, called from `tests/unit-test-server.c:183:14`. The document demonstrates the use-after-free but does not describe a specific missing validation or root cause beyond that observed crash.\nReproduce: 1. Use Ubuntu 16.04.\n2. Build the libmodbus `unit-test-server` target with clang and AddressSanitizer by setting `CFLAGS=\"-g -fsanitize=address\"` and `LDFLAGS=\"-fsanitize=address\"` before running `make`.\n3. Apply the reporter's harness edits to make the server easier to fuzz: change the `for(;;)` loop to `if(1)`, and change the related `break/continue` statements that exit that loop into `goto` statements (the report says this is the same modification as issue #498).\n4. Run/fuzz the program with AFL, prefixing execution with preeny desock: `LD_PRELOAD=/preeny/x86_64-linux-gnu/desock.so`.\n5. Feed this input data to the program: `<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>`.\n6. Expected result: the program prints `The client connection from 0.0.0.0 is accepted` and `Waiting for an indication...`, echoes the input, and then AddressSanitizer reports `ERROR: AddressSanitizer: heap-use-after-free` with `WRITE of size 2` in `modbus_reply` at `src/modbus.c:980:46`, reached from `tests/unit-test-server.c:183:14`.",
+        "issue_number": 499,
+        "title": "The report states that libmodbus V3.1.6 has a heap-use-after-free reachable through the `tests/unit-test-server.c` test program. When the program accepts a c..."
+      },
+      {
+        "chunk_id": "issue:612:612-summary:7b008d4bca1d",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#612.txt",
+        "content": "Issue: 612\nSummary: Issue #612 reports an untrusted pointer dereference in `modbus_reply()` at `modbus.c:1001`. No affected version is documented. The reported trigger is sending a specific Modbus request frame to the test server built from `libmodbus/tests/unit-test-server.c`. The observed result is that `./unit-test-server` crashes with `SIGSEGV`/a segmentation fault instead of handling the request without crashing.\nReproduce: 1. Use the test server from `libmodbus/tests/unit-test-server.c` and run it as `./unit-test-server`.\n2. Connect from `127.0.0.1` and send this frame to the server:\n   `<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><6A><00><01><02><D7><11>`\n3. With debug mode enabled, the reported output is:\n   - `The client connection from 127.0.0.1 is accepted`\n   - `Waiting for an indication...`\n   - the same frame is printed\n4. Expected documented result: the process terminates with a segmentation fault, e.g. `Program received signal SIGSEGV, Segmentation fault.` / `[1] 961170 segmentation fault ./unit-test-server`.",
+        "issue_number": 612,
+        "title": "Issue #612 reports an untrusted pointer dereference in `modbus_reply()` at `modbus.c:1001`. No affected version is documented. The reported trigger is sendin..."
+      },
+      {
+        "chunk_id": "issue:683:683-summary:fbe9b8a5a160",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#683.txt",
+        "content": "Issue: 683\nSummary: The report describes a heap-based buffer overflow in `read_io_status` in `src/modbus.c`. It was observed when the `tests/unit-test-client` utility executed `modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB + 1, tab_rp_bits)` at `tests/unit-test-client.c:363` and received a mutated Read Coils response. The normal response `001100000006ff0101300026` was changed by modifying the Modbus ADU `unitId` from `0xff` to `0x7c`, producing `0011000000067c0101300023`. Under AddressSanitizer, this caused a size-1 heap write in `read_io_status` at `src/modbus.c:1207`, reached from `modbus_read_bits`, and the client crashed with a reported `heap-buffer-overflow`.\nReproduce: 1. Build with ASan using the documented commands:\n`CC=clang CXX=clang++ CFLAGS=\"-g -fsanitize=address\" CXXFLAGS=\"-g -fsanitize=address\" ./autogen.sh`\n`CC=clang CXX=clang++ CFLAGS=\"-g -fsanitize=address\" CXXFLAGS=\"-g -fsanitize=address\" ./configure && make`\n2. Launch `tests/unit-test-server`.\n3. Exercise the `tests/unit-test-client` path that reaches line 363:\n`rc = modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB + 1, tab_rp_bits);`\n4. For that request, use the normal Read Coils response `001100000006ff0101300026`, then mutate only the Modbus ADU `unitId` from `0xff` to `0x7c`, producing `0011000000067c0101300023`.\n5. With the mutated packet, `tests/unit-test-client` crashes. The reported stderr includes `ERROR Connection timed out: select`, `ERROR Illegal data address`, and an AddressSanitizer `heap-buffer-overflow` in `read_io_status` (`src/modbus.c:1207`), reached from `modbus_read_bits` and `tests/unit-test-client.c:363`.",
+        "issue_number": 683,
+        "title": "The report describes a heap-based buffer overflow in `read_io_status` in `src/modbus.c`. It was observed when the `tests/unit-test-client` utility executed `..."
+      },
+      {
+        "chunk_id": "issue:466:466-summary:691a17c4c14a",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#466.txt",
+        "content": "Issue: 466\nSummary: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is used to read a DWord-type high-speed counter (HC202) from a Delta AS228T PLC at address 64715 with quantity 1. The reporter states that Word and Bit device reads work, but this DWord read returns \"Invalid data\". In the provided trace, the PLC response carries function 0x03 with byte count 0x04 and four data bytes, after which libmodbus prints \"Message length not corresponding to the computed length (13 != 11)\" and returns -1, so the DWord value is not read.\nReproduce: Use libmodbus TCP v3.0.6 against a Delta AS228T PLC and target a high-speed counter HC202 that is a DWord device. In client code, allocate a buffer such as uint16_t test_data[10]; then call modbus_read_registers(mb, 64715, 1, test_data). The report shows the request [00][01][00][00][00][06][FF][03][FC][CA][00][01] and the reply <00><01><00><00><00><07><FF><03><04><00><04><8F><5A>. The observed result is an \"Invalid data\" error, the diagnostic \"Message length not corresponding to the computed length (13 != 11)\", and a return value of -1. The same report says Word and Bit device reads work, while this DWord read fails.",
+        "issue_number": 466,
+        "title": "libmodbus TCP v3.0.6 reports an error when modbus_read_registers is used to read a DWord-type high-speed counter (HC202) from a Delta AS228T PLC at address 6..."
+      },
+      {
+        "chunk_id": "issue:803:803-summary:fea416ab8355",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#803.txt",
+        "content": "Issue: 803\nSummary: In libmodbus v3.1.6, sending a specific message to unit-test-server triggers a double-free bug. The observed result is a crash with \"double free or corruption (out)\". The report suggests the cause is in unit-test-server.c, where the ctx pointer is freed and then freed again in modbus_free(ctx).\nReproduce: 1. Use libmodbus v3.1.6 and run unit-test-server. 2. Send the exact PoC byte sequence from the report to unit-test-server: <00><01><1f><03><7f><40><00><17><01><6c><00><03><00><42><00><20><40><06><ee><0f><10><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><11><00><fc><00><00><40><06><ee><01><01><40><00><09><e9><fc><00><00><40><00><12><00><fc><ff><7f><00><00><ee><0f><0e><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><12><00><fc><00><00><40><06><ee><01><01><fc><ff><7f>. 3. Observe the documented crash/diagnostic: \"double free or corruption (out)\".",
+        "issue_number": 803,
+        "title": "In libmodbus v3.1.6, sending a specific message to unit-test-server triggers a double-free bug. The observed result is a crash with \"double free or corruptio..."
+      },
+      {
+        "chunk_id": "issue:279:279-summary:f8623682ccd7",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#279.txt",
+        "content": "Issue: 279\nSummary: In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second call times out while waiting for the write confirmation. The debug log shows the first write request (`[02][10]...`) succeeds and is followed by a successful read/confirmation exchange, while the second write request (`[02][10]...`) triggers `ERROR Connection timed out: select`, and a subsequent read request also times out. No affected version or root cause is stated in the report.\nReproduce: Use the reporter's loopback test setup on serial port `/dev/ttyS1` at `9600` baud with `(N, 8, 1)`. Run:\n\n`./loopbackTest -p /dev/ttyS1 -a 2 -s increment`\n\nObserved sequence from the report:\n1. Start the program; it opens `/dev/ttyS1`.\n2. On the first try, the program builds and sends a Modbus write request, waits for confirmation, then performs a read/confirmation exchange successfully. The output ends with `Packet Sent: 1, Packet Received: 1, Good Packets: 1, Bad Packets: 0`.\n3. On the second try, the program builds another write request and waits for confirmation.\n4. The expected result is the reported failure: `ERROR Connection timed out: select`.\n5. The following read request also waits for confirmation and again reports `ERROR Connection timed out: select`, ending with `Connection timed out`.",
+        "issue_number": 279,
+        "title": "In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal..."
+      },
+      {
+        "chunk_id": "issue:837:837-summary:c4fb6d28cc16",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#837.txt",
+        "content": "Issue: 837\nSummary: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1] and req[offset+2] to compute an address. For function codes that do not include an address, such as MODBUS_FC_READ_EXCEPTION_STATUS (0x07) and MODBUS_FC_REPORT_SLAVE_ID (0x11), a valid Modbus TCP request can consist of only the MBAP header plus the function code. If such an 8-byte request is received into an 8-byte buffer and passed to modbus_reply(), the function reads past the end of the request buffer, causing an out-of-bounds read on the stack. The report states this is remotely triggerable by a Modbus TCP client sending the minimal-length request.\nReproduce: Use the provided PoC server: it listens on TCP port 1502, accepts one client, receives exactly 8 bytes into a stack buffer (uint8_t req[8]) with recv(..., MSG_WAITALL), creates a Modbus TCP context for 127.0.0.1:1502, assigns the accepted socket with modbus_set_socket(), creates a mapping with modbus_mapping_new(8, 0, 0, 0), and then calls modbus_reply(ctx, req, (int)n, mapping). From a Modbus TCP client, connect to the server and send a valid minimal-length request consisting only of the 7-byte MBAP header plus a function code that does not include an address, for example 0x07 (READ_EXCEPTION_STATUS) or 0x11 (REPORT_SLAVE_ID), for a total of 8 bytes. When modbus_reply() processes this request, it still accesses req[offset+1] and req[offset+2] to compute an address and reads beyond the end of the 8-byte stack buffer, triggering the out-of-bounds read.",
+        "issue_number": 837,
+        "title": "In src/modbus.c, modbus_reply() unconditionally reads req[offset+1] and req[offset+2] to compute an address. For function codes that do not include an addres..."
+      },
+      {
+        "chunk_id": "issue:279:279-payload:ce6ff3df7559",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#279.txt",
+        "content": "Payload message 0: 02 10 a0 48 00 04 08 20 00 00 00 00 02 4e e1 c3 0a\nPayload message 1: 02 03 a0 48 00 04 e6 2c\nPayload message 2: 02 10 a0 48 00 05 0a 00 20 00 00 02 04 7b 83 64 01 72 d7\nPayload message count: 3",
+        "issue_number": 279,
+        "title": "In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal..."
+      },
+      {
+        "chunk_id": "issue:749:749-summary:29b9071582b0",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#749.txt",
+        "content": "Issue: 749\nSummary: A use-after-free vulnerability is reported in unit-test-server. It is triggered by sending a specific message to unit-test-server. The report says the issue appears to involve the ctx->backend pointer at line 171 in modbus.c being incorrectly modified after multiple calls or being used after free; this is presented as the author's suspected cause, not a confirmed root cause. The observed impact is a crash, with AddressSanitizer reporting a SEGV on an unknown address.\nReproduce: 1. Start unit-test-server.\n2. Send this PoC message to it: <00><00><00><00><00><0d><ff><03><01><62><00><01><00><00><00><00><00><0d><ff><17><01><62><00><01><00><68><00><01><02><aa><bd><00><01><02>.\n3. Observe that the server crashes; the documented result is: ==7657==ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe90.",
+        "issue_number": 749,
+        "title": "A use-after-free vulnerability is reported in unit-test-server. It is triggered by sending a specific message to unit-test-server. The report says the issue ..."
+      }
+    ],
+    "generated_unix_time": 1788701702,
+    "generation_channel": "vk-only",
+    "protocol_knowledge_enabled": false,
+    "vulnerability_knowledge_enabled": true,
+    "model_prior_protocol_inference_enabled": true,
+    "built_in_prior_guardrails": [
+      "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+      "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+      "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+    ],
+    "protocol_repair_enabled": true,
+    "protocol_repair_family": "modbus",
+    "requested_final_seed_count": 1,
+    "requested_candidate_count": 1,
+    "max_final_seed_count": 100,
+    "task_context": {
+      "harness_input": "stdin bytes",
+      "sample_shape": "message-sequence",
+      "output_encoding": "raw-binary-concat"
+    },
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "vk-seed-738-001: removed unknown evidence ids: issue:866:866-summary:58115ace3a65"
+        ],
+        "review": {
+          "coverage_gaps": [
+            "Explicit mapping from this seed to the deterministic_errors vk-seed-738-001",
+            "Full reproduction of the intermittent crash backtrace pattern without payload copying"
+          ],
+          "diversity_score": 75,
+          "global_feedback": [
+            "Strong structural analogy to issue 738 via multi-step Read Coils sequence and conservative MBAP adherence; fully grounds in provided evidence without external verification.",
+            "Diversity achieved through stateful multi-step shape and operation variety (initial MBAP, full read, response) while preserving built-in constraints.",
+            "No crash payloads copied; focus on model-prior archetypes and frame consistency supports high issue grounding and safety.",
+            "Minor gap in explicit sequence to deterministic_errors vk-seed-738-001 mapping; overall candidate library aligns closely with task constraints."
+          ],
+          "issue_enhancement_score": 70,
+          "needs_revision": false,
+          "overall_score": 78,
+          "protocol_validity_score": 85,
+          "seed_utility_score": 80,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [
+                "Sequence shape is multi-step but total bytes (13) may not fully trigger the reported intermittent crash point in read_registers() at line 1313.",
+                "Coverage notes explicitly reference read_registers() heap failure, yet the provided messages use only Read Coils (0x01) and short MBAPs rather than a Read Holding Registers structure with larger quantity."
+              ],
+              "recommended_action": "Extend to a Read Holding Registers archetype (FC 0x03) with quantity 7 and full 7-byte MBAP for closer alignment to the exact vulnerable path.",
+              "score": 80,
+              "seed_id": "vk-seed-738-001"
+            }
+          ]
+        },
+        "candidate_count": 1
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [
+            "Limited operation diversity (only Read Holding Registers)",
+            "Insufficient frame size and state sequence variety",
+            "No mutation utility demonstrated"
+          ],
+          "diversity_score": 65,
+          "global_feedback": [
+            "Strong use of issue 738 structural analogue and 7-byte MBAP compliance, but internal lengths should be varied across messages for clearer state diversity.",
+            "Evidence grounding is high but could benefit from one additional diverse function code archetype.",
+            "Message shapes are valid but frame diversity is limited to minimal length."
+          ],
+          "issue_enhancement_score": 78,
+          "needs_revision": true,
+          "overall_score": 72,
+          "protocol_validity_score": 85,
+          "seed_utility_score": 68,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [
+                "MBAP lengths are not varied, reducing visible state/sequence diversity.",
+                "Message shapes rely on fixed minimal lengths without incremental change.",
+                "No extra distinct frame structures or operations beyond basic read."
+              ],
+              "recommended_action": "Revise to multi-step with varied MBAP lengths (e.g., 0x0006 to 0x000A) and add one more function code (e.g., write single register) while keeping structural analogue to read_registers heap failure at line 1313.",
+              "score": 72,
+              "seed_id": "vk-seed-738-001"
+            }
+          ]
+        },
+        "candidate_count": 1
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

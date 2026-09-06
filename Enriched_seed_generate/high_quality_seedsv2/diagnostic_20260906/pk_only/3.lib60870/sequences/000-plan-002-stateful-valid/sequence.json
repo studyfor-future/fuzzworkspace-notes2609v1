@@ -1,0 +1,81 @@
+{
+  "seed_id": "plan-002-stateful-valid",
+  "title": "Stateful setup for C_IC_NA_1",
+  "strategy": "stateful_valid",
+  "target_operation": "C_IC_NA_1",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+    "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+    "function_code:function:function-text:14a1385d5f57",
+    "protocol_format:iec60870:service-or-function-:a22193b216a5",
+    "function_code:function:function-text:83986922f28d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT_ACT to enter active state",
+      "hex": "680d01000000000068010000000100",
+      "byte_length": 15,
+      "sha256": "c309b1c52a40780d0c2a9ce9455b4423ef50216d4f1c69da822158c2e0605d62"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "TESTFR_ACT keep-alive",
+      "hex": "680d01000000000068010000000400",
+      "byte_length": 15,
+      "sha256": "94c9461d2a18b02554d054b62da6f02d188f5846ae63fb83cc87a27139a20dce"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 general interrogation after setup",
+      "hex": "681600050000000068010000000810000000000000010001",
+      "byte_length": 24,
+      "sha256": "b8dfe7a219ce2ddae4e3c5aac845181c2f0244524e5f0c884ac94293e5f78b8d"
+    }
+  ],
+  "expected_behavior": "Client successfully sends valid single command request; server parses ASDU header and returns activation confirmation (ACT/CON) if values are within documented bounds.",
+  "constraints_preserved": [
+    "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+    "Keep 0x68 length octets consistent with the selected frame size.",
+    "Diversify link control, interrogation, command and measurement paths."
+  ],
+  "issue_safety_notes": "Sequence enters and maintains state for parser; conservative payload (zero values); fully compliant with IEC 60870-5-101 ASDU structure and documented framing; uses documented function codes.",
+  "sequence_sha256": "ab75787d04683329cb1f99572d97338bcfd55b27b972fd5f31b9617cec50c69a",
+  "total_bytes": 54,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b4ec9f58d11da22ec8ca1801b36349108a1f6caf3a9cf95a51758a9e5efc2860",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 30,
+        "payload_offset": 30,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

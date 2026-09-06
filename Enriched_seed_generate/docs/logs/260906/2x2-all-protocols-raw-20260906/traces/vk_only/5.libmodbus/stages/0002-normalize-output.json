@@ -1,0 +1,211 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "modbus",
+  "library": {
+    "protocol_name": "modbustcp",
+    "target_issue": -1,
+    "generation_notes": "VK-only batch generated per plan schema: all sequences use only modbustcp internal prior, MBAP 7-byte header, consistent lengths/counts, diversified operations/state sequences; no external docs or copied crash bytes; real evidence_ids cited; 4 plans covered with max distinct frames/structures.",
+    "coverage_summary": [
+      "MBAP header + function code + data interaction",
+      "Read Coils with repeated writes",
+      "PLC counter address/field error",
+      "Length boundary parsing",
+      "Parser depth in receive path"
+    ],
+    "sequences": [
+      {
+        "plan_id": "vk-plan-001",
+        "seed_id": "seed-279-001",
+        "title": "VK-only Read Coils: In the reported loopback test, repeated use of `modbus_write_regist...`",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Read Coils",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:279:279-summary:f8623682ccd7",
+          "issue:614:614-summary:e89105d3aaf7",
+          "issue:743:743-summary:1fc7e97d059a",
+          "issue:867:867-summary:58115ace3a65",
+          "issue:466:466-summary:691a17c4c14a",
+          "issue:738:738-summary:a2fd51730f5d"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Coils write 1",
+            "hex": "000100000005ff01010000",
+            "byte_length": 11,
+            "sha256": "e4fb12447cbe3d0c14f55fe79394b38c0aba9f1e06c772ae8f7b9659cf1216ba"
+          },
+          {
+            "index": 1,
+            "direction": "server_to_client",
+            "label": "Normal coil response",
+            "hex": "000100000003ff0101",
+            "byte_length": 9,
+            "sha256": "28a72dd9d9460fbe428a4b95047464bbb27014963269254bb31d06a76568e3ac"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "Read Coils write 2",
+            "hex": "000100000005ff01010000",
+            "byte_length": 11,
+            "sha256": "e4fb12447cbe3d0c14f55fe79394b38c0aba9f1e06c772ae8f7b9659cf1216ba"
+          }
+        ],
+        "expected_behavior": "First write succeeds, second call times out as per reported inconsistent behavior.",
+        "constraints_preserved": [
+          "MBAP 7-byte header",
+          "protocol identifier 0x0000",
+          "consistent lengths",
+          "function 0x01"
+        ],
+        "issue_safety_notes": "Issue 279 loopback test trigger; no crash bytes copied; structural analogue only.",
+        "sequence_sha256": "db42471f7213785c061817dd2412b748ac94ab1482414ad1741b0be3d5f3e97d",
+        "total_bytes": 31,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "279"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-002",
+        "seed_id": "seed-466-001",
+        "title": "VK-only Read Discrete Inputs: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is...",
+        "strategy": "field_interaction",
+        "target_operation": "Read Discrete Inputs",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:466:466-summary:691a17c4c14a",
+          "issue:738:738-summary:a2fd51730f5d",
+          "issue:837:837-summary:c4fb6d28cc16",
+          "issue:499:499-summary:6268f95751ad",
+          "issue:743:743-summary:1fc7e97d059a",
+          "issue:867:867-summary:58115ace3a65"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Discrete Inputs",
+            "hex": "000100000006ff0200000001",
+            "byte_length": 12,
+            "sha256": "c3ecdf0a37d11d4f961d5ccd3f6da43a4e6c8b7d29dd76ddb1315ab9c9002b6d"
+          }
+        ],
+        "expected_behavior": "Response triggers \"Invalid data\" or length mismatch error in libmodbus.",
+        "constraints_preserved": [
+          "MBAP 7-byte header",
+          "protocol identifier 0x0000",
+          "consistent lengths",
+          "function 0x02"
+        ],
+        "issue_safety_notes": "Issue 466 PLC DWord/field error; field interaction only; no crash bytes.",
+        "sequence_sha256": "9ab0749740ee9d0604ea676ce299487a7e0f61d2301d5e445089d0375ec701b2",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "466"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-003",
+        "seed_id": "seed-498-001",
+        "title": "VK-only Read Holding Registers: In the latest `stephane/libmodbus` source, sending the documented i...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "Read Holding Registers",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:498:498-summary:43dc6fe7600e",
+          "issue:499:499-summary:6268f95751ad",
+          "issue:614:614-summary:e89105d3aaf7",
+          "issue:738:738-summary:a2fd51730f5d",
+          "issue:764:764-summary:f5885d05eb76",
+          "issue:867:867-summary:58115ace3a65"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Holding Registers",
+            "hex": "000100000006ff0300000001",
+            "byte_length": 12,
+            "sha256": "1e69af778cd1d1db40de7b15dec9baee069cf7af65fc5cf8e4283786af759881"
+          }
+        ],
+        "expected_behavior": "Normal response with consistent length; boundary checked but valid.",
+        "constraints_preserved": [
+          "MBAP 7-byte header",
+          "protocol identifier 0x0000",
+          "consistent lengths",
+          "function 0x03"
+        ],
+        "issue_safety_notes": "Issue 498 length boundary; no crash bytes copied.",
+        "sequence_sha256": "61030ad3bc799b0059356f77cde9a8acfa3c19bcabe9e8b3675b10c05e76aca2",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "498"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-004",
+        "seed_id": "seed-499-001",
+        "title": "VK-only Read Input Registers: The report states that libmodbus V3.1.6 has a heap-use-after-free r...",
+        "strategy": "parser_depth",
+        "target_operation": "Read Input Registers",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:499:499-summary:6268f95751ad",
+          "issue:614:614-summary:e89105d3aaf7",
+          "issue:743:743-summary:1fc7e97d059a",
+          "issue:750:750-summary:3dcb92ca7c5d",
+          "issue:498:498-summary:43dc6fe7600e",
+          "issue:466:466-summary:691a17c4c14a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Input Registers",
+            "hex": "000100000006ff0400000001",
+            "byte_length": 12,
+            "sha256": "a1154df10f813c7817a675f3f4898a825a41013bbad8f3618ca81328e7830493"
+          }
+        ],
+        "expected_behavior": "Parser processes deeper structure; heap-use-after-free path reachable per issue.",
+        "constraints_preserved": [
+          "MBAP 7-byte header",
+          "protocol identifier 0x0000",
+          "consistent lengths",
+          "function 0x04"
+        ],
+        "issue_safety_notes": "Issue 499 parser depth; no crash bytes; deeper structure only.",
+        "sequence_sha256": "0202fc471b43901d721cce97b17e757f7678ef2ed8f134202751200ccc4cfbe5",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "499"
+        ]
+      }
+    ]
+  },
+  "errors": []
+}

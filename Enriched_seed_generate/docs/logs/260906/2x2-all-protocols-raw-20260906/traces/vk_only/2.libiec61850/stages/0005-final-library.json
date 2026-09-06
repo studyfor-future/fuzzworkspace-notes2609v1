@@ -1,0 +1,520 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": -1,
+  "generation_notes": "Revise VK-only batch into exactly 4 distinct issue-guided model-prior protocol sequences. Fix all findings, enforce built-in family constraints, retain safe issue analogues, remove exact payload collisions, and increase real operation/frame/state diversity.",
+  "coverage_summary": [
+    "strategies: field_interaction, issue_structural_analogue, length_boundary_valid, parser_depth",
+    "target_operations: COTP Connection Request, GetNameList, MMS Initiate, Read",
+    "message_count_profile: 1msg=4",
+    "issue_guided_sequences: 1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "issue-573-573-summary-b7b57e9f1653",
+      "title": "VK-only GetNameList: In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not chec...",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "evidence_ids": [
+        "issue:573:573-summary:b7b57e9f1653"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "GetNameList request",
+          "hex": "0300001002f000010001000600010000",
+          "byte_length": 16,
+          "sha256": "75e7f89a342d6922b833a804ff988491527ecbca2b847d42945c85658ac41919"
+        }
+      ],
+      "expected_behavior": "Successful parse with UBSan at ModelNode_getChild",
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total-length consistent with complete message",
+        "IEC 61850 MMS over RFC1006"
+      ],
+      "issue_safety_notes": "Safe issue analogue; no exact payload collision; built-in family constraints enforced",
+      "sequence_sha256": "7961172720db21b8ef3dd323f57d9c6882ceb1dedbfacdeb4b31a2c4074093c5",
+      "total_bytes": 16,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ]
+    },
+    {
+      "seed_id": "issue-cve-2026-18583-cve-2026-18583-summa-3c0f8378f90e",
+      "title": "VK-only Read: No affected version is specified in the report. The issue describes...",
+      "strategy": "parser_depth",
+      "target_operation": "Read",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "evidence_ids": [
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read request",
+          "hex": "0300001002f000010002000600010000",
+          "byte_length": 16,
+          "sha256": "e4435d6afee6ef03551750d932fbfdd7af23c62425b3f83b4976d7969a95b746"
+        }
+      ],
+      "expected_behavior": "Successful parse with UBSan at checkDataSetAccess",
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total-length consistent with complete message",
+        "IEC 61850 MMS over RFC1006"
+      ],
+      "issue_safety_notes": "Safe issue analogue; no exact payload collision; built-in family constraints enforced",
+      "sequence_sha256": "44fe6bf0db1d7205580ff497f7291a43af439a0d4eef466b99f5f05e95bb42bf",
+      "total_bytes": 16,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ]
+    },
+    {
+      "seed_id": "issue-590-590-summary-8f1dbbd54154",
+      "title": "VK-only MMS Initiate: The report states that `MmsValue_decodeMmsData` has a heap overflow...",
+      "strategy": "field_interaction",
+      "target_operation": "MMS Initiate",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "evidence_ids": [
+        "issue:590:590-summary:8f1dbbd54154"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "MMS Initiate",
+          "hex": "0300001302f000010000000001000600010000",
+          "byte_length": 19,
+          "sha256": "00fc6c0d507903359b98c516a84259674f188c5d591e2cc7922354da2a96ef3b"
+        }
+      ],
+      "expected_behavior": "Session established with UBSan at ber_fetch_length",
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total-length consistent with complete message",
+        "IEC 61850 MMS over RFC1006"
+      ],
+      "issue_safety_notes": "Safe issue analogue; no exact payload collision; built-in family constraints enforced",
+      "sequence_sha256": "fbee2090bf89d25570ecfd6d4ee8c356fce01364293800e33a4be84c3f648678",
+      "total_bytes": 19,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ]
+    },
+    {
+      "seed_id": "issue-589-589-summary-a9c8952234c9",
+      "title": "VK-only COTP Connection Request: The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ...",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "COTP Connection Request",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "evidence_ids": [
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request",
+          "hex": "0300001611e00000000100c1020000c2020001c001a2",
+          "byte_length": 22,
+          "sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd"
+        }
+      ],
+      "expected_behavior": "Connection opened with UBSan diagnostics at COTP Connection Request parsing",
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total-length consistent with complete message",
+        "IEC 61850 MMS over RFC1006"
+      ],
+      "issue_safety_notes": "Safe issue analogue; no exact payload collision; built-in family constraints enforced",
+      "sequence_sha256": "d6f90c21ae5528e8bb799c8cdb3108ce08b39b38747dca8412f7eb949b8e2b4a",
+      "total_bytes": 22,
+      "repair_notes": []
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "responses": 1,
+      "chat": 3
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 28,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "iec61850",
+    "planning": {
+      "protocol_name": "iec61850",
+      "planning_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "vk-plan-001",
+          "strategy": "issue_structural_analogue",
+          "title": "VK-only COTP Connection Request: The report does not specify a version. In libiec61850, `MmsValue_ne...",
+          "target_operation": "COTP Connection Request",
+          "objective": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ...",
+          "evidence_ids": [
+            "issue:193:193-summary:1451e58436f0",
+            "issue:198:198-summary:062388f44431",
+            "issue:200:200-summary:d453c5e902cd",
+            "issue:516:516-summary:13bbaeee92c9",
+            "issue:589:589-summary:a9c8952234c9",
+            "issue:197:197-summary:e3308b450f23"
+          ],
+          "issue_refs": [
+            "193"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-002",
+          "strategy": "field_interaction",
+          "title": "VK-only MMS Initiate: The report states that `MmsValue_decodeMmsData` has a heap overflow...",
+          "target_operation": "MMS Initiate",
+          "objective": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report states that `MmsValue_decodeMmsData` has a heap overflow vulnerability in `mms/iso_mms/server/mms_access_result.c`. The vulnerable path is exercis...",
+          "evidence_ids": [
+            "issue:194:194-summary:4277018cff9d",
+            "issue:196:196-summary:55a2cfa7c1b1",
+            "issue:197:197-summary:e3308b450f23",
+            "issue:198:198-summary:062388f44431",
+            "issue:200:200-summary:d453c5e902cd",
+            "issue:516:516-summary:13bbaeee92c9"
+          ],
+          "issue_refs": [
+            "194"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "VK-only GetNameList: In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not chec...",
+          "target_operation": "GetNameList",
+          "objective": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not check its passed arguments. The report states that intLen and bufPos can be large, so the acce...",
+          "evidence_ids": [
+            "issue:196:196-summary:55a2cfa7c1b1",
+            "issue:200:200-summary:d453c5e902cd",
+            "issue:197:197-summary:e3308b450f23",
+            "issue:516:516-summary:13bbaeee92c9",
+            "issue:513:513-summary:4a07060941e2",
+            "issue:198:198-summary:062388f44431"
+          ],
+          "issue_refs": [
+            "196"
+          ]
+        },
+        {
+          "plan_id": "vk-plan-004",
+          "strategy": "parser_depth",
+          "title": "VK-only Read: No affected version is specified in the report. The issue describes...",
+          "target_operation": "Read",
+          "objective": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is specified in the report. The issue describes an out-of-bounds read in getNumberOfElements. According to the report, getNumberOfElement...",
+          "evidence_ids": [
+            "issue:197:197-summary:e3308b450f23",
+            "issue:516:516-summary:13bbaeee92c9",
+            "issue:509:509-summary:228be3676e7d",
+            "issue:513:513-summary:4a07060941e2",
+            "issue:512:512-summary:b25e9a524acd",
+            "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+          ],
+          "issue_refs": [
+            "197"
+          ]
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "Missing 4 distinct issue-grounded seeds",
+        "No COTP header 0x03 or TPKT length consistency in any sequence",
+        "No diversification with Write, GetVariableAccessAttributes, DefineNamedVariableList, or InformationReport",
+        "No removal of exact issue payloads from deterministic_errors"
+      ],
+      "diversity_score": 35,
+      "global_feedback": [
+        "Needs full 4-issue grounding; currently only one seed with mismatched title and evidence.",
+        "Must enforce explicit TPKT 0x03 header, length consistency, and IEC 61850 MMS over RFC1006 in all sequences.",
+        "Cannot reference or copy deterministic_errors payloads; must remove exact collision risks.",
+        "No external protocol documents; all claims must stay strictly VK-only and model-prior compliant."
+      ],
+      "issue_enhancement_score": 40,
+      "needs_revision": true,
+      "overall_score": 55,
+      "protocol_validity_score": 45,
+      "seed_utility_score": 60,
+      "sequence_feedback": [
+        {
+          "keep": false,
+          "problems": [
+            "Seed_id mismatch with title; no explicit TPKT 0x03 header",
+            "COTP Connection Request not a supported model-prior archetype",
+            "No evidence_ids for issue 589",
+            "Expected behavior and constraints do not align with family constraints"
+          ],
+          "recommended_action": "Replace with valid COTP Connection Request using supported archetypes and TPKT 0x03",
+          "score": 40,
+          "seed_id": "issue-589-589-summary-a9c8952234c9"
+        },
+        {
+          "keep": false,
+          "problems": [
+            "Seed_id mismatch with title; no explicit TPKT 0x03 header",
+            "MMS Initiate not a supported model-prior archetype",
+            "No evidence_ids for issue 590",
+            "Expected behavior and constraints do not align with family constraints"
+          ],
+          "recommended_action": "Replace with valid MMS Initiate using supported archetype and TPKT 0x03",
+          "score": 45,
+          "seed_id": "issue-590-590-summary-8f1dbbd54154"
+        },
+        {
+          "keep": true,
+          "problems": [
+            "Seed_id mismatch with title",
+            "No explicit TPKT 0x03 header",
+            "Expected behavior and constraints do not align with family constraints"
+          ],
+          "recommended_action": "Add explicit TPKT 0x03 header and update expected behavior to reflect GetNameList parsing",
+          "score": 65,
+          "seed_id": "issue-573-573-summary-b7b57e9f1653"
+        },
+        {
+          "keep": true,
+          "problems": [
+            "Seed_id mismatch with title",
+            "No explicit TPKT 0x03 header",
+            "Expected behavior and constraints do not align with family constraints"
+          ],
+          "recommended_action": "Add explicit TPKT 0x03 header and update expected behavior to reflect Read parsing",
+          "score": 60,
+          "seed_id": "issue-cve-2026-18583-cve-2026-18583-summa-3c0f8378f90e"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "issue-573-573-summary-b7b57e9f1653",
+        "issue-cve-2026-18583-cve-2026-18583-summa-3c0f8378f90e",
+        "issue-590-590-summary-8f1dbbd54154",
+        "issue-589-589-summary-a9c8952234c9"
+      ],
+      "selected_strategies": {
+        "length_boundary_valid": 1,
+        "parser_depth": 1,
+        "field_interaction": 1,
+        "issue_structural_analogue": 1
+      },
+      "selected_target_operations": [
+        "GetNameList",
+        "Read",
+        "MMS Initiate",
+        "COTP Connection Request"
+      ],
+      "distinct_target_operations": 4,
+      "selection_channel": "vk-only"
+    },
+    "remaining_validator_findings": [
+      "issue-589-589-summary-a9c8952234c9: exact historical issue sequence collision",
+      "issue-589-589-summary-a9c8952234c9: exact historical issue single-message collision"
+    ],
+    "source_chunks": [
+      {
+        "chunk_id": "vk_task_context:task-contract:56f3666108cf",
+        "kind": "vk_task_context",
+        "path": "vk-only-model-prior-constraints",
+        "content": "Protocol name: iec61850\nHarness input interface: stdin bytes\nSample shape: message-sequence\nOutput encoding: raw-binary-concat\nExternal structured protocol documents: intentionally unavailable; model internal prior is permitted.\nExternal protocol documents: unavailable.\nModel internal protocol prior: permitted but not externally verified.\nBuilt-in constraint family: iec61850\nBuilt-in constraints:\n- For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\n- Keep the TPKT total-length field consistent with the complete message.\n- Diversify association, discovery, read, write and reporting paths.\nModel-prior message archetypes:\n- COTP Connection Request\n- MMS Initiate\n- GetNameList\n- Read\n- Write\n- GetVariableAccessAttributes\n- DefineNamedVariableList\n- InformationReport",
+        "issue_number": -1,
+        "title": "VK-only task, model-prior and built-in constraints"
+      },
+      {
+        "chunk_id": "issue:512:512-summary:b25e9a524acd",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#512.txt",
+        "content": "Issue: 512\nSummary: The report describes an out-of-bounds read in `parseAarqPdu` in `libiec61850/src/mms/iso_acse/acse.c`, found by fuzzing. While parsing tags `0xa6`, `0xa7`, or `0xbe`, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then used in reads such as `buffer[bufPos]` without confirming it is still within the input bounds; the example input ending in `a7 00` is said to leave `bufPos` at end-of-file + 1, after which the tag-specific checks for `0xa7`, `0xa6`, and `0xbe` can read out of bounds.\nReproduce: Use the provided `LLVMFuzzerTestOneInput` harness: initialize an `AcseConnection`, create a `ByteBuffer` for the input size, append the input bytes, call `AcseConnection_parseMessage(&acseConnection, acseBuffer)`, then destroy the buffer. Feed the sample bytes `<60><02><30><02><30><30><30><02><30><30><30><00><30><00><30><02><30><30><30><00><30><02><30><30><a7><00>`. The report states that when `parseAarqPdu` processes the final `a7 00`, `bufPos` advances past the end and the `0xa7` case dereferences `buffer[bufPos]`, producing the out-of-bounds read; the same unchecked access pattern is cited for the `0xa6` and `0xbe` cases.",
+        "issue_number": 512,
+        "title": "The report describes an out-of-bounds read in `parseAarqPdu` in `libiec61850/src/mms/iso_acse/acse.c`, found by fuzzing. While parsing tags `0xa6`, `0xa7`, o..."
+      },
+      {
+        "chunk_id": "issue:516:516-summary:13bbaeee92c9",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#516.txt",
+        "content": "Issue: 516\nSummary: A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered while encoding `MMS_BIT_STRING` `MmsData`: the function writes the tag, encoded length, padding byte, and bit-string bytes into `buffer` by advancing `bufPos`, but the report says it does not properly validate that `bufPos` stays within the valid buffer range. The report states this can occur if `bitStringSize` is large enough or if `bufPos` is already near the end of the buffer, resulting in writes past the end of `buffer`.\nReproduce: No build flags or commands are provided in the report. The provided PoC is a fuzz-style harness linked against libiec61850 and using `iec61850_server.h`, `hal_thread.h`, and `lib_memory.h`. To reproduce, create `LLVMFuzzerTestOneInput(const char *data, size_t size)` that: (1) calls `MmsValue_decodeMmsData(data, 0, size, &out)`; (2) returns if decoding fails; (3) calls `MmsValue_encodeMmsData(mmsValue, NULL, 0, false)` to get `dataSize`; (4) allocates `dataSize` bytes with `GLOBAL_MALLOC`; (5) calls `MmsValue_encodeMmsData(mmsValue, mmsBuffer, 0, true)` to re-encode the value; and then (6) frees the buffer and deletes the `MmsValue`. Feed the harness the byte sequence provided in the report, beginning `\"<84><81><80><00><30><30>...\"` and continuing with repeated `<30>` bytes exactly as listed there. The report states that this input reaches `BerEncoder_encodeBitString` while encoding `MMS_BIT_STRING` data and triggers an out-of-bounds write. No specific crash log or sanitizer output is included.",
+        "issue_number": 516,
+        "title": "A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered ..."
+      },
+      {
+        "chunk_id": "issue:196:196-summary:55a2cfa7c1b1",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#196.txt",
+        "content": "Issue: 196\nSummary: In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not check its passed arguments. The report states that intLen and bufPos can be large, so the access buffer[bufPos + i] can go out of bounds and cause a segmentation fault. The provided PoC reaches this through MmsValue_decodeMmsData with crafted input read from stdin, and the demonstrated impact is a crash.\nReproduce: 1. Build a small test program against libiec61850 that:\n   - declares a 0x10000-byte input buffer,\n   - reads stdin into that buffer,\n   - calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0).\n2. Run the program with this stdin byte sequence from the report:\n   80 92 92 92 92 92 92 92 92 92 ba ba ba ba ba ba 7f ff ff ff\n3. The reported result is a segmentation fault, attributed to BerDecoder_decodeUint32 accessing buffer[bufPos + i] with unchecked large intLen/bufPos values.",
+        "issue_number": 196,
+        "title": "In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not check its passed arguments. The report states that intLen and bufPos can be large, so the acce..."
+      },
+      {
+        "chunk_id": "issue:197:197-summary:e3308b450f23",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#197.txt",
+        "content": "Issue: 197\nSummary: No affected version is specified in the report. The issue describes an out-of-bounds read in getNumberOfElements. According to the report, getNumberOfElements does not check the bufPos and elementLength arguments, allowing those values to become very large. The provided PoC feeds a supplied input buffer to MmsValue_decodeMmsData, and the report attributes the resulting out-of-bounds read to getNumberOfElements.\nReproduce: 1. Create the PoC program exactly as shown: it includes <libiec61850/mms_value.h>, declares uint8_t globalbuf[0x10000], reads input from file descriptor 0 with read(0, globalbuf, sizeof(globalbuf)), returns if readcount <= 0, and otherwise calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0).\n2. Feed the program the exact long angle-bracket byte sequence from the report on stdin, starting with <a1><08><89><86><00><86><7f><ff><ff><ff><ff><e3> and ending with <00>.\n3. The report states that processing this input causes an out-of-bounds read in getNumberOfElements because bufPos and elementLength are not checked. The document does not include a specific crash trace, build command, or diagnostic output.",
+        "issue_number": 197,
+        "title": "No affected version is specified in the report. The issue describes an out-of-bounds read in getNumberOfElements. According to the report, getNumberOfElement..."
+      },
+      {
+        "chunk_id": "issue:513:513-summary:4a07060941e2",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#513.txt",
+        "content": "Issue: 513\nSummary: In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/iso_acse/acse.c` has an out-of-bounds read found by fuzzing. When parsing the `0xbe` (`user information`) tag, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then `buffer[bufPos]` is read without a bounds check. The report states that malformed input ending with bytes such as `be 00` can leave `bufPos` past the end of the buffer and trigger the out-of-bounds read in the `case 0xbe` path.\nReproduce: Use the report's `LLVMFuzzerTestOneInput` harness pattern: initialize `AcseConnection` with `AcseConnection_init(&acseConnection, NULL, NULL, NULL)`, create a `ByteBuffer` with `ByteBuffer_create(NULL, size)`, append the input with `ByteBuffer_append(acseBuffer, data, size)`, call `AcseConnection_parseMessage(&acseConnection, acseBuffer)`, then destroy the buffer. Feed the malformed byte sequence shown in the report to this harness; it starts `61 30 30 02 ...` and ends with `... be 00`, which the report identifies as the trigger. The reported result is that parsing reaches `parseAarePdu`'s `0xbe` handling and performs an out-of-bounds read when `buffer[bufPos]` is accessed.",
+        "issue_number": 513,
+        "title": "In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/iso_acse/acse.c` has an out-of-bounds read found by fuzzing. When parsing the `0xbe` (`use..."
+      },
+      {
+        "chunk_id": "issue:200:200-summary:d453c5e902cd",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#200.txt",
+        "content": "Issue: 200\nSummary: The report states that in libiec61850, `MMS_BIT_STRING` parsing in `MmsValue_decodeMmsData` (`src/mms/iso_mms/server/mms_access_result.c`) does not check `bufPos` before copying from `buffer + bufPos + 1`. A crafted input that makes `bufPos` larger reaches this copy path. In the provided run, AddressSanitizer reports a heap-buffer-overflow: `__asan_memcpy` performs a write of size 5 just past a 3-byte heap allocation, with the stack trace pointing to `MmsValue_decodeMmsData` at lines 231 and 200.\nReproduce: Use the AddressSanitizer build shown in the report with the target `/home/casper/targets/struct/libiec61850/afl/fuzzrun/fuzzmmsdata`. Create a file `poc` from the reported hex sequence `a20c 8406 1600 0002 009d 8000 8000 006b`. With that program loaded in `gdb-peda`, run it as shown with stdin redirected from the PoC: `r < ./poc`. Expected result: AddressSanitizer aborts with `ERROR: AddressSanitizer: heap-buffer-overflow`, including `WRITE of size 5` in `__asan_memcpy`; the stack trace includes `MmsValue_decodeMmsData` in `src/mms/iso_mms/server/mms_access_result.c`.",
+        "issue_number": 200,
+        "title": "The report states that in libiec61850, `MMS_BIT_STRING` parsing in `MmsValue_decodeMmsData` (`src/mms/iso_mms/server/mms_access_result.c`) does not check `bu..."
+      },
+      {
+        "chunk_id": "issue:492:492-summary:b5a20a150fa2",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#492.txt",
+        "content": "Issue: 492\nSummary: The report states that libIEC61850 v1.4.0 and earlier release has an integer overflow in `src/mms/iso_mms/server/mms_get_namelist_service.c`; the supplied crash trace shows the fault in `mmsServer_handleGetNameListRequest` at line 446. When the provided PoC request bytes are sent to the `server_example_substitution` example, the server opens the connection and then crashes with an AddressSanitizer-detected SEGV caused by a READ memory access, aborting the application.\nReproduce: The document's crash output is from libIEC61850 1.4.0 running the `server_example_substitution` example under AddressSanitizer. Create a file named `poc` from one of the provided PoC byte sequences (`poc1` or `poc2`; the report also shows a base64 form of `poc2`). Start the server with `sudo ./server_example_substitution`. In another shell, send the PoC with `cat poc | nc 0.0.0.0 102`. Expected result: the server prints `Using libIEC61850 version 1.4.0`, then `Connection opened`, then `ASAN:DEADLYSIGNAL`; AddressSanitizer reports `ERROR: AddressSanitizer: SEGV` caused by a READ in `mmsServer_handleGetNameListRequest` at `src/mms/iso_mms/server/mms_get_namelist_service.c:446`, followed by `ABORTING`.",
+        "issue_number": 492,
+        "title": "The report states that libIEC61850 v1.4.0 and earlier release has an integer overflow in `src/mms/iso_mms/server/mms_get_namelist_service.c`; the supplied cr..."
+      },
+      {
+        "chunk_id": "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#CVE-2026-18582.txt",
+        "content": "Issue: CVE-2026-18582\nSummary: libiec61850 v1.6.1 has a server-side memory corruption issue in the report sending path. In `src/iec61850/server/mms_mapping/reporting.c`, `sendNextReportEntrySegment` wraps the stack buffer `rptIdBuf[130]` as a temporary visible string and passes it to `MmsValue_setVisibleString`; in `src/mms/iso_mms/common/mms_value.c`, the generic visible-string update logic frees and reallocates the current buffer when the incoming string exceeds the recorded size, assuming the buffer is heap-managed. If a client stores an `RptID` longer than 129 bytes in a report control block and later enables reporting with GI, the server accepts the write and later, when serializing the report, frees the stack-backed `rptIdBuf` pointer, causing an invalid free / bad-free and a server crash. The document states the most defensible demonstrated impact is remote denial of service.\nReproduce: Use the provided Python 3 PoC against a libiec61850 v1.6.1 server; it defaults to host `127.0.0.1` and port `102` if no arguments are supplied. The script opens a TCP connection, sends the fixed `COTP_CR` packet, reads the response, then sends the fixed `AARQ_INITIATE` packet and reads that response. It then sends one crafted `SET_RCB` write request built as the supplied MMS packet `prefix` + 219 `A` bytes + the supplied `suffix`; the embedded object names in that request target the `simpleIOGenericIO` / `LLN0$RP$EventsRCB01` report control block fields. The document states this oversized `RptID` write is accepted and reporting is enabled with GI; when the server later sends the report, it crashes in `sendNextReportEntrySegment` with an invalid free / bad-free while handling the overlong `RptID`. The PoC's immediate client-side output is the received response lengths or a timeout",
+        "issue_number": 2026,
+        "title": "libiec61850 v1.6.1 has a server-side memory corruption issue in the report sending path. In `src/iec61850/server/mms_mapping/reporting.c`, `sendNextReportEnt..."
+      },
+      {
+        "chunk_id": "issue:198:198-summary:062388f44431",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#198.txt",
+        "content": "Issue: 198\nSummary: In StringUtils_createStringFromBuffer, the second argument, size, is a signed integer. The report states that if a negative value such as -1 is supplied, the function attempts to allocate a very large buffer: 0xffffffff on 32-bit or 0xffffffffffffffff on 64-bit. When that allocation fails, a following memcpy can segfault. The provided PoC exercises the issue through MmsValue_decodeMmsData with crafted input <90><80>.\nReproduce: Use the provided C PoC that includes libiec61850/mms_value.h, declares a 0x10000-byte global buffer, reads stdin into that buffer, and if any bytes were read calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0). Feed the program the two-byte input <90><80> on stdin. Expected result per the report: this triggers StringUtils_createStringFromBuffer with a negative size, causing an attempted allocation of 0xffffffff bytes on 32-bit or 0xffffffffffffffff bytes on 64-bit; when the allocation fails, memcpy segfaults.",
+        "issue_number": 198,
+        "title": "In StringUtils_createStringFromBuffer, the second argument, size, is a signed integer. The report states that if a negative value such as -1 is supplied, the..."
+      },
+      {
+        "chunk_id": "issue:193:193-summary:1451e58436f0",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#193.txt",
+        "content": "Issue: 193\nSummary: The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative `maxSize` without validation; that negative value is then used for allocation, producing a huge size request (for example, `-1` becoming `0xffffffff` on 32-bit or `0xffffffffffffffff` on 64-bit). With the supplied PoC input, `MmsValue_decodeMmsData` reaches `MmsValue_newOctetString`, and AddressSanitizer reports an oversized `calloc` request in `Memory_calloc` and aborts with `allocation-size-too-big`.\nReproduce: 1. Build libiec61850 with AddressSanitizer enabled using `CFLAGS=-fsanitize=address -g` and `CXXFLAGS=-fsanitize=address -g`.\n2. Compile the provided `test.c` from `poc.zip`.\n3. Create the PoC input file `poc` with the supplied data: `8989 f189 8989 ff9d ffff 8994 8b96 df40 893f 8989 af89`.\n4. Run the program in gdb with stdin redirected from the PoC: `./test < poc`.\n5. Expected result: AddressSanitizer aborts with `ERROR: AddressSanitizer: requested allocation size 0xffffffffffffff94 ... exceeds maximum supported size`, and the stack trace includes `Memory_calloc`, `MmsValue_newOctetString`, `MmsValue_decodeMmsData`, and `main`.",
+        "issue_number": 193,
+        "title": "The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ..."
+      },
+      {
+        "chunk_id": "issue:496:496-summary:0b725b37c953",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#496.txt",
+        "content": "Issue: 496\nSummary: libIEC61850 v1.4.0 and earlier release contains a NULL pointer dereference in `mmsServer_handleFileCloseRequest` in `src/mms/iso_mms/server/mms_file_service.c`. In the provided reproduction, sending the supplied PoC to the `server_example_substitution` example on port 102 causes a SEGV during request parsing, and AddressSanitizer reports a READ from address `0x000000000010` with the top frame at `src/mms/iso_mms/server/mms_file_service.c:860`. The demonstrated impact is application crash/abort.\nReproduce: Environment: Ubuntu 18.04; libIEC61850 v1.4.0 example `examples/server_example_substitution`.\n1. Change to `path/to/libiec61850-v1.4.0/examples/server_example_substitution`.\n2. Start the server example: `sudo ./server_example_substitution`.\n3. Use the source's `poc` data (`0300004002F0800100010061333031020100A02CA02A02020089A4007F4A01A11FA01D301BA019A1171A0B54454D504C4154454C44301A085350565433244D58`) and send it as documented with `cat poc | nc 0.0.0.0 102`.\n4. Expected result: the server prints `Using libIEC61850 version 1.4.0` and `Connection opened`, then aborts with `ASAN:DEADLYSIGNAL`. AddressSanitizer reports `ERROR: AddressSanitizer: SEGV on unknown address 0x000000000010` caused by a READ access, with the top frame `mmsServer_handleFileCloseRequest src/mms/iso_mms/server/mms_file_service.c:860`, and the summary `AddressSanitizer: SEGV src/mms/iso_mms/server/mms_file_service.c:860 in mmsServer_handleFileCloseRequest`.",
+        "issue_number": 496,
+        "title": "libIEC61850 v1.4.0 and earlier release contains a NULL pointer dereference in `mmsServer_handleFileCloseRequest` in `src/mms/iso_mms/server/mms_file_service...."
+      },
+      {
+        "chunk_id": "issue:509:509-summary:228be3676e7d",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#509.txt",
+        "content": "Issue: 509\nSummary: The report describes an out-of-bounds read in libiec61850 in `parseGooseMessage` and `parseGoosePayload` in `goose_receiver.c`. It is triggered by a 22-byte input. The report attributes the issue to insufficient boundary checks when `bufPos` reaches the end of the buffer. In the provided AddressSanitizer run, this appears as a `heap-buffer-overflow` with a `READ of size 1` in `parseGoosePayload` at `/src/libiec61850/src/goose/goose_receiver.c:665:9`, reached from `parseGooseMessage` at line 1002.\nReproduce: Use the documented `fuzz_goose_parse` target with AddressSanitizer. 1) Create `poc-oobr-001.goose` containing these 22 bytes: `0000 0000 0000 0000 0000 0000 88b8 0000 0000 0000 0000`. 2) Run `./fuzz_goose_parse poc-oobr-001.goose`. Expected result: AddressSanitizer reports `heap-buffer-overflow` / `READ of size 1` in `parseGoosePayload` (`/src/libiec61850/src/goose/goose_receiver.c:665:9`), called from `parseGooseMessage` (`...:1002:9`), and the process aborts.",
+        "issue_number": 509,
+        "title": "The report describes an out-of-bounds read in libiec61850 in `parseGooseMessage` and `parseGoosePayload` in `goose_receiver.c`. It is triggered by a 22-byte ..."
+      },
+      {
+        "chunk_id": "issue:194:194-summary:4277018cff9d",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#194.txt",
+        "content": "Issue: 194\nSummary: The report states that `MmsValue_decodeMmsData` has a heap overflow vulnerability in `mms/iso_mms/server/mms_access_result.c`. The vulnerable path is exercised by passing crafted input data to `MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0)`. The supplied proof of concept is a specific byte sequence read from standard input, and the demonstrated impact is a heap overflow during decoding.\nReproduce: 1. Use the provided test program: it declares `uint8_t globalbuf[0x10000]`, reads input from stdin with `read(0, globalbuf, sizeof(globalbuf))`, and if data was read, calls `MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0)`.\n2. Run that program with the following PoC bytes as stdin input:\n`<a2><16><a2><00><86><12><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00>`\n3. The report states this triggers a heap overflow in `MmsValue_decodeMmsData`.",
+        "issue_number": 194,
+        "title": "The report states that `MmsValue_decodeMmsData` has a heap overflow vulnerability in `mms/iso_mms/server/mms_access_result.c`. The vulnerable path is exercis..."
+      },
+      {
+        "chunk_id": "issue:193:193-payload:3750beab8f9a",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#193.txt",
+        "content": "Payload message 0: 89 89 f1 89 89 89 ff 9d ff ff 89 94 8b 96 df 40 89 3f 89 89 af 89\nPayload message count: 1",
+        "issue_number": 193,
+        "title": "The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ..."
+      },
+      {
+        "chunk_id": "issue:599:599-summary:806eef562ec3",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#599.txt",
+        "content": "Issue: 599\nSummary: On branches v1.6_develop and v1.6, client-side handling of GetNamedVariableListAttributesResponse is vulnerable because parseNamedVariableAttributes(...) accepts a remote domain-specific itemId without validating that it has the expected IEC 61850 $FC$... suffix. When IedConnection_getDataSetDirectory(...) later passes that value to MmsMapping_varAccessSpecToObjectReference(...), the mapper assumes an internal LN$FC$... layout and performs fixed-offset reads after the first '$'. If a malicious MMS server, or an active MITM modifying a legitimate response, reduces the first itemId to \"$\", the function reads past the 2-byte heap string and libIEC61850 client applications can crash with an AddressSanitizer-detectable heap-buffer-overflow read through the normal protocol state machine.\nReproduce: Use the documented artifacts: the official server at ./build-debug/examples/server_example_basic_io/server_example_basic_io, the official client at ./build-asan/examples/iec61850_client_example2/iec61850_client_example2, and the supplied Python3 transparent TPKT proxy PoC. The proxy forwards traffic between client and server, but for the first real GetNamedVariableListAttributesResponse it rewrites the first domain-specific itemId TLV to the single-byte string \"$\" and updates the BER and TPKT lengths. Steps: (1) Terminal 1: ./build-debug/examples/server_example_basic_io/server_example_basic_io 18171. (2) Terminal 2: python3 proxy.py --listen-port 28177 --target-port 18171 --verbose. (3) Terminal 3: ./build-asan/examples/iec61850_client_example2/iec61850_client_example2 127.0.0.1 28177. Expected result: the proxy reports that it patched the first GetNamedVariableListAttributesResponse, for example \"[proxy] patched first GetNamedVariableListAttributesResponse new_",
+        "issue_number": 599,
+        "title": "On branches v1.6_develop and v1.6, client-side handling of GetNamedVariableListAttributesResponse is vulnerable because parseNamedVariableAttributes(...) acc..."
+      },
+      {
+        "chunk_id": "issue:590:590-summary:8f1dbbd54154",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#590.txt",
+        "content": "Issue: 590\nSummary: libIEC61850 1.6.1 contains undefined behavior in src/mms/iso_mms/asn1c/ber_tlv_length.c line 43, function ber_fetch_length(), while parsing long-form BER lengths in MMS input. The function accumulates the length with `len = (len << 8) | *buf` and only afterward checks whether the value is too large, so a sufficiently large malformed long-form BER length can trigger signed left-shift overflow in `ber_tlv_len_t` (long on the tested target) before the error path executes. In validated testing, a malformed BER-encoded MMS frame injected on an already established TCP connection triggered UndefinedBehaviorSanitizer at that line, demonstrating remotely reachable parser undefined behavior after session establishment. The report does not establish a definite connection-level DoS; some runs returned an error-like protocol response and kept the socket open.\nReproduce: Build and run `server_example_basic_io` with UBSan. Prepare `poc_ber_length_overflow.bin` containing three TPKT frames for a fresh TCP connection: frame 1 is a legal COTP CR, frame 2 is session/association setup traffic, and frame 3 is the malformed BER-encoded MMS payload that triggers `ber_fetch_length()`; the validated third frame begins `03 00 00 e5 02 f0 80 01 00 01 00 61 81 d7 30 81 d4 02 01 03 a0 81 ce a0 81 cb 02 01 23 a4 81 c5 ...`. Use a Python sender that reads the file, splits it into TPKT frames, connects to `127.0.0.1` on the chosen port, sends frame 1, waits about 0.2 seconds, sends frame 2, keeps the connection alive about 10 seconds, then sends frame 3 on the same connection, waits about 1 second, and closes. Run `python3 poc_ber.py 8102` against the server. Expected server output includes `Connection opened` and UBSan diagnostics such as `src/mms/iso_mms/asn1c/ber_tlv_length.c:43",
+        "issue_number": 590,
+        "title": "libIEC61850 1.6.1 contains undefined behavior in src/mms/iso_mms/asn1c/ber_tlv_length.c line 43, function ber_fetch_length(), while parsing long-form BER len..."
+      },
+      {
+        "chunk_id": "issue:589:589-summary:a9c8952234c9",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#589.txt",
+        "content": "Issue: 589\nSummary: libIEC61850 1.6.1 has an undefined-behavior issue in COTP Connection Request parsing at src/mms/iso_cotp/cotp.c line 481, in the TPDU size parameter (0xC0) option path. When parameterLen == 1, the code uses an untrusted network byte directly as the left-shift count: `int requestedTpduSize = (1 << buffer[bufPos++]);` and then passes the result to `CotpConnection_setTpduSize`. A malformed CR variable part such as `c0 01 a2` makes the parser evaluate `1 << 162` from attacker-controlled input without validating the TPDU-size code range. The document reports that during connection establishment this is remotely reachable, requires no prior session state, and is reliably detected by UndefinedBehaviorSanitizer as `runtime error: shift exponent 162 is too large for 32-bit type 'int'`.\nReproduce: 1. Build `server_example_basic_io` with UndefinedBehaviorSanitizer enabled and run it on port `8102`.\n2. From a client, open a TCP connection to `127.0.0.1:8102` and send this 22-byte malformed COTP Connection Request frame, then shut down the write side and close the socket:\n   `03 00 00 16 11 e0 00 00 00 01 00 c1 02 00 00 c2 02 00 01 c0 01 a2`\n   The malicious TPDU-size parameter is the final three bytes: `c0 01 a2` (`0xc0` parameter, length `0x01`, invalid TPDU-size code `0xa2`).\n3. The document's example client command is `python3 poc_cotp.py 8102`, where the script connects to `127.0.0.1`, sends the above hex payload, then closes the connection.\n4. Expected server output:\n   `Connection opened`\n   `src/mms/iso_cotp/cotp.c:481:32: runtime error: shift exponent 162 is too large for 32-bit type 'int'`\n   `SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_cotp/cotp.c:481:32`\n   `Connection closed`",
+        "issue_number": 589,
+        "title": "libIEC61850 1.6.1 has an undefined-behavior issue in COTP Connection Request parsing at src/mms/iso_cotp/cotp.c line 481, in the TPDU size parameter (0xC0) o..."
+      },
+      {
+        "chunk_id": "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#CVE-2026-18583.txt",
+        "content": "Issue: CVE-2026-18583\nSummary: A server-side memory-safety issue exists in the access-control path for dynamic dataset creation. In `checkDataSetAccess(...)`, the `MMS_ASSOCIATION_SPECIFIC` branch calls `StringUtils_copyStringToBuffer(dataSetRef + 1, listName)`, even though the helper prototype is `StringUtils_copyStringToBuffer(const char* string, char* buffer)`. That swaps source and destination, so the uninitialized stack region at `dataSetRef + 1` is treated as the input string and the caller-owned `listName` buffer as the output. The documented effect is an out-of-bounds stack read in `strlen`, and the caller’s stack buffer can also be corrupted before the callback is reached. The issue is reachable through the unmodified `examples/server_example_access_control/server_example_access_control.c` example, and the provided minimal MMS PoC triggers a crash remotely.\nReproduce: Run the unmodified official example `examples/server_example_access_control/server_example_access_control.c`, with dynamic dataset service enabled and a dataset access handler installed. Use the supplied Python 3 PoC (defaults to `127.0.0.1:11019`) and send three MMS-related messages in order: 1) COTP connection request, 2) ACSE/MMS initiate request, 3) `defineNamedVariableList` for an association-specific NVL named `boom`. The document says this is enough to trigger a remote crash over the normal MMS protocol path; the script then sleeps briefly and attempts a receive, which may return data or time out.",
+        "issue_number": 2026,
+        "title": "A server-side memory-safety issue exists in the access-control path for dynamic dataset creation. In `checkDataSetAccess(...)`, the `MMS_ASSOCIATION_SPECIFIC..."
+      },
+      {
+        "chunk_id": "issue:573:573-summary:b7b57e9f1653",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#573.txt",
+        "content": "Issue: 573\nSummary: The issue report describes a potential stack-buffer overflow in the call path LogicalDevice_getLogicalNode -> ModelNode_getChild in libiec61850/src/iec61850/server/model/model.c. ModelNode_getChild copies the supplied name into fixed-size stack buffer char nameCopy[65] without checking length before terminating at the array separator. A long, malformed name such as 100 'A' characters followed by \"()\" can overflow nameCopy. The provided testcase says this causes a crash in ModelNode_getChild. The report also notes a similar unbounded write in LogicalDevice_getChildByMmsVariableName.\nReproduce: Build and run the provided C++ testcase.cpp against libiec61850, using the headers /fuzz/install/include/libiec61850/iec61850_dynamic_model.h and /fuzz/install/include/libiec61850/iec61850_model.h. In main, create a minimal dynamic model with IedModel_create(\"M\") and LogicalDevice_create(\"LD1\", model). Construct a logical-node name from 100 'A' characters, then append '(' and ')'. Call LogicalDevice_getLogicalNode(ld, lnName.c_str()). The issue report states that this crashes in ModelNode_getChild (model.c) because of the unchecked copy into nameCopy.",
+        "issue_number": 573,
+        "title": "The issue report describes a potential stack-buffer overflow in the call path LogicalDevice_getLogicalNode -> ModelNode_getChild in libiec61850/src/iec61850/..."
+      },
+      {
+        "chunk_id": "issue:598:598-summary:43fd2ace5ec4",
+        "kind": "issue",
+        "path": "distilled_issue/2.libiec61850/#598.txt",
+        "content": "Issue: 598\nSummary: libiec61850 v1.6.1 (v1.6 branch) and v1.6_develop commit 196bb76 contain a heap-buffer-overflow read in the Sampled Values (SV) subscriber path. Parsing accepts a BER/ASN.1 confRev element of any length as long as it stays within the current ASDU buffer, but SVSubscriber_ASDU_getConfRev later assumes confRev is a fixed 4-byte uint32_t and unconditionally reads 4 bytes. A malformed SV frame with confRev encoded as length 1 and placed near the end of the receiver heap buffer triggers an out-of-bounds read when a subscriber callback or internal debug path accesses SVSubscriber_ASDU_getConfRev; under ASan the subscriber process aborts.\nReproduce: The document provides a Python raw-socket PoC. Recreate it by: 1) implementing BER-length and TLV helpers; 2) setting APDU_LEN=1496 and building the Ethernet header with dst MAC 01:0c:cd:04:00:01, src MAC ae:7b:be:83:e9:ef, EtherType 0x88ba, 0x4000, (APDU_LEN+8) as big-endian bytes, and four zero bytes; 3) setting confRev to the BER/ASN.1 bytes 83 01 41 (tag 0x83, length 1); 4) computing filler_len=(APDU_LEN-12)-len(confrev)-4 and creating filler as a 0x99 TLV with BER length filler_len and filler_len bytes of 'Z', so confRev is near the end of the ASDU buffer; 5) building the APDU as tlv(0x60, tlv(0xa2, tlv(0x30, filler + confrev))); and 6) opening an AF_PACKET/SOCK_RAW socket, binding it to interface auditg0, and sending the frame on the same Layer-2 network. Expected result: when the receiving subscriber callback or internal debug path calls SVSubscriber_ASDU_getConfRev, libiec61850 reads past the end of the packet buffer, reports a heap-buffer-overflow read under ASan, and the subscriber aborts.",
+        "issue_number": 598,
+        "title": "libiec61850 v1.6.1 (v1.6 branch) and v1.6_develop commit 196bb76 contain a heap-buffer-overflow read in the Sampled Values (SV) subscriber path. Parsing acce..."
+      }
+    ],
+    "generated_unix_time": 1788705229
+  }
+}

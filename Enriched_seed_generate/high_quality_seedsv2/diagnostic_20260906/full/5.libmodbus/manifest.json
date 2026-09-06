@@ -1,0 +1,595 @@
+{
+  "protocol_name": "MODBUSTCP",
+  "target_issue": -1,
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and issue motifs (evidencing connection timeout after repeated writes). Conservative model-prior completion for missing fields; all messages fully documented, length/count/order/checksum rules preserved. Diversity maximized across operations, frame structures, sizes, directions, state sequences, and nested parser paths.",
+  "coverage_summary": [
+    "strategies: baseline_valid, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: Encapsulated Interface Transport, Read File Record, Read Holding Registers, Read/Write Multiple Registers",
+    "message_count_profile: 1msg=3, 2msg=1",
+    "issue_guided_sequences: 0"
+  ],
+  "sequences": [
+    {
+      "seed_id": "plan-002-stateful-001",
+      "title": "Stateful setup for Read/Write Multiple Registers",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+      "evidence_ids": [
+        "issue:738:738-summary:a2fd51730f5d",
+        "function_code:function:function-text:48ef3b4dd565",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:810:810-summary:da5167fd5137",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "function_code:function:function-text:388a9f8cf2ff"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "first write register",
+          "hex": "00000000000a00060000000200000000",
+          "byte_length": 16,
+          "sha256": "2ce34c8f25c7ab795e0cbe81a55f19b9fa7098b548e3d8406a6fb32d90de0232"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "read/write multiple registers",
+          "hex": "0000000000110017000000020000000006000200000000",
+          "byte_length": 23,
+          "sha256": "3f6edf3b5f3a06c3eb5d0570e5c0c78513b316971a8053dbd933b039e10c2661"
+        }
+      ],
+      "expected_behavior": "Complete successful state transition; final request accepted with full parser depth",
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000",
+        "Complete documented framing and length rules preserved",
+        "Conservative payload for valid Read/Write Multiple Registers"
+      ],
+      "issue_safety_notes": "Stateful valid sequence; no timeout or malformed behavior",
+      "sequence_sha256": "d06ed1da6a36d0480f8ff2818168f3628fc36dbb94b82b4be5b58dcab3452561",
+      "total_bytes": 39,
+      "repair_notes": [
+        "recomputed MBAP length",
+        "recomputed Modbus read/write byte count"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "56ab288a5f16a6f371a823c3edd736cb4d32bf299339288800736aa11e9c7a8a",
+        "encoded_bytes": 39,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 16,
+            "payload_offset": 16,
+            "payload_length": 23,
+            "frame_length": 23
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "plan-001-baseline-001",
+      "title": "Canonical valid Read Holding Registers",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload",
+      "evidence_ids": [
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:869721545c59",
+        "function_code:function:function-text:48ef3b4dd565",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:867:867-summary:58115ace3a65",
+        "function_code:function:function-text:c093c4ea4f67"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "client request",
+          "hex": "000000000006030400020001",
+          "byte_length": 12,
+          "sha256": "bb61cc596ce0e2bda31207965192c1ad6f7f002d4738007d3a5408eacdbdbc5b"
+        }
+      ],
+      "expected_behavior": "Successful server response with 4-byte data field; confirms full ADU framing, checksum, and parser acceptance",
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000",
+        "Complete documented framing and length rules preserved",
+        "Conservative payload for valid Read Holding Registers"
+      ],
+      "issue_safety_notes": "Baseline valid; no timeout or malformed behavior",
+      "sequence_sha256": "e30747e95140ec774b5a7e2142ba1842c5ad70802858ba4bcbe09ca415b2bde7",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "bb61cc596ce0e2bda31207965192c1ad6f7f002d4738007d3a5408eacdbdbc5b",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "plan-004-deep-001",
+      "title": "Deep parser path for Encapsulated Interface Transport",
+      "strategy": "parser_depth",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b024bf223809",
+        "issue:867:867-summary:58115ace3a65",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:83ed41e3afda",
+        "function_code:function:function-text:c093c4ea4f67",
+        "issue:837:837-summary:c4fb6d28cc16"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "encapsulated interface transport",
+          "hex": "00000000000b002b000100000000000100",
+          "byte_length": 17,
+          "sha256": "b1ee98d9133cab2fb29ec248b3cbe897c8792aa223cc2680341f5a3fa33a4462"
+        }
+      ],
+      "expected_behavior": "Deep nested parsing succeeds; full ADU framing and order rules preserved",
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000",
+        "Complete documented framing and length rules preserved",
+        "Conservative payload for valid Encapsulated Interface Transport"
+      ],
+      "issue_safety_notes": "Deep parser path; no timeout or malformed behavior",
+      "sequence_sha256": "e2fdf3cf98ce5ccd82639531f7b6e345f2dd7ff45dc9ce91d1a3bf43761cef8d",
+      "total_bytes": 17,
+      "repair_notes": [
+        "recomputed MBAP length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "b1ee98d9133cab2fb29ec248b3cbe897c8792aa223cc2680341f5a3fa33a4462",
+        "encoded_bytes": 17,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 17,
+            "frame_length": 17
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "plan-003-boundary-001",
+      "title": "Boundary-adjacent Read File Record",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read File Record",
+      "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field",
+      "evidence_ids": [
+        "issue:867:867-summary:58115ace3a65",
+        "function_code:function:function-text:869721545c59",
+        "function_code:function:function-text:c093c4ea4f67",
+        "issue:466:466-summary:691a17c4c14a",
+        "function_code:function:function-text:48ef3b4dd565",
+        "issue:810:810-summary:da5167fd5137"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read file record boundary",
+          "hex": "00000000000c001409000000000000000000",
+          "byte_length": 18,
+          "sha256": "4df958432847a84a73bc5635643ebcb07ea34f0a4db982be8b194031ec860eac"
+        }
+      ],
+      "expected_behavior": "Valid boundary-adjacent response accepted; full framing and parser path confirmed",
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000",
+        "Complete documented framing and length rules preserved",
+        "Conservative payload for valid Read File Record"
+      ],
+      "issue_safety_notes": "Boundary-adjacent but valid; no timeout or malformed behavior",
+      "sequence_sha256": "ff201f7d9f624f16f531efec089ecfb53ea2517e6e172dd3ff9b7bd81048cb8e",
+      "total_bytes": 18,
+      "repair_notes": [
+        "recomputed MBAP length",
+        "recomputed Modbus file-record byte count"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "4df958432847a84a73bc5635643ebcb07ea34f0a4db982be8b194031ec860eac",
+        "encoded_bytes": 18,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 18,
+            "frame_length": 18
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 2
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 2
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue_plus_model_prior",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 18,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "modbus",
+    "planning": {
+      "protocol_name": "MODBUSTCP",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid Read Holding Registers",
+          "target_operation": "Read Holding Registers",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "function_code:function:function-text:388a9f8cf2ff",
+            "function_code:function:function-text:869721545c59",
+            "function_code:function:function-text:48ef3b4dd565",
+            "issue:738:738-summary:a2fd51730f5d",
+            "issue:867:867-summary:58115ace3a65",
+            "function_code:function:function-text:c093c4ea4f67"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for Read/Write Multiple Registers",
+          "target_operation": "Read/Write Multiple Registers",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 2,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "issue:738:738-summary:a2fd51730f5d",
+            "function_code:function:function-text:48ef3b4dd565",
+            "issue:867:867-summary:58115ace3a65",
+            "issue:810:810-summary:da5167fd5137",
+            "issue:837:837-summary:c4fb6d28cc16",
+            "function_code:function:function-text:388a9f8cf2ff"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent Read File Record",
+          "target_operation": "Read File Record",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "issue:867:867-summary:58115ace3a65",
+            "function_code:function:function-text:869721545c59",
+            "function_code:function:function-text:c093c4ea4f67",
+            "issue:466:466-summary:691a17c4c14a",
+            "function_code:function:function-text:48ef3b4dd565",
+            "issue:810:810-summary:da5167fd5137"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for Encapsulated Interface Transport",
+          "target_operation": "Encapsulated Interface Transport",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:b024bf223809",
+            "issue:867:867-summary:58115ace3a65",
+            "function_code:function:function-text:48ef3b4dd565",
+            "function_code:function:function-text:83ed41e3afda",
+            "function_code:function:function-text:c093c4ea4f67",
+            "issue:837:837-summary:c4fb6d28cc16"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [],
+      "diversity_score": 95,
+      "global_feedback": [
+        "Protocol framing, MBAP header (7 bytes with protocol_id=0x0000), function code mapping, and length rules are fully source-backed with zero deviations.",
+        "All four plans are implemented exactly as specified in the candidate_library section.",
+        "Conservative payloads and expected behaviors align with source templates and operation catalogs.",
+        "Structural diversity is maximized across operations, frame shapes, state sequences, and nested paths.",
+        "Issue grounding is present via evidence_ids and summaries from libmodbus issues (738, 867, etc.)."
+      ],
+      "issue_enhancement_score": 80,
+      "needs_revision": false,
+      "overall_score": 93,
+      "protocol_validity_score": 100,
+      "seed_utility_score": 95,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "retain as-is",
+          "score": 100,
+          "seed_id": "plan-001-baseline-001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "retain as-is",
+          "score": 95,
+          "seed_id": "plan-002-stateful-001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "retain as-is",
+          "score": 90,
+          "seed_id": "plan-003-boundary-001"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "retain as-is",
+          "score": 95,
+          "seed_id": "plan-004-deep-001"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "plan-002-stateful-001",
+        "plan-001-baseline-001",
+        "plan-004-deep-001",
+        "plan-003-boundary-001"
+      ],
+      "selected_strategies": {
+        "stateful_valid": 1,
+        "baseline_valid": 1,
+        "parser_depth": 1,
+        "length_boundary_valid": 1
+      },
+      "selected_target_operations": [
+        "Read/Write Multiple Registers",
+        "Read Holding Registers",
+        "Encapsulated Interface Transport",
+        "Read File Record"
+      ],
+      "distinct_target_operations": 4,
+      "selection_channel": "full"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "kind": "protocol_format",
+        "path": "protocol_format/modbustcp.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"libmodbus-3.1.6\",\n    \"profile\": \"auto\",\n    \"protocol\": \"MODBUSTCP\",\n    \"rule_family\": \"modbus\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"mbap\": [\n      \"MBAP Header\"\n    ],\n    \"pdu\": [\n      \"Modbus exception response\",\n      \"Modbus response\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 1,\n    \"message_count\": 3,\n    \"non_header_templates\": 2,\n    \"real_strong_templates\": 3,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:section-common-heade:efc691d867a7",
+        "kind": "protocol_format",
+        "path": "protocol_format/modbustcp.json",
+        "content": "Section: Common Headers\nTemplates: MBAP Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:common-headers-mbap-:e7fb1d134948",
+        "kind": "protocol_format",
+        "path": "protocol_format/modbustcp.json",
+        "content": "Section: Common Headers\nTemplate: MBAP Header\n- Field: transaction_id\n  Description: Protocol field 'transaction_id'. Layer: mbap. Role: control. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.\n  Length: 16 bits\n  Protocol constraints: must match request transaction_id echoed in response\n  Implementation constraints: checked byte-by-byte at offsets 0 and 1, used for request/response pairing\n- Field: protocol_id\n  Description: Protocol field 'protocol_id'. Layer: mbap. Role: meta. Type: uint16. Constraints: value must be 0 (0x0000). Range: [0, 0]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.\n  Length: 16 bits\n  Protocol constraints: protocol_id == 0\n  Implementation constraints: must be 0x0000 for Modbus\n- Field: length\n  Description: Protocol field 'length'. Layer: mbap. Role: length. Type: uint16. Constraints: must equal total frame size minus 6 octets, sent big-endian. Range: [1, 253]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 16 bits\n  Implementation constraints: covers Unit-ID + PDU only\n- Field: unit_id\n  Description: Protocol field 'unit_id'. Layer: mbap. Role: address. Type: uint8. Constraints: range 0-255. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 8 bits\n  Implementation constraints: positional at byte 6 in MBAP header, must match request/response pair",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:c093c4ea4f67",
+        "kind": "function_code",
+        "path": "function_code/5.libmodbus/function.txt",
+        "content": "Modbus Function Code Reference\n==============================\n\nScope\n-----\nThis file contains:\n\n1. Modbus public function codes\n2. Legacy function codes\n3. Diagnostics subfunctions\n4. Encapsulated Interface Transport MEI types\n5. Read Device Identification codes\n6. Modbus exception codes\n7. User-defined function-code ranges\n\n================================================================\n1. MODBUS FUNCTION CODES\n================================================================\n\n0x01 = Read Coils\n0x02 = Read Discrete Inputs\n0x03 = Read Holding Registers\n0x04 = Read Input Registers\n0x05 = Write Single Coil\n0x06 = Write Single Register\n0x07 = Read Exception Status\n0x08 = Diagnostics\n0x09 = Program 484\n0x0A = Poll 484\n0x0B = Get Communication Event Counter\n0x0C = Get Communication Event Log\n0x0D = Program Controller\n0x0E = Poll Controller\n0x0F = Write Multiple Coils\n0x10 = Write Multiple Registers\n0x11 = Report Server ID\n0x12 = Program 884/M84\n0x13 = Reset Communication Link\n0x14 = Read File Record\n0x15 = Write File Record\n0x16 = Mask Write Register\n0x17 = Read/Write Multiple Registers\n0x18 = Read FIFO Queue\n0x2B = Encapsulated Interface Transport\n\nFunction code summary:\n\n0x01 Read Coils\n    Read one or more coil values.\n    Request:\n        Starting Address\n        Quantity of Coils\n    Response:\n        Byte Count\n        Packed Coil Status\n\n0x02 Read Discrete Inputs\n    Read one or more discrete input values.\n    Request:\n        Starting Address\n        Quantity of Inputs\n    Response:\n        Byte Count\n        Packed Input Status\n\n0x03 Read Holding Registers\n    Read holding registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:869721545c59",
+        "kind": "function_code",
+        "path": "function_code/5.libmodbus/function.txt",
+        "content": "Byte Count\n        Packed Input Status\n\n0x03 Read Holding Registers\n    Read holding registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values\n\n0x04 Read Input Registers\n    Read input registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values\n\n0x05 Write Single Coil\n    Write one coil.\n    Legal output values:\n        0xFF00 = ON\n        0x0000 = OFF\n\n0x06 Write Single Register\n    Write one 16-bit holding register.\n\n0x07 Read Exception Status\n    Serial-line-only function returning exception status bits.\n\n0x08 Diagnostics\n    Execute one diagnostics subfunction.\n\n0x09 Program 484\n    Legacy Modicon 484 programming function.\n\n0x0A Poll 484\n    Legacy Modicon 484 polling function.\n\n0x0B Get Communication Event Counter\n    Return communication event status and event count.\n\n0x0C Get Communication Event Log\n    Return communication status, counters, and event bytes.\n\n0x0D Program Controller\n    Legacy controller programming function.\n\n0x0E Poll Controller\n    Legacy controller polling function.\n\n0x0F Write Multiple Coils\n    Write multiple packed coil values.\n\n0x10 Write Multiple Registers\n    Write multiple 16-bit holding registers.\n\n0x11 Report Server ID\n    Return server identifier and run-state information.\n\n0x12 Program 884/M84\n    Legacy controller programming function.\n\n0x13 Reset Communication Link\n    Legacy communication-link reset function.\n\n0x14 Read File Record\n    Read one or more file-record groups.\n\n0x15 Write File Record\n    Write one or more file-record groups.\n\n0x16 Mask Write Register\n    Modify one holding register using AND and OR masks.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:48ef3b4dd565",
+        "kind": "function_code",
+        "path": "function_code/5.libmodbus/function.txt",
+        "content": "unction.\n\n0x14 Read File Record\n    Read one or more file-record groups.\n\n0x15 Write File Record\n    Write one or more file-record groups.\n\n0x16 Mask Write Register\n    Modify one holding register using AND and OR masks.\n\n0x17 Read/Write Multiple Registers\n    Write multiple registers and read multiple registers in one transaction.\n\n0x18 Read FIFO Queue\n    Read the contents of a FIFO queue.\n\n0x2B Encapsulated Interface Transport\n    Carry an MEI operation, including Read Device Identification.\n\n================================================================\n2. FUNCTION CODE ASSIGNMENT RANGES\n================================================================\n\n0x01-0x40 = Public or historically assigned range\n0x41-0x48 = User-defined function-code range\n0x49-0x63 = Public/reserved range\n0x64-0x6E = User-defined function-code range\n0x6F-0x7F = Public/reserved range\n\n0x80-0xFF are not normal request function codes.\n\nFor an exception response:\n\nException Function Code = Request Function Code OR 0x80\n\nExamples:\n\nRequest 0x03 -> Exception Response 0x83\nRequest 0x06 -> Exception Response 0x86\nRequest 0x10 -> Exception Response 0x90\nRequest 0x2B -> Exception Response 0xAB\n\n================================================================\n3. MODBUS DIAGNOSTICS SUBFUNCTIONS\n================================================================\n\nDiagnostics function code:\n\n0x08 = Diagnostics\n\nThe first two data bytes contain the diagnostics subfunction.\n\n0x0000 = Return Query Data\n0x0001 = Restart Communications Option\n0x0002 = Return Diagnostic Register\n0x0003 = Change ASCII Input Delimiter\n0x0004 = Force Listen Only Mode\n\n0x0005-0x0009 = Reserved",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:template-catalog:e27899722475",
+        "kind": "protocol_format",
+        "path": "protocol_format/modbustcp.json",
+        "content": "Protocol: MODBUSTCP\nTemplate catalog:\n- Common Headers :: MBAP Header -> transaction_id, protocol_id, length, unit_id\n- Service or Function Specific Templates :: Modbus response -> function_code, data\n- Error or Exception Templates :: Modbus exception response -> function_code",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:b024bf223809",
+        "kind": "function_code",
+        "path": "function_code/5.libmodbus/function.txt",
+        "content": "Diagnostics\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0000 = Return Query Data\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0001 = Restart Communications Option\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0002 = Return Diagnostic Register\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0003 = Change ASCII Input Delimiter\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0004 = Force Listen Only Mode\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000A = Clear Counters and Diagnostic Register\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000B = Return Bus Message Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000C = Return Bus Communication Error Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000D = Return Bus Exception Error Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000E = Return Server Message Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000F = Return Server No Response Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0010 = Return Server NAK Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0011 = Return Server Busy Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0012 = Return Bus Character Overrun Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0013 = Clear Overrun Counter and Flag\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0014 = Get/Clear Modbus Plus Statistics\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x2B = Encapsulated Interface Transport\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x0D = CANopen General Reference\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x0E = Read Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x01 = Basic Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x02 = Regular Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x03 = Extended Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x04 = Specific Device Identifi",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:feea6cf87ab2",
+        "kind": "function_code",
+        "path": "function_code/5.libmodbus/function.txt",
+        "content": "gnostics subfunction.\n\n0x0000 = Return Query Data\n0x0001 = Restart Communications Option\n0x0002 = Return Diagnostic Register\n0x0003 = Change ASCII Input Delimiter\n0x0004 = Force Listen Only Mode\n\n0x0005-0x0009 = Reserved\n\n0x000A = Clear Counters and Diagnostic Register\n0x000B = Return Bus Message Count\n0x000C = Return Bus Communication Error Count\n0x000D = Return Bus Exception Error Count\n0x000E = Return Server Message Count\n0x000F = Return Server No Response Count\n0x0010 = Return Server NAK Count\n0x0011 = Return Server Busy Count\n0x0012 = Return Bus Character Overrun Count\n0x0013 = Clear Overrun Counter and Flag\n0x0014 = Get/Clear Modbus Plus Statistics\n\nDiagnostics subfunction details:\n\n0x0000 Return Query Data\n    Echo the request data in the response.\n\n0x0001 Restart Communications Option\n    Restart communication processing.\n    Data value 0x0000:\n        Clear event log.\n    Data value 0xFF00:\n        Preserve event log where supported.\n\n0x0002 Return Diagnostic Register\n    Return the server diagnostic register.\n\n0x0003 Change ASCII Input Delimiter\n    Change the Modbus ASCII message delimiter.\n\n0x0004 Force Listen Only Mode\n    Place the serial server into listen-only mode.\n\n0x000A Clear Counters and Diagnostic Register\n    Clear communication counters and diagnostic register.\n\n0x000B Return Bus Message Count\n    Return number of messages detected on the bus.\n\n0x000C Return Bus Communication Error Count\n    Return number of communication errors.\n\n0x000D Return Bus Exception Error Count\n    Return number of exception responses.\n\n0x000E Return Server Message Count\n    Return number of messages processed by the server.\n\n0x000F Return Server No Response Count\n    Return number of messages for which no response was sent.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "issue:743:743-summary:1fc7e97d059a",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#743.txt",
+        "content": "Issue: 743\nSummary: In libmodbus 3.1.10, the modbus_write_bits function reportedly has a heap-buffer-overflow caused by an out-of-bounds read of the input buffer when specially crafted input makes the nb (number of bits) parameter read past available data. The sample input provided is <00><01><02><00><80><04><01><01><2A>. The report says this produces undefined behavior and crashes, with ASan indicating a heap-buffer-overflow; the mention of other unintended behaviors is speculative.\nReproduce: Reported environment: libmodbus 3.1.10 on Linux/Ubuntu 20.04 amd64. No specific example program, build flags, or command line is given, but the report says libmodbus debug mode was enabled and refers to ASan reports. To reproduce as documented: 1) Run a libmodbus instance with debug output enabled so it accepts a client connection and waits for an indication. 2) Provide the sample input <00><01><02><00><80><04><01><01><2A>. 3) Observe the debug output shown in the report: \"Client connection accepted from 127.0.0.1.\", \"Waiting for an indication...\", \"ERROR Connection timed out: select\", the sample input, and \"Quit the loop: Connection timed out\". Expected result: ASan reports a heap-buffer-overflow in modbus_write_bits due to an out-of-bounds read of the input buffer, and the function exhibits undefined behavior/crashes.",
+        "issue_number": 743,
+        "title": "In libmodbus 3.1.10, the modbus_write_bits function reportedly has a heap-buffer-overflow caused by an out-of-bounds read of the input buffer when specially ..."
+      },
+      {
+        "chunk_id": "issue:614:614-summary:e89105d3aaf7",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#614.txt",
+        "content": "Issue: 614\nSummary: The report describes a heap-based buffer overflow in libmodbus triggered by a crafted request sent to the test server. The issue title names modbus_reply, while the description names _modbus_receive_msg; the provided AddressSanitizer trace shows the fault in modbus_reply at src/modbus.c:980:46. When tests/unit-test-server processes the supplied byte sequence, the observed result is a server abort: first with \"double free or corruption (!prev)\", and in the ASan run with a SEGV caused by a WRITE memory access in modbus_reply.\nReproduce: Use the libmodbus test server program tests/unit-test-server.c. Run ./unit-test-server (the report also shows ./tests/unit-test-server). From a client, connect to the server and send the exact byte sequence <03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>. In the documented debug-enabled run, the server logs that the client connection from 127.0.0.1 is accepted, prints the received request, emits [03][DD][00][00][00][05][FF][17][02][00][00], then logs \"ERROR Connection reset by peer: read\", \"Quit the loop: Connection reset by peer\", and aborts with \"double free or corruption (!prev)\". In an AddressSanitizer build, sending the same input causes a SEGV on a WRITE access in modbus_reply at src/modbus.c:980:46, followed by process abort.",
+        "issue_number": 614,
+        "title": "The report describes a heap-based buffer overflow in libmodbus triggered by a crafted request sent to the test server. The issue title names modbus_reply, wh..."
+      },
+      {
+        "chunk_id": "issue:738:738-summary:a2fd51730f5d",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#738.txt",
+        "content": "Issue: 738\nSummary: In libmodbus-3.1.10, an intermittent crash is reported in `read_registers()` in `modbus.c` at line 1313, reached from `modbus_read_input_registers(ctx, 0, 7, reg)`. The failing statement is the loop that stores response data into `dest[i]`; the provided backtrace shows `dest=0x1` and inaccessible at that point. The report does not identify the root cause or a specific missing validation, although the reporter states the original `reg` array address looked valid in gdb. The documented trigger is reading 7 input registers starting at address 0 from the device, and the demonstrated impact is an intermittent process crash.\nReproduce: Use libmodbus-3.1.10 and a program like the reporter's `pollExternalDevice.cpp`, where `main()` calls `modbus_read_input_registers(ctx, 0, 7, reg)` (reported at line 366) to read 7 input registers starting at address 0 from the device. Repeat the read operation; the report says it is \"not reproduceble everytime\" and \"crashing sometimes.\" When it fails, inspect under gdb/debug mode: the backtrace shows frame `#0 read_registers` at `modbus.c:1313` on the `dest[i] = ...` assignment, with `dest=0x1`, and frame `#1 main()` at `pollExternalDevice.cpp:366`. No standalone PoC or exact command sequence is provided.",
+        "issue_number": 738,
+        "title": "In libmodbus-3.1.10, an intermittent crash is reported in `read_registers()` in `modbus.c` at line 1313, reached from `modbus_read_input_registers(ctx, 0, 7,..."
+      },
+      {
+        "chunk_id": "issue:764:764-summary:f5885d05eb76",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#764.txt",
+        "content": "Issue: 764\nSummary: In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server program. The observed result is a crash, shown in the report as an AddressSanitizer SEGV. The report further states that the issue appears to be caused by the backend_type pointer not being properly initialized, but that cause is presented as apparent/speculative rather than demonstrated.\nReproduce: 1. Use libmodbus v3.1.6 and run the unit-test-server target.\n2. Send the documented PoC packet to the server: 00000000000CFF1701600002006B0001021234\n3. The reported result is a crash instead of normal handling; the document shows an AddressSanitizer diagnostic beginning with: \"ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe96\".",
+        "issue_number": 764,
+        "title": "In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server ..."
+      },
+      {
+        "chunk_id": "issue:279:279-payload:ce6ff3df7559",
+        "kind": "issue",
+        "path": "distilled_issue/5.libmodbus/#279.txt",
+        "content": "Payload message 0: 02 10 a0 48 00 04 08 20 00 00 00 00 02 4e e1 c3 0a\nPayload message 1: 02 03 a0 48 00 04 e6 2c\nPayload message 2: 02 10 a0 48 00 05 0a 00 20 00 00 02 04 7b 83 64 01 72 d7\nPayload message count: 3",
+        "issue_number": 279,
+        "title": "In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second cal..."
+      }
+    ],
+    "generated_unix_time": 1788705788,
+    "generation_channel": "full",
+    "protocol_knowledge_enabled": true,
+    "vulnerability_knowledge_enabled": true,
+    "model_prior_gap_completion_enabled": true,
+    "built_in_prior_guardrails": [
+      "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+      "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+      "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+    ],
+    "protocol_repair_enabled": true,
+    "requested_final_seed_count": 4,
+    "requested_candidate_count": 4,
+    "max_final_seed_count": 100,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [],
+        "review": {
+          "coverage_gaps": [],
+          "diversity_score": 95,
+          "global_feedback": [
+            "Protocol framing, MBAP header (7 bytes with protocol_id=0x0000), function code mapping, and length rules are fully source-backed with zero deviations.",
+            "All four plans are implemented exactly as specified in the candidate_library section.",
+            "Conservative payloads and expected behaviors align with source templates and operation catalogs.",
+            "Structural diversity is maximized across operations, frame shapes, state sequences, and nested paths.",
+            "Issue grounding is present via evidence_ids and summaries from libmodbus issues (738, 867, etc.)."
+          ],
+          "issue_enhancement_score": 80,
+          "needs_revision": false,
+          "overall_score": 93,
+          "protocol_validity_score": 100,
+          "seed_utility_score": 95,
+          "sequence_feedback": [
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 100,
+              "seed_id": "plan-001-baseline-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 95,
+              "seed_id": "plan-002-stateful-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 90,
+              "seed_id": "plan-003-boundary-001"
+            },
+            {
+              "keep": true,
+              "problems": [],
+              "recommended_action": "retain as-is",
+              "score": 95,
+              "seed_id": "plan-004-deep-001"
+            }
+          ]
+        },
+        "candidate_count": 4
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

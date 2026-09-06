@@ -1,0 +1,64 @@
+{
+  "seed_id": "b003-s001",
+  "title": "Base Read Holding Registers variant 1",
+  "strategy": "stateful_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Holding Registers Request",
+      "hex": "000000000006010300020001",
+      "byte_length": 12,
+      "sha256": "eb5eeb2555c8d89fbb06ae59ff80aa1aa69c810ac231e7ec4f76ef73b127061c"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Holding Registers Response",
+      "hex": "0000000000080103000200010002",
+      "byte_length": 14,
+      "sha256": "ce082306123fa9e56bb557bab96fdb4bd3d6c6ffb74e56b8b02f34f4a68f6914"
+    }
+  ],
+  "expected_behavior": "Server returns holding register data starting at address 0x0002 with quantity 0x0001.",
+  "constraints_preserved": [
+    "7-byte MBAP header with protocol identifier 0x0000",
+    "Unit identifier 0x01",
+    "Function code 0x03",
+    "Starting address 0x0002",
+    "Quantity 0x0001"
+  ],
+  "issue_safety_notes": "No external vulnerability issues available; issue_safety_notes explicit as per base constraints.",
+  "sequence_sha256": "5834afe62ada7d6b240ed790e8c4f61a7aae58d4f0cfd9ed4f88aefc3d13e757",
+  "total_bytes": 26,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "11c4adb01a3a0ef3568fd542a455485feef51f999cd19ade52863e4b0016824a",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

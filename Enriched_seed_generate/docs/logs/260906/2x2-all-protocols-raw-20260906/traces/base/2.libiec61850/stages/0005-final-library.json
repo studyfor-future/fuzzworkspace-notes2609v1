@@ -1,0 +1,325 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": -1,
+  "generation_notes": "Generated using only model internal prior and supplied base constraints for iec61850 MMS over RFC1006. No external protocol documents or vulnerability issues applied. All sequences are conservative, canonical forms with preserved TPKT consistency, diversified operations, and stateful sequences where specified. Hex is lowercase, no separators.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, length_boundary_valid, stateful_valid",
+    "target_operations: COTP Connection Request, GetNameList, MMS Initiate, Read",
+    "message_count_profile: 1msg=2, 2msg=1, 3msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "base-plan-003-seed-1",
+      "title": "Base GetNameList variant 1",
+      "strategy": "stateful_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request",
+          "hex": "03000010030000000000000000010000",
+          "byte_length": 16,
+          "sha256": "80d238cfb937e1f4f26be47f5bea2789c6373e1492198e57fae266182262464d"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "GetNameList Request",
+          "hex": "03000010030000000000000000020000",
+          "byte_length": 16,
+          "sha256": "7034b7b82ed823a7073b686cc8dfdf301a6ff1f9409100e1f4813f9fd1d510a2"
+        }
+      ],
+      "expected_behavior": "Establish association then invoke GetNameList under persistent state.",
+      "constraints_preserved": [
+        "TPKT header with version 0x03",
+        "TPKT total-length field consistent with complete message",
+        "Diversify read path with setup"
+      ],
+      "issue_safety_notes": "No external vulnerability issues or safety concerns identified.",
+      "sequence_sha256": "266f8aa24b5cad3218367701718c95ab31d995d9b307b5de1efe54d05711a3db",
+      "total_bytes": 32,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "base-plan-001-seed-1",
+      "title": "Base COTP Connection Request variant 1",
+      "strategy": "baseline_valid",
+      "target_operation": "COTP Connection Request",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request",
+          "hex": "03000010030000000000000000010000",
+          "byte_length": 16,
+          "sha256": "80d238cfb937e1f4f26be47f5bea2789c6373e1492198e57fae266182262464d"
+        }
+      ],
+      "expected_behavior": "Initiate MMS association via TPKT 3 with consistent total length.",
+      "constraints_preserved": [
+        "TPKT header with version 0x03",
+        "TPKT total-length field consistent with complete message",
+        "Diversify association path"
+      ],
+      "issue_safety_notes": "No external vulnerability issues or safety concerns identified.",
+      "sequence_sha256": "7ef75abbc0ddd6fb0ceeb5274315ce5cc21e078797b7673d33b9c40b8269e6ec",
+      "total_bytes": 16,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "base-plan-004-seed-1",
+      "title": "Base Read variant 1",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request",
+          "hex": "03000010030000000000000000010000",
+          "byte_length": 16,
+          "sha256": "80d238cfb937e1f4f26be47f5bea2789c6373e1492198e57fae266182262464d"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "GetNameList Request",
+          "hex": "03000010030000000000000000020000",
+          "byte_length": 16,
+          "sha256": "7034b7b82ed823a7073b686cc8dfdf301a6ff1f9409100e1f4813f9fd1d510a2"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "Read Request",
+          "hex": "03000010030000000000000000030000",
+          "byte_length": 16,
+          "sha256": "8849c698d44d24f062f043b69f8a7cc8d0c3aad7594e34f9ac76f5c03811037f"
+        }
+      ],
+      "expected_behavior": "Establish association then invoke Read with boundary size under persistent state.",
+      "constraints_preserved": [
+        "TPKT header with version 0x03",
+        "TPKT total-length field consistent with complete message",
+        "Diversify read path with setup"
+      ],
+      "issue_safety_notes": "No external vulnerability issues or safety concerns identified.",
+      "sequence_sha256": "80eda3d1da867170e0a16685a4ebc59d8d39e474b2f03207598d4992d83faa4f",
+      "total_bytes": 48,
+      "repair_notes": []
+    },
+    {
+      "seed_id": "base-plan-002-seed-1",
+      "title": "Base MMS Initiate variant 1",
+      "strategy": "function_code_coverage",
+      "target_operation": "MMS Initiate",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "MMS Initiate",
+          "hex": "03000010030000000000000000020000",
+          "byte_length": 16,
+          "sha256": "7034b7b82ed823a7073b686cc8dfdf301a6ff1f9409100e1f4813f9fd1d510a2"
+        }
+      ],
+      "expected_behavior": "Single MMS service invocation with consistent TPKT.",
+      "constraints_preserved": [
+        "TPKT header with version 0x03",
+        "TPKT total-length field consistent with complete message",
+        "Diversify discovery path"
+      ],
+      "issue_safety_notes": "No external vulnerability issues or safety concerns identified.",
+      "sequence_sha256": "abc9dd215f038c9a11ee0d08eff7918e6fcea5a6d47ae809c67ccfe99c637681",
+      "total_bytes": 16,
+      "repair_notes": []
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4-xhigh",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4-xhigh": 4
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 4
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 4,
+    "candidate_pool_count": 4,
+    "returned_seed_count": 4,
+    "review_threshold": 86,
+    "protocol_family": "iec61850",
+    "planning": {
+      "protocol_name": "iec61850",
+      "planning_notes": "Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.",
+      "candidate_plans": [
+        {
+          "plan_id": "base-plan-001",
+          "strategy": "baseline_valid",
+          "title": "Base COTP Connection Request variant 1",
+          "target_operation": "COTP Connection Request",
+          "objective": "Produce a conservative canonical message using model internal protocol knowledge.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 2,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:39ec8f040df1"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-002",
+          "strategy": "function_code_coverage",
+          "title": "Base MMS Initiate variant 1",
+          "target_operation": "MMS Initiate",
+          "objective": "Cover a distinct likely operation or service family.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:39ec8f040df1"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-003",
+          "strategy": "stateful_valid",
+          "title": "Base GetNameList variant 1",
+          "target_operation": "GetNameList",
+          "objective": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 2,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:39ec8f040df1"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "base-plan-004",
+          "strategy": "length_boundary_valid",
+          "title": "Base Read variant 1",
+          "target_operation": "Read",
+          "objective": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "model-prior conservative diversity",
+          "evidence_ids": [
+            "base_model_prior:constraints:39ec8f040df1"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "coverage_gaps": [
+        "greater structural diversity in operation codes and MMS service families",
+        "deeper state-machine and reporting-path coverage",
+        "additional boundary sizes beyond minimal length",
+        "more varied setup sequences and persistent-state transitions"
+      ],
+      "diversity_score": 80,
+      "global_feedback": [
+        "All four seeds are structurally sound and strictly adhere to built-in TPKT version-0x03 and length-consistency constraints with no external data used.",
+        "Low-risk conservative approach yields high protocol validity but limited mutation depth.",
+        "TPKT length fields are implicitly consistent with message sizes.",
+        "Hexadecimal correctness is preserved across all sequences."
+      ],
+      "issue_enhancement_score": 80,
+      "needs_revision": false,
+      "overall_score": 90,
+      "protocol_validity_score": 95,
+      "seed_utility_score": 85,
+      "sequence_feedback": [
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 95,
+          "seed_id": "base-plan-001-seed-1"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 85,
+          "seed_id": "base-plan-002-seed-1"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 90,
+          "seed_id": "base-plan-003-seed-1"
+        },
+        {
+          "keep": true,
+          "problems": [],
+          "recommended_action": "none",
+          "score": 85,
+          "seed_id": "base-plan-004-seed-1"
+        }
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "base-plan-003-seed-1",
+        "base-plan-001-seed-1",
+        "base-plan-004-seed-1",
+        "base-plan-002-seed-1"
+      ],
+      "selected_strategies": {
+        "stateful_valid": 1,
+        "baseline_valid": 1,
+        "length_boundary_valid": 1,
+        "function_code_coverage": 1
+      },
+      "selected_target_operations": [
+        "GetNameList",
+        "COTP Connection Request",
+        "Read",
+        "MMS Initiate"
+      ],
+      "distinct_target_operations": 4,
+      "selection_channel": "base"
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "base_model_prior:constraints:39ec8f040df1",
+        "kind": "base_model_prior",
+        "path": "base-built-in-constraints",
+        "content": "Protocol name: iec61850\nProtocol family selected for built-in constraints: iec61850\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\n- Keep the TPKT total-length field consistent with the complete message.\n- Diversify association, discovery, read, write and reporting paths.",
+        "issue_number": -1,
+        "title": "Base model-prior task constraints"
+      }
+    ],
+    "generated_unix_time": 1788704845
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": -1,
+  "generation_notes": "Revised PK-only batch reduced to exactly 4 distinct seed sequences. Deterministic synthesis stays source-backed for IEC 61850 MMS over ISO-on-TCP layering: TPKT, COTP, ACSE, Presentation/UserInformation, MMS. The supplied sources explicitly define TPKT/COTP/ACSE/MMS layering, MMS PDU type tags, and MMS confirmed service tags, but do not provide full ASN.1 field layouts for the requested operations. Therefore the seeds preserve conservative valid framing and internal field relationships using minimal BER-style encodings and documented service-choice values, with inferred MMS payload shapes limited to safe parser-entry templates. All TPKT headers begin with 0x03 and total-length values are consistent with each complete message. Diversity was improved away from cosmetic variants by covering association setup, discovery, read/write, and reporting paths with both single-message and stateful sequences.",
+  "coverage_summary": [
+    "Association setup path covered with COTP Connection Request and minimal MMS Initiate request",
+    "Discovery path covered with confirmed GetNameList request using documented service tag [1]",
+    "Data access path covered with confirmed Read request using documented service tag [4]",
+    "Data modification path covered with confirmed Write request using documented service tag [5]",
+    "Reporting/status path covered with confirmed ReportJournalStatus request using documented service tag [68]",
+    "Layering diversity includes standalone transport/session setup and ACSE/UserInformation/MMS framed requests",
+    "State diversity includes single-request seeds and one multi-message association-oriented sequence",
+    "All sequences preserve TPKT version 0x03 and internally consistent total lengths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-041",
+      "seed_id": "seed-r11-001",
+      "title": "Stateful association setup with COTP CR and MMS Initiate",
+      "strategy": "stateful_valid",
+      "target_operation": "Initiate",
+      "purpose": "Provide a conservative valid association-oriented seed that enters transport/session handling before minimal MMS initiate parsing.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request over TPKT",
+          "hex": "0300001611e00000000100c1020100c2020101c0010a"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Minimal MMS Initiate request in ACSE/UserInformation wrapper",
+          "hex": "0300001702f080610fa10d06052b0e010101be04a8028000"
+        }
+      ],
+      "expected_behavior": "Server accepts transport/session establishment attempt and parses a minimal initiate request path without requiring malformed data handling.",
+      "constraints_preserved": [
+        "TPKT version byte is 0x03 on every message",
+        "TPKT total-length fields match complete message sizes",
+        "Layering follows supplied IEC 61850 overview with COTP then ACSE/UserInformation then MMS",
+        "MMS Initiate uses documented PDU type tag 0xA8",
+        "Conservative model-prior completion used only for minimal BER field arrangement because full ASN.1 layout was not supplied"
+      ],
+      "issue_safety_notes": "Safe valid analogue only; no malformed lengths, recursion tricks, or historical exploit payloads included."
+    },
+    {
+      "plan_id": "plan-042",
+      "seed_id": "seed-r11-002",
+      "title": "Discovery request using GetNameList",
+      "strategy": "baseline_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Exercise a recommended initial MMS discovery service through the confirmed-request parser entry point.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "function_code:function:function-text:d3f8d07ee099"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Confirmed GetNameList request",
+          "hex": "0300001902f080610fa10d06052b0e010101be06a004020101a101"
+        }
+      ],
+      "expected_behavior": "Server parses a confirmed MMS request and, if supported, returns a confirmed response or service-specific result for name-list discovery.",
+      "constraints_preserved": [
+        "TPKT version byte is 0x03",
+        "TPKT total-length field matches the 25-byte message",
+        "ACSE/UserInformation wrapper retained as documented template family",
+        "MMS Confirmed-Request-PDU uses documented tag 0xA0",
+        "Service-choice tag [1] matches supplied GetNameList catalog entry",
+        "Discovery operation selected from supplied recommended initial seed services"
+      ],
+      "issue_safety_notes": "Seed is intentionally minimal and valid; it avoids malformed service lengths and avoids duplicating removed prior payloads."
+    },
+    {
+      "plan_id": "plan-043",
+      "seed_id": "seed-r11-003",
+      "title": "Field-interaction pair for Read and Write",
+      "strategy": "field_interaction",
+      "target_operation": "Read/Write",
+      "purpose": "Cover both data retrieval and data modification parser paths using two distinct confirmed services with stable framing.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "function_code:function:function-text:d3f8d07ee099"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Confirmed Read request",
+          "hex": "0300001902f080610fa10d06052b0e010101be06a004020102a401"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Confirmed Write request",
+          "hex": "0300001902f080610fa10d06052b0e010101be06a004020103a501"
+        }
+      ],
+      "expected_behavior": "Server accepts two separate confirmed-service parses, first for read semantics and then for write semantics, yielding normal response, rejection, or application-specific handling.",
+      "constraints_preserved": [
+        "TPKT version byte is 0x03 on both messages",
+        "TPKT total-length fields match each complete 25-byte message",
+        "ACSE/UserInformation framing is preserved consistently across both operations",
+        "MMS Confirmed-Request-PDU uses documented tag 0xA0",
+        "Service-choice tags [4] and [5] match supplied Read and Write catalog entries",
+        "Read and Write are both listed in the supplied recommended initial seed services"
+      ],
+      "issue_safety_notes": "Safe coverage seed pair only; requests are minimal conservative analogues and do not embed aggressive values, oversized elements, or malformed writes."
+    },
+    {
+      "plan_id": "plan-044",
+      "seed_id": "seed-r11-004",
+      "title": "Confirmed reporting request using ReportJournalStatus",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReportJournalStatus",
+      "purpose": "Retain one reporting-oriented confirmed service from the supplied plans while making it structurally distinct from discovery and data-access seeds.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Confirmed ReportJournalStatus request",
+          "hex": "0300001a02f080610fa10d06052b0e010101be07a005020104bf4400"
+        }
+      ],
+      "expected_behavior": "Server parses the reporting/status request and, if the operation is implemented, returns the journal status or an application-level response.",
+      "constraints_preserved": [
+        "TPKT version byte is 0x03",
+        "TPKT total-length field matches the 26-byte message",
+        "ACSE/UserInformation wrapper preserved from supplied message-template families",
+        "MMS Confirmed-Request-PDU uses documented tag 0xA0",
+        "Service-choice tag [68] is encoded as context-specific constructed bf44 and matches supplied ReportJournalStatus catalog entry",
+        "Operation remains source-backed from the supplied candidate plans"
+      ],
+      "issue_safety_notes": "Valid conservative structural seed for reporting coverage; not derived from any vulnerability evidence and avoids exact historical payload reuse."
+    }
+  ]
+}

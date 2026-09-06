@@ -1,0 +1,135 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": -1,
+  "generation_notes": "Generated 4 conservative MMS-over-RFC1006 seed sequences for IEC 61850 using only fallible model-prior protocol knowledge and the supplied base constraints. TPKT headers start with 03 and total-length fields are internally consistent. Encodings are intended as mutation-friendly plausible seeds, not externally verified protocol transcripts.",
+  "coverage_summary": [
+    "Stateful association-then-write path with explicit server response directionality",
+    "Single-request discovery-style GetVariableAccessAttributes with boundary-adjacent visible length growth",
+    "Single-request DefineNamedVariableList exercising interacting list/name fields",
+    "Single-request InformationReport using a deeper nested structure to reach report parsing paths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-045",
+      "seed_id": "iec61850-base-045",
+      "title": "Base Write variant 6",
+      "strategy": "stateful_valid",
+      "target_operation": "Write",
+      "purpose": "Provide a plausible setup-then-target MMS flow: association establishment followed by a write request to reach stateful write handling with conservative framing.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "associate_request",
+          "hex": "0300001611e00000000100c1020001c0010ac2020001"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "write_request",
+          "hex": "0300002f02f08030230201013e1e80036170708108646f312473742456616c81010a820101a309830100a402830105"
+        }
+      ],
+      "expected_behavior": "A target that accepts or partially parses MMS over RFC1006 may first process the association request and then route the second message into write-related handling; rejection is acceptable if local state prerequisites differ.",
+      "constraints_preserved": [
+        "Used the specified target operation Write",
+        "Followed the setup_then_request sequence shape with 2 messages",
+        "TPKT version byte begins with 03",
+        "TPKT total lengths are internally consistent for both messages",
+        "Message directions are stateful and not cosmetic duplicates",
+        "Only supplied base constraint evidence id is cited"
+      ],
+      "issue_safety_notes": "No external vulnerability issue knowledge was available. This seed is based only on model-prior plausibility and base constraints, not on verified issue details or external protocol documentation."
+    },
+    {
+      "plan_id": "base-plan-046",
+      "seed_id": "iec61850-base-046",
+      "title": "Base GetVariableAccessAttributes variant 6",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetVariableAccessAttributes",
+      "purpose": "Exercise a conservative single discovery request with a somewhat longer object identifier field while keeping visible BER-style and TPKT lengths aligned.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "get_variable_access_attributes_request",
+          "hex": "0300002b02f080301f020102a51a80034c443081136c6c6e30246d6f64247374244865616c7468"
+        }
+      ],
+      "expected_behavior": "A plausible MMS parser may classify this as a GetVariableAccessAttributes-style request and enter variable metadata lookup or rejection logic depending on naming expectations.",
+      "constraints_preserved": [
+        "Used the specified target operation GetVariableAccessAttributes",
+        "Followed the single_request sequence shape with 1 message",
+        "TPKT version byte begins with 03",
+        "TPKT total length is internally consistent",
+        "Boundary-adjacent size chosen by extending the object name field rather than random padding",
+        "Only supplied base constraint evidence id is cited"
+      ],
+      "issue_safety_notes": "No external vulnerability issue knowledge was available. The request shape is a conservative model-prior seed and should be treated as plausible rather than externally verified."
+    },
+    {
+      "plan_id": "base-plan-047",
+      "seed_id": "iec61850-base-047",
+      "title": "Base DefineNamedVariableList variant 6",
+      "strategy": "field_interaction",
+      "target_operation": "DefineNamedVariableList",
+      "purpose": "Exercise list-definition parsing by coupling a named list identifier with two variable-spec entries so that count-like and nested-name relationships can be mutated together.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "define_named_variable_list_request",
+          "hex": "0300003f02f0803033020103ab2e80056c697374318125a11180034c4430810a6c6c6e3024737424537461a11080034c443081096c70686431246d6f64"
+        }
+      ],
+      "expected_behavior": "A plausible server may enter named-variable-list creation logic, parse the list name, then iterate over two member specifications; alternative behavior may be graceful rejection if naming scopes differ.",
+      "constraints_preserved": [
+        "Used the specified target operation DefineNamedVariableList",
+        "Followed the single_request sequence shape with 1 message",
+        "TPKT version byte begins with 03",
+        "TPKT total length is internally consistent",
+        "Field interaction is represented through list identifier plus multiple nested member entries",
+        "Only supplied base constraint evidence id is cited"
+      ],
+      "issue_safety_notes": "No external vulnerability issue knowledge was available. This is a structure-oriented seed derived from internal model prior only, without external verification."
+    },
+    {
+      "plan_id": "base-plan-048",
+      "seed_id": "iec61850-base-048",
+      "title": "Base InformationReport variant 6",
+      "strategy": "parser_depth",
+      "target_operation": "InformationReport",
+      "purpose": "Drive deeper report parsing through a nested report structure with multiple variable-access/data components in one standalone message.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "information_report",
+          "hex": "0300003e02f0803032020104a531a11480034c4430810d727063622452505424427256616c3019a005830101a1088306737461747573a1028300"
+        }
+      ],
+      "expected_behavior": "A target that supports MMS reporting may descend into report indication parsing, process the reported variable reference, and then walk multiple nested data elements; otherwise it may reject after framing or operation dispatch.",
+      "constraints_preserved": [
+        "Used the specified target operation InformationReport",
+        "Followed the single_request sequence shape with 1 message",
+        "TPKT version byte begins with 03",
+        "TPKT total length is internally consistent",
+        "Nested substructures were used to increase parser depth without random corruption",
+        "Only supplied base constraint evidence id is cited"
+      ],
+      "issue_safety_notes": "No external vulnerability issue knowledge was available. This deeper-form seed is based on model-prior plausibility and base constraints only, not on externally verified protocol behavior or issue reports."
+    }
+  ]
+}

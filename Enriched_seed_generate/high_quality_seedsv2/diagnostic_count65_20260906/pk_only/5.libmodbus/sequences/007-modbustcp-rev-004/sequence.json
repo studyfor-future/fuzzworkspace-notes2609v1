@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-rev-004",
+  "title": "Read File Record single-group request",
+  "strategy": "parser_depth",
+  "target_operation": "Read File Record",
+  "purpose": "Exercise a deeper parser entry using a valid file-record style request body with one sub-request group under correct Modbus/TCP framing.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:9821a13f1ada",
+    "function_code:function:function-text:869721545c59",
+    "function_code:function:function-text:48ef3b4dd565"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read File Record request",
+      "hex": "000000000009141206000100000001",
+      "byte_length": 15,
+      "sha256": "17b7e258f1b2761d11b33311f7d4b6af1ddcc32a3ce4ec8aae6f02baafe2ac0c"
+    }
+  ],
+  "expected_behavior": "Server decodes function 0x14 and parses one file-record group from the request body. If the addressed file, record, and length are supported, it returns a normal Read File Record response; otherwise it may return an exception response.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0009 matches unit id plus 8-byte PDU",
+    "Function 0x14 selected from documented function catalog",
+    "File-record request body completed conservatively as one grouped sub-request with internal byte-count consistency",
+    "Canonical byte ordering maintained for reference type and 16-bit fields",
+    "Valid PK-only parser-depth seed without intentional corruption"
+  ],
+  "issue_safety_notes": "No vulnerability payloads used. File-record body is a safe structural analogue intended for parser coverage, not malformed stress.",
+  "sequence_sha256": "3abb6b8a2e5c0275f8ad219723ca8fc5f24c651664d6ea1c18618723bbfbb2e2",
+  "total_bytes": 15,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "17b7e258f1b2761d11b33311f7d4b6af1ddcc32a3ce4ec8aae6f02baafe2ac0c",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

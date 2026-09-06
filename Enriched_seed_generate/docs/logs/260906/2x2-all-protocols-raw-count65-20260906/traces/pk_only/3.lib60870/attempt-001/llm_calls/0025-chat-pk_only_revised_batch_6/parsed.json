@@ -1,0 +1,143 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": -1,
+  "generation_notes": "Rebuilt as exactly 4 distinct PK-only seeds around conservative IEC 60870-5-104 APCI framing, because review feedback explicitly requested clean 0x68 APDUs instead of mixed 101/104 hybrids. Supplied sources directly ground Type Identification values, APCI/U-format categories, common command qualifier semantics, and recommended seed operations. Concrete APCI byte layouts and I-format control-field patterns are completed conservatively from widely recognized IEC 60870-5-104 practice only where the supplied excerpts are silent. All 0x68 length octets match the bytes that follow. Diversity was improved across pure U-format control, stateful handshake plus system command, control command, and monitoring/report paths. Exact previously removed payloads and malformed historical frames were not reused.",
+  "coverage_summary": [
+    "Pure IEC 60870-5-104 U-format STARTDT activation seed",
+    "Stateful IEC 60870-5-104 sequence combining STARTDT activation/confirmation with a valid General Interrogation ASDU",
+    "Canonical control-path Single Command seed using TypeID 45 and execute/ON qualifier semantics",
+    "Canonical monitoring-path measured value seed using recommended monitoring TypeID 13 with one information object"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-u-startdt",
+      "seed_id": "pk104_startdt_act_v1",
+      "title": "STARTDT activation U-format frame",
+      "strategy": "baseline_valid",
+      "target_operation": "STARTDT activation",
+      "purpose": "Provide a minimal valid 104 APCI control frame that reaches U-format handling without ASDU parsing.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT act",
+          "hex": "680407000000"
+        }
+      ],
+      "expected_behavior": "Parser accepts a valid IEC 60870-5-104 U-format STARTDT activation frame and transitions toward data transfer enabled state.",
+      "constraints_preserved": [
+        "Uses only IEC 60870-5-104 style 0x68 APCI framing",
+        "Length octet 0x04 matches the 4-byte APCI control field payload",
+        "No invented ASDU fields are attached to a U-format frame",
+        "Operation chosen from model-prior archetypes without contradicting supplied sources"
+      ],
+      "issue_safety_notes": "Benign protocol control analogue only; no malformed lengths, duplicate historical payloads, or exploit-specific content."
+    },
+    {
+      "plan_id": "plan-gi-stateful",
+      "seed_id": "pk104_startdt_gi_v1",
+      "title": "STARTDT handshake followed by General Interrogation",
+      "strategy": "stateful_valid",
+      "target_operation": "C_IC_NA_1",
+      "purpose": "Exercise both U-format and I-format parser/state transitions using a conservative STARTDT exchange before a general interrogation request.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "function_code:function:function-text:9662ce251be3",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT act",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STARTDT con",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "C_IC_NA_1 general interrogation request",
+          "hex": "680e00000000640106000100000014"
+        }
+      ],
+      "expected_behavior": "After STARTDT activation/confirmation, parser accepts the I-format ASDU as TypeID 100 general interrogation with activation cause and qualifier 20.",
+      "constraints_preserved": [
+        "Pure 104 APCI framing used for all messages",
+        "U-format frames keep fixed 4-byte control payload with matching length 0x04",
+        "General interrogation ASDU uses TypeID 100 from supplied recommended system ASDUs",
+        "Cause of transmission encoded as activation in a standard two-octet COT field",
+        "Single information object with IOA zero and interrogation qualifier 20"
+      ],
+      "issue_safety_notes": "Safe stateful seed; structurally valid handshake and request only, avoiding malformed control combinations and historical collisions."
+    },
+    {
+      "plan_id": "plan-sc-exec",
+      "seed_id": "pk104_c_sc_na_1_exec_on_v1",
+      "title": "Single Command execute ON request",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SC_NA_1",
+      "purpose": "Cover a canonical control ASDU with unambiguous supplied qualifier semantics for execute plus ON state.",
+      "evidence_ids": [
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:function-text:9662ce251be3",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "C_SC_NA_1 execute ON",
+          "hex": "680e000000002d0106000100010001"
+        }
+      ],
+      "expected_behavior": "Parser accepts a valid TypeID 45 single command request and dispatches to the single-command handler with SCO execute/ON semantics.",
+      "constraints_preserved": [
+        "TypeID 45 matches supplied mapping for C_SC_NA_1",
+        "Single-object VSQ used",
+        "ASDU keeps common address and 3-byte IOA ordering typical for 104",
+        "Qualifier byte uses select/execute bit 0 and command state ON per supplied common command qualifier table",
+        "APCI length 0x0e matches four control bytes plus ten ASDU bytes"
+      ],
+      "issue_safety_notes": "Valid command-path seed only; avoids unsupported timed variant encodings and any malformed qualifier experimentation."
+    },
+    {
+      "plan_id": "plan-measured-value",
+      "seed_id": "pk104_m_me_nc_1_report_v1",
+      "title": "Measured value short floating-point report",
+      "strategy": "function_code_coverage",
+      "target_operation": "M_ME_NC_1",
+      "purpose": "Add a distinct monitoring/report parser path using a recommended monitoring TypeID with one floating-point information object.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "function_code:function:function-text:9662ce251be3",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "M_ME_NC_1 spontaneous report",
+          "hex": "680f000000000d010300010001000000803f00"
+        }
+      ],
+      "expected_behavior": "Parser accepts a monitoring ASDU for TypeID 13 measured short floating-point value with one information object and spontaneous cause.",
+      "constraints_preserved": [
+        "TypeID 13 matches supplied mapping for M_ME_NC_1",
+        "Single-object VSQ used",
+        "Spontaneous monitoring style encoded with a standard two-octet cause field",
+        "Information object carries 3-byte IOA, 4-byte IEEE-754 float payload, and one quality byte",
+        "APCI length 0x0f matches four control bytes plus eleven ASDU bytes"
+      ],
+      "issue_safety_notes": "Benign monitoring seed; uses straightforward one-object reporting structure rather than oversized or nested payloads."
+    }
+  ]
+}

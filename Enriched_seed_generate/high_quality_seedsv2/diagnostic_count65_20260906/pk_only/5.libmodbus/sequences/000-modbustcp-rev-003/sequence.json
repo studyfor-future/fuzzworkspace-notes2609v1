@@ -1,0 +1,68 @@
+{
+  "seed_id": "modbustcp-rev-003",
+  "title": "Read then Read/Write Multiple Registers sequence",
+  "strategy": "stateful_valid",
+  "target_operation": "Read Holding Registers and Read/Write Multiple Registers",
+  "purpose": "Increase state and parser diversity with a two-step sequence that first performs a simple documented register read and then exercises the combined read/write register transaction.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:9821a13f1ada",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:48ef3b4dd565"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Holding Registers request",
+      "hex": "000000000006030300000002",
+      "byte_length": 12,
+      "sha256": "a0982e12046b4de7f9c4fd8d728bdd6f6ebb79a31a2165918fbc9ed1f4f91fa2"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read/Write Multiple Registers request",
+      "hex": "00000000000d0317000000010001000102002a",
+      "byte_length": 19,
+      "sha256": "b4743b558a69f9a997fa322e18393d0a836d17abba839c625c4d83cb4eba9895"
+    }
+  ],
+  "expected_behavior": "Server first processes function 0x03 using the supplied starting address and quantity. It then processes function 0x17 as a combined transaction, reading one register from address 0x0000 and writing one register at address 0x0001 with byte count 0x02 and value 0x002A, returning the read portion if supported.",
+  "constraints_preserved": [
+    "Each message uses a 7-byte MBAP header",
+    "Protocol identifier set to 0x0000 in both messages",
+    "First MBAP length 0x0006 matches unit id plus 5-byte PDU for function 0x03",
+    "Second MBAP length 0x000f matches unit id plus 14-byte PDU for function 0x17",
+    "Function 0x03 request includes Starting Address and Quantity of Registers as documented",
+    "Function 0x17 selected from documented function catalog and completed conservatively with internally consistent read/write counts and byte count",
+    "Canonical field ordering preserved across both requests"
+  ],
+  "issue_safety_notes": "Safe stateful coverage only. Combined-register request is structurally valid and avoids malformed count or byte-count mismatches.",
+  "sequence_sha256": "b104490f3b248d5d57a174c7ea472ed5c195252dd06bd8b5f80efdefbbe9abb2",
+  "total_bytes": 31,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "db7bfc54667a6be0e627ccec9dc27f5779b3159e994de4a9096ab22df8844355",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ]
+  }
+}

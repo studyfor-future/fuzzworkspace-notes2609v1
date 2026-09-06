@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-seed-059",
+  "title": "Base Read/Write Multiple Registers variant 5",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Use a write-register setup followed by a distinct read/write-multiple-registers request to exercise stateful sequencing and both write and combined access paths.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Multiple Registers setup",
+      "hex": "00050000000b0116003000020400010002",
+      "byte_length": 17,
+      "sha256": "bd06690a6fe364384497b5aea4a3e6e9d469d6c1f10ce525e1c302be6707374e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read/Write Multiple Registers request",
+      "hex": "00060000000f011700100002002000020411112222",
+      "byte_length": 21,
+      "sha256": "284513296e5069877d75868512c6f9b0d27da4dc4d15a54af1c6f3bed7c5a10e"
+    }
+  ],
+  "expected_behavior": "The first request may write two registers at address 0030. The second may read two registers at 0010 and write two registers at 0020 with values 1111 and 2222; a server may instead return standard exceptions for unsupported or inaccessible addresses.",
+  "constraints_preserved": [
+    "Both messages use 7-byte MBAP headers and protocol identifier 0000.",
+    "First MBAP length 000b matches unit plus the 10-byte function-16 PDU.",
+    "Function-16 quantity 0002 and byte count 04 match the two 16-bit values.",
+    "Second MBAP length 000f matches unit plus the 14-byte function-17 PDU.",
+    "Function-17 read and write quantities are both 0002, and write byte count 04 matches the two values.",
+    "Transaction identifiers differ and message order is preserved.",
+    "Unit identifier 01 is consistent across the sequence."
+  ],
+  "issue_safety_notes": "No external vulnerability or issue knowledge is available. Modbus/TCP commonly does not require application state between these operations, so the setup relationship is an intentional sequence-coverage heuristic rather than a claimed protocol requirement.",
+  "sequence_sha256": "e67b7707df1c2d6581a0726019d8b756053e31e32a2c14722e3aff3cf104a4b1",
+  "total_bytes": 38,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ef8a7fd240eafe34199851e3bc74aa3d6462a1baaa379ab4aa5969500526f912",
+    "encoded_bytes": 38,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 17,
+        "payload_offset": 17,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ]
+  }
+}

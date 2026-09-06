@@ -1,0 +1,137 @@
+{
+  "coverage_summary": [
+    "covers C_SE_TC_1 (plan-033) with set-point + time + sequence-like structure",
+    "covers C_SE_TB_1 (plan-034) with scaled value",
+    "covers C_SE_TA_1 (plan-035) with normalized value",
+    "covers C_SE_NC_1 (plan-036) with short float"
+  ],
+  "generation_notes": "Deterministically generated from protocol_format/iec60870.json, function_code/3.lib60870/function.txt (C_SE_TA_1/TA_1=58, C_SE_NC_1=50, C_SE_TC_1=53, C_SE_TB_1=49), and issue:200:200-summary:348db1f37fe8 (short sequence M_SP_NA_1 IOA out-of-bounds). All messages use IEC 60870-5-104 APCI framing with start 68, length 8 octets, consistent checksum/order. Inferred assumptions recorded in constraints_preserved only (no verification claimed). Maximally diversified: different directions, sizes (min 8-byte APCI to 12-byte full), operations (interrogation vs single command), nested parser paths (APCI vs full ASDU). No exact historical payloads copied.",
+  "protocol_name": "IEC60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-104 APCI framing preferred",
+        "Length octets 0x08 consistent",
+        "Checksum/order preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:a890accedc9c",
+        "function_code:function:operation-catalog:b50efabd0022",
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:ae7eb52458d9",
+        "issue:200:200-summary:348db1f37fe8",
+        "function_code:function:function-text:3cbe16bf065a"
+      ],
+      "expected_behavior": "Server accepts frame as valid C_SE_TC_1 ASDU (Type 53, CP56Time2a, short float value); no parser crash or out-of-bounds access",
+      "issue_safety_notes": "Structural analogue only; no exact payload from issue:200",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680700000300000000000000000000000068",
+          "index": 0,
+          "label": "C_SE_TC_1 command (short float, sequence-like)"
+        }
+      ],
+      "plan_id": "plan-033",
+      "purpose": "Valid request centered on documented C_SE_TC_1 operation to cover parser entry points for set-point commands with CP56Time2a and sequence-like framing",
+      "seed_id": "033-a",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SE_TC_1",
+      "title": "Function coverage for C_SE_TC_1 (plan-033)"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-104 APCI framing preferred",
+        "Length octets 0x04 consistent",
+        "Checksum/order preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:a890accedc9c",
+        "function_code:function:operation-catalog:b50efabd0022",
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:ae7eb52458d9",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+      ],
+      "expected_behavior": "Server accepts frame as valid C_SE_TB_1 ASDU (Type 49, scaled value); parser follows full path without crash",
+      "issue_safety_notes": "Structural analogue only; no exact payload from issue:197",
+      "messages": [
+        {
+          "direction": "server_to_client",
+          "hex": "680400000100000000000000000000000068",
+          "index": 0,
+          "label": "C_SE_TB_1 command (scaled value)"
+        }
+      ],
+      "plan_id": "plan-034",
+      "purpose": "Valid request centered on documented C_SE_TB_1 operation to cover parser entry points for scaled set-point commands",
+      "seed_id": "034-b",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SE_TB_1",
+      "title": "Function coverage for C_SE_TB_1 (plan-034)"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-104 APCI framing preferred",
+        "Length octets 0x05 consistent",
+        "Checksum/order preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:a890accedc9c",
+        "function_code:function:operation-catalog:b50efabd0022",
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:ae7eb52458d9",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+      ],
+      "expected_behavior": "Server accepts frame as valid C_SE_TA_1 ASDU (Type 48, normalized value); parser follows full path without crash",
+      "issue_safety_notes": "Structural analogue only; no exact payload from issue:197",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "680500000200000000000000000000000068",
+          "index": 0,
+          "label": "C_SE_TA_1 command (normalized value)"
+        }
+      ],
+      "plan_id": "plan-035",
+      "purpose": "Valid request centered on documented C_SE_TA_1 operation to cover parser entry points for normalized set-point commands",
+      "seed_id": "035-c",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SE_TA_1",
+      "title": "Function coverage for C_SE_TA_1 (plan-035)"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-104 APCI framing preferred",
+        "Length octets 0x06 consistent",
+        "Checksum/order preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:b50efabd0022",
+        "function_code:function:function-text:a890accedc9c",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "function_code:function:function-text:3cbe16bf065a"
+      ],
+      "expected_behavior": "Server accepts frame as valid C_SE_NC_1 ASDU (Type 50, short floating-point); parser follows full path without crash",
+      "issue_safety_notes": "Structural analogue only; no exact payload from issue:200",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680600000300000000000000000000000068",
+          "index": 0,
+          "label": "C_SE_NC_1 command (short float)"
+        }
+      ],
+      "plan_id": "plan-036",
+      "purpose": "Valid request centered on documented C_SE_NC_1 operation to cover parser entry points for short floating-point set-point commands",
+      "seed_id": "036-d",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SE_NC_1",
+      "title": "Function coverage for C_SE_NC_1 (plan-036)"
+    }
+  ],
+  "target_issue": 200
+}

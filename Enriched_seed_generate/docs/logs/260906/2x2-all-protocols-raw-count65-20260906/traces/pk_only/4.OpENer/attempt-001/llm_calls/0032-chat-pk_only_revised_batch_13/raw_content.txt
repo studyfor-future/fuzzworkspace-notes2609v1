@@ -1,0 +1,147 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Revised PK-only batch synthesized strictly from supplied EtherNet/IP encapsulation and CPF sources, with conservative model-prior completion only where the sources list commands/statuses but do not provide full per-command body templates. Exactly four distinct seeds were retained to improve diversity across discovery, session lifecycle, and explicit-message paths while preserving source-backed framing: 24-byte encapsulation headers, little-endian command and length fields, and documented CPF item pairings for SendRRData. Historical duplicate/cosmetic variants were removed, and prior invalid or status-claim-heavy seeds were replaced by structurally valid analogues that target the named operations without asserting exact returned CIP general-status outcomes.",
+  "coverage_summary": [
+    "Discovery path via ListIdentity with zero-length encapsulation payload.",
+    "Session establishment path via RegisterSession using a minimal 4-byte command-specific payload analogue with documented encapsulation framing.",
+    "Session teardown path via UnregisterSession in a stateful two-message sequence reusing the registered session handle.",
+    "Explicit unconnected messaging path via SendRRData with documented Null Address Item plus Unconnected Data Item CPF combination.",
+    "Parser diversity across single-request, two-step stateful, zero-length payload, and nested CPF payload structures.",
+    "Target-operation diversity aligned to supplied plans while avoiding duplicate single-request cosmetic variants."
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-049",
+      "seed_id": "pk-049-r1",
+      "title": "Write-Once status analogue through explicit unconnected request",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Write-Once Value Or Medium Already Written",
+      "purpose": "Provide a structurally valid explicit-message seed that reaches SendRRData, CPF, and nested CIP parsing while thematically covering the documented general-status name only as a safe analogue.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "sendrrdata with null-address and unconnected-data items carrying minimal cip request analogue",
+          "hex": "6f00120000000000000000000000000000000000000000000000000002000000000000b2000600010220012401"
+        }
+      ],
+      "expected_behavior": "The receiver should parse a valid EtherNet/IP SendRRData frame with the documented common CPF item pairing and then process or reject the embedded CIP request according to implementation-specific object/service support.",
+      "constraints_preserved": [
+        "24-byte EtherNet/IP encapsulation header used",
+        "Encapsulation command and payload length encoded little-endian",
+        "SendRRData uses documented common CPF combination of Null Address Item and Unconnected Data Item",
+        "Payload length field matches the 18-byte command-specific body",
+        "General-status name is treated as thematic coverage only, not as a claimed response trigger",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "PK-only seed; no vulnerability claim and no exact historical exploit payload. The embedded CIP bytes are a conservative structural analogue because the supplied sources do not provide full wire templates for the named status condition."
+    },
+    {
+      "plan_id": "plan-050",
+      "seed_id": "pk-050-r1",
+      "title": "Vendor-Specific Error analogue through discovery command",
+      "strategy": "function_code_coverage",
+      "target_operation": "Vendor-Specific Error",
+      "purpose": "Add a pure discovery-path seed that exercises ListIdentity parsing and diversifies away from explicit-message-only coverage while still mapping to the supplied plan's named operation as a non-assertive analogue.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "listidentity discovery request",
+          "hex": "630000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The receiver should parse a valid ListIdentity encapsulation request with zero-length payload and may return identity information or ignore it depending on role and deployment.",
+      "constraints_preserved": [
+        "24-byte EtherNet/IP encapsulation header used",
+        "Command 0x0063 ListIdentity taken directly from supplied command catalog",
+        "Zero payload encoded with little-endian length 0x0000",
+        "No undocumented CPF or CIP body added to a discovery command",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "PK-only seed; the status name from the plan is represented only as coverage labeling. No response status is predicted or forced."
+    },
+    {
+      "plan_id": "plan-051",
+      "seed_id": "pk-051-r1",
+      "title": "Unsupported encapsulation protocol revision coverage via session registration",
+      "strategy": "baseline_valid",
+      "target_operation": "Unsupported encapsulation protocol revision",
+      "purpose": "Exercise RegisterSession parsing with a minimal command-specific body so the corpus covers a canonical session-establishment path distinct from discovery and CPF-bearing explicit messaging.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "registersession minimal request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        }
+      ],
+      "expected_behavior": "The receiver should parse a valid RegisterSession encapsulation header and command-specific payload analogue, then either establish a session or return an implementation-defined encapsulation status if the revision or options are unsupported.",
+      "constraints_preserved": [
+        "24-byte EtherNet/IP encapsulation header used",
+        "Command 0x0065 RegisterSession from supplied command catalog",
+        "Little-endian payload length set to 4 for the command-specific body",
+        "Seed remains conservative because the supplied sources enumerate encapsulation fields and status names but not a full RegisterSession body template",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "PK-only seed; uses a safe, minimal registration analogue and avoids asserting reproduction of any exact unsupported-revision condition."
+    },
+    {
+      "plan_id": "plan-052",
+      "seed_id": "pk-052-r1",
+      "title": "Unknown Modbus Error analogue with stateful unregister path",
+      "strategy": "stateful_valid",
+      "target_operation": "Unknown Modbus Error",
+      "purpose": "Introduce explicit session-state interaction by pairing RegisterSession with UnregisterSession, improving lifecycle coverage and handle propagation diversity beyond single-frame requests.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "registersession setup request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "unregistersession using established handle analogue",
+          "hex": "660000007856341200000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The receiver should parse a RegisterSession request followed by a valid UnregisterSession frame carrying a nonzero session handle; if the handle is recognized, the session may be torn down, otherwise an encapsulation-status error may be returned by the implementation.",
+      "constraints_preserved": [
+        "24-byte EtherNet/IP encapsulation header used for both messages",
+        "Commands 0x0065 RegisterSession and 0x0066 UnregisterSession taken from supplied command catalog",
+        "Little-endian fields preserved throughout",
+        "State relationship preserved by reusing a nonzero session handle in the second message",
+        "UnregisterSession carries zero-length payload as a conservative analogue",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "PK-only seed; no vulnerability claim. The chosen session handle is a benign placeholder for stateful corpus growth and not a replay of any historical issue payload."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "coverage_summary": [
+    "MMS CONFIRMED SERVICE TAGS",
+    "COTP Connection Request TPDU size",
+    "MMS Initiate",
+    "function_code_coverage",
+    "parser_depth"
+  ],
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs (COTP TPDU size shift path) to keep generation stable while preserving SRAG knowledge grounding. Conservative model-prior completion for missing plan coverage.",
+  "protocol_name": "IEC61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Complete documented framing and preserve length/count/checksum/order rules.",
+        "MMS service tag 0x32 documented in function_code/function-text:d319479344be.",
+        "TPKT header version 0x03 and total-length consistent.",
+        "COTP Connection Request TPDU size parameter 0x01."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "Parser reaches MmsValue_decodeMmsData for ReportEventConditionStatus service tag 0x32, exercising the full MMS PDU and ACSE framing without triggering allocation issues.",
+      "issue_safety_notes": "Issue evidence used for structural guidance only. Exact historical crash payloads (e.g., oversized octetString) not used. Diversified to valid documented operation path.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e00000000100c1020000c202000001c001a2",
+          "index": 0,
+          "label": "COTP CR with TPDU size"
+        }
+      ],
+      "plan_id": "plan-065",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-iec61850-065-1",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReportEventConditionStatus",
+      "title": "Function coverage for ReportEventConditionStatus"
+    }
+  ],
+  "target_issue": 589
+}

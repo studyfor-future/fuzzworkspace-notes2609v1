@@ -1,0 +1,61 @@
+{
+  "id": "chatcmpl-EL9OWRJgDtFWq5GBwVK1vYtxqIsHc",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"bacnet-stack\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised exactly four distinct BACnet/IP seed sequences from the supplied base plans using only model internal prior and the built-in Base constraints. No external protocol documents or vulnerability issues were used. Deterministic findings were addressed by ensuring lowercase even-length hex, one non-duplicate seed per plan, and visible BVLC four-byte total lengths consistent with each full frame. Seeds preserve common BACnet/IP BVLC, NPDU, and APDU layering while improving operation and frame-shape diversity across property write, subscription, range, and file services.\",\n  \"coverage_summary\": [\n    \"base-plan-025: WriteProperty confirmed request with scalar property value and priority field\",\n    \"base-plan-026: SubscribeCOV confirmed request covering subscriber process, monitored object, issue-confirmed flag, and lifetime interaction\",\n    \"base-plan-027: ReadRange confirmed request using nested range parameters for deeper parser coverage\",\n    \"base-plan-028: AtomicReadFile confirmed request using stream access with signed offset and bounded count\",\n    \"All four seeds keep BVLC total lengths internally consistent and use lowercase even-length hex\",\n    \"Operation diversity spans property access, subscription, range selection, and file service families\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-025\",\n      \"seed_id\": \"base-plan-025-r1\",\n      \"title\": \"Base WriteProperty variant 3 revised\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"WriteProperty\",\n      \"purpose\": \"Exercise a conservative confirmed WriteProperty request with a compact real-valued property payload and explicit priority while keeping nested tags and total frame length internally consistent.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"BACnet/IP Confirmed WriteProperty request\",\n          \"hex\": \"810a0019010402000fc400080001910c3e4442c800003f4901\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP server should parse the frame as a confirmed WriteProperty request and then return an acknowledgment or a protocol-conforming error depending on object, property, value, and access state.\",\n      \"constraints_preserved\": [\n        \"BVLC uses BACnet/IP original-unicast framing with a four-byte header\",\n        \"BVLC total length 0x0019 matches the full encoded message length\",\n        \"NPDU precedes the confirmed-request APDU and service parameters\",\n        \"Opening and closing tags in the property value portion are balanced\",\n        \"Hex is lowercase and has an even number of characters\"\n      ],\n      \"issue_safety_notes\": \"No vulnerability issue knowledge is used. This is a conservative model-prior seed for parser and operation coverage only.\"\n    },\n    {\n      \"plan_id\": \"base-plan-026\",\n      \"seed_id\": \"base-plan-026-r1\",\n      \"title\": \"Base SubscribeCOV variant 3 revised\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"SubscribeCOV\",\n      \"purpose\": \"Vary subscriber process identifier, confirmed-notification choice, and lifetime together in a compact confirmed SubscribeCOV request while preserving a plausible monitored-object structure.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"BACnet/IP Confirmed SubscribeCOV request\",\n          \"hex\": \"810a001d010402010505091c0008000229013a0000012c\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP server should parse the message as a confirmed SubscribeCOV request and either accept the subscription parameters or return a protocol-level rejection or error.\",\n      \"constraints_preserved\": [\n        \"BVLC total length 0x001d matches the full encoded message length\",\n        \"Common BACnet/IP BVLC then NPDU then APDU layering is preserved\",\n        \"Confirmed request APDU fields appear before service-specific parameters\",\n        \"Object identifier and following context-tagged fields remain internally ordered\",\n        \"Hex is lowercase and has an even number of characters\"\n      ],\n      \"issue_safety_notes\": \"No external issue reports or verified protocol references were used. The field combination is a model-prior plausibility seed intended for conservative coverage.\"\n    },\n    {\n      \"plan_id\": \"base-plan-027\",\n      \"seed_id\": \"base-plan-027-r1\",\n      \"title\": \"Base ReadRange variant 3 revised\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"ReadRange\",\n      \"purpose\": \"Reach deeper parser logic with a confirmed ReadRange request that includes object and property selection plus a nested range form carrying a signed start position and item count.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"BACnet/IP Confirmed ReadRange request with nested range selection\",\n          \"hex\": \"810a001d0104020226c40008000319553e0cfffffffe1c000000053f\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP server should parse the message as a confirmed ReadRange request, process the nested range selector, and then return a range result or a protocol-conforming error.\",\n      \"constraints_preserved\": [\n        \"BVLC total length 0x001d matches the full encoded message length\",\n        \"BVLC, NPDU, and confirmed APDU layering follow a common BACnet/IP arrangement\",\n        \"Object identifier and property identifier precede nested range data\",\n        \"Nested opening and closing tags are balanced in the range selector\",\n        \"Hex is lowercase and has an even number of characters\"\n      ],\n      \"issue_safety_notes\": \"No known issue is being targeted. This deeper form is a conservative structural seed based on model prior and should not be treated as externally verified protocol evidence.\"\n    },\n    {\n      \"plan_id\": \"base-plan-028\",\n      \"seed_id\": \"base-plan-028-r1\",\n      \"title\": \"Base AtomicReadFile variant 3 revised\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"AtomicReadFile\",\n      \"purpose\": \"Add a structurally distinct file-service seed using a confirmed AtomicReadFile request with stream-style parameters, a negative offset, and a bounded requested octet count.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"BACnet/IP Confirmed AtomicReadFile stream request\",\n          \"hex\": \"810a001a0104020306c4000a00070e0cfffffffc1c00000020\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP server should parse the frame as a confirmed AtomicReadFile request and then return file data or an error depending on file object state, permissions, and support for the requested access parameters.\",\n      \"constraints_preserved\": [\n        \"BVLC total length 0x001a matches the full encoded message length\",\n        \"Common BACnet/IP BVLC plus NPDU plus APDU layering is preserved\",\n        \"File object identifier appears before access parameters\",\n        \"Signed offset and unsigned count are each encoded with explicit value bytes\",\n        \"Hex is lowercase and has an even number of characters\"\n      ],\n      \"issue_safety_notes\": \"No vulnerability issue knowledge is available. This is a conservative model-prior file-service coverage seed, not a claim of verified protocol validity.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {}
+    }
+  ],
+  "created": 1788709708,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1693,
+    "prompt_tokens": 5743,
+    "total_tokens": 7436,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 359,
+      "engine_ttlt_ms": 16760,
+      "pre_inference_ms": 85,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 940,
+      "service_ttlt_ms": 17336,
+      "user_visible_ttft_ms": 854
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260826104250-7188400d-default-r0-dp0-default"
+  }
+}

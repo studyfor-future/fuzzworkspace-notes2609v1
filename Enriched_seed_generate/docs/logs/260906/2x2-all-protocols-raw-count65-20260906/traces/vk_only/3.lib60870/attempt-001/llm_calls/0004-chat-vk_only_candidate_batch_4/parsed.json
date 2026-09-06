@@ -1,0 +1,149 @@
+{
+  "coverage_summary": [
+    "GHSA-G3W7-X5RX-83XM: issue_structural_analogue general interrogation",
+    "GHSA-7V97-JMWV-W5J7: field_interaction single command",
+    "13: length_boundary_valid double command",
+    "53: parser_depth measured value"
+  ],
+  "generation_notes": "4 VK-only (P-/V+) candidate sequences generated exclusively per plan using internal IEC 60870 family constraints + issue-supported trigger relations only; no external docs; maximize distinct ops/frames/sizes/state seqs while preserving lengths/counters; basic repair later.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 start/end octets consistent with FT1.1 framing",
+        "APDU length octet L=10 preserved",
+        "Single-request sequence_shape",
+        "message_budget=1",
+        "VSQ=0x64 (max objects claimed)",
+        "IOA structure omitted to force parser to read past body end"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parser accepts VSQ object count=0x64 (100 objects) despite short ASDU body after header; InformationObject_ParseObjectAddress called with invalid startIndex leads to out-of-bounds read in TestCommand_getFromBuffer path (crashes with heap over-read under ASAN)",
+      "issue_safety_notes": "Traces exact vulnerability trigger from GHSA-G3W7-X5RX-83XM (TypeID 104 C_TS_NA_1, VSQ exceeding ASDU body) and GHSA-7V97-JMWV-W5J7; no crash bytes copied; uses model-prior conservative form",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680a000000000068050100000068",
+          "index": 0,
+          "label": "General Interrogation request"
+        }
+      ],
+      "plan_id": "vk-plan-013",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "vk-plan-013",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "General Interrogation",
+      "title": "VK-only General Interrogation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 start/end octets consistent with FT1.1 framing",
+        "APDU length octet L=10 preserved",
+        "Single-request sequence_shape",
+        "message_budget=1",
+        "VSQ=0x82 (2 objects claimed)",
+        "No sequence base IOA (trigger exact path from issue:200)"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "expected_behavior": "Parser accepts sequence-form M_SP_NA_1 (TypeID 1) with VSQ claiming 2 objects but no IOA bytes after COT/CA; CS101_ASDU_getElement triggers InformationObject_ParseObjectAddress reading past buffer end (heap-buffer-overflow)",
+      "issue_safety_notes": "Traces exact vulnerability trigger from GHSA-7V97-JMWV-W5J7 (InformationObject_ParseObjectAddress startIndex advance) and GHSA-G3W7-X5RX-83XM; no crash bytes copied; uses model-prior conservative form",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680a000000000068030100000068",
+          "index": 0,
+          "label": "Single Command request"
+        }
+      ],
+      "plan_id": "vk-plan-014",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "vk-plan-014",
+      "strategy": "field_interaction",
+      "target_operation": "Single Command",
+      "title": "VK-only Single Command: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 start/end octets consistent with FT1.1 framing",
+        "APDU length octet L=10 preserved",
+        "Single-request sequence_shape",
+        "message_budget=1",
+        "VSQ=0x01 (1 object claimed)",
+        "Exact length boundary on ASDU body for parser depth path"
+      ],
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parser accepts boundary ASDU where claimed object count exactly matches remaining body length; CS101_ASDU_getElement reaches InformationObject_ParseObjectAddress and reads one byte past buffer end (crash in server example)",
+      "issue_safety_notes": "Traces exact vulnerability trigger from issue 13 and GHSA-7V97-JMWV-W5J7; no crash bytes copied; uses model-prior conservative form",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680a000000000068040100000068",
+          "index": 0,
+          "label": "Double Command request"
+        }
+      ],
+      "plan_id": "vk-plan-015",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-plan-015",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Double Command",
+      "title": "VK-only Double Command: No affected version is specified. The report shows that `./test/iec..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 start/end octets consistent with FT1.1 framing",
+        "APDU length octet L=10 preserved",
+        "Single-request sequence_shape",
+        "message_budget=1",
+        "VSQ=0x10 (16 objects claimed)",
+        "Deeper parser path triggered by issue 53"
+      ],
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "Parser accepts deeper nested ASDU structure with VSQ claiming objects that force parser_depth into InformationObject_ParseObjectAddress (SEGV on cpXXtime2a path in cs104_server example)",
+      "issue_safety_notes": "Traces exact vulnerability trigger from issue 53 and GHSA-G3W7-X5RX-83XM; no crash bytes copied; uses model-prior conservative form",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680a000000000068010100000068",
+          "index": 0,
+          "label": "Measured Value request"
+        }
+      ],
+      "plan_id": "vk-plan-016",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-plan-016",
+      "strategy": "parser_depth",
+      "target_operation": "Measured Value",
+      "title": "VK-only Measured Value: Against the latest source from /mz-automation/lib60870/ (exact rele..."
+    }
+  ],
+  "target_issue": 178
+}

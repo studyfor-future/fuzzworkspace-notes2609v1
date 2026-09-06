@@ -1,0 +1,54 @@
+{
+  "id": "chatcmpl-ELB9xeQJiqq1EhbUByWuWvZ5RyL2Q",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated one conservative Modbus/TCP base seed from model-prior knowledge only. The sequence follows the requested plan and uses a single plausible Write Single Coil request ADU with a 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP length. Validity is treated as plausible from training prior and not externally verified.\",\n  \"coverage_summary\": [\n    \"Single-request Modbus/TCP ADU\",\n    \"Function-code coverage focused on Write Single Coil\",\n    \"MBAP header with transaction identifier, protocol identifier 0x0000, length, and unit identifier\",\n    \"Conservative coil-write value using common ON encoding\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-065\",\n      \"seed_id\": \"modbustcp-base-065-01\",\n      \"title\": \"Base Write Single Coil variant 6\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Write Single Coil\",\n      \"purpose\": \"Cover a likely write-oriented Modbus/TCP operation with a compact, mutation-friendly single request that exercises function code 0x05 and basic address/value parsing.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_single_coil_request\",\n          \"hex\": \"00010000000611050013ff00\"\n        }\n      ],\n      \"expected_behavior\": \"A plausible Modbus/TCP server may parse the MBAP header and PDU as a Write Single Coil request for unit 0x11, coil address 0x0013, setting the output ON using value 0xff00; a normal implementation might acknowledge with an echo-style success response or reject based on device state.\",\n      \"constraints_preserved\": [\n        \"Used Modbus/TCP ADU shape with 7-byte MBAP header\",\n        \"Used protocol identifier 0x0000\",\n        \"Kept MBAP length internally consistent at 0x0006 for unit identifier plus 5-byte PDU\",\n        \"Preserved requested target operation Write Single Coil\",\n        \"Used lowercase hexadecimal without separators\",\n        \"Used exactly one sequence for the single supplied plan\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issue information was available. This seed was generated from fallible model-prior protocol knowledge plus the supplied base constraints, aiming for conservative structural validity rather than issue-specific triggering.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788716493,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 568,
+    "prompt_tokens": 2248,
+    "total_tokens": 2816,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 79,
+      "engine_ttlt_ms": 5611,
+      "pre_inference_ms": 103,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 401,
+      "service_ttlt_ms": 5925,
+      "user_visible_ttft_ms": 298
+    }
+  },
+  "routing": {
+    "serving_pipereplica": "d20260818172145-722f0c28-default-r0-dp0-default"
+  }
+}

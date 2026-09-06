@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELAOZ4yIhOxUcu1HAKUxna5VKkiZ3",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"iec60870\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"VK-only revised batch for iec60870 using only supplied issue evidence, task constraints, and fallible model-internal protocol prior. Exactly 4 distinct sequences are retained, one per requested plan, with duplicate/colliding seeds removed, odd-length hex fixed, lowercase hex only, and visible 0x68 length octets kept internally consistent. The set increases operation, frame, and state diversity across Read Command, STARTDT activation, STOPDT activation, and TESTFR activation while preserving safe issue analogues and avoiding exact historical PoC payloads.\",\n  \"coverage_summary\": [\n    \"Read Command covered with a stateful U-frame prerequisite followed by a compact I-frame request\",\n    \"STARTDT activation covered as a pure U-frame link-control archetype with explicit response diversity\",\n    \"STOPDT activation covered as a separate pure U-frame control path distinct from STARTDT and TESTFR\",\n    \"TESTFR activation covered with a stateful control-plus-I-frame analogue to touch server processing after link test setup\",\n    \"Issue 196 analogue emphasized via server-side state and subsequent compact I-frame processing rather than copied crash bytes\",\n    \"Issue 197 analogue emphasized via connection event and link-control transition handling\",\n    \"Issue 200 analogue emphasized via short sequence-form ASDU structure with advertised plurality and minimal body\",\n    \"Issue 201 analogue emphasized via provoking plausible outbound/server-side handling after control activation\",\n    \"Mix of single-request and multi-step stateful sequences\",\n    \"Mix of pure U-frames and U-frame plus I-frame sequences\",\n    \"Distinct APCI lengths and ASDU bodies for mutation-friendly evolution\",\n    \"No exact payload collision with supplied historical crash hex\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-045\",\n      \"seed_id\": \"vk12-seed-045-r1\",\n      \"title\": \"VK-only Read Command with link start prerequisite and compact read ASDU analogue\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"Read Command\",\n      \"purpose\": \"Exercise a server-side Read Command path with a valid link-start prerequisite and a short, conservative I-frame whose ASDU remains internally sized but close to minimal parsing boundaries relevant to queue and short-body handling analogues.\",\n      \"evidence_ids\": [\n        \"issue:196:196-summary:7e4abb310eea\",\n        \"issue:201:201-summary:798beefc9cab\",\n        \"issue:200:200-summary:348db1f37fe8\",\n        \"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\n        \"issue:54:54-summary:bed996ddfd18\",\n        \"issue:197:197-summary:287854ab1555\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT activation request\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Command compact I-frame\",\n          \"hex\": \"680e00000000660105000100010000\"\n        }\n      ],\n      \"expected_behavior\": \"Implementation should accept or cleanly reject the link-start plus Read Command sequence without queue traversal confusion, out-of-bounds access, or malformed short-body acceptance beyond intended parser checks.\",\n      \"constraints_preserved\": [\n        \"0x68 IEC 60870-5-104 style framing used\",\n        \"Visible length octets consistent with frame sizes\",\n        \"Target operation preserved as Read Command\",\n        \"Stateful multi-step sequence increases diversity beyond single U-frame\",\n        \"No exact historical crash payload reused\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"Uses a conservative compact read-style ASDU after activation as a safe structural analogue only; it avoids the reported long crash stream and does not copy any supplied PoC bytes.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-046\",\n      \"seed_id\": \"vk12-seed-046-r1\",\n      \"title\": \"VK-only STARTDT activation pure U-frame control transition\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"STARTDT activation\",\n      \"purpose\": \"Reach connection and event-handling logic through a recognizable STARTDT activation exchange while keeping the sequence short, mutation-friendly, and distinct from I-frame parser analogues.\",\n      \"evidence_ids\": [\n        \"issue:197:197-summary:287854ab1555\",\n        \"issue:201:201-summary:798beefc9cab\",\n        \"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\n        \"issue:53:53-summary:9148432dbf39\",\n        \"issue:54:54-summary:bed996ddfd18\",\n        \"issue:178:178-summary:01c5b607cf00\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT activation request\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"STARTDT confirmation analogue\",\n          \"hex\": \"68040b000000\"\n        }\n      ],\n      \"expected_behavior\": \"Implementation should transition the connection into started data-transfer state or reject safely; no deadlock or stuck mutex condition should arise during connection event processing.\",\n      \"constraints_preserved\": [\n        \"Pure U-frame link-control archetype retained\",\n        \"0x68 length octets consistent with 4-byte control body\",\n        \"Target operation preserved as STARTDT activation\",\n        \"Multi-step stateful exchange retained\",\n        \"Distinct from STOPDT and TESTFR sequences\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"This is a safe control-path analogue for deadlock-oriented evidence, not a copied reproducer. It intentionally avoids malformed ASDU bodies and focuses on state transition handling.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-047\",\n      \"seed_id\": \"vk12-seed-047-r1\",\n      \"title\": \"VK-only STOPDT activation single control request\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"STOPDT activation\",\n      \"purpose\": \"Provide a clean STOPDT control-path seed distinct from the STARTDT and TESTFR cases, useful for mutating link-state transitions around application/parser prerequisites.\",\n      \"evidence_ids\": [\n        \"issue:200:200-summary:348db1f37fe8\",\n        \"issue:201:201-summary:798beefc9cab\",\n        \"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\n        \"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\n        \"issue:54:54-summary:bed996ddfd18\",\n        \"issue:53:53-summary:9148432dbf39\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STOPDT activation request\",\n          \"hex\": \"680413000000\"\n        }\n      ],\n      \"expected_behavior\": \"Implementation should stop data transfer or reject safely; no parser confusion, stale state use, or unexpected acceptance side effects should occur.\",\n      \"constraints_preserved\": [\n        \"Pure U-frame control message\",\n        \"0x68 length octet consistent with 4-byte body\",\n        \"Target operation preserved as STOPDT activation\",\n        \"Single-request shape retained for diversity\",\n        \"No duplicate seed id or payload collision from prior library\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"Uses only a conservative STOPDT control frame. The issue linkage is by safe structural/state analogue rather than by reproducing any out-of-bounds parser condition.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-048\",\n      \"seed_id\": \"vk12-seed-048-r1\",\n      \"title\": \"VK-only TESTFR activation followed by short sequence-form information ASDU analogue\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"TESTFR activation\",\n      \"purpose\": \"Create a distinct stateful TESTFR-based seed that first exercises link-test handling and then sends a short sequence-form I-frame analogue with advertised multiplicity and minimal body to probe parser and server reaction diversity.\",\n      \"evidence_ids\": [\n        \"issue:201:201-summary:798beefc9cab\",\n        \"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\n        \"issue:200:200-summary:348db1f37fe8\",\n        \"issue:197:197-summary:287854ab1555\",\n        \"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\n        \"issue:175:175-summary:1d1910f22105\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"TESTFR activation request\",\n          \"hex\": \"680443000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Short sequence-form I-frame analogue\",\n          \"hex\": \"680a02000000018203000100\"\n        }\n      ],\n      \"expected_behavior\": \"Implementation should handle TESTFR and the following compact I-frame without out-of-bounds object-address reads or unsafe server-side follow-on behavior; safe rejection is acceptable.\",\n      \"constraints_preserved\": [\n        \"TESTFR target operation preserved with explicit U-frame activation\",\n        \"Second message uses recognizable IEC 60870-5-104 style I-frame framing\",\n        \"Visible length octets consistent in both frames\",\n        \"Short sequence-form ASDU analogue kept mutation-friendly and non-identical to issue PoCs\",\n        \"Stateful two-step sequence increases diversity\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"The second frame is a safe analogue inspired by short sequence and VSQ/body mismatch reports, but it is not an exact historical PoC and is kept conservative to preserve family framing constraints.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788713555,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2315,
+    "prompt_tokens": 9047,
+    "total_tokens": 11362,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 9,
+      "engine_ttft_ms": 161,
+      "engine_ttlt_ms": 20229,
+      "pre_inference_ms": 101,
+      "service_tbt_ms": 9,
+      "service_ttft_ms": 342,
+      "service_ttlt_ms": 20405,
+      "user_visible_ttft_ms": 241
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818160425-6e6c83b0-default-r1-dp0-default"
+  }
+}

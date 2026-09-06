@@ -1,0 +1,50 @@
+{
+  "seed_id": "pk-rev-001",
+  "title": "Canonical Who-Is discovery request",
+  "strategy": "baseline_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Provide a simple, mutation-friendly discovery seed using unconfirmed request layering and minimal payload.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "who-is-request",
+      "hex": "810b000801001008",
+      "byte_length": 8,
+      "sha256": "9bd0ef5e47775abe1dbfee1cbe30fbd31df0e639803df74720f54398533e3757"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP endpoint should accept the frame as an unconfirmed discovery-style request and either process it locally or ignore it if discovery handling is disabled.",
+  "constraints_preserved": [
+    "BVLC header present and length 0x000c matches 12-byte frame",
+    "NPDU header uses version 0x01 with control 0x00 as a minimal local NPDU scaffold",
+    "APDU uses Unconfirmed-Request-PDU type 0x10 from supplied APDU type reference",
+    "Unconfirmed service body uses conservative minimal Who-Is form because numeric service/body details were not included in supplied excerpts"
+  ],
+  "issue_safety_notes": "PK-only seed; no vulnerability motif used. Payload is a conservative minimal discovery analogue, not a replay of any historical issue sample.",
+  "sequence_sha256": "0132de617efd88eacf6153de2b032bbb9a55c2120bfc4714a1b99d2f995be0e0",
+  "total_bytes": 8,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9bd0ef5e47775abe1dbfee1cbe30fbd31df0e639803df74720f54398533e3757",
+    "encoded_bytes": 8,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ]
+  }
+}

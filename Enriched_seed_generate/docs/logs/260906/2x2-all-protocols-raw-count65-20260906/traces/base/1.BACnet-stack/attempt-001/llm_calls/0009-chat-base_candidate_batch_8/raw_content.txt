@@ -1,0 +1,133 @@
+{
+  "protocol_name": "bacnet-stack",
+  "target_issue": -1,
+  "generation_notes": "Generated exactly four BACnet/IP seed sequences from model-internal prior only, preserving each supplied plan and target operation once. Messages use plausible BVLC+NPDU+APDU layering with internally consistent visible BVLC lengths. Validity is heuristic and not externally verified.",
+  "coverage_summary": [
+    "AtomicWriteFile confirmed-service single request with application-layer payload",
+    "DeviceCommunicationControl confirmed-service single request covering a different service family",
+    "Who-Is two-message stateful-style discovery exchange with request then plausible I-Am response",
+    "I-Am single-message unconfirmed advertisement with slightly larger payload to exercise conservative boundary-adjacent length"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-029",
+      "seed_id": "bacnet-base-029-01",
+      "title": "Base AtomicWriteFile variant 3",
+      "strategy": "baseline_valid",
+      "target_operation": "AtomicWriteFile",
+      "purpose": "Provide a conservative BACnet/IP confirmed request for AtomicWriteFile using a compact file object reference and short record-style payload.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "atomic_write_file_request",
+          "hex": "810a00130104000501070a19430421002a"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP stack may parse this as a confirmed service request targeting AtomicWriteFile and either process or reject it based on object existence, permissions, or exact field encoding.",
+      "constraints_preserved": [
+        "Used BACnet/IP-style BVLC, NPDU and APDU layering",
+        "BVLC total length is internally consistent at 0x0013",
+        "Single-request shape preserved for the plan",
+        "Operation kept as AtomicWriteFile",
+        "Hex is lowercase without separators"
+      ],
+      "issue_safety_notes": "No external vulnerability issue information is available. This seed is a model-prior conservative structural candidate, not derived from verified issue details."
+    },
+    {
+      "plan_id": "base-plan-030",
+      "seed_id": "bacnet-base-030-01",
+      "title": "Base DeviceCommunicationControl variant 3",
+      "strategy": "function_code_coverage",
+      "target_operation": "DeviceCommunicationControl",
+      "purpose": "Cover a distinct confirmed service family with a plausible DeviceCommunicationControl request containing a short duration/control/password-style payload.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "device_communication_control_request",
+          "hex": "810a0012010400051109210000019131"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP stack may parse this as a confirmed DeviceCommunicationControl request and return an acknowledgement, error, or reject depending on implementation state and field acceptance.",
+      "constraints_preserved": [
+        "Used BACnet/IP-style BVLC, NPDU and APDU layering",
+        "BVLC total length is internally consistent at 0x0012",
+        "Single-request shape preserved for the plan",
+        "Operation kept as DeviceCommunicationControl",
+        "Hex is lowercase without separators"
+      ],
+      "issue_safety_notes": "No external vulnerability issue information is available. This candidate only aims at structural service coverage based on fallible model prior."
+    },
+    {
+      "plan_id": "base-plan-031",
+      "seed_id": "bacnet-base-031-01",
+      "title": "Base Who-Is variant 4",
+      "strategy": "stateful_valid",
+      "target_operation": "Who-Is",
+      "purpose": "Exercise a simple discovery sequence with a Who-Is broadcast-style request followed by a plausible I-Am response to encourage stateful parser and dispatch coverage.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "who_is_request",
+          "hex": "810b000c0120ffff1008"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "i_am_response",
+          "hex": "810a00120120001000c40200000122040091"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP implementation may treat the first frame as a Who-Is query and the second as a plausible I-Am advertisement carrying a device identifier and capability-style data.",
+      "constraints_preserved": [
+        "Used BACnet/IP-style BVLC, NPDU and APDU layering",
+        "BVLC total lengths are internally consistent at 0x000c and 0x0012",
+        "Setup-then-request style two-message sequence preserved for the plan",
+        "Operation kept as Who-Is",
+        "Discovery traffic diversified relative to confirmed-service requests",
+        "Hex is lowercase without separators"
+      ],
+      "issue_safety_notes": "No external vulnerability issue information is available. The response pairing is only a plausible model-prior discovery analogue and not externally verified protocol evidence."
+    },
+    {
+      "plan_id": "base-plan-032",
+      "seed_id": "bacnet-base-032-01",
+      "title": "Base I-Am variant 4",
+      "strategy": "length_boundary_valid",
+      "target_operation": "I-Am",
+      "purpose": "Provide a standalone unconfirmed I-Am advertisement with a slightly larger-than-minimal payload to exercise conservative boundary-adjacent length handling while keeping visible lengths consistent.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "i_am_announcement",
+          "hex": "810a00140120001000c4020000642204009105210a"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP stack may parse this as an unconfirmed I-Am announcement and update discovery state, ignore it, or reject it if exact field encoding differs from implementation expectations.",
+      "constraints_preserved": [
+        "Used BACnet/IP-style BVLC, NPDU and APDU layering",
+        "BVLC total length is internally consistent at 0x0014",
+        "Single-request shape preserved for the plan",
+        "Operation kept as I-Am",
+        "Boundary-adjacent payload is larger than the paired discovery response while remaining compact",
+        "Hex is lowercase without separators"
+      ],
+      "issue_safety_notes": "No external vulnerability issue information is available. This is a conservative size-variation seed based on model prior rather than verified issue knowledge."
+    }
+  ]
+}

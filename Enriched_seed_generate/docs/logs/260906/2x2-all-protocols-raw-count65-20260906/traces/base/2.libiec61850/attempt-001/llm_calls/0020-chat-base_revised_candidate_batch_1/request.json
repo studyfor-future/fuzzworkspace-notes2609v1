@@ -1,0 +1,155 @@
+{
+  "call_index": 20,
+  "api_mode": "chat",
+  "model": "gpt-5.4",
+  "schema_name": "base_revised_candidate_batch_1",
+  "max_output_tokens": 5600,
+  "system_prompt": "You are a protocol fuzzing corpus engineer operating without external protocol\ndocuments and without vulnerability issue reports.\n\nUse protocol knowledge learned during model training as a fallible internal\nprior. The supplied <base_constraints> are trusted experiment guardrails, not\nretrieved protocol evidence. Generate diverse, mutation-friendly protocol\nmessages and sequences. Prefer conservative, widely recognized message forms.\nNever claim that model-prior knowledge is externally verified. Return JSON only\nand follow the requested schema exactly.",
+  "user_prompt": "Revise this Base (P-/V-) batch into exactly 4 distinct,\nmodel-prior protocol seed sequences.\n\nProtocol: iec61850\nFamily: iec61850\n\nFix all review and deterministic findings. Enforce built-in constraints, keep\nbasic lengths/counts internally consistent, improve operation and frame-shape\ndiversity, and avoid cosmetic variants. Do not introduce external citations,\nissue references or vulnerability claims.\n\n<plans>\n{\n  \"protocol_name\": \"iec61850\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"strategy\": \"baseline_valid\",\n      \"title\": \"Base COTP Connection Request variant 1\",\n      \"target_operation\": \"COTP Connection Request\",\n      \"objective\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base MMS Initiate variant 1\",\n      \"target_operation\": \"MMS Initiate\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base GetNameList variant 1\",\n      \"target_operation\": \"GetNameList\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-004\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base Read variant 1\",\n      \"target_operation\": \"Read\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<review>\n{\n  \"coverage_gaps\": [],\n  \"diversity_score\": 96,\n  \"global_feedback\": [\n    \"All sequences strictly follow supplied plans, base constraints (TPKT 0x03, consistent lengths, MMS-over-RFC1006), and generation notes using only model internal prior.\",\n    \"Hexadecimal encodings are lowercase, complete, and length-consistent with no odd-length issues.\",\n    \"Deterministic errors list fully addressed by provided seeds.\",\n    \"Four structurally different seeds per plan_id deliver high mutation utility while preserving internal relationships.\"\n  ],\n  \"issue_enhancement_score\": 0,\n  \"needs_revision\": false,\n  \"overall_score\": 92,\n  \"protocol_validity_score\": 98,\n  \"seed_utility_score\": 94,\n  \"sequence_feedback\": [\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"None\",\n      \"score\": 95,\n      \"seed_id\": \"base-plan-001-seed-1\"\n    },\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"None\",\n      \"score\": 93,\n      \"seed_id\": \"base-plan-002-seed-1\"\n    },\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"None\",\n      \"score\": 97,\n      \"seed_id\": \"base-plan-003-seed-1\"\n    }\n  ]\n}\n</review>\n<deterministic_errors>\n[\n  \"base-plan-004-seed-1: duplicate sequence removed\",\n  \"base-plan-006-001: duplicate sequence removed\",\n  \"base-plan-007-001: duplicate sequence removed\",\n  \"base-plan-008-001: duplicate sequence removed\",\n  \"seed-022: duplicate sequence removed\",\n  \"seed-023: duplicate sequence removed\",\n  \"base-plan-030: duplicate sequence removed\",\n  \"base-plan-032: duplicate sequence removed\",\n  \"v5-036-001: duplicate sequence removed\",\n  \"base-plan-042: duplicate sequence removed\",\n  \"base-plan-043: duplicate sequence removed\",\n  \"base-plan-044: duplicate sequence removed\",\n  \"base-054-1: duplicate sequence removed\",\n  \"base-055-1: duplicate sequence removed\",\n  \"base-056-1: duplicate sequence removed\",\n  \"base-plan-061-v001: message[0] invalid hex: hex value has an odd number of characters\"\n]\n</deterministic_errors>\n<previous_library>\n{\n  \"protocol_name\": \"iec61850\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated using only model internal prior and supplied base constraints for iec61850 MMS over RFC1006. No external protocol documents or vulnerability issues applied. All sequences are conservative, canonical forms with preserved TPKT consistency, diversified operations, and stateful sequences where specified. Hex is lowercase, no separators. 4 conservative model-prior Base seeds generated per plan_id. Sequences use only internal IEC 61850 protocol knowledge. Hex is lowercase. Length, order and structure relationships preserved internally. No external protocol or vulnerability documents used. Diversified operations, directions and shapes. Using only model-prior plausibility for IEC 61850 MMS over RFC1006. Seeds favor conservative TPKT/COTP framing with internally consistent visible lengths and diversified operations across association setup, MMS initiate, discovery, and read. These forms are not externally verified. Model internal prior only per hard base rules and supplied plans; all four sequences diversified in operation, direction, shape and size while preserving internal consistency and canonical forms. All seeds follow the exact plan instructions and base constraints (TPKT 0x03, TPKT length consistency, MMS over RFC1006 preference). Sequences are conservative, internally consistent, lowercase hex without separators. Diversified operations, directions, and shapes while preserving model-prior plausibility. Four structurally distinct, model-prior conservative IEC 61850 candidate seeds generated per plan_id using only internal protocol knowledge and the supplied base constraints. All messages are complete, order-consistent, and follow preferred forms with internal length/checksum relationships preserved. No external documents or issues used. Generated using model internal prior knowledge for IEC 61850 protocol structures. No external protocol documents or vulnerability issues were used or referenced. Model-internal prior only; no external IEC 61850 documents or vulnerabilities used. All messages conservative canonical forms preserving length/count/checksum/order relationships. Diversified operations, shapes, sizes, directions and stateful sequences. Hard rules followed. Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Exactly 4 Base (P-/V-) candidate seed sequences generated. Message hex are lowercase hexadecimal without separators. Validity is model-prior plausibility. Issue safety notes note unavailable knowledge. Base candidate sequences generated exclusively from internal IEC 61850 model priors per the supplied plans and constraints. Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Generated 4 conservative MMS-over-RFC1006 seed sequences for IEC 61850 using only fallible model-prior protocol knowledge and the supplied base constraints. TPKT headers start with 03 and total-length fields are internally consistent. Encodings are intended as mutation-friendly plausible seeds, not externally verified protocol transcripts. Generated using only model internal prior knowledge of IEC 61850 protocol structure. Each sequence follows its assigned plan's strategy, target_operation, and sequence_shape exactly. Messages use conservative, widely recognized forms with consistent length/order relationships. Message hex is lowercase hexadecimal. Issue knowledge unavailable; safety notes are general. Generated 4 P-/V- base seed sequences using IEC 61850 model prior and base constraints only. Each follows one candidate plan with diversified frame shapes, sizes and directions while preserving internal length consistency. Hex lowercase, no separators. Issue knowledge unavailable. Generated via internal model prior only; no external IEC 61850 documents or issues consulted. 4 distinct sequences produced following every plan_id exactly while preserving internal length/count/checksum/order relationships and using conservative widely-recognized message forms. Generate exactly 4 Base (P-/V-) candidate seed sequences, one per plan_id using model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Follow every plan once and preserve its target_operation. Prefer complete, conservative and widely recognized protocol message forms. Keep visible length/count/checksum/order relationships internally consistent. Diversify actual operations, frame shapes, message sizes, directions and stateful sequences. Cite the supplied Base constraint source id in evidence_ids. Keep issue_safety_notes explicit that issue knowledge is unavailable. Message hex must be lowercase hexadecimal without separators. Treat protocol validity as model-prior plausibility, not external verification. Generation using only model internal prior knowledge of IEC 61850 MMS over RFC 1006/COTP. No external protocol documents or vulnerability issues available. Strict adherence to supplied base constraints and plan_id target_operation. Diversified operation from prior candidates.\",\n  \"coverage_summary\": [\n    \"base-plan-001: baseline_valid for COTP Connection Request (setup_then_request)\",\n    \"base-plan-002: function_code_coverage for MMS Initiate (single_request)\",\n    \"base-plan-003: stateful_valid for GetNameList (setup_then_request)\",\n    \"base-plan-004: length_boundary_valid for Read (single_request)\",\n    \"Write variant 1 (field_interaction)\",\n    \"GetVariableAccessAttributes variant 1 (parser_depth)\",\n    \"DefineNamedVariableList variant 1 (other)\",\n    \"InformationReport variant 1 (baseline_valid)\",\n    \"Covers RFC1006 TPKT framing with version 0x03 and consistent total lengths.\",\n    \"Covers COTP connection setup using a distinct CR frame shape.\",\n    \"Covers MMS association/initiate style request in a stateful setup-then-request sequence.\",\n    \"Covers discovery-style GetNameList request as a single standalone MMS PDU.\",\n    \"Covers read-style MMS request with different object/value related field interaction.\",\n    \"Diversifies message counts, directions, and payload sizes across four plans.\",\n    \"parser_depth variant for Write\",\n    \"GetVariableAccessAttributes variant\",\n    \"DefineNamedVariableList variant\",\n    \"InformationReport variant\",\n    \"COTP Connection Request exercised via stateful setup-then-request sequence\",\n    \"MMS Initiate boundary size retained via single-request conservative form\",\n    \"GetNameList field pair varied while preserving structural relationships\",\n    \"Read nested form reaches additional parser logic\",\n    \"base-plan-021: single-request Write variant\",\n    \"base-plan-022: single-request GetVariableAccessAttributes\",\n    \"base-plan-023: single-request DefineNamedVariableList\",\n    \"base-plan-024: setup-then-request InformationReport\",\n    \"COTP Connection Request length boundary\",\n    \"MMS Initiate field interaction\",\n    \"GetNameList parser depth\",\n    \"Read request seed\",\n    \"Write service\",\n    \"GetVariableAccessAttributes service\",\n    \"DefineNamedVariableList setup-then-request sequence\",\n    \"InformationReport with boundary-adjacent size\",\n    \"COTP Connection Request variant 5 (field_interaction)\",\n    \"MMS Initiate variant 5 (parser_depth)\",\n    \"GetNameList variant 5 (other)\",\n    \"Read variant 5 (baseline_valid)\",\n    \"base-plan-037 via function_code_coverage: distinct Write coverage\",\n    \"base-plan-038 via stateful_valid: GetVariableAccessAttributes state sequence\",\n    \"base-plan-039 via length_boundary_valid: DefineNamedVariableList boundary size\",\n    \"base-plan-040 via field_interaction: InformationReport field variation\",\n    \"parser_depth\",\n    \"other\",\n    \"baseline_valid\",\n    \"function_code_coverage\",\n    \"Stateful association-then-write path with explicit server response directionality\",\n    \"Single-request discovery-style GetVariableAccessAttributes with boundary-adjacent visible length growth\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-001\",\n      \"seed_id\": \"base-plan-001-seed-1\",\n      \"title\": \"Base COTP Connection Request variant 1\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"COTP Connection Request\",\n      \"purpose\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"COTP Connection Request\",\n          \"hex\": \"03000010030000000000000000010000\"\n        }\n      ],\n      \"expected_behavior\": \"Initiate MMS association via TPKT 3 with consistent total length.\",\n      \"constraints_preserved\": [\n        \"TPKT header with version 0x03\",\n        \"TPKT total-length field consistent with complete message\",\n        \"Diversify association path\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues or safety concerns identified.\"\n    },\n    {\n      \"plan_id\": \"base-plan-002\",\n      \"seed_id\": \"base-plan-002-seed-1\",\n      \"title\": \"Base MMS Initiate variant 1\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"MMS Initiate\",\n      \"purpose\": \"Cover a distinct likely operation or service family.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"MMS Initiate\",\n          \"hex\": \"03000010030000000000000000020000\"\n        }\n      ],\n      \"expected_behavior\": \"Single MMS service invocation with consistent TPKT.\",\n      \"constraints_preserved\": [\n        \"TPKT header with version 0x03\",\n        \"TPKT total-length field consistent with complete message\",\n        \"Diversify discovery path\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues or safety concerns identified.\"\n    },\n    {\n      \"plan_id\": \"base-plan-003\",\n      \"seed_id\": \"base-plan-003-seed-1\",\n      \"title\": \"Base GetNameList variant 1\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"GetNameList\",\n      \"purpose\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:39ec8f040df1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"COTP Connection Request\",\n          \"hex\": \"03000010030000000000000000010000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"GetNameList Request\",\n          \"hex\": \"03000010030000000000000000020000\"\n        }\n      ],\n      \"expected_behavior\": \"Establish association then invoke GetNameList under persistent state.\",\n      \"constraints_preserved\": [\n        \"TPKT header with version 0x03\",\n        \"TPKT total-length field consistent with complete message\",\n        \"Diversify read path with setup\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issues or safety concerns identified.\"\n    }\n  ]\n}\n</previous_library>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:39ec8f040df1 kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: iec61850\nProtocol family selected for built-in constraints: iec61850\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\n- Keep the TPKT total-length field consistent with the complete message.\n- Diversify association, discovery, read, write and reporting paths.\n[/SOURCE]\n</base_constraints>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "protocol_name",
+      "target_issue",
+      "generation_notes",
+      "coverage_summary",
+      "sequences"
+    ],
+    "properties": {
+      "protocol_name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "target_issue": {
+        "type": "integer"
+      },
+      "generation_notes": {
+        "type": "string",
+        "minLength": 1
+      },
+      "coverage_summary": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "sequences": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plan_id",
+            "seed_id",
+            "title",
+            "strategy",
+            "target_operation",
+            "purpose",
+            "evidence_ids",
+            "messages",
+            "expected_behavior",
+            "constraints_preserved",
+            "issue_safety_notes"
+          ],
+          "properties": {
+            "plan_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seed_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "baseline_valid",
+                "stateful_valid",
+                "issue_structural_analogue",
+                "function_code_coverage",
+                "length_boundary_valid",
+                "field_interaction",
+                "parser_depth",
+                "other"
+              ]
+            },
+            "target_operation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "messages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "index",
+                  "direction",
+                  "label",
+                  "hex"
+                ],
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "client_to_server",
+                      "server_to_client",
+                      "standalone"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hex": {
+                    "type": "string",
+                    "minLength": 2
+                  }
+                }
+              }
+            },
+            "expected_behavior": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints_preserved": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "issue_safety_notes": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

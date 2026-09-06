@@ -1,0 +1,149 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": 803,
+  "generation_notes": "VK-only candidates use conservative Modbus/TCP MBAP framing and model-prior operation layouts. Lengths, counts, and byte fields are internally consistent; protocol details are fallible internal prior and are not externally verified.",
+  "coverage_summary": [
+    "Diagnostics request with a compact fixed subfunction structure",
+    "Read File Record request with nested record metadata",
+    "Two-step Read/Write Multiple Registers state sequence",
+    "Encapsulated Interface Transport request with MEI framing"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-033",
+      "seed_id": "seed-diagnostics-01",
+      "title": "Diagnostics fixed-subfunction boundary request",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Diagnostics",
+      "purpose": "Exercise a compact Diagnostics request near the minimum structurally valid PDU size while preserving a consistent MBAP length.",
+      "evidence_ids": [
+        "issue:803:803-summary:fea416ab8355",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "vk_task_context:task-contract:950d6d207e6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Diagnostics return-query-data request",
+          "hex": "000100000006010800000000"
+        }
+      ],
+      "expected_behavior": "The server should parse one complete Diagnostics request and either return a normal diagnostic response or a protocol-level exception without desynchronizing the stream.",
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 equals unit identifier plus six PDU bytes",
+        "Diagnostics function code 08 with a two-byte subfunction and two-byte data field"
+      ],
+      "issue_safety_notes": "This is a structural analogue based on issue evidence and does not copy a historical crash payload. It is intended for controlled fuzzing; no crash outcome is asserted."
+    },
+    {
+      "plan_id": "vk-plan-034",
+      "seed_id": "seed-file-record-01",
+      "title": "Nested Read File Record with two-record depth",
+      "strategy": "parser_depth",
+      "target_operation": "Read File Record",
+      "purpose": "Reach nested file-record parsing with a valid request containing one subrequest and a nontrivial record length, while retaining a two-message stateful harness shape.",
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "vk_task_context:task-contract:950d6d207e6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read File Record request",
+          "hex": "00020000000a01140706000100000002"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Repeated Read File Record request with alternate file and record",
+          "hex": "00030000000a02140706000200010001"
+        }
+      ],
+      "expected_behavior": "Each request should be parsed as a complete Read File Record transaction; a compliant server may return file-record data or a defined exception for unavailable references.",
+      "constraints_preserved": [
+        "Each message has a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP lengths equal the unit identifier plus the complete PDU",
+        "Read File Record byte count matches the nested record descriptor",
+        "Nested reference type, file number, record number, and record length fields are present"
+      ],
+      "issue_safety_notes": "The sequence explores length-field and parser-depth relations reported in the evidence without reproducing any exact historical trigger bytes. Model-prior field semantics are not externally verified."
+    },
+    {
+      "plan_id": "vk-plan-035",
+      "seed_id": "seed-readwrite-registers-01",
+      "title": "Read setup followed by Read/Write Multiple Registers",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Use a valid preliminary register read followed by a distinct combined read/write request to exercise state-dependent register mapping and reply handling.",
+      "evidence_ids": [
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:612:612-summary:7b008d4bca1d",
+        "vk_task_context:task-contract:950d6d207e6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read holding registers setup",
+          "hex": "001000000006010300000002"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Read/write multiple registers request",
+          "hex": "00110000000c01170000000100020001021234"
+        }
+      ],
+      "expected_behavior": "The server should process the setup read and then parse the combined operation with one register to read, one register to write, and a two-byte write payload.",
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers",
+        "Protocol identifier is 0000",
+        "First MBAP length 0006 matches unit plus FC03 request",
+        "Second MBAP length 000c matches unit plus the complete FC17 PDU",
+        "FC17 read and write quantities are positive and write byte count matches the supplied register data"
+      ],
+      "issue_safety_notes": "This preserves the issue-related state and reply-processing focus while using valid operation fields rather than an exact reported payload. It does not claim that the model-prior state behavior is externally verified."
+    },
+    {
+      "plan_id": "vk-plan-036",
+      "seed_id": "seed-encapsulated-interface-01",
+      "title": "Encapsulated Interface Transport device-identification request",
+      "strategy": "other",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Exercise a distinct MEI-based PDU whose complete declared ADU length is consistent, providing a mutation-friendly base for later stream and length variations.",
+      "evidence_ids": [
+        "issue:867:867-summary:58115ace3a65",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:810:810-summary:da5167fd5137",
+        "vk_task_context:task-contract:950d6d207e6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read device identification basic request",
+          "hex": "000400000005012b0e0100"
+        }
+      ],
+      "expected_behavior": "The server should parse the complete Encapsulated Interface Transport request and return device-identification data or a defined exception response.",
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0005 equals unit identifier plus the four-byte MEI PDU",
+        "Encapsulated function code 2b, MEI type 0e, read-device-ID code 01, and object selection 00 are structurally present"
+      ],
+      "issue_safety_notes": "This is a conservative structural analogue for receive-path length handling and does not copy the historical extra-byte trigger. Any mutation of declared length or trailing stream bytes should be treated as a separate fuzzing variant."
+    }
+  ]
+}

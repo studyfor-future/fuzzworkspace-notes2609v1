@@ -1,0 +1,167 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": 589,
+  "generation_notes": "Revised to exactly four distinct seeds while preserving source-backed MMS-over-ISO-on-TCP framing and documented MMS PDU type coverage from the supplied plans. To remove near-duplicate single-byte tag variants, the batch now mixes COTP connection setup, association/MMS initiate, confirmed discovery/read/reporting service paths, and the requested Cancel/Conclude parser entry points. Conservative model-prior completion was used only for gaps in byte-level ACSE/UserInformation realization and simple confirmed-service embeddings, without contradicting supplied sources. TPKT version 0x03 is preserved and each TPKT total-length matches the full message. Safe issue handling keeps only structural analogues of the COTP TPDU-size option path using bounded TPDU-size codes and avoids the exact historical crashing value c001a2 as well as any negative/oversized octet-string motifs.",
+  "coverage_summary": [
+    "MMS over RFC1006 with TPKT version 0x03 and length-consistent framing",
+    "COTP Connection Request coverage with safe TPDU-size option analogue for issue 589",
+    "Association and MMS Initiate path diversity using ACSE/UserInformation layering",
+    "Discovery path using Confirmed-Request-PDU service-choice analogue for GetNameList",
+    "Read path using Confirmed-Request-PDU service-choice analogue for Read",
+    "Reporting path using Unconfirmed-PDU service-choice analogue for InformationReport",
+    "Explicit MMS PDU type coverage for Cancel-Request-PDU, Cancel-Response-PDU, Cancel-Error-PDU, and Conclude-Error-PDU",
+    "Removal of cosmetic one-byte-only duplicates by varying framing, direction, and state depth"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-039",
+      "seed_id": "seed-039-r01",
+      "title": "Safe COTP CR followed by Cancel-Request-PDU",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Cancel-Request-PDU",
+      "purpose": "Exercise the remotely reachable connection-establishment parser path implicated by the TPDU-size option issue and then transition into MMS PDU tag coverage for Cancel-Request-PDU with a distinct two-message stateful sequence.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request with bounded TPDU-size code",
+          "hex": "0300001611e00000000100c1020000c2020001c0010a"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Cancel-Request-PDU after transport setup",
+          "hex": "0300001811e00000000100c1020000c2020001a2020001a5"
+        }
+      ],
+      "expected_behavior": "The CR should parse without undefined behavior because the TPDU-size option remains length 1 but uses a bounded code instead of the historical out-of-range exponent. The subsequent MMS Cancel-Request-PDU should be accepted as a distinct parser entry point or rejected cleanly at a higher semantic layer without transport-parser instability.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03.",
+        "TPKT total-length fields are consistent with the complete message.",
+        "COTP TPDU-size parameter retains the documented 0xc0 0x01 structure but avoids the exact crashing value from issue 589.",
+        "Sequence diversifies connection setup and cancel operation coverage.",
+        "No exact historical payload collision is reused."
+      ],
+      "issue_safety_notes": "Safe structural analogue only: preserves the vulnerable option path shape c0 01 xx while replacing the dangerous exponent byte a2 with bounded value 0a. No negative-size or oversized-allocation motifs are included."
+    },
+    {
+      "plan_id": "plan-038",
+      "seed_id": "seed-038-r01",
+      "title": "Association-style initiate then Cancel-Response-PDU",
+      "strategy": "stateful_valid",
+      "target_operation": "Cancel-Response-PDU",
+      "purpose": "Provide a more realistic association-to-MMS progression by sending an ACSE/UserInformation-shaped initiate frame before a server-to-client Cancel-Response-PDU, increasing direction and state diversity beyond isolated single-PDU seeds.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Association-style ACSE with embedded Initiate-Request-PDU",
+          "hex": "0300001911e00000000100c1020000c2020001a803020100"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Cancel-Response-PDU",
+          "hex": "0300001811e00000000100c1020000c2020001a2020001a6"
+        }
+      ],
+      "expected_behavior": "The first frame should drive association/initiate-oriented decoding through the documented ACSE/UserInformation layered presentation and MMS initiate tag coverage. The second frame should exercise Cancel-Response-PDU parsing as a server-originated MMS PDU without relying on an identical single-frame cosmetic variant.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03.",
+        "TPKT total-length fields are consistent with the complete message.",
+        "Layer order remains compatible with TPKT/COTP and documented ACSE/UserInformation presentation.",
+        "Directionality is diversified with a client-to-server setup message followed by a server-to-client MMS response.",
+        "Only conservative model-prior completion is used for minimal initiate embedding."
+      ],
+      "issue_safety_notes": "No malformed TPDU-size parameter, no copied crash trigger, and no oversized BER length or octet-string allocation analogue. This seed is intended as a valid/stateful parser-path expansion."
+    },
+    {
+      "plan_id": "plan-040",
+      "seed_id": "seed-040-r01",
+      "title": "Discovery/read pair ending in Cancel-Error-PDU",
+      "strategy": "function_code_coverage",
+      "target_operation": "Cancel-Error-PDU",
+      "purpose": "Replace a cosmetic singleton with a deeper confirmed-service sequence that touches discovery and read-style confirmed-request paths before reaching Cancel-Error-PDU coverage.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Confirmed-Request-PDU service-choice analogue for GetNameList",
+          "hex": "0300001a11e00000000100c1020000c2020001a003020101"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Confirmed-Request-PDU service-choice analogue for Read",
+          "hex": "0300001a11e00000000100c1020000c2020001a003020104"
+        },
+        {
+          "index": 2,
+          "direction": "server_to_client",
+          "label": "Cancel-Error-PDU",
+          "hex": "0300001811e00000000100c1020000c2020001a2020001a7"
+        }
+      ],
+      "expected_behavior": "The first two confirmed requests should traverse the generic Confirmed-Request-PDU parser with distinct service-choice values aligned to documented GetNameList and Read service codes, then the final frame should cover Cancel-Error-PDU handling as a separate MMS PDU type. Clean acceptance or graceful semantic rejection is expected, with no parser overrun or undefined behavior.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03.",
+        "TPKT total-length fields are consistent with each complete message.",
+        "MMS confirmed service diversification uses documented service-code references for GetNameList and Read.",
+        "Sequence explicitly expands discovery and read paths before cancel-error coverage.",
+        "Frames are structurally distinct rather than one-byte cosmetic tag swaps only."
+      ],
+      "issue_safety_notes": "No issue-trigger bytes are mirrored. Service-choice analogues remain short and bounded, intended to increase parser coverage while staying safely away from historical malformed-length or allocation motifs."
+    },
+    {
+      "plan_id": "plan-037",
+      "seed_id": "seed-037-r01",
+      "title": "Reporting path with InformationReport then Conclude-Error-PDU",
+      "strategy": "function_code_coverage",
+      "target_operation": "Conclude-Error-PDU",
+      "purpose": "Add explicit reporting-path diversity by sending an Unconfirmed-PDU analogue for InformationReport before exercising Conclude-Error-PDU, satisfying the request to diversify reporting coverage rather than keeping four nearly identical terminal-tag frames.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "Unconfirmed-PDU reporting analogue for InformationReport",
+          "hex": "0300001a11e00000000100c1020000c2020001a303020100"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Conclude-Error-PDU",
+          "hex": "0300001811e00000000100c1020000c2020001a2020001ad"
+        }
+      ],
+      "expected_behavior": "The unconfirmed reporting-style frame should exercise a different MMS PDU family from confirmed and cancel traffic, and the concluding error PDU should then reach the documented Conclude-Error-PDU parser entry point. Parser stability and bounded processing are expected even if session semantics are incomplete.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03.",
+        "TPKT total-length fields are consistent with the complete message.",
+        "Reporting-path diversity is added using an Unconfirmed-PDU analogue before conclude-error coverage.",
+        "MMS PDU type tags remain aligned with documented values including 0xa3 and 0xad.",
+        "No exact historical crash payload or duplicate prior seed is reused."
+      ],
+      "issue_safety_notes": "This seed is a safe parser-path expansion only. It does not include dangerous TPDU-size exponents, negative octet-string size patterns, or oversized nested lengths."
+    }
+  ]
+}

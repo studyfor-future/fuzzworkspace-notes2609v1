@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-plan-044-seed-1",
+  "title": "Base Write Multiple Registers variant 4",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Cover a distinct write family with a complete FC10 request carrying multiple register values and an exception-shaped response alternative for response parser diversity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Multiple Registers Request",
+      "hex": "44090000000d09100020000306111122223333",
+      "byte_length": 19,
+      "sha256": "cb9f26a0a51fb5500d7660b1bf3b3008a0335167fcc0cd34255625202f2cec72"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Write Multiple Registers Exception Response",
+      "hex": "440900000003099002",
+      "byte_length": 9,
+      "sha256": "b6acf17dc59623946e93b8fe62a35d500135a187a1733d4b6fe46c4b36049689"
+    }
+  ],
+  "expected_behavior": "A conforming peer would typically either acknowledge the starting address and quantity on success or return an exception-shaped response using the same transaction context if the request is not accepted.",
+  "constraints_preserved": [
+    "7-byte MBAP header used in both messages",
+    "Protocol identifier is 0000",
+    "Request MBAP length 000d matches unit identifier plus 12-byte PDU",
+    "Function code 10 matches the named Write Multiple Registers operation in the request",
+    "Quantity 0003 and byte count 06 agree with three 16-bit register values",
+    "Exception response MBAP length 0003 matches unit identifier plus 2-byte exception PDU",
+    "Transaction identifier is consistent across request and response"
+  ],
+  "issue_safety_notes": "Model-prior conservative seed only. Exception-shaped coverage is included for parser diversity and should not be interpreted as a vulnerability claim or externally verified behavior.",
+  "sequence_sha256": "af407c41e77768c6a001152f02d332f6dabebbdedd53c6955dee1a77b35b1b8f",
+  "total_bytes": 28,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0e177e00efa824c6345956541ce9a50caac83924dba41e56a16d062322e109ee",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 19,
+        "frame_length": 19
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 19,
+        "payload_offset": 19,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

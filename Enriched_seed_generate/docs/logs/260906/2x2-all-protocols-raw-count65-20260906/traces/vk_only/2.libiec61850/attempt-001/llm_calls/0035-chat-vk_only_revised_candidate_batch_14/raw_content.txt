@@ -1,0 +1,165 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": 2026,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct sequences. Built only from supplied issue evidence plus conservative model-prior IEC61850/MMS-over-RFC1006 framing. All hex strings are lowercase, even-length, and use TPKT version 0x03 with internally consistent total lengths. Exact historical payload collisions were avoided by using safe structural analogues rather than reproducing reported crash packets. Diversity was increased across association, discovery, write, dynamic dataset, and report-related paths, while keeping sequences mutation-friendly and recognizable.",
+  "coverage_summary": [
+    "association setup via COTP connection request",
+    "acse or initiate style follow-on state progression",
+    "discovery path through getvariableaccessattributes",
+    "dynamic dataset creation analogue through definenamedvariablelist",
+    "reporting or informationreport-related post-write/report path",
+    "integer and bit-string decoder analogue coverage without direct crash-byte reuse",
+    "single-request and multi-message stateful diversity",
+    "conservative tpkts with length consistency preserved",
+    "issue 609 inspired decoder-stressing payload shape",
+    "issue 599 inspired short item-name response analogue",
+    "cve-2026-18583 inspired association-specific dataset creation path",
+    "cve-2026-18582 inspired oversized visible-string style write path"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-053",
+      "seed_id": "vk-053-r1",
+      "title": "Stateful write path with decoder-stressing value fields",
+      "strategy": "stateful_valid",
+      "target_operation": "Write",
+      "purpose": "Exercise a plausible association prerequisite followed by a write carrying compact integer or bit-string-like data fields that can be mutated toward issue-609 style left-shift or signed-decoder edge cases, without copying direct reproducer bytes.",
+      "evidence_ids": [
+        "issue:609:609-summary:a7f14e01134e",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cotp_connection_request",
+          "hex": "0300001611e00000000100c1020100c2020102c0010a"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "initiate_like_request",
+          "hex": "0300001d02f080610fa10d020103a208020101020101be0000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "write_request_with_mutable_small_value",
+          "hex": "0300002f02f080a029020105a024a02280044c443031a10a1a085641522431303031a206840400810001"
+        }
+      ],
+      "expected_behavior": "A tolerant target may advance through basic association handling and parse the final write container. Mutations around the final value bytes, lengths, or tags may drive decoder edge behavior for integer, binary-time, or bit-string related code paths.",
+      "constraints_preserved": [
+        "tpkt version starts with 03",
+        "tpkt total lengths are consistent per message",
+        "messages remain recognizable as cotp plus mms-like sequence",
+        "stateful setup precedes write operation",
+        "hex is lowercase and even-length"
+      ],
+      "issue_safety_notes": "Uses a safe analogue for decoder-sensitive value parsing and avoids the exact issue-609 direct BER test buffers or any historical crash packet."
+    },
+    {
+      "plan_id": "vk-plan-054",
+      "seed_id": "vk-054-r1",
+      "title": "Discovery response analogue with shortened domain-specific item name",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "GetVariableAccessAttributes",
+      "purpose": "Provide a standalone server-to-client style discovery response analogue that contains a very short visible name component, supporting mutation toward issue-599 style fixed-offset assumptions on returned item identifiers.",
+      "evidence_ids": [
+        "issue:599:599-summary:806eef562ec3"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "short_name_discovery_response_analogue",
+          "hex": "0300001e02f080a118020106a113a11180024c448103241a0161"
+        }
+      ],
+      "expected_behavior": "A client-side parser may accept the compact response shape and then process an unusually short name field. Further mutation of the visible-string length and contents can probe assumptions about internal name layout and suffix expectations.",
+      "constraints_preserved": [
+        "tpkt version starts with 03",
+        "tpkt total length matches full frame",
+        "single standalone response remains recognizable as mms-like over rfc1006",
+        "short field is an analogue not a direct reproduced patched packet",
+        "hex is lowercase and even-length"
+      ],
+      "issue_safety_notes": "This is a safe structural analogue for the shortened itemId condition and does not reproduce an exact intercepted or patched GetNamedVariableListAttributesResponse from the report."
+    },
+    {
+      "plan_id": "vk-plan-055",
+      "seed_id": "vk-055-r1",
+      "title": "Association-specific dataset creation sequence with compact named variable list",
+      "strategy": "field_interaction",
+      "target_operation": "DefineNamedVariableList",
+      "purpose": "Exercise the dynamic dataset creation path using a multi-step client sequence that reaches defineNamedVariableList with a short association-scoped list name and compact member specification, matching the issue-supported state dependency while remaining conservative and mutation-friendly.",
+      "evidence_ids": [
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cotp_connection_request",
+          "hex": "0300001611e00000000200c1020100c2020102c0010b"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "initiate_like_request",
+          "hex": "0300001d02f080610fa10d020101a208020103020101be0000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "define_named_variable_list_assoc_scope",
+          "hex": "0300003902f080a033020107a02ea10a1a086173736f633031a220a01e80044c443031a1161a044c4c4e301a0e2444532431303031245354"
+        }
+      ],
+      "expected_behavior": "A server with dynamic dataset support may parse the stateful define request and pass the association-specific list name through access-control and copy logic. Mutating list-name length, scope indicators, or embedded member references can explore the affected branch conditions.",
+      "constraints_preserved": [
+        "tpkt version starts with 03",
+        "tpkt total lengths are consistent per message",
+        "multi-step state progression mirrors issue-supported association prerequisite",
+        "operation diversity includes dynamic dataset creation path",
+        "hex is lowercase and even-length"
+      ],
+      "issue_safety_notes": "Preserves the vulnerable path analogue without using the reported crashing dataset name or exact PoC bytes."
+    },
+    {
+      "plan_id": "vk-plan-056",
+      "seed_id": "vk-056-r1",
+      "title": "Report-control write followed by information-report style frame",
+      "strategy": "parser_depth",
+      "target_operation": "InformationReport",
+      "purpose": "Cover report-related server logic by pairing an oversized but moderate visible-string style write analogue for a report identifier with a follow-on information-report-like frame, supporting mutation toward report serialization and visible-string ownership edge cases related to CVE-2026-18582.",
+      "evidence_ids": [
+        "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+        "issue:573:573-summary:b7b57e9f1653"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "set_report_control_write_analogue",
+          "hex": "0300004a02f080a044020108a03fa13a80044c443031a10f1a0d4c4c4e302452502452434231a2218a1f5250542d41414141414141414141414141414141414141414141414141"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "information_report_like_followup",
+          "hex": "0300002d02f080a127020109a122a12080044c443031a10d1a0b4556454e545352434231a20583030100ff"
+        }
+      ],
+      "expected_behavior": "The target may accept or reject the write analogue, then parse the report-like follow-up if used in a replay, proxy, or bidirectional harness. Mutations of the visible-string size, object-name length, and report payload structure can explore stack or heap ownership assumptions in report-related code paths.",
+      "constraints_preserved": [
+        "tpkt version starts with 03",
+        "tpkt total lengths are consistent per message",
+        "covers reporting path distinct from dataset creation and discovery",
+        "uses moderate string size instead of exact historical oversized payload",
+        "hex is lowercase and even-length"
+      ],
+      "issue_safety_notes": "Avoids the exact historical overlong RptID write size and object path while preserving a safe analogue of report-control visible-string stress."
+    }
+  ]
+}

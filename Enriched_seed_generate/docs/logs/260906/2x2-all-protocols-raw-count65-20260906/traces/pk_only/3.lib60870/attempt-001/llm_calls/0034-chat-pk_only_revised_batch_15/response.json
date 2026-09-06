@@ -1,0 +1,54 @@
+{
+  "id": "chatcmpl-ELAq6sPBOyAkshKWXDd68twVi9XoZ",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"IEC60870\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Rebuilt as exactly 4 PK-only seeds using a single consistent IEC 60870-5-104 APCI framing style with source-backed TypeID and qualifier selections from the supplied function references, while retaining the supplied protocol overview as the primary authority for IEC60870/lib60870 context. To address review findings, malformed 101/104 hybrids and unsupported P_AC_NA_1 claims were removed. Conservative model-prior completion was limited to standard 104 APCI control-byte layouts, common 2-octet COT and CA ordering, 3-octet IOA ordering, and minimal command object encodings needed to realize documented operations without contradicting supplied sources. Length octets were recalculated for every APDU and state diversity was improved with U-format activation, stateful handshake plus interrogation, command, and monitoring-report coverage.\",\n  \"coverage_summary\": [\n    \"Pure IEC 60870-5-104 U-format STARTDT activation with exact 4-byte control field and consistent APCI length\",\n    \"Stateful 104 sequence combining STARTDT activation/confirmation and a valid C_IC_NA_1 general interrogation request using qualifier 20\",\n    \"Canonical 104 I-format C_SC_NA_1 single command request using documented TypeID 45 and common command qualifier semantics\",\n    \"Monitoring-direction 104 I-format M_ST_TB_1 sample carrying documented TypeID 32 with CP56Time2a-sized payload for parser coverage beyond commands\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-104-u-startdt\",\n      \"seed_id\": \"pk15-001\",\n      \"title\": \"STARTDT activation handshake seed\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"STARTDT activation\",\n      \"purpose\": \"Provide a clean U-format entry point for transport/session activation parsing without ASDU ambiguity.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT act\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"STARTDT con\",\n          \"hex\": \"68040b000000\"\n        }\n      ],\n      \"expected_behavior\": \"A 104-capable peer should accept the U-format STARTDT activation and may answer with STARTDT confirmation; parsers should classify both as U-format APCI frames with no ASDU body.\",\n      \"constraints_preserved\": [\n        \"Uses only IEC 60870-5-104 APCI framing, avoiding 101/104 hybridization\",\n        \"0x68 length octet equals 4 for U-format frames containing only the control field\",\n        \"Distinct documented U-format control bytes are preserved for activation and confirmation\"\n      ],\n      \"issue_safety_notes\": \"Benign transport-control analogue only; no historical exploit payloads, no malformed lengths, and no device-specific side effects beyond normal data-transfer start negotiation.\"\n    },\n    {\n      \"plan_id\": \"plan-104-gi-stateful\",\n      \"seed_id\": \"pk15-002\",\n      \"title\": \"STARTDT then General Interrogation\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"C_IC_NA_1 General Interrogation\",\n      \"purpose\": \"Exercise stateful parsing by negotiating data transfer and then submitting a canonical interrogation ASDU with the documented station interrogation qualifier.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"function_code:function:function-text:9662ce251be3\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT act\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"STARTDT con\",\n          \"hex\": \"68040b000000\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"C_IC_NA_1 interrogation request\",\n          \"hex\": \"680e00000000640106000100000014\"\n        }\n      ],\n      \"expected_behavior\": \"After STARTDT confirmation, the peer should parse the following I-format ASDU as a general interrogation request: TypeID 100, single object, activation cause, common address 1, IOA 0, qualifier of interrogation 20.\",\n      \"constraints_preserved\": [\n        \"104 APCI length 0x0e matches 4 control octets plus 10-byte ASDU\",\n        \"TypeID 100 is used for C_IC_NA_1 per supplied function reference\",\n        \"Qualifier 20 is preserved for station interrogation as listed in the supplied qualifier catalog\",\n        \"ASDU field order is kept as TypeID, VSQ, COT, CA, IOA, QOI\"\n      ],\n      \"issue_safety_notes\": \"Normal protocol-state coverage only; uses a standard interrogation request with minimal address scope and no malformed or collision-prone payload structure.\"\n    },\n    {\n      \"plan_id\": \"plan-104-c-sc-na-1\",\n      \"seed_id\": \"pk15-003\",\n      \"title\": \"Single command execute ON\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"C_SC_NA_1\",\n      \"purpose\": \"Cover the canonical single-command path with an unambiguous documented control TypeID and qualifier semantics distinct from interrogation traffic.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:d8995aeae15b\",\n        \"function_code:function:function-text:9662ce251be3\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"C_SC_NA_1 execute ON request\",\n          \"hex\": \"680e000000002d0106000100010001\"\n        }\n      ],\n      \"expected_behavior\": \"The peer should parse this as an I-format single command request: TypeID 45, one information object, activation cause, common address 1, IOA 1, SCO value 0x01 representing execute with ON state.\",\n      \"constraints_preserved\": [\n        \"TypeID 45 is preserved for C_SC_NA_1 from the supplied control-direction catalog\",\n        \"Single-command qualifier semantics follow supplied common command qualifier rules: select bit 0 execute, state bit 1 ON\",\n        \"0x68 length 0x0e is consistent with a 10-byte ASDU plus 4-byte 104 control field\",\n        \"I-format sequence counters start at zero for a mutation-friendly baseline\"\n      ],\n      \"issue_safety_notes\": \"Safe structural command analogue only; uses a minimal execute-ON encoding with small addresses and no malformed flags or repeated activation storms.\"\n    },\n    {\n      \"plan_id\": \"plan-060\",\n      \"seed_id\": \"pk15-004\",\n      \"title\": \"M_ST_TB_1 monitored report sample\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"M_ST_TB_1\",\n      \"purpose\": \"Add a monitoring-direction timed measurement/report seed that differs materially from command traffic and reaches CP56Time2a-sized object parsing.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:d8995aeae15b\",\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"server_to_client\",\n          \"label\": \"M_ST_TB_1 spontaneous report\",\n          \"hex\": \"681400000000200103000100020081000000000001010101\"\n        }\n      ],\n      \"expected_behavior\": \"The peer should parse the APDU as an I-format monitoring ASDU with TypeID 32 M_ST_TB_1, one object, spontaneous cause, common address 1, IOA 2, a one-octet step-position value with transient flag cleared, followed by a 7-octet CP56Time2a-sized timestamp payload.\",\n      \"constraints_preserved\": [\n        \"TypeID 32 is preserved for M_ST_TB_1 from the supplied CP56Time2a monitoring catalog\",\n        \"Length octet 0x14 matches 4 control octets plus 16-byte ASDU\",\n        \"Single-object VSQ is used to keep object boundaries explicit for mutation\",\n        \"Monitoring report direction is separated from client command traffic\"\n      ],\n      \"issue_safety_notes\": \"This is a passive report-shaped seed for parser coverage; timestamp bytes are benign placeholder values chosen to preserve CP56Time2a-sized structure without reproducing any known issue payload.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788715262,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2001,
+    "prompt_tokens": 8461,
+    "total_tokens": 10462,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 209,
+      "engine_ttlt_ms": 19553,
+      "pre_inference_ms": 76,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 496,
+      "service_ttlt_ms": 19834,
+      "user_visible_ttft_ms": 421
+    }
+  },
+  "routing": {
+    "serving_pipereplica": "d20260817141218-23feb8fe-default-r0-dp0-default"
+  }
+}

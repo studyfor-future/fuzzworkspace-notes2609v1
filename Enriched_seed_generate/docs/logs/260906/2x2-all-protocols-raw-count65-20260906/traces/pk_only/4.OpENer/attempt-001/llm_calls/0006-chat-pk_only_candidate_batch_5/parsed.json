@@ -1,0 +1,152 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Generated 4 PK-only candidate seeds, one per supplied plan, using EtherNet/IP encapsulation with documented 24-byte headers and little-endian length fields. Because the supplied sources do not document CIP service-code values for Save, Restore, or Reset, those operations are represented as structurally valid explicit-message placeholders using conservative inferred CIP service bytes; these assumptions are explicitly recorded. To preserve framing validity and parser reachability, all explicit messages use SendRRData with the documented Null Address Item plus Unconnected Data Item CPF combination. No vulnerability or issue claims are made.",
+  "coverage_summary": [
+    "Covers EtherNet/IP encapsulation header parsing with command 0x006f SendRRData and 24-byte header form.",
+    "Covers Common Packet Format item parsing with documented Null Address Item and Unconnected Data Item combination.",
+    "Exercises explicit-message payload diversity across minimal request data, parameterized request data, and longer payload body sizes.",
+    "Touches CIP path parsing toward a common documented class id (Identity Object 0x01) using a conservative EPATH encoding assumption.",
+    "Includes one seed intentionally themed around a documented general status name only as a structurally valid analogue, not as a status-trigger claim."
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-017",
+      "seed_id": "enetip-pk-017",
+      "title": "Function coverage analogue for Save via SendRRData explicit request",
+      "strategy": "function_code_coverage",
+      "target_operation": "Save",
+      "purpose": "Provide a structurally valid EtherNet/IP explicit-message seed aligned to the Save plan while preserving documented encapsulation and CPF structure and keeping the CIP body compact for mutation.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a8ab6b7392b2",
+        "function_code:function:function-text:3b15ec1ab4ca",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "function_code:function:function-text:d62ad498ac4f",
+        "function_code:function:operation-catalog:a6b9b629463c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "sendrrdata-save-analogue",
+          "hex": "6f001600010000000000000000000000000000000000000000000000020000000000b2000a1602200124013001"
+        }
+      ],
+      "expected_behavior": "Parser should accept the EtherNet/IP encapsulation header, parse two CPF items, and deliver a compact unconnected explicit request to the CIP layer; target application response may vary because the exact Save service code was not documented in the supplied sources.",
+      "constraints_preserved": [
+        "Used encapsulation command 0x006f SendRRData from supplied command list.",
+        "Used 24-byte encapsulation header with little-endian command, length, session handle, status, and options per supplied format.",
+        "Set encapsulation payload length to 0x0016 to match the 22-byte CPF payload that follows.",
+        "Used documented SendRRData CPF item combination: Null Address Item followed by Unconnected Data Item.",
+        "Kept Null Address Item type 0x0000 with zero length.",
+        "Set Unconnected Data Item type 0x00b2 with length 0x000a matching the 10-byte CIP request.",
+        "Used a conservative inferred CIP request layout: service byte, path size in 16-bit words, class segment 0x20 0x01, instance segment 0x24 0x01, one request data byte.",
+        "Used a conservative inferred service byte 0x16 only as a mutation-friendly placeholder for the Save-themed plan because supplied sources name the operation category but do not provide the actual service-code value."
+      ],
+      "issue_safety_notes": "This is a protocol-valid structural seed only. It does not assert any vulnerability, error condition, or guaranteed Save semantics."
+    },
+    {
+      "plan_id": "plan-018",
+      "seed_id": "enetip-pk-018",
+      "title": "Routing-failure-status-themed large explicit request analogue",
+      "strategy": "function_code_coverage",
+      "target_operation": "Routing Failure Request Packet Too Large",
+      "purpose": "Exercise larger yet internally consistent SendRRData and CPF lengths with a longer unconnected explicit payload, using the documented general-status name only as thematic coverage rather than an expected result.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:40a9289da660",
+        "function_code:function:operation-catalog:e8810af4c6bf",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:b3c070259d0a",
+        "function_code:function:function-text:d62ad498ac4f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "sendrrdata-large-explicit-analogue",
+          "hex": "6f002500020000000000000000000000000000000000000000000000020000000000b200190e02200124013001000102030405060708090a0b0c0d0e0f"
+        }
+      ],
+      "expected_behavior": "Parser should accept the encapsulation and CPF framing and pass a larger unconnected explicit request upward; any returned CIP general status is implementation dependent and not prescribed by this seed.",
+      "constraints_preserved": [
+        "Used encapsulation command 0x006f SendRRData and documented 24-byte header form.",
+        "Set encapsulation payload length to 0x0025 matching the CPF payload byte count.",
+        "Used documented CPF pair Null Address Item plus Unconnected Data Item.",
+        "Set Unconnected Data Item length to 0x0019 matching the 25-byte CIP request carried inside.",
+        "Used a conservative inferred CIP message layout with service byte 0x0e, path size 2 words, path to class 0x01 instance 0x01, and 16 bytes of request data to increase parser coverage.",
+        "Referenced the documented status name 'Routing Failure Request Packet Too Large' only as plan context; this request is not claimed to produce that status."
+      ],
+      "issue_safety_notes": "No issue behavior is claimed. The sequence is intended only to broaden parser coverage with a larger valid frame."
+    },
+    {
+      "plan_id": "plan-019",
+      "seed_id": "enetip-pk-019",
+      "title": "Function coverage analogue for Restore with parameter bytes",
+      "strategy": "function_code_coverage",
+      "target_operation": "Restore",
+      "purpose": "Supply a structurally valid explicit request variant for the Restore plan with multiple request-data bytes to exercise field interaction between CPF lengths and CIP body size.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a8ab6b7392b2",
+        "function_code:function:function-text:3b15ec1ab4ca",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:578655b8e58e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "sendrrdata-restore-analogue",
+          "hex": "6f001800030000000000000000000000000000000000000000000000020000000000b2000c15022001240130010001"
+        }
+      ],
+      "expected_behavior": "Parser should successfully process the encapsulation header and CPF items and expose a slightly longer explicit request to the CIP parser; application-level acceptance depends on implementation support for the implied service.",
+      "constraints_preserved": [
+        "Used little-endian encapsulation command and length fields with 24-byte header.",
+        "Set encapsulation payload length to 0x0018 corresponding to 24 CPF bytes.",
+        "Used documented item types 0x0000 and 0x00b2 in the documented SendRRData combination.",
+        "Set Unconnected Data Item length 0x000c to match the embedded 12-byte CIP request.",
+        "Used a conservative inferred explicit-request layout and EPATH encoding to Identity Object class 0x01 instance 0x01.",
+        "Used conservative inferred service byte 0x15 as a Restore-themed placeholder because the supplied sources do not provide the actual Restore service code."
+      ],
+      "issue_safety_notes": "This seed preserves protocol structure and avoids any claim that the target supports or will execute a Restore operation."
+    },
+    {
+      "plan_id": "plan-020",
+      "seed_id": "enetip-pk-020",
+      "title": "Function coverage analogue for Reset with minimal parameter",
+      "strategy": "function_code_coverage",
+      "target_operation": "Reset",
+      "purpose": "Create another valid SendRRData explicit-message seed with a different inferred service byte and small request body to diversify service dispatch while preserving all documented framing rules.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a8ab6b7392b2",
+        "function_code:function:function-text:3b15ec1ab4ca",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "function_code:function:operation-catalog:a6b9b629463c",
+        "function_code:function:function-text:578655b8e58e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "sendrrdata-reset-analogue",
+          "hex": "6f001700040000000000000000000000000000000000000000000000020000000000b2000b0520012401300100"
+        }
+      ],
+      "expected_behavior": "Parser should accept a compact but complete explicit-message request over SendRRData and route it through CPF parsing into the CIP layer; final service handling is implementation dependent.",
+      "constraints_preserved": [
+        "Used EtherNet/IP encapsulation command 0x006f and the documented 24-byte header.",
+        "Set payload length 0x0017 to exactly match the CPF bytes following the header.",
+        "Preserved documented CPF structure with two items: Null Address Item and Unconnected Data Item.",
+        "Set the unconnected item length to 0x000b matching the 11-byte CIP request.",
+        "Used a conservative inferred CIP service byte 0x05 as a Reset-themed placeholder because the exact Reset service code is not present in supplied sources.",
+        "Used conservative inferred EPATH bytes 0x20 0x01 0x24 0x01 and path-size value 0x02; this assumption is recorded rather than presented as source-verified."
+      ],
+      "issue_safety_notes": "No vulnerability, fault, or reset effect is asserted. This is a safe structural corpus seed for parser and dispatcher coverage."
+    }
+  ]
+}

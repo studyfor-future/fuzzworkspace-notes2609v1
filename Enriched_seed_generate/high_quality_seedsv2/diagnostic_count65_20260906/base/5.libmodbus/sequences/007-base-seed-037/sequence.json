@@ -1,0 +1,62 @@
+{
+  "seed_id": "base-seed-037",
+  "title": "Base Read Coils variant 4",
+  "strategy": "function_code_coverage",
+  "target_operation": "Read Coils",
+  "purpose": "Cover the Read Coils operation with a compact request using a non-default unit identifier, nonzero starting address, and moderate coil quantity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Coils request, unit 11, address 0x0010, quantity 0x0013",
+      "hex": "0001000000060b0100100013",
+      "byte_length": 12,
+      "sha256": "1748aa8696016392077dfa0f4290261e79c147c1f21bcc68a29b79bec6bbb92d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Coils response (coil status bytes)",
+      "hex": "0001000000060b0101010100",
+      "byte_length": 12,
+      "sha256": "94ba43b76c4d0d324cb9616f01358cd2aa64bee49750b0e08dfbb1dd05772197"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the request as a Read Coils operation and return a response containing the requested coil status or a normal Modbus exception response if the addressed data is unavailable.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 equals one unit byte plus the five-byte Read Coils PDU.",
+    "Function code 01, starting address, and quantity fields are ordered consistently.",
+    "Quantity is within the ordinary Read Coils request range."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This is a conservative model-prior-valid seed and is not intended to reproduce a known issue.",
+  "sequence_sha256": "89d149619f38386ba207db32989c8d9025667e661ea636cb2d17f4d557fb5552",
+  "total_bytes": 24,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0736f3efb1022232dcb497119ea4d56efd66822232a1273f84642e4faf117c31",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

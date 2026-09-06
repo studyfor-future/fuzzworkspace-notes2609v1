@@ -1,0 +1,127 @@
+{
+  "protocol_name": "bacnet-stack",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly 4 distinct BACnet/IP seed sequences from the supplied Base plans using only model internal prior and the built-in constraints. External protocol documents, external issue reports, and external citations were not used. The prior duplicate I-Am plan was repaired by emitting one distinct I-Am sequence, and all message hex strings are even-length lowercase. Seeds preserve conservative BACnet/IP-style BVLC plus NPDU/APDU layering with internally consistent four-byte BVLC total lengths. Diversity is improved across discovery, unconfirmed advertisement, confirmed property access, and multi-property access while avoiding cosmetic-only variants.",
+  "coverage_summary": [
+    "base-plan-001: Who-Is single request using a conservative unconfirmed discovery frame",
+    "base-plan-002: I-Am single message unconfirmed advertisement distinct from Who-Is and no longer duplicated",
+    "base-plan-003: ReadProperty setup-then-request sequence combining discovery setup with a confirmed property read",
+    "base-plan-004: ReadPropertyMultiple single request with a larger confirmed-service frame for boundary-adjacent parser coverage"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-001",
+      "seed_id": "base-plan-001-rev1",
+      "title": "Base Who-Is canonical discovery request",
+      "strategy": "baseline_valid",
+      "target_operation": "Who-Is",
+      "purpose": "Provide a conservative discovery seed with minimal BACnet/IP layering and a distinct broadcast-style unconfirmed request shape.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Who-Is request",
+          "hex": "810b000a01002008"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint may parse the BVLC and NPDU and treat the APDU as a basic discovery request that can trigger device advertisement responses.",
+      "constraints_preserved": [
+        "Common BACnet/IP-style BVLC plus NPDU plus APDU layering retained",
+        "BVLC four-byte total length is internally consistent",
+        "Single-message discovery coverage preserved",
+        "Lowercase even-length hex preserved"
+      ],
+      "issue_safety_notes": "Constructed from fallible model prior only and kept conservative; no external issue knowledge or vulnerability claims are used."
+    },
+    {
+      "plan_id": "base-plan-002",
+      "seed_id": "base-plan-002-rev1",
+      "title": "Base I-Am unconfirmed advertisement",
+      "strategy": "function_code_coverage",
+      "target_operation": "I-Am",
+      "purpose": "Restore distinct operation coverage with a plausible unconfirmed advertisement frame that differs structurally from the Who-Is request.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "I-Am advertisement",
+          "hex": "810b001201002010c4020000012204009100"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP stack may parse this as an unsolicited or response-like device advertisement carrying basic device identity and capability fields.",
+      "constraints_preserved": [
+        "Common BACnet/IP-style BVLC plus NPDU plus APDU layering retained",
+        "BVLC four-byte total length is internally consistent",
+        "Distinct I-Am coverage restored after duplicate removal",
+        "Lowercase even-length hex preserved"
+      ],
+      "issue_safety_notes": "This is a conservative model-prior seed intended for parser coverage only; no externally verified protocol claims or issue references are implied."
+    },
+    {
+      "plan_id": "base-plan-003",
+      "seed_id": "base-plan-003-rev1",
+      "title": "Base ReadProperty with discovery setup",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "purpose": "Exercise a plausible two-step interaction by sending discovery first and then a confirmed property read request with simple object and property selectors.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Who-Is setup",
+          "hex": "810b000a01002008"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "ReadProperty request",
+          "hex": "810b001101000420000c0c020000011949"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint may first process discovery and then parse the confirmed service request as a targeted property read against a discovered device object.",
+      "constraints_preserved": [
+        "Common BACnet/IP-style BVLC plus NPDU plus APDU layering retained",
+        "BVLC four-byte total length is internally consistent for both messages",
+        "Stateful setup-then-request plan shape preserved",
+        "Lowercase even-length hex preserved"
+      ],
+      "issue_safety_notes": "Sequence remains conservative and mutation-friendly, using only internal prior rather than externally verified BACnet encodings."
+    },
+    {
+      "plan_id": "base-plan-004",
+      "seed_id": "base-plan-004-rev1",
+      "title": "Base ReadPropertyMultiple boundary-adjacent request",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Exercise a somewhat larger confirmed-service request with nested property-list structure while keeping internal frame length consistency.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ReadPropertyMultiple request",
+          "hex": "810b001601000420000e0c020000011e0919491f"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint may parse the frame as a multi-property read request and enter deeper confirmed-service and tagged-parameter handling paths than the simpler ReadProperty seed.",
+      "constraints_preserved": [
+        "Common BACnet/IP-style BVLC plus NPDU plus APDU layering retained",
+        "BVLC four-byte total length is internally consistent",
+        "Length-boundary-valid objective preserved with a larger single request",
+        "Lowercase even-length hex preserved"
+      ],
+      "issue_safety_notes": "The frame shape is intentionally conservative and structurally richer for fuzzing utility, without relying on external documentation or making vulnerability assertions."
+    }
+  ]
+}

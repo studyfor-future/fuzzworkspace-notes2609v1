@@ -1,0 +1,145 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": 13,
+  "generation_notes": "Revised to exactly 4 distinct seeds with source-backed IEC 60870-5-104 APCI framing and conservative IEC 60870 ASDU layouts where the supplied sources list type IDs, cause-of-transmission values, interrogation qualifiers, and U-format/APDU start semantics but not full byte templates. Previous invalid and duplicate entries were removed. Diversity was improved across U-format activation, interrogation, control, and monitoring paths while preserving 0x68 length consistency and avoiding the exact historical crash payload from issue 13.",
+  "coverage_summary": [
+    "IEC 60870-5-104 U-format STARTDT activation path",
+    "IEC 60870-5-104 U-format TESTFR activation path",
+    "IEC 60870 control-direction interrogation using station interrogation qualifier 20",
+    "IEC 60870 control-direction single command using TypeID 45",
+    "IEC 60870 monitoring-direction measured value using TypeID 13",
+    "Distinct client_to_server and server_to_client parser entry paths",
+    "Safe structural analogue coverage for issue 13 without reproducing the reported payload",
+    "0x68 APDU framing with length octets matched to 4-byte APCI or APCI+ASDU payload size"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-021",
+      "seed_id": "seq-021-001-r1",
+      "title": "STARTDT activation baseline",
+      "strategy": "baseline_valid",
+      "target_operation": "STARTDT activation",
+      "purpose": "Exercise the minimal IEC 60870-5-104 U-format activation parser path with a compact valid frame before application ASDUs are exchanged.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:3cbe16bf065a",
+        "issue:13:13-summary:187d3c5ead6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "u-format startdt act",
+          "hex": "680407000000"
+        }
+      ],
+      "expected_behavior": "Peer recognizes a valid STARTDT activation U-frame and transitions link state without crash.",
+      "constraints_preserved": [
+        "Uses IEC 60870-5-104 APDU start byte 0x68",
+        "Length octet 0x04 matches a 4-byte APCI U-format frame",
+        "Avoids copying the oversized malformed issue 13 payload",
+        "Relies on widely recognized 104 U-format control value for STARTDT activation as conservative model-prior completion"
+      ],
+      "issue_safety_notes": "Safe structural analogue only; minimal valid U-frame chosen to reach protocol state handling without reproducing the reported crashing input."
+    },
+    {
+      "plan_id": "plan-022",
+      "seed_id": "seq-022-001-r1",
+      "title": "General interrogation after link activation",
+      "strategy": "stateful_valid",
+      "target_operation": "General Interrogation",
+      "purpose": "Cover a common stateful control path by pairing link activation with an I-format interrogation ASDU using the documented station interrogation qualifier.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:3cbe16bf065a",
+        "issue:13:13-summary:187d3c5ead6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "u-format startdt act",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "c_ic_na_1 station interrogation",
+          "hex": "680e0000000064010600010000000014"
+        }
+      ],
+      "expected_behavior": "Peer accepts STARTDT activation and then parses the interrogation ASDU as a valid station interrogation request without abnormal termination.",
+      "constraints_preserved": [
+        "Both messages use IEC 60870-5-104 APDU framing with 0x68",
+        "Second message length 0x0e matches 4 APCI bytes plus 10 ASDU bytes",
+        "Uses TypeID 100 for interrogation with qualifier 20 from supplied sources",
+        "ASDU ordering follows conservative common 104 practice: TypeID, VSQ, COT, common address, IOA, qualifier"
+      ],
+      "issue_safety_notes": "Issue-oriented but non-colliding analogue; uses short valid I-format ASDU instead of the historical malformed long frame."
+    },
+    {
+      "plan_id": "plan-023",
+      "seed_id": "seq-023-001-r1",
+      "title": "Single command control path",
+      "strategy": "function_code_coverage",
+      "target_operation": "Single Command",
+      "purpose": "Exercise a distinct control-direction I-format parser path using documented TypeID 45 with a compact single information object.",
+      "evidence_ids": [
+        "protocol_format:iec60870:format-overview:6fc14a471f76",
+        "function_code:function:function-text:d8995aeae15b",
+        "issue:13:13-summary:187d3c5ead6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "c_sc_na_1 single command",
+          "hex": "680e000000002d010600010001000001"
+        }
+      ],
+      "expected_behavior": "Peer parses a valid single-command ASDU and either accepts or application-rejects it cleanly based on local configuration, without parser failure.",
+      "constraints_preserved": [
+        "Uses documented TypeID 45 C_SC_NA_1",
+        "Length octet 0x0e is consistent with APCI plus 10-byte ASDU",
+        "Single information object with 3-byte IOA and 1-byte command qualifier/value field",
+        "Framing remains within conservative valid 104 I-format structure"
+      ],
+      "issue_safety_notes": "Chosen as a safe alternative parser path near I-format handling implicated by the issue, but not matching the crash sample structure."
+    },
+    {
+      "plan_id": "plan-024",
+      "seed_id": "seq-024-001-r1",
+      "title": "Measured value with TESTFR handshake",
+      "strategy": "parser_depth",
+      "target_operation": "Measured Value",
+      "purpose": "Increase direction and parser diversity by combining a U-format test frame with a compact monitoring-direction measured-value ASDU returned from server to client.",
+      "evidence_ids": [
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:b0db75237939",
+        "issue:13:13-summary:187d3c5ead6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "u-format testfr act",
+          "hex": "680443000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "m_me_nc_1 measured short float",
+          "hex": "6801110002000d010300010001000000803f00"
+        }
+      ],
+      "expected_behavior": "Peer processes TESTFR activation at link level and then parses a monitoring ASDU carrying one short floating-point measured value without crash.",
+      "constraints_preserved": [
+        "First frame uses IEC 60870-5-104 U-format with 4-byte APCI and correct 0x68 length 0x04",
+        "Second frame uses documented TypeID 13 M_ME_NC_1",
+        "Second frame length 0x11 matches 4 APCI bytes plus 13 ASDU bytes",
+        "Monitoring ASDU uses one object, 3-byte IOA, 4-byte float value, and 1-byte quality descriptor in conservative common ordering"
+      ],
+      "issue_safety_notes": "Safe structural analogue adds parser depth and reverse direction coverage while remaining far from the exact crashing issue payload."
+    }
+  ]
+}

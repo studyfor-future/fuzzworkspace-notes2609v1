@@ -1,0 +1,142 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct issue-guided sequences. Built-in iec60870 family constraints are enforced conservatively using recognizable 0x68 APCI framing and internally consistent length octets. Exact historical crash payloads were not copied. The revised set removes duplicate seed collisions, repairs prior invalid framing, increases operation/frame/state diversity, and keeps issue analogues safe by preferring short, mutation-friendly structures that can exercise parser, control, interrogation, and command paths without reproducing exact reported PoCs.",
+  "coverage_summary": [
+    "Pure U-frame link-control coverage via TESTFR activation",
+    "Stateful U-frame plus I-frame coverage via STARTDT prerequisite followed by General Interrogation",
+    "Command-path coverage via Single Command with conservative I-frame payload",
+    "Field interaction coverage via Double Command with alternate command/body structure",
+    "Issue analogue coverage for short-or-count-sensitive ASDU parsing",
+    "Distinct operations across link control, interrogation, and command archetypes",
+    "Multi-step stateful example included to increase state-machine diversity",
+    "All sequences use lowercase hex with visible 0x68 length consistency"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-057",
+      "seed_id": "vk-rev-057-196-a",
+      "title": "VK-only TESTFR activation with conservative standalone U-frame boundary",
+      "strategy": "length_boundary_valid",
+      "target_operation": "TESTFR activation",
+      "purpose": "Exercise a minimal link-control path related to server-side message handling while preserving recognizable U-frame structure and avoiding oversized or collision-prone payloads.",
+      "evidence_ids": [
+        "issue:196:196-summary:7e4abb310eea",
+        "issue:197:197-summary:287854ab1555",
+        "issue:54:54-summary:bed996ddfd18"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "testfr_act_minimal",
+          "hex": "680443000000"
+        }
+      ],
+      "expected_behavior": "A conservative implementation should parse the U-frame as a TESTFR activation request and either acknowledge, ignore, or close cleanly without memory safety faults.",
+      "constraints_preserved": [
+        "widely recognized IEC 60870-5-104 style 0x68 APCI framing",
+        "U-frame control-only message",
+        "length octet matches 4-byte APCI payload",
+        "target operation preserved as TESTFR activation"
+      ],
+      "issue_safety_notes": "This is a safe structural analogue only. It avoids the reported long malformed stream and does not reuse any exact historical crash bytes."
+    },
+    {
+      "plan_id": "vk-plan-058",
+      "seed_id": "vk-rev-058-197-b",
+      "title": "VK-only General Interrogation after STARTDT prerequisite",
+      "strategy": "parser_depth",
+      "target_operation": "General Interrogation",
+      "purpose": "Increase state diversity by using a plausible activation prerequisite before a small interrogation I-frame that can drive ASDU parsing without depending on exact issue payload layouts.",
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "startdt_act",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "general_interrogation_small_iframe",
+          "hex": "680e0000000064010600010000000014"
+        }
+      ],
+      "expected_behavior": "A server should accept or reject the activation cleanly, then parse the small interrogation I-frame and respond, ignore, or close without deadlock or parser overrun.",
+      "constraints_preserved": [
+        "recognized U-frame followed by I-frame sequence",
+        "length octets internally consistent",
+        "stateful multi-step sequence",
+        "target operation preserved as General Interrogation",
+        "diversified frame types and state progression"
+      ],
+      "issue_safety_notes": "The sequence is a conservative parser-depth analogue and not an exact reproduction of any deadlock or file-segment trigger. The I-frame is intentionally short and mutation-friendly."
+    },
+    {
+      "plan_id": "vk-plan-059",
+      "seed_id": "vk-rev-059-200-c",
+      "title": "VK-only Single Command with short conservative command ASDU",
+      "strategy": "stateful_valid",
+      "target_operation": "Single Command",
+      "purpose": "Cover a command-oriented I-frame using a compact command body that remains structurally plausible and can be mutated toward count or object-address edge cases linked to short-ASDU parsing issues.",
+      "evidence_ids": [
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "single_command_small_iframe",
+          "hex": "680f000000002d01060001000100008100"
+        }
+      ],
+      "expected_behavior": "A parser should treat this as a small command-like I-frame and either process or reject it cleanly, with no out-of-bounds access when later mutations vary count, IOA, or qualifier bytes.",
+      "constraints_preserved": [
+        "IEC 60870-5-104 style I-frame",
+        "length octet matches payload size",
+        "command path coverage",
+        "target operation preserved as Single Command"
+      ],
+      "issue_safety_notes": "This keeps a full visible IOA and minimal body to avoid the exact missing-IOA crash structure while remaining close enough for safe mutation toward issue-related boundaries."
+    },
+    {
+      "plan_id": "vk-plan-060",
+      "seed_id": "vk-rev-060-201-d",
+      "title": "VK-only Double Command with alternate field interaction layout",
+      "strategy": "field_interaction",
+      "target_operation": "Double Command",
+      "purpose": "Provide dedicated field-interaction coverage for a second command archetype using a distinct I-frame shape and altered command payload bytes to broaden mutation starting points.",
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:175:175-summary:1d1910f22105"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "double_command_interaction_iframe",
+          "hex": "680f020000002e01060001000200000200"
+        }
+      ],
+      "expected_behavior": "A target should parse this alternate command-form I-frame as a distinct command-path input and handle it without encoder/decoder corruption, queue confusion, or memory safety errors.",
+      "constraints_preserved": [
+        "recognized 0x68 I-frame APCI structure",
+        "length field consistent with frame body",
+        "dedicated field interaction coverage for Double Command",
+        "target operation preserved as Double Command"
+      ],
+      "issue_safety_notes": "This sequence is only an issue-guided analogue. It does not copy any file-transfer overflow payload and intentionally stays outside the exact reported crash shape."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "seed_id": "base-plan-043-seed-1",
+  "title": "Base Write Multiple Coils variant 4",
+  "strategy": "baseline_valid",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Use a conservative complete FC0F exchange with a small multi-coil payload, preserving correct quantity, byte count, and response shape for baseline mutation utility.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Multiple Coils Request",
+      "hex": "330300000009050f0010000a024d01",
+      "byte_length": 15,
+      "sha256": "0d6207bd7c328d497759ff14496fed1b9d8e29708f212283580ea1c5ed7525f0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Write Multiple Coils Response",
+      "hex": "330300000006050f0010000a",
+      "byte_length": 12,
+      "sha256": "9541d3edf47068c657d37720024037b3bdc4439211fb5e523f3add6198dc6842"
+    }
+  ],
+  "expected_behavior": "A conforming peer would typically acknowledge the starting address and quantity written when the request is acceptable.",
+  "constraints_preserved": [
+    "7-byte MBAP header used in both messages",
+    "Protocol identifier is 0000",
+    "Request MBAP length 0008 matches unit identifier plus 7-byte fixed PDU and 2 data bytes",
+    "Response MBAP length 0006 matches unit identifier plus 5-byte response PDU",
+    "Function code 0f matches the named Write Multiple Coils operation",
+    "Quantity 000a and byte count 02 are internally consistent"
+  ],
+  "issue_safety_notes": "Model-prior conservative seed only. This sequence is intended for parser and mutator coverage, not to imply any issue relevance.",
+  "sequence_sha256": "fcdc1af04d9c6eed0ab2d7da210bec45904d3c0076c20b1242cbc9e3887ef871",
+  "total_bytes": 27,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ffbb709541911f3a6fb9fe5bdc905272ee27079cfa37c5351b74f38db964ed04",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "seed_id": "base-seed-062",
+  "title": "Base Read Discrete Inputs variant 6",
+  "strategy": "parser_depth",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Use a larger but conventional discrete-input quantity to exercise quantity decoding, response byte-count calculation, and packed-bit response parsing.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Discrete Inputs request, unit 18, start address 0, quantity 16",
+      "hex": "000200000006120200000010",
+      "byte_length": 12,
+      "sha256": "ba45d60968249a0bfc06cb2599c4197a3a2715bb69ec161694a762bc381ca8cc"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse function code 02 and request 16 discrete inputs, producing a response with a two-byte packed status payload or a standard protocol exception.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the six bytes after the transaction and protocol fields.",
+    "Function code 02, address 0000, and quantity 0010 are structurally complete.",
+    "The requested quantity maps cleanly to a two-byte packed response payload.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "No issue reports or external protocol documents were available; parser-depth intent is based only on model-prior protocol plausibility and does not assert a vulnerability.",
+  "sequence_sha256": "3b9e2778666bb8b57bf9cf9b7dd63551cb130b5a4ba935ba7e8424cc62ced7bb",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ba45d60968249a0bfc06cb2599c4197a3a2715bb69ec161694a762bc381ca8cc",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELAC4XecHkH7CFMzBEj0OOnsj2XTM",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"IEC61850\",\n  \"target_issue\": 589,\n  \"generation_notes\": \"Revised to exactly four distinct MMS-over-RFC1006 seed sequences grounded in supplied IEC61850 layering and MMS service-tag sources, with conservative model-prior completion only for minimal BER/ACSE/COTP framing gaps. TPKT headers all begin with 0x03 and total-length fields match the full message bytes. Prior duplicate single-PDU cosmetic variants were removed by diversifying operation paths across association, discovery, read/write-style variable access, reporting, and domain/program function coverage. Because issue evidence was enabled, one seed preserves only a safe structural analogue of the COTP TPDU-size option path from issue 589 by using a valid one-byte TPDU-size code in a Connection Request, explicitly avoiding the historical invalid shift-exponent payload. Exact historical collision payloads and malformed octet-string patterns from issue 193 were not reused.\",\n  \"coverage_summary\": [\n    \"MMS over ISO-on-TCP layering with TPKT, COTP, ACSE/UserInformation, and MMS PDU tags\",\n    \"Safe COTP Connection Request option-path coverage using TPDU-size parameter 0xC0 with valid code\",\n    \"Association/initiation path via MMS Initiate-Request-PDU (0xA8)\",\n    \"Discovery path via Confirmed-Request-PDU carrying GetNameList service tag [1]\",\n    \"Attribute/read-style path via Confirmed-Request-PDU carrying GetVariableAccessAttributes service tag [6]\",\n    \"Program/domain function coverage via confirmed service tags [35] StoreDomainContent and [41] Stop\",\n    \"Reporting path via Unconfirmed-PDU (0xA3) / InformationReport-style coverage\",\n    \"Multi-message stateful sequence included to improve state diversity beyond single-request seeds\",\n    \"All seeds preserve TPKT version 0x03 and internally consistent frame lengths\",\n    \"Issue-enabled batch uses only safe structural analogue for COTP TPDU-size parsing and avoids exact historical malformed payloads\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-049\",\n      \"seed_id\": \"plan-049-seed-1-revA\",\n      \"title\": \"Stateful association to discovery with safe COTP TPDU-size analogue and GetNameList\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"GetNameList\",\n      \"purpose\": \"Exercise a deeper parser path by pairing a valid RFC1006/COTP Connection Request that includes the TPDU-size option with a minimal MMS Initiate request and a subsequent confirmed discovery request, while preserving only a safe structural analogue of the issue-589 option path.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\",\n        \"issue:589:589-summary:a9c8952234c9\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"COTP Connection Request with valid TPDU-size option\",\n          \"hex\": \"0300001611e00000000100c1020000c2020001c0010a\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Minimal MMS Initiate-Request-PDU\",\n          \"hex\": \"0300000b02f080a803020100\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed-Request-PDU with GetNameList service tag\",\n          \"hex\": \"0300000c02f080a003a10100\"\n        }\n      ],\n      \"expected_behavior\": \"A tolerant MMS/IEC61850 parser should accept the layered framing, parse the valid TPDU-size option without entering the invalid shift path, then recognize an Initiate request followed by a confirmed GetNameList discovery request.\",\n      \"constraints_preserved\": [\n        \"For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\",\n        \"Keep the TPKT total-length field consistent with the complete message.\",\n        \"Diversify association, discovery, read, write and reporting paths.\",\n        \"Use only a safe structural analogue of the issue-589 TPDU-size parameter path and not the historical invalid exponent byte.\"\n      ],\n      \"issue_safety_notes\": \"This sequence intentionally covers the COTP 0xC0 option path using parameterLen 0x01 and a small valid TPDU-size code 0x0a instead of the documented invalid value 0xa2. It preserves framing structure relevant to parsing coverage but removes the exact undefined-behavior trigger.\"\n    },\n    {\n      \"plan_id\": \"plan-050\",\n      \"seed_id\": \"plan-050-seed-1-revA\",\n      \"title\": \"Confirmed service coverage for Stop\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Stop\",\n      \"purpose\": \"Provide a distinct single-request confirmed-service seed centered on the documented Stop service tag to add program-invocation control coverage without duplicating prior generic confirmed-request shapes.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"Confirmed-Request-PDU with Stop service tag\",\n          \"hex\": \"0300000c02f080a003a12900\"\n        }\n      ],\n      \"expected_behavior\": \"The parser should accept the RFC1006/COTP-wrapped MMS confirmed request and dispatch it to the Stop confirmed-service handler or corresponding service-choice parser path.\",\n      \"constraints_preserved\": [\n        \"For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\",\n        \"Keep the TPKT total-length field consistent with the complete message.\",\n        \"Use documented MMS PDU type tag 0xA0 for confirmed request and service tag value [41] for Stop.\"\n      ],\n      \"issue_safety_notes\": \"No issue motif is exercised here beyond standard framing. The seed is intentionally compact, valid, and avoids malformed lengths, oversized allocations, or invalid COTP option values.\"\n    },\n    {\n      \"plan_id\": \"plan-051\",\n      \"seed_id\": \"plan-051-seed-1-revA\",\n      \"title\": \"Unconfirmed reporting path with InformationReport-style PDU\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"InformationReport\",\n      \"purpose\": \"Add unconfirmed/reporting-path diversity absent from the four candidate plans by using the documented MMS Unconfirmed-PDU tag, improving parser coverage beyond repeated confirmed-service requests.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"Unconfirmed-PDU for reporting path\",\n          \"hex\": \"0300000b02f080a303010000\"\n        }\n      ],\n      \"expected_behavior\": \"A parser with MMS unconfirmed-service support should recognize the 0xA3 Unconfirmed-PDU path and continue into reporting-style message handling rather than confirmed-service dispatch.\",\n      \"constraints_preserved\": [\n        \"For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\",\n        \"Keep the TPKT total-length field consistent with the complete message.\",\n        \"Diversify association, discovery, read, write and reporting paths.\",\n        \"Use a distinct MMS PDU type tag from confirmed-request coverage.\"\n      ],\n      \"issue_safety_notes\": \"This is a safe reporting-path seed using a short, well-formed unconfirmed MMS wrapper. It does not reuse any historical crash payload and introduces no malformed octet-string or invalid shift-exponent condition.\"\n    },\n    {\n      \"plan_id\": \"plan-052\",\n      \"seed_id\": \"plan-052-seed-1-revA\",\n      \"title\": \"Attribute access followed by domain content service\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"GetVariableAccessAttributes and StoreDomainContent\",\n      \"purpose\": \"Increase semantic diversity by combining an attribute/read-style request with a domain-management confirmed service, giving the corpus two different confirmed service tags and parser branches in one sequence without relying on cosmetic framing changes.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\",\n        \"function_code:function:operation-catalog:8c2d1b34818b\",\n        \"function_code:function:operation-catalog:d64a03d5852a\",\n        \"function_code:function:operation-catalog:ecc66f95fee4\",\n        \"function_code:function:operation-catalog:9bb344dfd383\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed-Request-PDU with GetVariableAccessAttributes service tag\",\n          \"hex\": \"0300000c02f080a003a10600\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed-Request-PDU with StoreDomainContent service tag\",\n          \"hex\": \"0300000c02f080a003a12300\"\n        }\n      ],\n      \"expected_behavior\": \"The target should parse two valid confirmed requests in sequence, first entering variable-access-attribute handling and then entering the StoreDomainContent confirmed-service path.\",\n      \"constraints_preserved\": [\n        \"For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.\",\n        \"Keep the TPKT total-length field consistent with the complete message.\",\n        \"Diversify association, discovery, read, write and reporting paths.\",\n        \"Use documented confirmed service tag values [6] and [35] to maximize parser entry-point diversity.\"\n      ],\n      \"issue_safety_notes\": \"The sequence stays within compact, valid confirmed-service wrappers and does not attempt malformed sizes, negative-length analogues, or exact reproduction of any issue payload. The pair is intended for safe branch coverage only.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788712780,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2334,
+    "prompt_tokens": 8513,
+    "total_tokens": 10847,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 395,
+      "engine_ttlt_ms": 24145,
+      "pre_inference_ms": 84,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 678,
+      "service_ttlt_ms": 24423,
+      "user_visible_ttft_ms": 594
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 50663,
+  "routing": {
+    "serving_pipereplica": "d20260826141614-a9af37d5-default-r2-dp0-default"
+  }
+}

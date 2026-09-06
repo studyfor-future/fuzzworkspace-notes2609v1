@@ -1,0 +1,51 @@
+{
+  "seed_id": "bacnet-pk-021-whois",
+  "title": "Minimal unconfirmed Who-Is discovery seed",
+  "strategy": "function_code_coverage",
+  "target_operation": "Who-Is",
+  "purpose": "Cover unconfirmed service dispatch path with standard Who-Is discovery request for parser entry point coverage.",
+  "evidence_ids": [
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:operation-catalog:77a3af392c60",
+    "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+    "function_code:function:function-text:457cd2894efe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC NPDU Unconfirmed Who-Is request",
+      "hex": "810a000801001008",
+      "byte_length": 8,
+      "sha256": "99af28ae1f95fd271b8eb9f5ed4497e15dd25150a25aa6b7eede941c4d2131eb"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP receiver should recognize the unconfirmed-request PDU, process the Who-Is discovery, and potentially respond with an I-Am message.",
+  "constraints_preserved": [
+    "BVLC type 0x81 and function 0x0a with four-byte header",
+    "BVLC total length 0x0008 matching complete frame",
+    "NPDU version 0x01 with zero control and no routing fields",
+    "APDU high nibble 0x1 for Unconfirmed-Request-PDU",
+    "Service choice 0x08 for Who-Is from confirmed function text excerpt",
+    "No optional device instance limits"
+  ],
+  "issue_safety_notes": "Positive parser coverage seed only; no vulnerability claims.",
+  "sequence_sha256": "a37d0490aba90ca62fc2085a27ff3b0afd41962de7772da528d462e6f52dd2ad",
+  "total_bytes": 8,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "99af28ae1f95fd271b8eb9f5ed4497e15dd25150a25aa6b7eede941c4d2131eb",
+    "encoded_bytes": 8,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ]
+  }
+}

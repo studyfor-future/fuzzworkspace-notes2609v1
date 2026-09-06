@@ -1,0 +1,52 @@
+{
+  "seed_id": "pk9-002",
+  "title": "Confirmed ReadProperty for device object identifier",
+  "strategy": "function_code_coverage",
+  "target_operation": "ReadProperty",
+  "purpose": "Exercise a common confirmed service path with object/property parameter structure while preserving credible BACnet/IP framing.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Original-Unicast-NPDU carrying confirmed ReadProperty",
+      "hex": "810a0010010000050c0c0200004b190c",
+      "byte_length": 16,
+      "sha256": "ac0b202867fd6117c8841da09064758ad6d9d5c491378c3afc9fb855d82bbdbe"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP target should parse the frame as a confirmed ReadProperty request for a device object and either return the property value or an application-level error if the object instance is absent.",
+  "constraints_preserved": [
+    "BVLC total length 0x0011 matches 17-byte message",
+    "NPDU version/control explicitly encoded as 01 00",
+    "Confirmed-request PDU type uses first APDU octet 0x00",
+    "Confirmed service choice 0x0C for ReadProperty is directly source-backed",
+    "Service body uses conservative standard BACnet tagged fields for object identifier and property identifier because full per-field grammar is not supplied in the excerpts"
+  ],
+  "issue_safety_notes": "Valid confirmed-service seed; uses ordinary object/property access structure and avoids malformed lengths or response-only PDUs.",
+  "sequence_sha256": "1bc82ac4c088fc4d701b5aa36050e2a989017b89ad91ec3b2b68005843b44584",
+  "total_bytes": 16,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ac0b202867fd6117c8841da09064758ad6d9d5c491378c3afc9fb855d82bbdbe",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "seed_id": "pk9-003",
+  "title": "Confirmed AtomicReadFile stream-access seed",
+  "strategy": "field_interaction",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Cover file-service parsing with a longer confirmed request body that introduces additional tagged parameters and offset/count interactions.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Original-Unicast-NPDU carrying confirmed AtomicReadFile",
+      "hex": "810a001701000005061c000000012e09003f3100210000",
+      "byte_length": 23,
+      "sha256": "e9c65af5fbd5e75111163a2c8da6e1a4fd57acba5509b2a53f4e23a0bf64e06f"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP implementation should accept the outer framing, recognize confirmed service choice 0x06, and attempt to parse a file-read request in a normal file-service code path.",
+  "constraints_preserved": [
+    "BVLC total length 0x0017 matches 23-byte message",
+    "NPDU version/control explicitly present",
+    "Confirmed service choice 0x06 for AtomicReadFile is directly source-backed",
+    "Body is a conservative BACnet-style tagged file object plus access method/count analogue to maximize mutation utility without overstating source verification",
+    "Single-message complete request preserves replay utility"
+  ],
+  "issue_safety_notes": "Safe parser-entry analogue for file operations; not derived from any vulnerability-triggering payload and intentionally avoids extreme sizes.",
+  "sequence_sha256": "262ce9a54268498010e22ff55c69b1570d7c8cdc6c12bc51fed20a40abae2683",
+  "total_bytes": 23,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e9c65af5fbd5e75111163a2c8da6e1a4fd57acba5509b2a53f4e23a0bf64e06f",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ]
+  }
+}

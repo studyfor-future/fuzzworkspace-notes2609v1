@@ -1,0 +1,61 @@
+{
+  "id": "chatcmpl-ELAJs5S21j5UpMjpeAemD2z1r5Ro6",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"OpENer\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated 4 model-prior EtherNet/IP encapsulation seeds for OpENer using conservative 24-byte headers with little-endian length fields where applicable. Session-oriented requests use a plausible RegisterSession response to set up later client requests. All validity is based on model-prior plausibility and built-in constraints only, not external verification.\",\n  \"coverage_summary\": [\n    \"Covers session establishment with RegisterSession using a minimal 4-byte command-specific payload.\",\n    \"Covers session teardown with UnregisterSession using a nonzero session handle established by prior server response.\",\n    \"Covers explicit unconnected-style request path through SendRRData with CPF items and nested CIP-like service content.\",\n    \"Covers connected-style request path through SendUnitData with connection address and sequenced data items.\",\n    \"Diversifies directions with setup_then_request sequences and standalone requests.\",\n    \"Preserves visible encapsulation length relationships and uses conservative little-endian header encoding.\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-053\",\n      \"seed_id\": \"opener-base-053-01\",\n      \"title\": \"Base RegisterSession variant 6\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"RegisterSession\",\n      \"purpose\": \"Exercise a conservative RegisterSession request using the common minimal payload size while keeping encapsulation length and response structure internally consistent.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"register_session_request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"register_session_response\",\n          \"hex\": \"65000400785634120000000000000000000000000000000001000000\"\n        }\n      ],\n      \"expected_behavior\": \"A plausible server accepts the RegisterSession request and returns success with a newly assigned nonzero session handle and matching 4-byte command-specific payload.\",\n      \"constraints_preserved\": [\n        \"Uses EtherNet/IP-style 24-byte encapsulation header.\",\n        \"Uses little-endian payload length of 0004 matching the 4-byte RegisterSession command data.\",\n        \"Keeps command-specific payload size internally consistent across request and response.\",\n        \"Follows requested setup_then_request shape within the 2-message budget.\"\n      ],\n      \"issue_safety_notes\": \"No external issue knowledge is available. This seed is a conservative model-prior session-establishment example and is not based on any verified vulnerability details.\"\n    },\n    {\n      \"plan_id\": \"base-plan-054\",\n      \"seed_id\": \"opener-base-054-01\",\n      \"title\": \"Base UnregisterSession variant 6\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"UnregisterSession\",\n      \"purpose\": \"Vary the session handle and status interaction through a setup response followed by a client UnregisterSession request that reuses the established handle and zero-length command data.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"server_to_client\",\n          \"label\": \"prior_register_session_response\",\n          \"hex\": \"65000400214365870000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"unregister_session_request\",\n          \"hex\": \"660000002143658700000000000000000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"A plausible server interprets the nonzero session handle from prior setup state and accepts the UnregisterSession request with no command-specific payload.\",\n      \"constraints_preserved\": [\n        \"Uses EtherNet/IP-style 24-byte encapsulation header for both messages.\",\n        \"Uses little-endian payload length 0004 for the setup RegisterSession response and 0000 for UnregisterSession.\",\n        \"Preserves the same session handle value across the setup message and the UnregisterSession request.\",\n        \"Maintains requested 2-message setup_then_request structure.\"\n      ],\n      \"issue_safety_notes\": \"No external issue knowledge is available. This seed only explores a plausible field relationship between session setup state and teardown, without any claim of verified protocol or issue behavior.\"\n    },\n    {\n      \"plan_id\": \"base-plan-055\",\n      \"seed_id\": \"opener-base-055-01\",\n      \"title\": \"Base SendRRData variant 6\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"SendRRData\",\n      \"purpose\": \"Exercise a deeper explicit-message parser path by sending a plausible SendRRData encapsulation carrying CPF null-address and unconnected-data items with a nested CIP-like request body.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"send_rr_data_unconnected_explicit\",\n          \"hex\": \"6f00180011111111000000000000000000000000000000000000000000000000020000000000b200080e03200624013003\"\n        }\n      ],\n      \"expected_behavior\": \"A plausible target either parses the CPF structure and dispatches the nested explicit request or rejects it cleanly at the application level while accepting the outer encapsulation framing.\",\n      \"constraints_preserved\": [\n        \"Uses EtherNet/IP-style 24-byte encapsulation header.\",\n        \"Uses little-endian encapsulation length 0018 matching the 24-byte SendRRData payload.\",\n        \"Includes a conservative interface handle of zero and timeout of zero in the command-specific area.\",\n        \"Uses two CPF items with lengths consistent with the included item data.\",\n        \"Maintains single_request shape within the 1-message budget.\"\n      ],\n      \"issue_safety_notes\": \"No external issue knowledge is available. This deeper parser seed is based only on model-prior protocol structure and is intended as a conservative structural coverage input.\"\n    },\n    {\n      \"plan_id\": \"base-plan-056\",\n      \"seed_id\": \"opener-base-056-01\",\n      \"title\": \"Base SendUnitData variant 6\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"SendUnitData\",\n      \"purpose\": \"Provide a structurally distinct connected-style explicit messaging seed using SendUnitData with a connection address item and a sequenced connected-data item.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"send_unit_data_connected_explicit\",\n          \"hex\": \"70001e00222222220000000000000000000000000000000000000000000000000200a1000401000000b1000e010000000e03200624013003\"\n        }\n      ],\n      \"expected_behavior\": \"A plausible target processes the SendUnitData envelope, interprets the connection address and sequence fields, and either routes the contained connected explicit request or rejects it cleanly if connection state is absent.\",\n      \"constraints_preserved\": [\n        \"Uses EtherNet/IP-style 24-byte encapsulation header.\",\n        \"Uses little-endian encapsulation length 001e matching the 30-byte SendUnitData payload.\",\n        \"Includes zero interface handle and timeout fields before CPF items.\",\n        \"Uses two CPF items with internally consistent item lengths for address and connected-data content.\",\n        \"Maintains a single structurally distinct single_request seed rather than a cosmetic variant.\"\n      ],\n      \"issue_safety_notes\": \"No external issue knowledge is available. This seed is a model-prior connected-message variant for coverage diversity and does not rely on any verified vulnerability or externally confirmed protocol detail.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {}
+    }
+  ],
+  "created": 1788713264,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1767,
+    "prompt_tokens": 2625,
+    "total_tokens": 4392,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 12,
+      "engine_ttft_ms": 168,
+      "engine_ttlt_ms": 20628,
+      "pre_inference_ms": 81,
+      "service_tbt_ms": 12,
+      "service_ttft_ms": 747,
+      "service_ttlt_ms": 21204,
+      "user_visible_ttft_ms": 666
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260826104250-7188400d-default-r2-dp0-default"
+  }
+}

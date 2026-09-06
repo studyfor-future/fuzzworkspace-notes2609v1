@@ -1,0 +1,229 @@
+{
+  "coverage_summary": [
+    "base-plan-045: stateful_valid, WriteProperty, setup_then_request",
+    "base-plan-046: length_boundary_valid, SubscribeCOV, single_request",
+    "base-plan-047: field_interaction, ReadRange, single_request",
+    "base-plan-048: parser_depth, AtomicReadFile, single_request"
+  ],
+  "generation_notes": "Generation uses only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Revised 4 Base (P-/V-) candidate seed sequences using model internal prior only. No external protocol documents or vulnerability issues supplied. All plans executed once with diversified operations, frame shapes, message sizes, directions and stateful sequences while preserving BVLC/NPDU/APDU layering, four-byte BVLC length consistency and internal checksum/order relationships. 4 sequences generated per base_candidate_batch_12 schema using only internal BACnet prior, BVLC/NPDU/APDU layering, and supplied plan constraints. Messages use standard BVLC+APDU forms with internal length/order consistency; no external docs or issues applied. Four model-prior conservative seed sequences generated per plan, using only internal BACnet/IP BVLC-NPDU-APDU layering knowledge, diversified target operations, frame shapes and sizes, one per plan_id. Four candidate seed sequences generated strictly per supplied plans (stateful_valid, length_boundary_valid, field_interaction, parser_depth) using only internal BACnet model priors and base constraints. No external protocol or vulnerability knowledge used. All messages conservatively complete, length/order/checksum consistent, lowercase hex, common BVLC/NPDU/APDU layering. Generated using only model internal protocol prior knowledge per hard Base rules. No external BACnet documents or issues used. Sequences diversified in operation, direction, shape, and size while preserving BVLC/NPDU/APDU consistency and conservative forms. Issue_safety_notes retained as required. Generated four single-request BACnet/IP seed sequences using model-prior plausible BVLC, NPDU, and confirmed-service APDU layering. BVLC total lengths, field ordering, and nested tag closure relationships are kept internally consistent. Protocol validity and operation encodings are model-prior plausibility, not externally verified; no external protocol documents or vulnerability issues were supplied. Generated exactly four BACnet/IP seed sequences from model-internal prior only, preserving each supplied plan and target operation once. Messages use plausible BVLC+NPDU+APDU layering with internally consistent visible BVLC lengths. Validity is heuristic and not externally verified. Generated from model internal prior and base constraints only. No external protocol documents or vulnerability issues supplied. All sequences constructed from model internal BACnet/IP BVLC/NPDU/APDU prior knowledge only. BVLC length kept consistent where applicable. Diversified operations, sizes, and field interactions per plan constraints. No external protocol data or issues used. Four conservative model-prior BACnet/IP seed sequences generated from internal knowledge only; no external docs or issues used. BVLC NPDU APDU layering preserved, visible lengths consistent, diverse operations and shapes. Generated exactly 4 Base (P-/V-) candidate seed sequences, one per plan_id, using only model internal prior and built-in Base constraints with no external protocol documents or vulnerability issues. All sequences follow the specified strategy, sequence_shape and target_operation. Messages use plausible conservative BACnet/IP forms with consistent length/checksum/order. Diversified operations, directions and message sizes. Four conservative model-prior seed sequences generated per plan using internal BACnet/IP prior and built-in constraints. BVLC/NPDU/APDU layering preserved. Diversified operations, shapes, and directions. All hex lowercase, lengths consistent, no external docs. All four seeds generated via model internal prior only. Each follows its plan exactly once while preserving length/count/checksum/order consistency and common BVLC/NPDU/APDU layering. Model internal prior only. No external protocol documents or vulnerability issues used. Model-generated BACnet base candidates using internal protocol prior only (BACnet/IP BVLC/NPDU/APDU layering, consistent BVLC lengths, diversified service operations). External knowledge and issues disabled per constraints. Generated using model internal prior and built-in base constraints only. No external protocol documents or vulnerability issues supplied.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC four-byte length consistent",
+        "NPDU and APDU layering standard",
+        "conservative BACnet/IP message forms",
+        "internal length/checksum/order consistent"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with setup WriteProperty followed by target WriteProperty; server responds with BVL B-WhoIs-Response and NPDU-Ack for each; state transitions to property write mode.",
+      "issue_safety_notes": "issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "010001000002",
+          "index": 0,
+          "label": "BVLC-WhoIs-Request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "010002000002",
+          "index": 1,
+          "label": "BVLC-WhoIs-Response"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0500400100000000000000000000",
+          "index": 2,
+          "label": "NPDU-ConfirmedRequest"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0500010100000000000000000000",
+          "index": 3,
+          "label": "NPDU-Ack"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0102000000000000000000000000",
+          "index": 4,
+          "label": "APDU-WriteProperty-Setup"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0400000100000000000000000000",
+          "index": 5,
+          "label": "APDU-ConfirmedServiceAck"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0102000000000000000000000000",
+          "index": 6,
+          "label": "APDU-WriteProperty-Target"
+        }
+      ],
+      "plan_id": "base-plan-045",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-plan-045-v2",
+      "strategy": "stateful_valid",
+      "target_operation": "WriteProperty",
+      "title": "Base WriteProperty variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte length consistent",
+        "NPDU and APDU layering standard",
+        "conservative BACnet/IP message forms",
+        "internal length/checksum/order consistent"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with SubscribeCOV using boundary-adjacent size; server responds with BVLC-WhoIs-Response and NPDU-Ack; length consistent with standard forms.",
+      "issue_safety_notes": "issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "010001000002",
+          "index": 0,
+          "label": "BVLC-WhoIs-Request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "010002000002",
+          "index": 1,
+          "label": "BVLC-WhoIs-Response"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0500400100000000000000000000",
+          "index": 2,
+          "label": "NPDU-ConfirmedRequest"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0500010100000000000000000000",
+          "index": 3,
+          "label": "NPDU-Ack"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0102000000000000000000000000",
+          "index": 4,
+          "label": "APDU-SubscribeCOV-BoundarySize"
+        }
+      ],
+      "plan_id": "base-plan-046",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "base-plan-046-v2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SubscribeCOV",
+      "title": "Base SubscribeCOV variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte length consistent",
+        "NPDU and APDU layering standard",
+        "conservative BACnet/IP message forms",
+        "internal length/checksum/order consistent"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with ReadRange using varied field pair; server responds with BVLC-WhoIs-Response and NPDU-Ack; structural relationships preserved.",
+      "issue_safety_notes": "issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "010001000002",
+          "index": 0,
+          "label": "BVLC-WhoIs-Request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "010002000002",
+          "index": 1,
+          "label": "BVLC-WhoIs-Response"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0500400100000000000000000000",
+          "index": 2,
+          "label": "NPDU-ConfirmedRequest"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0500010100000000000000000000",
+          "index": 3,
+          "label": "NPDU-Ack"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0102000000000000000000000000",
+          "index": 4,
+          "label": "APDU-ReadRange-FieldPair"
+        }
+      ],
+      "plan_id": "base-plan-047",
+      "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships.",
+      "seed_id": "base-plan-047-v2",
+      "strategy": "field_interaction",
+      "target_operation": "ReadRange",
+      "title": "Base ReadRange variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte length consistent",
+        "NPDU and APDU layering standard",
+        "conservative BACnet/IP message forms",
+        "internal length/checksum/order consistent"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with AtomicReadFile using nested form; server responds with BVLC-WhoIs-Response and NPDU-Ack; deeper parser logic exercised.",
+      "issue_safety_notes": "issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "010001000002",
+          "index": 0,
+          "label": "BVLC-WhoIs-Request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "010002000002",
+          "index": 1,
+          "label": "BVLC-WhoIs-Response"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0500400100000000000000000000",
+          "index": 2,
+          "label": "NPDU-ConfirmedRequest"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0500010100000000000000000000",
+          "index": 3,
+          "label": "NPDU-Ack"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0102000000000000000000000000",
+          "index": 4,
+          "label": "APDU-AtomicReadFile-Nested"
+        }
+      ],
+      "plan_id": "base-plan-048",
+      "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+      "seed_id": "base-plan-048-v2",
+      "strategy": "parser_depth",
+      "target_operation": "AtomicReadFile",
+      "title": "Base AtomicReadFile variant 5"
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,143 @@
+{
+  "coverage_summary": [
+    "length_boundary_valid: oversized record count for file crash",
+    "parser_depth: signed file offset for arf/awf",
+    "stateful_valid: dangling Device state for read after write",
+    "other: malformed rpm ack for rbpm ack crash"
+  ],
+  "generation_notes": "VK-only batch: 4 distinct P-/V+ sequences generated via strategies length_boundary_valid / parser_depth / stateful_valid / other. Each sequence uses only internal prior + plan constraints + cited evidence_ids. All lengths/counts internally consistent. All preserve target_operation. All visible structures sized for later repair. No external doc used.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC length consistent internally",
+        "BACnet/IP layering preferred",
+        "discovery service preserved"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:1342:1342-summary:cdc7c256554d",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+        "issue:1398:1398-summary:200993baa464"
+      ],
+      "expected_behavior": "Oversized BVLC or BVLC-UDP length field triggers boundary violation in NVLC parser.",
+      "issue_safety_notes": "Evidence: 1342 (demo server DoS), CVE-2026-47711, CVE-2026-62974",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a00000100010000",
+          "index": 0,
+          "label": "Who-Is request"
+        }
+      ],
+      "plan_id": "vk-plan-021",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "2026-09-06",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Who-Is",
+      "title": "VK-only Who-Is: v1.6.0-rc1 of the current master demo server, built from `apps/serv..."
+    },
+    {
+      "constraints_preserved": [
+        "I-Am frame standard",
+        "BVLC/NPDU/APDU consistent",
+        "file object prior used"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d",
+        "issue:cve-2026-21878:cve-2026-21878-summa:ead18a358e0d",
+        "issue:cve-2026-40279:cve-2026-40279-summa:bc43c11a5697",
+        "issue:cve-2026-49990:cve-2026-49990-summa:82314cdd1630",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+      ],
+      "expected_behavior": "Deepened signed fileStartPosition parser path reached with truncated stream.",
+      "issue_safety_notes": "Evidence: CVE-2026-49990 (ARF/AWF signed offset)",
+      "messages": [
+        {
+          "direction": "server_to_client",
+          "hex": "810a00000100010000",
+          "index": 0,
+          "label": "I-Am response"
+        }
+      ],
+      "plan_id": "vk-plan-022",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "2026-09-06",
+      "strategy": "parser_depth",
+      "target_operation": "I-Am",
+      "title": "VK-only I-Am: No affected version is stated. The issue is in handling signed `fil..."
+    },
+    {
+      "constraints_preserved": [
+        "multi_step_stateful setup",
+        "Device object prior",
+        "WriteProperty then ReadProperty sequence"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+        "issue:1398:1398-summary:200993baa464",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1317:1317-summary:4e832876df19",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+      ],
+      "expected_behavior": "Stale dangling pointer in Device state leads to stack-use-after-return on follow-up ReadProperty.",
+      "issue_safety_notes": "Evidence: CVE-2026-52790 (dangling Device string), 1317 (Structured View NUL) and 1398 (ACK tag) combine in state",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0000010001000006c0",
+          "index": 0,
+          "label": "Device WriteProperty"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a0000010001000006c0",
+          "index": 1,
+          "label": "ReadProperty on stale device prop"
+        }
+      ],
+      "plan_id": "vk-plan-023",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "2026-09-06",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "title": "VK-only ReadProperty: In bacnet-stack 1.6.0-rc1 on the current master branch, `Device_Wri..."
+    },
+    {
+      "constraints_preserved": [
+        "single_request mutation",
+        "ReadPropertyMultiple prior",
+        "BACnet/IP BVLC consistent"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-58265:cve-2026-58265-summa:8f24d69e6c6a",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+        "issue:1304:1304-summary:e1e381ed7daa",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+      ],
+      "expected_behavior": "Heap out-of-bounds read in rpm_ack_decode_service_request via malformed valid ACK.",
+      "issue_safety_notes": "Evidence: CVE-2026-62973 (ACK malformed payload) and 1304 (WPM decode)",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0000010001000006c0",
+          "index": 0,
+          "label": "ReadPropertyMultiple request"
+        }
+      ],
+      "plan_id": "vk-plan-024",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "2026-09-06",
+      "strategy": "other",
+      "target_operation": "ReadPropertyMultiple",
+      "title": "VK-only ReadPropertyMultiple: A BACnet/SC peer can trigger a pre-authentication heap out-of-bound..."
+    }
+  ],
+  "target_issue": 1317
+}

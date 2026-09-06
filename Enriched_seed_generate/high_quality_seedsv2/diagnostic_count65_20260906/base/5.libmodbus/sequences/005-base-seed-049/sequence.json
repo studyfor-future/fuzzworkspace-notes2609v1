@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-seed-049",
+  "title": "Base Write Single Coil variant 4",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Single Coil",
+  "purpose": "Exercise Write Single Coil through a setup-then-target sequence using varied transaction identifiers with consistent MBAP structure.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Coils setup",
+      "hex": "0001000000060c0100000001",
+      "byte_length": 12,
+      "sha256": "36dcf9809104afd3166b73931a6976f2d14fe53d74ac1e68aa35dad99c9ec2bc"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Write Single Coil request",
+      "hex": "0002000000080c0500010000ff00",
+      "byte_length": 14,
+      "sha256": "f8f2bba3c5d2fabadb1365e5a2ca90cb412232fc69820d1ae09762f9d2314a6f"
+    }
+  ],
+  "expected_behavior": "The server should parse the setup read if supported, then parse the Write Single Coil request and return a normal response or exception according to device support.",
+  "constraints_preserved": [
+    "7-byte MBAP header structure",
+    "Protocol identifier is 0000",
+    "MBAP length 0006 equals unit identifier plus 5-byte PDU",
+    "Write Single Coil function code 05 is used with two-byte address and two-byte value",
+    "Transaction identifiers advance from 0001 to 0002"
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report was supplied or used; expected behavior is based only on model-prior plausibility and built-in Base constraints.",
+  "sequence_sha256": "6a1f843ebfc58a0189ce689f914f2db3391dde24b84bd01263aedbc3cf4704fa",
+  "total_bytes": 26,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "72a36f1af701658f349e38adf91b66a497486aa7e834fa1185144115987b9a7a",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

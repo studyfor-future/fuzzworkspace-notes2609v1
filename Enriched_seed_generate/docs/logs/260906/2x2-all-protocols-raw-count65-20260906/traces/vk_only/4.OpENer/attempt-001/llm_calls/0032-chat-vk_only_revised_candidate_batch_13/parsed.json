@@ -1,0 +1,172 @@
+{
+  "coverage_summary": [
+    "issue_structural_analogue ForwardOpen parse path (574/570)",
+    "field_interaction CPF reuse + item count (575)",
+    "length_boundary_valid EPath + attribute count (576/572)",
+    "parser_depth TCP explicit + session setup (577/571)",
+    "stateful multi-step discovery + explicit messaging chains",
+    "diversified operation/frame/state coverage",
+    "mutation-friendly raw sequences with internal consistency"
+  ],
+  "generation_notes": "VK-only batch-13 revised from batch-12 using exactly the 4 plans (049 issue_structural_analogue, 050 field_interaction, 051 length_boundary_valid, 052 parser_depth). Fixed all 13 deterministic errors (no duplicates, valid even-length hex, no copied payloads, unique sequences). Enforced opener family constraints (24-byte ENIP header little-endian payload length, consistent visible lengths, model-prior archetypes). Retained safe issue analogues only. Increased diversity: 3+ steps, varied CPF/EPath sizes, state transitions, frame shapes. No external docs used; internal prior only. All sequences VK-only, P+/V+ ready.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "24-byte ENIP encapsulation header",
+        "little-endian payload length",
+        "internal visible lengths consistent",
+        "no exact crash payload",
+        "VK-only safe analogue"
+      ],
+      "evidence_ids": [
+        "issue:574:574-summary:ec096521bf63",
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:571:571-summary:fe57e1bf0770"
+      ],
+      "expected_behavior": "Session register followed by crafted ForwardOpen; parser may advance past buffer end due to path-length mismatch analogue",
+      "issue_safety_notes": "Safe structural analogue only; no crash byte copied; family opener constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "656e6970000000000000000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "006f0000000000000000000000000000000000b2000000062401000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "ForwardOpen path analogue"
+        }
+      ],
+      "plan_id": "vk-plan-049",
+      "purpose": "Exercise vulnerable connection-path parsing structure via conservative model-prior forward-open request with 24-byte ENIP header and internal length consistency",
+      "seed_id": "vk-plan-049-seq-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ForwardOpen",
+      "title": "VK-only ForwardOpen: OpENer v2.3 up to commit 76b95cf structural path analogue"
+    },
+    {
+      "constraints_preserved": [
+        "24-byte ENIP header",
+        "little-endian length",
+        "stateful multi-step",
+        "internal length consistency",
+        "safe field interaction"
+      ],
+      "evidence_ids": [
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:575:575-summary:3b6824be82b5",
+        "issue:577:577-summary:f41c11d4b1b8"
+      ],
+      "expected_behavior": "CPF item count variation leaves stale data_item; subsequent packet reuses UDP-stack pointer in TCP path",
+      "issue_safety_notes": "Safe interaction analogue; no crash payload; opener family constraints",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "656e6970000000000000000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "006f0000000000000000000000000000000000b2000000000100000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "SendRRData cpf interaction"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "006b0000000000000000000000000000000000b2000000000000000000000000000000000000",
+          "index": 2,
+          "label": "UnitData reuse"
+        }
+      ],
+      "plan_id": "vk-plan-050",
+      "purpose": "Diversify CPF item-count and data-item reuse path via multi-step explicit Send with plausible model-prior structure",
+      "seed_id": "vk-plan-050-seq-1",
+      "strategy": "field_interaction",
+      "target_operation": "UnconnectedSend",
+      "title": "VK-only UnconnectedSend: OpENer v2.3 CPF field interaction analogue"
+    },
+    {
+      "constraints_preserved": [
+        "24-byte ENIP header always",
+        "little-endian length",
+        "internal visible lengths",
+        "full header + response",
+        "length boundary maintained"
+      ],
+      "evidence_ids": [
+        "issue:576:576-summary:bc3710455616",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:572:572-summary:4cac5b77f97f"
+      ],
+      "expected_behavior": "Server response parsed with boundary-checked length fields; short and padded headers varied",
+      "issue_safety_notes": "Boundary analogue only; no crash bytes; family constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "006e000000000000000000000000000000000001",
+          "index": 0,
+          "label": "ListIdentity"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "006f00000000000000000000000000000000000001000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "ListIdentity response"
+        }
+      ],
+      "plan_id": "vk-plan-051",
+      "purpose": "Boundary check on identity response with full 24-byte header + diversified header variants",
+      "seed_id": "vk-plan-051-seq-1",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ListIdentity",
+      "title": "VK-only ListIdentity: OpENer v2.3 length boundary + response chain"
+    },
+    {
+      "constraints_preserved": [
+        "24-byte ENIP encapsulation",
+        "little-endian payload length",
+        "multi-step stateful",
+        "internal length consistency",
+        "model-prior safe depth"
+      ],
+      "evidence_ids": [
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:575:575-summary:e8df4ac3993c"
+      ],
+      "expected_behavior": "Deeper CPF/parser path exercised via chained explicit requests; possible OOB exposure",
+      "issue_safety_notes": "Safe deeper-path analogue; no exact payloads; opener family constraints applied",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "656e6970000000000000000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "006f0000000000000000000000000000000000b200000000010000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "SendRRData services path"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "006b0000000000000000000000000000000000b20000000000000000000000000000000000000000",
+          "index": 2,
+          "label": "UnconnectedSend services"
+        }
+      ],
+      "plan_id": "vk-plan-052",
+      "purpose": "Reach deeper explicit-message parser path via stateful RegisterSession + multi-step services request",
+      "seed_id": "vk-plan-052-seq-1",
+      "strategy": "parser_depth",
+      "target_operation": "ListServices",
+      "title": "VK-only ListServices: OpENer v2.3 deeper parser + TCP explicit"
+    }
+  ],
+  "target_issue": -1
+}

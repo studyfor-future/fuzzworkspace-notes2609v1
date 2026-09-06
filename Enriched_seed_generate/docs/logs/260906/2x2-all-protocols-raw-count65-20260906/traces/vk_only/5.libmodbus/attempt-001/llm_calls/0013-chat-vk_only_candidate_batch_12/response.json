@@ -1,0 +1,54 @@
+{
+  "id": "chatcmpl-ELB8kFprZD3CMma7DkDOSpTXcUAnO",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": 743,\n  \"generation_notes\": \"Constructed four VK-only Modbus/TCP candidate sequences from the supplied plans using conservative internal prior only. Each sequence preserves the requested target_operation, uses a 7-byte MBAP header with protocol identifier 0000, keeps visible length/count fields internally consistent, and aims at issue-relevant parser or state relations without copying historical crash payloads verbatim.\",\n  \"coverage_summary\": [\n    \"Covers four distinct target operations: Diagnostics, Read File Record, Read/Write Multiple Registers, and Encapsulated Interface Transport.\",\n    \"Varies function classes across simple fixed-format, nested subrequest, mixed read/write, and MEI-style encapsulated frames.\",\n    \"Exercises issue-related relations including short-but-valid request shapes, deeper parser structures, mixed-length subfields, and state-sensitive write/read combinations.\",\n    \"Diversifies transaction identifiers, unit identifiers, addresses, counts, record metadata, and payload sizes while preserving internal framing consistency.\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-045\",\n      \"seed_id\": \"vk12-modbustcp-045-01\",\n      \"title\": \"VK-only Diagnostics boundary probe with minimal data field\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"Diagnostics\",\n      \"purpose\": \"Explore a short valid Diagnostics request that stays internally consistent while stressing dispatch and length handling paths adjacent to issue reports involving malformed or undersized request processing.\",\n      \"evidence_ids\": [\n        \"issue:743:743-summary:1fc7e97d059a\",\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:499:499-summary:6268f95751ad\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:683:683-summary:fbe9b8a5a160\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"diagnostics-subfunction-echo-minimal\",\n          \"hex\": \"120100000006f50800000000\"\n        }\n      ],\n      \"expected_behavior\": \"A parser that supports this operation should accept or cleanly reject the request without desynchronization, and any reply path should remain bounded on the fixed-size PDU.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes\",\n        \"Protocol identifier set to 0000\",\n        \"MBAP length 0006 matches unit identifier plus 5-byte PDU\",\n        \"Single-request sequence preserved per plan\",\n        \"Target operation remains Diagnostics\"\n      ],\n      \"issue_safety_notes\": \"This is an issue analogue only: it keeps a valid fixed-format Diagnostics layout and avoids reproducing any historical crashing byte stream while still probing short-length request handling.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-046\",\n      \"seed_id\": \"vk12-modbustcp-046-01\",\n      \"title\": \"VK-only Read File Record nested single-subrequest parser walk\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"Read File Record\",\n      \"purpose\": \"Reach a deeper parser structure with one coherent file-record subrequest, using conservative nested lengths to exercise record parsing paths related to prior crash reports involving mixed multi-message and complex request structures.\",\n      \"evidence_ids\": [\n        \"issue:748:748-summary:90052b7dfbe9\",\n        \"issue:763:763-summary:e75d690140f2\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:612:612-summary:7b008d4bca1d\",\n        \"issue:279:279-summary:f8623682ccd7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"read-file-record-one-subrequest\",\n          \"hex\": \"12020000000a2a140706000200030002\"\n        }\n      ],\n      \"expected_behavior\": \"A compliant implementation should parse the nested byte-count and subrequest descriptor consistently, then either service or reject the file/record access without overrunning internal buffers.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes\",\n        \"Protocol identifier set to 0000\",\n        \"MBAP length 000a matches unit identifier plus 9-byte PDU\",\n        \"Read File Record function preserved\",\n        \"Nested request byte count 07 matches one 7-byte subrequest\"\n      ],\n      \"issue_safety_notes\": \"The frame is a conservative structural analogue and not a copy of any reported PoC; it intentionally uses a single coherent subrequest to focus on parser depth rather than overt corruption.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-047\",\n      \"seed_id\": \"vk12-modbustcp-047-01\",\n      \"title\": \"VK-only Read/Write Multiple Registers mixed-count valid state probe\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Read/Write Multiple Registers\",\n      \"purpose\": \"Exercise the combined read/write register path with a plausible state-sensitive request that writes two registers while reading back one nearby register, targeting issue themes around repeated or mixed operations without requiring an external setup script.\",\n      \"evidence_ids\": [\n        \"issue:749:749-summary:29b9071582b0\",\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:763:763-summary:e75d690140f2\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:750:750-summary:3dcb92ca7c5d\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"readwrite-registers-write2-read1\",\n          \"hex\": \"12030000000f7f1701200001013000020411112222\"\n        }\n      ],\n      \"expected_behavior\": \"The target should parse the mixed read/write layout, consume exactly the declared write byte count, and either perform the operation or return an exception without corrupting state.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes\",\n        \"Protocol identifier set to 0000\",\n        \"MBAP length 000f matches unit identifier plus 14-byte PDU\",\n        \"Target operation remains Read/Write Multiple Registers\",\n        \"Write quantity 0002 is consistent with byte count 04 and four data bytes\"\n      ],\n      \"issue_safety_notes\": \"Although inspired by state-sensitive issue reports, this sequence is a single internally consistent combined-operation request and avoids reproducing historical multi-frame crash material.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-048\",\n      \"seed_id\": \"vk12-modbustcp-048-01\",\n      \"title\": \"VK-only Encapsulated Interface Transport conservative MEI analogue\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"Encapsulated Interface Transport\",\n      \"purpose\": \"Create a distinct mutation-friendly encapsulated transport request with a compact MEI-style body so the receiver traverses less-common dispatch and payload handling code adjacent to prior crafted-message crashes.\",\n      \"evidence_ids\": [\n        \"issue:750:750-summary:3dcb92ca7c5d\",\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"issue:763:763-summary:e75d690140f2\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:803:803-summary:fea416ab8355\",\n        \"issue:499:499-summary:6268f95751ad\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"encapsulated-interface-basic-mei\",\n          \"hex\": \"12040000000533430e0100\"\n        }\n      ],\n      \"expected_behavior\": \"An implementation with Encapsulated Interface Transport support should either process the MEI selector path or reject it as unsupported while keeping framing synchronized and bounded.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes\",\n        \"Protocol identifier set to 0000\",\n        \"MBAP length 0005 matches unit identifier plus 4-byte PDU\",\n        \"Single-request sequence preserved per plan\",\n        \"Target operation remains Encapsulated Interface Transport\"\n      ],\n      \"issue_safety_notes\": \"This request deliberately uses conservative framing and a short encapsulated payload as an analogue for crafted-message receive-path testing, not as a reproduction of any published crashing bytes.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788716418,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1921,
+    "prompt_tokens": 6281,
+    "total_tokens": 8202,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 278,
+      "engine_ttlt_ms": 16268,
+      "pre_inference_ms": 83,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 736,
+      "service_ttlt_ms": 16725,
+      "user_visible_ttft_ms": 653
+    }
+  },
+  "routing": {
+    "serving_pipereplica": "d20260818160425-b051ce24-default-r0-dp0-default"
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": 565,
+  "generation_notes": "Four distinct mutation-friendly EtherNet/IP seed sequences rebuilt with mechanically consistent 24-byte encapsulation headers, little-endian command and payload-length fields, even-length hexadecimal, and complete CPF item framing where applicable. Discovery, session lifecycle, unconnected explicit messaging, and connected explicit messaging are covered. Session-dependent messages use a runtime substitution point for the handle returned by RegisterSession; inferred CIP service and path details are explicitly identified as conservative model-prior completion. Historical malformed payloads and exact issue payloads are not reproduced.",
+  "coverage_summary": [
+    "ListIdentity discovery request with an empty encapsulation payload",
+    "ListServices discovery request with an empty encapsulation payload",
+    "RegisterSession followed by SendRRData and UnregisterSession using the negotiated runtime session handle",
+    "SendUnitData with Connected Address and Connected Data CPF items",
+    "GetAttributeSingle and bounded CIP path parsing through an unconnected explicit-message item",
+    "Safe structural analogue for session-handle validation and teardown paths without cross-connection handle misuse or malformed lengths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-revised-001",
+      "seed_id": "seed-revised-001",
+      "title": "ListIdentity discovery request",
+      "strategy": "baseline_valid",
+      "target_operation": "ListIdentity",
+      "purpose": "Exercise the canonical EtherNet/IP discovery command with a complete encapsulation header and no nested payload assumptions.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListIdentity request",
+          "hex": "630000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The server parses the ListIdentity command and may return a List Identity Response Item; ordinary unsupported-command or transport behavior is acceptable when discovery is unavailable.",
+      "constraints_preserved": [
+        "24-byte encapsulation header",
+        "Command 0x0063 encoded little-endian",
+        "Payload length is zero and matches the transmitted body",
+        "Session handle and status are zero for the discovery request"
+      ],
+      "issue_safety_notes": "Safe discovery analogue with no session-handle reuse, no forged identity data, and no malformed or oversized fields."
+    },
+    {
+      "plan_id": "plan-revised-002",
+      "seed_id": "seed-revised-002",
+      "title": "ListServices discovery request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ListServices",
+      "purpose": "Cover a distinct discovery command and its empty-payload encapsulation path while preserving exact header framing.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:section-common-heade:540b84623d2f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListServices request",
+          "hex": "040000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The server parses the ListServices discovery command and may return supported-service information; a normal encapsulation error is acceptable for an implementation that does not support the command.",
+      "constraints_preserved": [
+        "24-byte encapsulation header",
+        "Command 0x0004 encoded little-endian",
+        "Payload length is zero and matches the transmitted body",
+        "Sender context and options occupy the complete remaining header fields"
+      ],
+      "issue_safety_notes": "Safe command-coverage seed; it does not exercise registered-session ownership or provide malformed length/count combinations."
+    },
+    {
+      "plan_id": "plan-revised-003",
+      "seed_id": "seed-revised-003",
+      "title": "Registered session explicit request and teardown",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession, SendRRData, UnregisterSession",
+      "purpose": "Exercise a meaningful session lifecycle: register, use the negotiated handle for an unconnected explicit request, then unregister the same session.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "issue:565:565-summary:9f823d95b613",
+        "issue:314:314-summary:3abfe4f839d0"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "SendRRData with Null Address and GetAttributeSingle",
+          "hex": "6f001600010000000000000000000000000000000000000000000000000000000000000200000000b20006000e02200124010100"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "UnregisterSession using negotiated handle",
+          "hex": "660000000100000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The harness sends message 0, extracts the server-assigned session handle from the RegisterSession response, substitutes it for 01000000 in messages 1 and 2, and verifies that each frame has the expected command and length. The explicit request may produce a normal CIP service or object error because the object semantics are inferred.",
+      "constraints_preserved": [
+        "RegisterSession payload is exactly four bytes: protocol version 1 and flags 0",
+        "Each encapsulation header is 24 bytes with little-endian payload length",
+        "SendRRData payload length is 0x0016 and covers interface handle, timeout, CPF count, two CPF items, and six-byte CIP data",
+        "CPF item order is Null Address Item followed by Unconnected Data Item",
+        "Unconnected Data Item length is six bytes and matches the CIP request",
+        "Session handle 01000000 is a runtime substitution marker, not a literal authorization claim"
+      ],
+      "issue_safety_notes": "Safe structural analogue for issue 565 session validation and teardown. The sequence uses the handle returned on the same connection, does not probe foreign handles, and avoids the issue's forged cross-connection behavior. It also satisfies issue 314's bounded data-length path without malformed or oversized input."
+    },
+    {
+      "plan_id": "plan-revised-004",
+      "seed_id": "seed-revised-004",
+      "title": "Connected explicit SendUnitData frame",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "SendUnitData",
+      "purpose": "Exercise the connected CPF layout with distinct connected address and connected data items, including a bounded sequenced CIP request.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "issue:565:565-summary:9f823d95b613",
+        "issue:574:574-summary:860cad928179"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendUnitData with Connected Address and Connected Data",
+          "hex": "70001c0001000000000000000000000000000000000000000000000000000000000000000002000100040001000000b100080000000e02200124010100"
+        }
+      ],
+      "expected_behavior": "The server validates the SendUnitData encapsulation and CPF item lengths, then may process the connected request or return a normal invalid-session, connection, or CIP error because the connection identifier and service semantics are conservative inferred values.",
+      "constraints_preserved": [
+        "24-byte encapsulation header with command 0x0070 and payload length 0x001c",
+        "SendUnitData payload contains interface handle, timeout, CPF count two, and two ordered CPF items",
+        "Connected Address Item type 0x0100 has a four-byte connection identifier",
+        "Connected Data Item type 0x00B1 has eight bytes consisting of a two-byte sequence value and six-byte CIP data",
+        "All nested item lengths equal the bytes transmitted"
+      ],
+      "issue_safety_notes": "Safe connected-parser analogue informed by the documented SendUnitData path. It uses bounded identifiers and lengths, does not claim a real ForwardOpen-created connection, and does not reproduce malformed connected-data or historical vulnerability payloads."
+    }
+  ]
+}

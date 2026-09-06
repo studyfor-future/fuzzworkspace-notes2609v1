@@ -1,0 +1,159 @@
+{
+  "coverage_summary": [
+    "VK-only TESTFR activation (length_boundary_valid) with boundary on VSQ/N",
+    "VK-only General Interrogation (parser_depth) with deeper protocol structure",
+    "VK-only Single Command (stateful_valid) with sequence-form prerequisite",
+    "VK-only Double Command (other) with FileSegment encoding interaction"
+  ],
+  "generation_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "iec60870 frame",
+        "link control path",
+        "TESTFR archetype",
+        "no crash bytes"
+      ],
+      "evidence_ids": [
+        "issue:196:196-summary:7e4abb310eea",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "server processes as TESTFR with boundary-length consistency but no crash",
+      "issue_safety_notes": "avoids direct GHSA-196 PoC bytes; uses model-internal TESTFR archetype with consistent 0x04 length octet per family constraints",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 0,
+          "label": "TESTFR_activation"
+        }
+      ],
+      "plan_id": "vk-plan-021",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+      "seed_id": "seed-021",
+      "strategy": "length_boundary_valid",
+      "target_operation": "TESTFR activation",
+      "title": "VK-only TESTFR activation: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-overflow when it processes the supplied PoC byte stream"
+    },
+    {
+      "constraints_preserved": [
+        "multi_step_stateful shape",
+        "GI archetype",
+        "parser_depth path",
+        "no crash bytes"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:178:178-summary:01c5b607cf00"
+      ],
+      "expected_behavior": "deeper GI parser path triggered with consistent lengths but no crash",
+      "issue_safety_notes": "avoids direct GHSA-197 PoC bytes; uses model-internal GI sequence with deeper structure per family constraints",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 0,
+          "label": "GI_init"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 1,
+          "label": "GI_activation"
+        }
+      ],
+      "plan_id": "vk-plan-022",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+      "seed_id": "seed-022",
+      "strategy": "parser_depth",
+      "target_operation": "General Interrogation",
+      "title": "VK-only General Interrogation: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave implementation"
+    },
+    {
+      "constraints_preserved": [
+        "multi_step_stateful shape",
+        "command path",
+        "state prerequisite",
+        "no crash bytes"
+      ],
+      "evidence_ids": [
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39"
+      ],
+      "expected_behavior": "parser accepts short sequence ASDU with state transition but no crash",
+      "issue_safety_notes": "avoids direct GHSA-200 PoC bytes; uses model-internal sequence-form command with consistent 0x68 L octet per family constraints",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 0,
+          "label": "SingleCommand_init"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 1,
+          "label": "SingleCommand_activation"
+        }
+      ],
+      "plan_id": "vk-plan-023",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite",
+      "seed_id": "seed-023",
+      "strategy": "stateful_valid",
+      "target_operation": "Single Command",
+      "title": "VK-only Single Command: lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU whose header advertises elements actually includes the required base information object address"
+    },
+    {
+      "constraints_preserved": [
+        "multi_step_stateful shape",
+        "command path",
+        "FileSegment analogue",
+        "no crash bytes"
+      ],
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:175:175-summary:1d1910f22105"
+      ],
+      "expected_behavior": "FileSegment encoding path exercised with consistent lengths but no crash",
+      "issue_safety_notes": "avoids direct GHSA-201 PoC bytes; uses model-internal double command sequence with conservative framing per family constraints",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 0,
+          "label": "DoubleCommand_init"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68050300000000",
+          "index": 1,
+          "label": "DoubleCommand_activation"
+        }
+      ],
+      "plan_id": "vk-plan-024",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing",
+      "seed_id": "seed-024",
+      "strategy": "other",
+      "target_operation": "Double Command",
+      "title": "VK-only Double Command: lib60870-C v2.4.0 contains a heap-based buffer overflow in the FileSegment information object encoding path used to construct outgoing CS101/CS104 ASDUs"
+    }
+  ],
+  "target_issue": 201
+}

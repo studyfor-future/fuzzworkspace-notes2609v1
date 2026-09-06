@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELBfCc8yPIO5laR92WjKt1Es9ahsL",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"MODBUSTCP\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised to exactly 4 distinct MODBUS/TCP seed sequences using supplied plans as primary guidance and conservative Modbus/TCP framing priors only for gaps. All messages use a 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP Length fields. Historical issue evidence is retained only as structural guidance for safe analogues; exact reproduced crash payloads and malformed length collisions were removed. Diversity was improved across operations and sequence shapes by keeping one issue-guided Read Input Registers request, one single-step Report Server ID request, one two-step Report Server ID stateful exchange, and one additional valid function-code coverage seed for Read File Record to broaden parser and field-layout coverage without cosmetic duplication.\",\n  \"coverage_summary\": [\n    \"MBAP header coverage with 7-byte header and protocol identifier 0x0000\",\n    \"Read Input Registers function code 0x04 with address/quantity request fields\",\n    \"Report Server ID function code 0x11 as single-request analogue\",\n    \"Report Server ID function code 0x11 in a two-message stateful request/response exchange\",\n    \"Read File Record function code 0x14 with subrequest byte-count structure\",\n    \"Single-request and multi-step stateful sequence shapes\",\n    \"Variation in unit identifiers, transaction identifiers, and PDU layouts\",\n    \"Safe structural analogues derived from issue reports 738, 614, 764, 803, and 810 without reusing exact historical crash payloads\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-017\",\n      \"seed_id\": \"SEED-017-R1\",\n      \"title\": \"Issue-guided analogue for Read Input Registers\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Read Input Registers\",\n      \"purpose\": \"Exercise the documented 0x04 request path with the same general address-plus-quantity structure referenced by the issue while using a safe valid register range and fully consistent MBAP framing.\",\n      \"evidence_ids\": [\n        \"issue:763:763-summary:e75d690140f2\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"issue:749:749-summary:29b9071582b0\",\n        \"issue:614:614-summary:e89105d3aaf7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Input Registers request\",\n          \"hex\": \"100100000006040400010003\"\n        }\n      ],\n      \"expected_behavior\": \"Server should parse a valid Read Input Registers request and return either normal register data or a protocol-level exception, without instability.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header preserved\",\n        \"Protocol identifier set to 0x0000\",\n        \"MBAP length 0x0006 matches unit identifier plus 5-byte PDU\",\n        \"Function code 0x04 is documented for Read Input Registers\",\n        \"Request includes 2-byte starting address and 2-byte quantity fields\",\n        \"Quantity is nonzero and structurally valid\"\n      ],\n      \"issue_safety_notes\": \"Uses the issue-referenced read-input-registers shape but changes the concrete address and quantity away from the reported trigger; no malformed response shaping or exact crash payload reuse.\"\n    },\n    {\n      \"plan_id\": \"plan-018\",\n      \"seed_id\": \"SEED-018-R1\",\n      \"title\": \"Single-request Report Server ID analogue\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Report Server ID\",\n      \"purpose\": \"Cover the Report Server ID parser entry with a minimal valid MODBUS/TCP ADU and preserve issue-guided focus on historically sensitive non-address-based function handling.\",\n      \"evidence_ids\": [\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"issue:750:750-summary:3dcb92ca7c5d\",\n        \"issue:612:612-summary:7b008d4bca1d\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:749:749-summary:29b9071582b0\",\n        \"issue:867:867-summary:58115ace3a65\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Report Server ID request\",\n          \"hex\": \"1002000000020511\"\n        }\n      ],\n      \"expected_behavior\": \"Server should accept the valid 0x11 request and return server identifier and run-state information if supported, or a clean exception if not supported.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header preserved\",\n        \"Protocol identifier set to 0x0000\",\n        \"MBAP length 0x0002 matches unit identifier plus 1-byte PDU\",\n        \"Function code 0x11 is documented for Report Server ID\",\n        \"Request contains no extraneous padding bytes\",\n        \"Unit identifier diversified from other seeds\"\n      ],\n      \"issue_safety_notes\": \"Keeps only the safe minimal valid request shape for Report Server ID and avoids the exact malformed packet forms associated with historical invalid-pointer and parser issues.\"\n    },\n    {\n      \"plan_id\": \"plan-020\",\n      \"seed_id\": \"SEED-020-R1\",\n      \"title\": \"Stateful Report Server ID request and response exchange\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Report Server ID\",\n      \"purpose\": \"Provide a complete two-message valid exchange around the 0x11 path to exercise both request parsing and response handling while preserving coherent transaction and length relationships.\",\n      \"evidence_ids\": [\n        \"issue:810:810-summary:da5167fd5137\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:612:612-summary:7b008d4bca1d\",\n        \"issue:466:466-summary:691a17c4c14a\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Report Server ID request\",\n          \"hex\": \"1003000000020611\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"Report Server ID response analogue\",\n          \"hex\": \"100300000006061104424201\"\n        }\n      ],\n      \"expected_behavior\": \"Client should correlate the response to the request by transaction and unit identifier and process a normal Report Server ID style payload without desynchronization.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header preserved in both messages\",\n        \"Protocol identifier set to 0x0000 in both messages\",\n        \"Request MBAP length 0x0002 matches unit identifier plus 1-byte PDU\",\n        \"Response MBAP length 0x0006 matches unit identifier plus 5-byte PDU\",\n        \"Transaction identifier is consistent across request and response\",\n        \"Function code 0x11 is documented for Report Server ID\"\n      ],\n      \"issue_safety_notes\": \"This is a safe stateful analogue for length-handling concerns: both frames have internally consistent MBAP lengths and avoid the incorrect-length forms cited in historical reports.\"\n    },\n    {\n      \"plan_id\": \"plan-021-RF\",\n      \"seed_id\": \"SEED-021-RF1\",\n      \"title\": \"Valid Read File Record subrequest\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Read File Record\",\n      \"purpose\": \"Increase operation and field-layout diversity with a valid 0x14 request that includes a byte-counted file-record subrequest, covering a more nested parser shape than simple register reads.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:c093c4ea4f67\",\n        \"function_code:function:function-text:869721545c59\",\n        \"protocol_format:modbustcp:format-overview:9821a13f1ada\",\n        \"protocol_format:modbustcp:section-common-heade:efc691d867a7\",\n        \"issue:614:614-summary:e89105d3aaf7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read File Record request\",\n          \"hex\": \"10040000000907140606000100000002\"\n        }\n      ],\n      \"expected_behavior\": \"Server should parse the Read File Record request with one subrequest item and either return file-record data if supported or a clean exception response.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header preserved\",\n        \"Protocol identifier set to 0x0000\",\n        \"MBAP length 0x0009 matches unit identifier plus 8-byte PDU\",\n        \"Function code 0x14 is documented for Read File Record\",\n        \"Byte count 0x06 matches one complete file-record subrequest body\",\n        \"Subrequest preserves reference type plus file number, record number, and record length field ordering\"\n      ],\n      \"issue_safety_notes\": \"Chosen as a safe structural broadening seed with nested length-bearing fields; it is fully framed and not an exact reproduction of any historical crafted overflow payload.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788718430,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2102,
+    "prompt_tokens": 9345,
+    "total_tokens": 11447,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 439,
+      "engine_ttlt_ms": 21162,
+      "pre_inference_ms": 103,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 745,
+      "service_ttlt_ms": 21462,
+      "user_visible_ttft_ms": 643
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 49403,
+  "routing": {
+    "serving_pipereplica": "d20260826141614-a9af37d5-default-r0-dp0-default"
+  }
+}

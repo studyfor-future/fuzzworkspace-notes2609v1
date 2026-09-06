@@ -1,0 +1,136 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Generated from model-prior Modbus/TCP knowledge and the supplied Base constraints only. Protocol validity is plausible but not externally verified; no external issue knowledge was available.",
+  "coverage_summary": [
+    "Diagnostics request using function 08 with a zero subfunction and zero data payload.",
+    "Read File Record request using function 14 with one conservative file-record subrequest.",
+    "Two-message write-then-read/write sequence covering function 16 followed by function 17.",
+    "Encapsulated Interface Transport request using function 43 and MEI type 0e with a minimal valid-looking device-identification payload.",
+    "MBAP transaction identifiers, protocol identifiers, unit identifiers, lengths, function payloads, and byte counts are internally consistent."
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-057",
+      "seed_id": "base-seed-057",
+      "title": "Base Diagnostics variant 5",
+      "strategy": "baseline_valid",
+      "target_operation": "Diagnostics",
+      "purpose": "Exercise a canonical Modbus Diagnostics request with a standard return-query-data subfunction and a zero data value.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Diagnostics return query data request",
+          "hex": "000100000007050800000000"
+        }
+      ],
+      "expected_behavior": "A conforming server may parse the request and return a Diagnostics response for unit 05, commonly echoing the subfunction and data; unsupported diagnostics may produce a protocol exception response.",
+      "constraints_preserved": [
+        "7-byte MBAP header is used.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0007 equals the unit identifier plus the 6-byte PDU.",
+        "Function code 08, subfunction 0000, and 0000 data are ordered consistently.",
+        "Unit identifier 05 diversifies the seed."
+      ],
+      "issue_safety_notes": "No external vulnerability or issue knowledge is available. This is a conservative model-prior seed intended for parsing and functional coverage, not an issue reproduction."
+    },
+    {
+      "plan_id": "base-plan-058",
+      "seed_id": "base-seed-058",
+      "title": "Base Read File Record variant 5",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read File Record",
+      "purpose": "Cover the file-record service with one compact subrequest for file 1, record 0, and a two-register record length.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read File Record request with one subrequest",
+          "hex": "00020000000a02140706000100000002"
+        }
+      ],
+      "expected_behavior": "A conforming server may parse the single file-record subrequest and return the requested record data, or return a standard exception if the addressed file or record is unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header is used.",
+        "Protocol identifier is 0000.",
+        "MBAP length 000a equals the unit identifier plus the 9-byte function-14 PDU.",
+        "The function-14 byte count 07 matches the one 7-byte subrequest.",
+        "Reference type 06, file number 0001, record number 0000, and record length 0002 are consistently encoded.",
+        "Unit identifier 02 diversifies the seed."
+      ],
+      "issue_safety_notes": "No external vulnerability or issue knowledge is available. The message is a conservative function-coverage candidate based on model-prior protocol plausibility."
+    },
+    {
+      "plan_id": "base-plan-059",
+      "seed_id": "base-seed-059",
+      "title": "Base Read/Write Multiple Registers variant 5",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Use a write-register setup followed by a distinct read/write-multiple-registers request to exercise stateful sequencing and both write and combined access paths.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Write Multiple Registers setup",
+          "hex": "00050000000b0116003000020400010002"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Read/Write Multiple Registers request",
+          "hex": "00060000000f011700100002002000020411112222"
+        }
+      ],
+      "expected_behavior": "The first request may write two registers at address 0030. The second may read two registers at 0010 and write two registers at 0020 with values 1111 and 2222; a server may instead return standard exceptions for unsupported or inaccessible addresses.",
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers and protocol identifier 0000.",
+        "First MBAP length 000b matches unit plus the 10-byte function-16 PDU.",
+        "Function-16 quantity 0002 and byte count 04 match the two 16-bit values.",
+        "Second MBAP length 000f matches unit plus the 14-byte function-17 PDU.",
+        "Function-17 read and write quantities are both 0002, and write byte count 04 matches the two values.",
+        "Transaction identifiers differ and message order is preserved.",
+        "Unit identifier 01 is consistent across the sequence."
+      ],
+      "issue_safety_notes": "No external vulnerability or issue knowledge is available. Modbus/TCP commonly does not require application state between these operations, so the setup relationship is an intentional sequence-coverage heuristic rather than a claimed protocol requirement."
+    },
+    {
+      "plan_id": "base-plan-060",
+      "seed_id": "base-seed-060",
+      "title": "Base Encapsulated Interface Transport variant 5",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Exercise a minimal, boundary-adjacent Modbus/TCP ADU for the device-identification form of Encapsulated Interface Transport.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Device Identification basic request",
+          "hex": "0004000000057f2b0e0100"
+        }
+      ],
+      "expected_behavior": "A conforming server may parse the function-43 MEI type-0e request and return basic device-identification objects, or return a standard exception if the MEI service is unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header is used.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0005 equals the unit identifier plus the 4-byte PDU.",
+        "Function code 2b, MEI type 0e, read-device-identification code 01, and initial object identifier 00 are ordered consistently.",
+        "The compact request retains a valid-looking minimum payload shape.",
+        "Unit identifier 7f diversifies the seed."
+      ],
+      "issue_safety_notes": "No external vulnerability or issue knowledge is available. This is a boundary-adjacent length candidate based on model-prior plausibility and should be treated as unverified."
+    }
+  ]
+}

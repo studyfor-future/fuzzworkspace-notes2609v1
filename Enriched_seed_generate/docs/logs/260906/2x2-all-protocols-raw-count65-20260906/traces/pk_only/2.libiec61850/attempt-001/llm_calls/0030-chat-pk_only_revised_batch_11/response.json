@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELA8KsA1qrbcBJto8JeQOSw6efTjM",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"IEC61850\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised PK-only batch reduced to exactly 4 distinct seed sequences. Deterministic synthesis stays source-backed for IEC 61850 MMS over ISO-on-TCP layering: TPKT, COTP, ACSE, Presentation/UserInformation, MMS. The supplied sources explicitly define TPKT/COTP/ACSE/MMS layering, MMS PDU type tags, and MMS confirmed service tags, but do not provide full ASN.1 field layouts for the requested operations. Therefore the seeds preserve conservative valid framing and internal field relationships using minimal BER-style encodings and documented service-choice values, with inferred MMS payload shapes limited to safe parser-entry templates. All TPKT headers begin with 0x03 and total-length values are consistent with each complete message. Diversity was improved away from cosmetic variants by covering association setup, discovery, read/write, and reporting paths with both single-message and stateful sequences.\",\n  \"coverage_summary\": [\n    \"Association setup path covered with COTP Connection Request and minimal MMS Initiate request\",\n    \"Discovery path covered with confirmed GetNameList request using documented service tag [1]\",\n    \"Data access path covered with confirmed Read request using documented service tag [4]\",\n    \"Data modification path covered with confirmed Write request using documented service tag [5]\",\n    \"Reporting/status path covered with confirmed ReportJournalStatus request using documented service tag [68]\",\n    \"Layering diversity includes standalone transport/session setup and ACSE/UserInformation/MMS framed requests\",\n    \"State diversity includes single-request seeds and one multi-message association-oriented sequence\",\n    \"All sequences preserve TPKT version 0x03 and internally consistent total lengths\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-041\",\n      \"seed_id\": \"seed-r11-001\",\n      \"title\": \"Stateful association setup with COTP CR and MMS Initiate\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Initiate\",\n      \"purpose\": \"Provide a conservative valid association-oriented seed that enters transport/session handling before minimal MMS initiate parsing.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"COTP Connection Request over TPKT\",\n          \"hex\": \"0300001611e00000000100c1020100c2020101c0010a\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Minimal MMS Initiate request in ACSE/UserInformation wrapper\",\n          \"hex\": \"0300001702f080610fa10d06052b0e010101be04a8028000\"\n        }\n      ],\n      \"expected_behavior\": \"Server accepts transport/session establishment attempt and parses a minimal initiate request path without requiring malformed data handling.\",\n      \"constraints_preserved\": [\n        \"TPKT version byte is 0x03 on every message\",\n        \"TPKT total-length fields match complete message sizes\",\n        \"Layering follows supplied IEC 61850 overview with COTP then ACSE/UserInformation then MMS\",\n        \"MMS Initiate uses documented PDU type tag 0xA8\",\n        \"Conservative model-prior completion used only for minimal BER field arrangement because full ASN.1 layout was not supplied\"\n      ],\n      \"issue_safety_notes\": \"Safe valid analogue only; no malformed lengths, recursion tricks, or historical exploit payloads included.\"\n    },\n    {\n      \"plan_id\": \"plan-042\",\n      \"seed_id\": \"seed-r11-002\",\n      \"title\": \"Discovery request using GetNameList\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"GetNameList\",\n      \"purpose\": \"Exercise a recommended initial MMS discovery service through the confirmed-request parser entry point.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\",\n        \"function_code:function:function-text:d3f8d07ee099\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed GetNameList request\",\n          \"hex\": \"0300001902f080610fa10d06052b0e010101be06a004020101a101\"\n        }\n      ],\n      \"expected_behavior\": \"Server parses a confirmed MMS request and, if supported, returns a confirmed response or service-specific result for name-list discovery.\",\n      \"constraints_preserved\": [\n        \"TPKT version byte is 0x03\",\n        \"TPKT total-length field matches the 25-byte message\",\n        \"ACSE/UserInformation wrapper retained as documented template family\",\n        \"MMS Confirmed-Request-PDU uses documented tag 0xA0\",\n        \"Service-choice tag [1] matches supplied GetNameList catalog entry\",\n        \"Discovery operation selected from supplied recommended initial seed services\"\n      ],\n      \"issue_safety_notes\": \"Seed is intentionally minimal and valid; it avoids malformed service lengths and avoids duplicating removed prior payloads.\"\n    },\n    {\n      \"plan_id\": \"plan-043\",\n      \"seed_id\": \"seed-r11-003\",\n      \"title\": \"Field-interaction pair for Read and Write\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"Read/Write\",\n      \"purpose\": \"Cover both data retrieval and data modification parser paths using two distinct confirmed services with stable framing.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\",\n        \"function_code:function:function-text:d3f8d07ee099\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed Read request\",\n          \"hex\": \"0300001902f080610fa10d06052b0e010101be06a004020102a401\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed Write request\",\n          \"hex\": \"0300001902f080610fa10d06052b0e010101be06a004020103a501\"\n        }\n      ],\n      \"expected_behavior\": \"Server accepts two separate confirmed-service parses, first for read semantics and then for write semantics, yielding normal response, rejection, or application-specific handling.\",\n      \"constraints_preserved\": [\n        \"TPKT version byte is 0x03 on both messages\",\n        \"TPKT total-length fields match each complete 25-byte message\",\n        \"ACSE/UserInformation framing is preserved consistently across both operations\",\n        \"MMS Confirmed-Request-PDU uses documented tag 0xA0\",\n        \"Service-choice tags [4] and [5] match supplied Read and Write catalog entries\",\n        \"Read and Write are both listed in the supplied recommended initial seed services\"\n      ],\n      \"issue_safety_notes\": \"Safe coverage seed pair only; requests are minimal conservative analogues and do not embed aggressive values, oversized elements, or malformed writes.\"\n    },\n    {\n      \"plan_id\": \"plan-044\",\n      \"seed_id\": \"seed-r11-004\",\n      \"title\": \"Confirmed reporting request using ReportJournalStatus\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"ReportJournalStatus\",\n      \"purpose\": \"Retain one reporting-oriented confirmed service from the supplied plans while making it structurally distinct from discovery and data-access seeds.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec61850:format-overview:c508483411ac\",\n        \"protocol_format:iec61850:section-message-temp:35b5427fecca\",\n        \"function_code:function:function-text:d319479344be\",\n        \"function_code:function:function-text:2e18df2c8f6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Confirmed ReportJournalStatus request\",\n          \"hex\": \"0300001a02f080610fa10d06052b0e010101be07a005020104bf4400\"\n        }\n      ],\n      \"expected_behavior\": \"Server parses the reporting/status request and, if the operation is implemented, returns the journal status or an application-level response.\",\n      \"constraints_preserved\": [\n        \"TPKT version byte is 0x03\",\n        \"TPKT total-length field matches the 26-byte message\",\n        \"ACSE/UserInformation wrapper preserved from supplied message-template families\",\n        \"MMS Confirmed-Request-PDU uses documented tag 0xA0\",\n        \"Service-choice tag [68] is encoded as context-specific constructed bf44 and matches supplied ReportJournalStatus catalog entry\",\n        \"Operation remains source-backed from the supplied candidate plans\"\n      ],\n      \"issue_safety_notes\": \"Valid conservative structural seed for reporting coverage; not derived from any vulnerability evidence and avoids exact historical payload reuse.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788712548,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2082,
+    "prompt_tokens": 8053,
+    "total_tokens": 10135,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 179,
+      "engine_ttlt_ms": 20408,
+      "pre_inference_ms": 97,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 373,
+      "service_ttlt_ms": 20582,
+      "user_visible_ttft_ms": 276
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818160425-726f99e2-default-r1-dp0-default"
+  }
+}

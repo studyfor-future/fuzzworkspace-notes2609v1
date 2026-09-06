@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-seed-063",
+  "title": "Base Read Holding Registers variant 6",
+  "strategy": "other",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Provide a structurally distinct multi-message transaction with a multi-register Read Holding Registers request and a matching normal response payload.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Holding-register transaction setup request, unit 19, start address 0, quantity 8",
+      "hex": "000300000006130300000008",
+      "byte_length": 12,
+      "sha256": "3c12e549328323b7dd4fab50683f7addd58f0e87059c548973a812ded8caafff"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Holding Registers response, unit 19, 8 registers",
+      "hex": "00030000001313031000010002000300040005000600070008",
+      "byte_length": 25,
+      "sha256": "abe33f188b2b7a240dd44ad8fdf3af0ce9acf59993e7fbea24ae0a88b402d7de"
+    }
+  ],
+  "expected_behavior": "The server should associate both frames by transaction identifier 0003 and interpret the operation as reading eight holding registers, with a response byte count of 16 and eight two-byte register values.",
+  "constraints_preserved": [
+    "Both frames use 7-byte MBAP headers.",
+    "Protocol identifier is 0000 in both directions.",
+    "Request MBAP length 0006 is correct for the unit and five-byte request PDU.",
+    "Response MBAP length 0013 equals one unit byte plus one function byte, one byte count, and 16 data bytes.",
+    "Response transaction identifier and unit identifier match the request.",
+    "Function code 03 and quantity 0008 are complete and consistent with the response byte count.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "No vulnerability issue knowledge is available; the two-frame exchange is a conservative structural seed based on model-internal protocol knowledge only.",
+  "sequence_sha256": "7cca0be8e09b8e48c9e71f1f7c0d1168b861a3edb5731c70f8e22d77f59a6ea2",
+  "total_bytes": 37,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f0721c411fe12b4fcb163629589e015fa1439f6ddfe58733c1e817d717db4248",
+    "encoded_bytes": 37,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ]
+  }
+}

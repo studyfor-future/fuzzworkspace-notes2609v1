@@ -1,0 +1,191 @@
+{
+  "coverage_gaps": [
+    "No sequences for UnconnectedSend target operation",
+    "Missing GetAttributeSingle and SetAttributeSingle full stateful chains",
+    "No ForwardOpen or SendUnitData with full CPF diversity",
+    "No ListIdentity with full 24-byte header + response",
+    "Only 8-10 valid seeds out of 65 requested",
+    "No mutation utility demonstrated (no varied path sizes or field values)",
+    "Deterministic errors not resolved in any candidate",
+    "No coverage for parser_depth on SetAttributeSingle or CPF response",
+    "Issue enhancement low: many plans reference same issues without unique analogues"
+  ],
+  "diversity_score": 30,
+  "global_feedback": [
+    "Multiple vk-plan-X appear as duplicate entries (e.g. vk-plan-002 repeated verbatim multiple times); this inflates the candidate list and violates the single JSON requirement.",
+    "Many sequences contain malformed hex (e.g. \"656e6970c000000000000000\", \"0000000000000000000000000000000000000000\", \"656e6570\" without proper 8/16/24-byte alignment) violating hexadecimal correctness.",
+    "Several seeds repeat identical hex values or short invalid strings; this breaks length consistency and visible lengths internally consistent requirement.",
+    "Exact issue payloads partially copied in a few places (e.g. some 0x00b2 0x00e fields), violating \"avoidance of exact issue payloads\".",
+    "Deterministic errors (odd-length hex, duplicate sequence removed) are not addressed in any sequence.",
+    "No unique, fully valid 65 seeds generated; only 4-5 distinct valid sequences exist across all plans.",
+    "Strategy mapping and target_operation preservation inconsistent across batches.",
+    "No external protocol verification is correctly handled (internal prior only), but actual hex used is not model-prior only.",
+    "Mutation utility low: most messages are too short or invalid for real harness stdin-byte input."
+  ],
+  "issue_enhancement_score": 30,
+  "needs_revision": true,
+  "overall_score": 45,
+  "protocol_validity_score": 40,
+  "seed_utility_score": 40,
+  "sequence_feedback": [
+    {
+      "keep": false,
+      "problems": [
+        "Malformed hex with odd length and repeated fields",
+        "Contains exact crash bytes from issue 577",
+        "Not internally length consistent"
+      ],
+      "recommended_action": "Regenerate with proper 24-byte ENIP little-endian header + lowercase hex no separators + consistent visible counts",
+      "score": 20,
+      "seed_id": "issue-374-374-summary-3d44e552a6bc"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Invalid hex length in RegisterSession message",
+        "No full 24-byte header",
+        "Missing session response placeholder"
+      ],
+      "recommended_action": "Fix to full 24-byte header + proper RegisterSession + SendRRData structure",
+      "score": 25,
+      "seed_id": "vk-seed-005"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Standalone message not using model-prior archetype",
+        "Hex too short and invalid",
+        "Does not preserve target_operation SendUnitData"
+      ],
+      "recommended_action": "Use 24-byte header + CPF items + lowercase hex only",
+      "score": 15,
+      "seed_id": "vk-seed-006"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Repeated plan_id with identical seed_id",
+        "Hex not lowercase or separator-free",
+        "Overlaps with other plans"
+      ],
+      "recommended_action": "Unique seed_id per candidate + full hex validation",
+      "score": 30,
+      "seed_id": "vk-plan-009-seed-1"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Low diversity (repeats RegisterSession pattern)",
+        "Some lengths internally inconsistent"
+      ],
+      "recommended_action": "Add more CPF items and vary path sizes for mutation utility",
+      "score": 40,
+      "seed_id": "opener-vk-013"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Path too long for budget 2",
+        "Contains partial issue payload",
+        "No session response"
+      ],
+      "recommended_action": "Keep message budget 2 and remove oversized path",
+      "score": 35,
+      "seed_id": "opener-vk-015"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Good stateful structure",
+        "Hex correct",
+        "Target preserved"
+      ],
+      "recommended_action": "Increase message budget to 3 for full session + SendRRData + SetAttributeSingle",
+      "score": 45,
+      "seed_id": "seq-018"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Duplicate structure across plans",
+        "Invalid hex",
+        "No crash-byte avoidance"
+      ],
+      "recommended_action": "Make unique and ensure lowercase hex",
+      "score": 25,
+      "seed_id": "vk-only-025-001"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Stateful but low diversity",
+        "Good constraints but can be mutated"
+      ],
+      "recommended_action": "Vary the ForwardOpen path size slightly for mutation",
+      "score": 50,
+      "seed_id": "opener-seed-forwardopen-session-01"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Nested structure good",
+        "Hex correct",
+        "Issue 564/571 analogy preserved"
+      ],
+      "recommended_action": "Add one more message for parser depth",
+      "score": 40,
+      "seed_id": "opener-seed-unconnected-send-02"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Too short",
+        "Does not use full model-prior archetype"
+      ],
+      "recommended_action": "Add RegisterSession prerequisite",
+      "score": 30,
+      "seed_id": "opener-seed-listidentity-discovery-03"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Standalone but invalid hex",
+        "Does not preserve ListServices archetype"
+      ],
+      "recommended_action": "Use 24-byte header + ListServices command",
+      "score": 35,
+      "seed_id": "opener-seed-listservices-boundary-04"
+    },
+    {
+      "keep": false,
+      "problems": [
+        "Short invalid hex",
+        "Plan 033 not fully implemented"
+      ],
+      "recommended_action": "Full 24-byte hex for RegisterSession",
+      "score": 20,
+      "seed_id": "vkplan033"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Good parser depth",
+        "Hex valid"
+      ],
+      "recommended_action": "Increase to multi-step with SendRRData",
+      "score": 55,
+      "seed_id": "532"
+    },
+    {
+      "keep": true,
+      "problems": [
+        "Complete padded EPath",
+        "Stateful with full header",
+        "Good issue 557/577 analogy"
+      ],
+      "recommended_action": "Keep as base but allow mutation on path size",
+      "score": 60,
+      "seed_id": "opener-register-sendrrdata-padded-path-01"
+    }
+  ]
+}

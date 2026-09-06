@@ -1,0 +1,145 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": -1,
+  "generation_notes": "Rebuilt this PK-only batch as exactly four source-grounded IEC 60870-5-104 APDU seeds to avoid the prior 101/104 hybrid errors. Supplied sources explicitly cover the 0x68 IEC 60870-5-104 start byte, U-format frame types, TypeIDs including C_SC_NA_1 and C_DC_NA_1, Cause of Transmission values including test and confirmation semantics, and interrogation qualifier 20 for station interrogation. Where the sources were incomplete on exact APDU field packing, conservative model-prior completion was used for standard 104 APCI/I-format and U-format layouts without contradicting supplied evidence. Length octets were recalculated to match each frame exactly. The four seeds are intentionally distinct across U-format control, stateful U+I exchange, control command TypeID 45, and monitoring/report TypeID 5 with spontaneous COT 3 to improve parser and state coverage while preserving valid frame relationships.",
+  "coverage_summary": [
+    "Pure IEC 60870-5-104 U-format coverage with exact 0x68 start and 4-byte control field for TESTFR activation",
+    "Stateful IEC 60870-5-104 sequence combining STARTDT activation/confirmation with a valid General Interrogation I-format ASDU using TypeID 100 and QOI 20",
+    "Control-direction I-format command coverage using TypeID 45 C_SC_NA_1 with activation cause",
+    "Monitoring-direction I-format report coverage using TypeID 5 M_ST_NA_1 with spontaneous cause"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-049",
+      "seed_id": "plan-049-testfr-act-104-001",
+      "title": "IEC 60870-5-104 TESTFR activation U-format",
+      "strategy": "function_code_coverage",
+      "target_operation": "Test operation",
+      "purpose": "Provide a clean U-format parser entry for 104 test handling without malformed ASDU mixing.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:3cbe16bf065a",
+        "function_code:function:function-text:14a1385d5f57"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "TESTFR act",
+          "hex": "680443000000"
+        }
+      ],
+      "expected_behavior": "A 104 peer should recognize a valid TESTFR activation U-format APDU and either accept it as a keepalive/test control frame or answer with the corresponding TESTFR confirmation.",
+      "constraints_preserved": [
+        "Uses IEC 60870-5-104 APDU start byte 0x68 from supplied source",
+        "Uses standard 104 U-format shape with 4 control bytes and no ASDU",
+        "Length octet 0x04 matches the 4-byte control field exactly",
+        "No FT1.2 checksum, repeated-length, or end-delimiter fields were mixed into this 104 frame"
+      ],
+      "issue_safety_notes": "PK-only seed; no historical exploit payload retained. This is a safe structural control-frame analogue chosen to replace malformed prior test examples."
+    },
+    {
+      "plan_id": "plan-050",
+      "seed_id": "plan-050-startdt-gi-104-001",
+      "title": "STARTDT handshake followed by General Interrogation",
+      "strategy": "stateful_valid",
+      "target_operation": "Station Interrogation",
+      "purpose": "Exercise connection state handling first, then drive I-format ASDU parsing for C_IC_NA_1 with station interrogation qualifier 20.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:dba2914dfe00",
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:187ce180236e",
+        "function_code:function:function-text:3cbe16bf065a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT act",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STARTDT con",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "General Interrogation activation QOI=20",
+          "hex": "680e00000000640106000100000014"
+        }
+      ],
+      "expected_behavior": "After STARTDT activation and confirmation, the peer should accept the I-format APDU as a General Interrogation activation using TypeID 100, VSQ 1, activation cause 6, common address 1, IOA 0, and interrogation qualifier 20.",
+      "constraints_preserved": [
+        "All frames use IEC 60870-5-104 0x68 APDU framing only",
+        "U-format STARTDT act/con control bytes are kept distinct from I-format control bytes",
+        "General Interrogation uses QOI 20 exactly as cited by supplied interrogation qualifier evidence",
+        "I-format APDU length 0x0e equals 4 control bytes plus 10 ASDU bytes",
+        "ASDU field order preserved as TypeID, VSQ, COT, common address, IOA, object payload"
+      ],
+      "issue_safety_notes": "PK-only seed. Uses standard stateful handshake and canonical interrogation structure rather than any issue-derived malformed sequence."
+    },
+    {
+      "plan_id": "plan-052",
+      "seed_id": "plan-052-single-command-104-001",
+      "title": "Single Command activation C_SC_NA_1",
+      "strategy": "baseline_valid",
+      "target_operation": "Positive confirmation",
+      "purpose": "Add an unambiguous control-direction I-format seed using documented TypeID 45 for single command and a normal activation cause that can elicit confirmation handling.",
+      "evidence_ids": [
+        "function_code:function:function-text:d8995aeae15b",
+        "function_code:function:operation-catalog:b0db75237939",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "C_SC_NA_1 activation ON",
+          "hex": "680e000000002d0106000100010001"
+        }
+      ],
+      "expected_behavior": "A compliant peer should parse this as a single-command activation ASDU with TypeID 45, one information object at IOA 1, and a command byte requesting an ON state; a normal positive activation confirmation may follow in response depending on endpoint policy.",
+      "constraints_preserved": [
+        "TypeID 45 is taken directly from supplied source for C_SC_NA_1",
+        "I-format APCI used consistently with 104 framing",
+        "Length octet 0x0e matches 4 control bytes plus 10 ASDU bytes",
+        "One-object VSQ used and IOA retained as 3-byte field",
+        "Cause field kept as a standard activation request to avoid contradiction with supplied positive/negative confirmation catalog text"
+      ],
+      "issue_safety_notes": "PK-only seed; intentionally uses a conservative canonical command layout and avoids any exact prior malformed payload."
+    },
+    {
+      "plan_id": "plan-051",
+      "seed_id": "plan-051-spontaneous-mstna1-104-001",
+      "title": "Spontaneous step-position report M_ST_NA_1",
+      "strategy": "function_code_coverage",
+      "target_operation": "Spontaneous",
+      "purpose": "Cover monitoring/report parsing with a distinct spontaneous indication path using documented TypeID 5 step-position information.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "function_code:function:function-text:83986922f28d",
+        "protocol_format:iec60870:format-overview:6fc14a471f76"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "M_ST_NA_1 spontaneous report",
+          "hex": "680f0000000005010300010200001100"
+        }
+      ],
+      "expected_behavior": "A 104 receiver should parse this as one spontaneous M_ST_NA_1 information object from common address 1, IOA 2, carrying a step-position value byte and quality byte.",
+      "constraints_preserved": [
+        "TypeID 5 M_ST_NA_1 is taken from supplied source",
+        "Cause of transmission set to spontaneous (3), correcting the prior semantic mismatch",
+        "Direction set server_to_client to reflect monitoring/report style traffic",
+        "APDU length 0x0f equals 4 control bytes plus 11 ASDU bytes",
+        "ASDU keeps single-object ordering with TypeID, VSQ, COT, CA, IOA, then object payload"
+      ],
+      "issue_safety_notes": "PK-only seed; semantic correction only. Uses a safe canonical spontaneous report structure and avoids prior invalid hybrids."
+    }
+  ]
+}

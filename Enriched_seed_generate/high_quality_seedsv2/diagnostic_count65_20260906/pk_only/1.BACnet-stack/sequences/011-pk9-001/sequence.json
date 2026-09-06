@@ -1,0 +1,51 @@
+{
+  "seed_id": "pk9-001",
+  "title": "Canonical Who-Is broadcast discovery",
+  "strategy": "baseline_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Provide a compact, mutation-friendly discovery seed that exercises BACnet/IP outer framing and unconfirmed request parsing without requiring prior state.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Original-Broadcast-NPDU carrying unconfirmed Who-Is",
+      "hex": "810b0007010010",
+      "byte_length": 7,
+      "sha256": "bca79b3d5c0597197f62e5611220ecea610ab958192024f23079298aa852d16e"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP listener should accept the BVLC and NPDU framing and parse the APDU as an unconfirmed discovery request; devices may respond with I-Am on the network.",
+  "constraints_preserved": [
+    "Single complete message rather than artificial fragments",
+    "BVLC header uses BACnet/IP style with total length matching actual byte count",
+    "NPDU version byte present and control byte set to a minimal no-routing form",
+    "APDU begins with unconfirmed-request PDU type high nibble 0x10 per supplied function code reference",
+    "Who-Is service-body details are omitted to keep the seed minimal and mutation-friendly where full source grammar is not provided"
+  ],
+  "issue_safety_notes": "PK-only valid discovery analogue with no issue payloads and no exact historical collision material.",
+  "sequence_sha256": "7d695d1db40f6fb40993113948c79914a4ac297251593208a9ff479f1a4d6591",
+  "total_bytes": 7,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bca79b3d5c0597197f62e5611220ecea610ab958192024f23079298aa852d16e",
+    "encoded_bytes": 7,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

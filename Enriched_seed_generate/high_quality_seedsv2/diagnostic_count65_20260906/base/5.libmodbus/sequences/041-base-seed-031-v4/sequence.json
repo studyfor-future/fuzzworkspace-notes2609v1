@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-031-v4",
+  "title": "Base Write Multiple Coils variant 4",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Exercise FC0F with packed coil data using single-request shape with valid response.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Multiple Coils request",
+      "hex": "000300000009030f0013000a02cd01",
+      "byte_length": 15,
+      "sha256": "3911d07f7eb234e491d94dc0a5c93f0b4c67e1cf56f342c7d1814664f2739df0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Write Multiple Coils response",
+      "hex": "000300000004030f0013",
+      "byte_length": 10,
+      "sha256": "af1d2af6581b79769bdff5d92d376a81d0a3fa85868122b1406ca695d8feb24c"
+    }
+  ],
+  "expected_behavior": "The server should validate the MBAP header and FC0F payload, write quantity 10 coils starting at address 0x0013, and return the starting address and quantity.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0009 equals the unit identifier plus the eight-byte FC0F payload.",
+    "FC0F quantity and byte count are complete and ordered."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available; this is a conservative model-prior baseline and is not externally verified.",
+  "sequence_sha256": "2d22b9249d060872f1b7e47edec49053d49256be29040572110126528f5cd407",
+  "total_bytes": 25,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1a48ef58190bd272791fe44fa8ec6a3342e227e25d4373a7a9b2bf035285b5c0",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ]
+  }
+}

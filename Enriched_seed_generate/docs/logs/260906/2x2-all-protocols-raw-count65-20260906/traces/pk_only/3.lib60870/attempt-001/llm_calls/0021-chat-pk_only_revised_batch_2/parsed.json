@@ -1,0 +1,160 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": -1,
+  "generation_notes": "Four distinct PK-only IEC 60870-5-104 seeds using conservative APCI model-prior completion where the supplied excerpts omit complete ASDU layouts. All 0x68 length octets equal the number of bytes following the length field; U-format control frames use four control bytes, and I-format frames use send and receive sequence fields followed by an ASDU. No exact historical vulnerability payloads are used or claimed.",
+  "coverage_summary": [
+    "Valid U-format STARTDT activation and confirmation followed by an I-format General Interrogation request.",
+    "Valid I-format single command using TypeID 45 and a select qualifier.",
+    "Valid server-to-client I-format step-position measurement using TypeID 5.",
+    "Valid STOPDT and TESTFR U-format control exchanges with distinct control functions."
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-revised-001",
+      "seed_id": "pk-revised-001",
+      "title": "STARTDT handshake followed by station interrogation",
+      "strategy": "stateful_valid",
+      "target_operation": "STARTDT activation and General Interrogation",
+      "purpose": "Exercise a valid IEC 60870-5-104 U-format session activation followed by an I-format station interrogation request, covering control-state transition and ASDU parsing.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:3cbe16bf065a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation request",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STARTDT activation confirmation",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "General Interrogation activation, station qualifier",
+          "hex": "680e0000000064010600010000000014"
+        }
+      ],
+      "expected_behavior": "The peer accepts STARTDT activation and then parses the I-format ASDU as a General Interrogation activation with TypeID 100, one information object, activation cause, common address 1, information object address 0, and station interrogation qualifier 20.",
+      "constraints_preserved": [
+        "IEC 60870-5-104 APDU start byte 0x68",
+        "U-format STARTDT activation and confirmation control values",
+        "I-format send and receive sequence fields are both zero",
+        "Length 0x0e covers four APCI control bytes plus the ten-byte interrogation ASDU",
+        "TypeID 100, activation cause, common address, information object address, and qualifier are kept in ASDU order"
+      ],
+      "issue_safety_notes": "PK-only seed with no vulnerability assertion and no exact historical payload collision; values are ordinary protocol-valid session and interrogation fields."
+    },
+    {
+      "plan_id": "plan-revised-002",
+      "seed_id": "pk-revised-002",
+      "title": "Selected single command",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_SC_NA_1 Single Command",
+      "purpose": "Cover the canonical single-command TypeID with a valid I-format frame and distinguish command selection semantics through the command qualifier.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "function_code:function:operation-catalog:dba2914dfe00",
+        "protocol_format:iec60870:service-or-function-:a22193b216a5"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Single Command select activation",
+          "hex": "680e000000002d010600010001000081"
+        }
+      ],
+      "expected_behavior": "The peer parses an I-format C_SC_NA_1 command with TypeID 45, one object, activation cause, common address 1, information object address 1, and a single-command qualifier carrying the select bit.",
+      "constraints_preserved": [
+        "IEC 60870-5-104 I-format framing with 0x68 start",
+        "Length 0x0e matches four control bytes and a ten-byte ASDU",
+        "TypeID 45 is C_SC_NA_1 Single Command",
+        "One-object VSQ is used",
+        "Command qualifier is the final field after the three-byte information object address"
+      ],
+      "issue_safety_notes": "PK-only structural analogue using a normal selected command; it does not reproduce a historical exploit payload or claim a vulnerability."
+    },
+    {
+      "plan_id": "plan-revised-003",
+      "seed_id": "pk-revised-003",
+      "title": "Step-position measurement report",
+      "strategy": "field_interaction",
+      "target_operation": "M_ST_NA_1 Step-position information",
+      "purpose": "Exercise the server-to-client monitoring path with a measurement TypeID, object address, step-position value, and quality descriptor in a distinct I-format shape.",
+      "evidence_ids": [
+        "function_code:function:function-text:3cbe16bf065a",
+        "protocol_format:iec60870:format-overview:6fc14a471f76",
+        "protocol_format:iec60870:section-message-temp:82928a8cc718"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "Step-position information report",
+          "hex": "680f000000000501030001000100000500"
+        }
+      ],
+      "expected_behavior": "The peer parses an I-format monitoring ASDU as M_ST_NA_1 with one information object, spontaneous cause, common address 1, information object address 1, step position 5, and a zero quality descriptor.",
+      "constraints_preserved": [
+        "IEC 60870-5-104 I-format framing with four APCI control bytes",
+        "Length 0x0f matches four control bytes plus an eleven-byte ASDU",
+        "TypeID 5 is M_ST_NA_1 step-position information",
+        "The monitoring direction is server to client",
+        "The step-position value and quality descriptor follow the three-byte information object address"
+      ],
+      "issue_safety_notes": "PK-only monitoring seed with ordinary bounded measurement and quality values; no issue-specific payload or vulnerability claim is included."
+    },
+    {
+      "plan_id": "plan-revised-004",
+      "seed_id": "pk-revised-004",
+      "title": "STOPDT and TESTFR control exchange",
+      "strategy": "function_code_coverage",
+      "target_operation": "STOPDT activation and TESTFR activation",
+      "purpose": "Cover distinct IEC 60870-5-104 U-format control functions and their confirmations without adding an ASDU payload.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:3cbe16bf065a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STOPDT activation request",
+          "hex": "680413000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STOPDT activation confirmation",
+          "hex": "680423000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "TESTFR activation request",
+          "hex": "680443000000"
+        },
+        {
+          "index": 3,
+          "direction": "server_to_client",
+          "label": "TESTFR activation confirmation",
+          "hex": "680483000000"
+        }
+      ],
+      "expected_behavior": "The peer parses valid U-format STOPDT activation and confirmation followed by TESTFR activation and confirmation, with no ASDU bytes present in any control frame.",
+      "constraints_preserved": [
+        "Each U-format APDU has start byte 0x68 and length 0x04",
+        "Each frame contains exactly four APCI control bytes after the length field",
+        "STOPDT and TESTFR control values are kept distinct",
+        "No I-format sequence or ASDU fields are appended to U-format frames"
+      ],
+      "issue_safety_notes": "PK-only control-path coverage with standard U-format exchanges; no historical issue payload, malformed length, or vulnerability assertion is included."
+    }
+  ]
+}

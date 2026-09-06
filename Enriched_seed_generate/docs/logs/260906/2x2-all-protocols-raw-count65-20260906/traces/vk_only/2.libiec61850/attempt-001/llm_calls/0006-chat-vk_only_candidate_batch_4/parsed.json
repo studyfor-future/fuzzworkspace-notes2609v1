@@ -1,0 +1,213 @@
+{
+  "coverage_summary": [
+    "issue_structural_analogue parseAarePdu OOB on Write path",
+    "field_interaction BerEncoder OOB on Write payload",
+    "length_boundary_valid empty-list crash on DefineNamedVariableList pre-Write",
+    "parser_depth NULL-deref on InformationReport post-Write"
+  ],
+  "generation_notes": "VK-only Write sequences (IEC61850/MMS family, TPKT-prefixed COTP/MMS Initiate + Write request per archetypes + hard rules on lengths/structures/state): 4 distinct operations (1. parseAarePdu OOB-read analogue on write-payload write; 2. BerEncoder OOB-write field interaction on write-payload; 3. length-boundary with empty NVL on define-list pre-write; 4. parser-depth NVL parse on info-report post-write) framed as single-request (COTP + MMS Initiate + Write), visible lengths consistent internally, no crash-byte copy, no external docs, auditable via provided evidence_ids.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT starts with 0x03, length field matches message",
+        "COTP + MMS Initiate + Write sequence",
+        "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+        "single-request shape, consistent internal lengths"
+      ],
+      "evidence_ids": [
+        "issue:513:513-summary:4a07060941e2",
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:598:598-summary:43fd2ace5ec4",
+        "issue:509:509-summary:228be3676e7d"
+      ],
+      "expected_behavior": "OOB read in parseAarePdu (or write-path) when payload malformed in TLV",
+      "issue_safety_notes": "Evidence_id 513: no exact crash bytes copied; structural OOB analogue only; does not execute over library",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001602f08001000106070801000001",
+          "index": 0,
+          "label": "COTP_ConnReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "600d02014a020144800101",
+          "index": 1,
+          "label": "MMS_InitiateReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "a05a02014b02014c80012002014d02014e80012c6001021a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a02011a0301220a010c1a010d130101",
+          "index": 2,
+          "label": "MMS_WriteReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6004020104",
+          "index": 3,
+          "label": "MMS_WriteRes"
+        }
+      ],
+      "plan_id": "vk-plan-013",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "vk-plan-013-abc123",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Write",
+      "title": "VK-only Write: In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/iso_acse/acse.c` has an out-of-bounds read found by fuzzing. When parsing the `0xbe` (`user information`) tag, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then `buffer[bufPos]` is read without a bounds check. The report states that malformed input ending with bytes such as `be 00` can leave `bufPos` past the end of the buffer and trigger the out-of-bounds read in the `case 0xbe` path."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT starts with 0x03, length field matches message",
+        "COTP + MMS Initiate + Write sequence",
+        "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+        "single-request shape, consistent internal lengths"
+      ],
+      "evidence_ids": [
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:197:197-summary:e3308b450f23"
+      ],
+      "expected_behavior": "OOB write in BerEncoder_encodeBitString during Write payload encoding",
+      "issue_safety_notes": "Evidence_id 516: no exact crash bytes copied; field-interaction analogue only; does not execute over library",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001602f08001000106070801000001",
+          "index": 0,
+          "label": "COTP_ConnReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "600d02014a020144800101",
+          "index": 1,
+          "label": "MMS_InitiateReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "a02802014f0201508001200201510201528001026002020102",
+          "index": 2,
+          "label": "MMS_GetVarAccessReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6004020104",
+          "index": 3,
+          "label": "MMS_GetVarAccessRes"
+        }
+      ],
+      "plan_id": "vk-plan-014",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "vk-plan-014-abc123",
+      "strategy": "field_interaction",
+      "target_operation": "GetVariableAccessAttributes",
+      "title": "VK-only GetVariableAccessAttributes: A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered while encoding `MMS_BIT_STRING` `MmsData`: the function writes the tag, encoded length, padding byte, and bit-string bytes into `buffer` by advancing `bufPos`, but the report says it does not properly validate that `bufPos` stays within the valid buffer range. The report states this can occur if `bitStringSize` is large enough or if `bufPos` is already near the end of the buffer, resulting in writes past the end of `buffer`."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT starts with 0x03, length field matches message",
+        "COTP + MMS Initiate + Write sequence",
+        "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+        "single-request shape, consistent internal lengths"
+      ],
+      "evidence_ids": [
+        "issue:542:542-summary:a6cc05667747",
+        "issue:543:543-summary:be7fbfff0ea5",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:495:495-summary:292e0a30dc47",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:492:492-summary:b5a20a150fa2"
+      ],
+      "expected_behavior": "Invalid memory read in handleDeleteNamedVariableListRequest (null list.count deref)",
+      "issue_safety_notes": "Evidence_id 542: no exact crash bytes copied; boundary analogue only; does not execute over library",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001602f08001000106070801000001",
+          "index": 0,
+          "label": "COTP_ConnReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "600d02014a020144800101",
+          "index": 1,
+          "label": "MMS_InitiateReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "a05a02015202015380012002015402015580012c6001021a01010802015602011a0301220a010c1a010d130101",
+          "index": 2,
+          "label": "MMS_DefineNVLReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6004020104",
+          "index": 3,
+          "label": "MMS_DefineNVLRes"
+        }
+      ],
+      "plan_id": "vk-plan-015",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-plan-015-abc123",
+      "strategy": "length_boundary_valid",
+      "target_operation": "DefineNamedVariableList",
+      "title": "VK-only DefineNamedVariableList: libiec61850 v1.5.1 is reported to crash in `mmsServer_handleDeleteNamedVariableListRequest` in `mms_named_variable_list_service.c`. The report says certain requests can leave `request->listOfVariableListName` empty/null, and the function then reads `request->listOfVariableListName->list.count` without first validating that field. The demonstrated result is an invalid memory read and a Segmentation Fault (SEGV)."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT starts with 0x03, length field matches message",
+        "COTP + MMS Initiate + Write sequence",
+        "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+        "single-request shape, consistent internal lengths"
+      ],
+      "evidence_ids": [
+        "issue:543:543-summary:be7fbfff0ea5",
+        "issue:368:368-summary:997e8d1338a8",
+        "issue:542:542-summary:a6cc05667747",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:496:496-summary:0b725b37c953",
+        "issue:513:513-summary:4a07060941e2"
+      ],
+      "expected_behavior": "NULL pointer dereference in semaphore wait during createNVL or related handler",
+      "issue_safety_notes": "Evidence_id 543: no exact crash bytes copied; parser-depth analogue only; does not execute over library",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001602f08001000106070801000001",
+          "index": 0,
+          "label": "COTP_ConnReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "600d02014a020144800101",
+          "index": 1,
+          "label": "MMS_InitiateReq"
+        },
+        {
+          "direction": "standalone",
+          "hex": "a01e02015702015880012002015902015a8001026003020102",
+          "index": 2,
+          "label": "MMS_InformationReport"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6004020104",
+          "index": 3,
+          "label": "MMS_InformationReportRes"
+        }
+      ],
+      "plan_id": "vk-plan-016",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-plan-016-abc123",
+      "strategy": "parser_depth",
+      "target_operation": "InformationReport",
+      "title": "VK-only InformationReport: libiec61850 v1.5.1 is reported to have a NULL pointer dereference in sem_wait when a server receives a specific message. The report attributes this to the semaphore wait in the mmsServer_handleCreateNamedVariableListRequest or related path."
+    }
+  ],
+  "target_issue": 513
+}

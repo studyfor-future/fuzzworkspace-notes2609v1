@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "baseline_valid: STOPDT activation variant 4 (single_request)",
+    "function_code_coverage: TESTFR activation variant 4 (single_request)",
+    "stateful_valid: General Interrogation variant 4 (setup_then_request)",
+    "length_boundary_valid: Single Command variant 4 (single_request)"
+  ],
+  "generation_notes": "Using only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Exactly 4 conservative candidate seed sequences produced via diversification of operations, frame shapes, sizes, directions and stateful sequences. Generated using only model internal protocol prior per base constraints source.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "preferred FT1.2 APCI framing",
+        "0x68 length octets consistent",
+        "diversified command path"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Receiver parses as STOPDT confirmation, resets all sessions and clocks.",
+      "issue_safety_notes": "Issue knowledge unavailable; safety notes based solely on model internal prior.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680768000000086800",
+          "index": 0,
+          "label": "STOPDT request"
+        }
+      ],
+      "plan_id": "base-plan-029",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "seed_id": "base-model-prior-constraints-623b2f3a6db7",
+      "strategy": "baseline_valid",
+      "target_operation": "STOPDT activation",
+      "title": "Base STOPDT activation variant 4"
+    },
+    {
+      "constraints_preserved": [
+        "preferred FT1.2 APCI framing",
+        "0x68 length octets consistent",
+        "diversified command path"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Receiver parses as TESTFR confirmation.",
+      "issue_safety_notes": "Issue knowledge unavailable; safety notes based solely on model internal prior.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680768000000086800",
+          "index": 0,
+          "label": "TESTFR request"
+        }
+      ],
+      "plan_id": "base-plan-030",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "seed_id": "base-model-prior-constraints-623b2f3a6db7-2",
+      "strategy": "function_code_coverage",
+      "target_operation": "TESTFR activation",
+      "title": "Base TESTFR activation variant 4"
+    },
+    {
+      "constraints_preserved": [
+        "preferred FT1.2 APCI framing",
+        "0x68 length octets consistent",
+        "diversified interrogation path"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Server applies setup then executes GI, returning group responses.",
+      "issue_safety_notes": "Issue knowledge unavailable; safety notes based solely on model internal prior.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680768000000086800",
+          "index": 0,
+          "label": "GI setup request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "680768000000086800",
+          "index": 1,
+          "label": "GI target request"
+        }
+      ],
+      "plan_id": "base-plan-031",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-model-prior-constraints-623b2f3a6db7-3",
+      "strategy": "stateful_valid",
+      "target_operation": "General Interrogation",
+      "title": "Base General Interrogation variant 4"
+    },
+    {
+      "constraints_preserved": [
+        "preferred FT1.2 APCI framing",
+        "0x68 length octets consistent",
+        "diversified command path"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Receiver parses and executes the single command.",
+      "issue_safety_notes": "Issue knowledge unavailable; safety notes based solely on model internal prior.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680768000000086800",
+          "index": 0,
+          "label": "Single Command request"
+        }
+      ],
+      "plan_id": "base-plan-032",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "base-model-prior-constraints-623b2f3a6db7-4",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Single Command",
+      "title": "Base Single Command variant 4"
+    }
+  ],
+  "target_issue": -1
+}

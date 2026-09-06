@@ -1,0 +1,80 @@
+{
+  "seed_id": "base-seed-052",
+  "title": "Base Read Input Registers variant 5",
+  "strategy": "stateful_valid",
+  "target_operation": "Read Input Registers",
+  "purpose": "Use a two-request read sequence with changed unit and address context before exercising function code 0x04 for input registers; include a coherent exception-shaped response frame for response diversity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Preliminary Read Discrete Inputs request, unit 0x02, start 0x0000, quantity 8",
+      "hex": "020000000006020200000008",
+      "byte_length": 12,
+      "sha256": "1b49e1908cf38e21aac3e5631fbf68e2aa3a157fd8c51ac3097e59ddc777a5a0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read Input Registers request, unit 0x04, start 0x0010, quantity 4",
+      "hex": "020100000006040400100004",
+      "byte_length": 12,
+      "sha256": "7b604f113f3894187f69a7cb2f90017911a560a69340b8b64989486221baa69f"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "Read Input Registers exception response, unit 0x04, exception 0x84",
+      "hex": "020100000003040184",
+      "byte_length": 9,
+      "sha256": "ad038efc67dfdd9cc0341abd560eeaf668498db8a1d476c1386192ec79376c71"
+    }
+  ],
+  "expected_behavior": "The server may process the preliminary discrete-input read and then return eight data bytes for four input registers, or return normal protocol/device exceptions when the unit or address range is unavailable.",
+  "constraints_preserved": [
+    "Both messages use consistent Modbus/TCP MBAP framing.",
+    "Protocol identifier is 0x0000 in both headers.",
+    "Each length field is 0x0006 and matches the request body.",
+    "Transaction identifiers are ordered and distinct.",
+    "Function code 0x04 uses register address and quantity fields in canonical order.",
+    "Quantity 4 corresponds to eight response data bytes."
+  ],
+  "issue_safety_notes": "External issue knowledge is unavailable; this stateful sequence expresses only conservative model-prior protocol plausibility and does not claim externally verified validity or security relevance.",
+  "sequence_sha256": "e28b65815fc72c882c60ade4a11884e4c063fd83400d5bc952cef4a7d1aafa3e",
+  "total_bytes": 33,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0cb22e69b6f5c9c9648f30efc9bdd8474541cda52eef37c3f54a551af46d766a",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

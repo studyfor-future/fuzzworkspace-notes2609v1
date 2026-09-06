@@ -1,0 +1,161 @@
+{
+  "protocol_name": "BACNET",
+  "target_issue": -1,
+  "generation_notes": "Generated 4 PK-only BACnet/IP seeds from the supplied operation catalog and layering guidance. Each seed uses BVLC + NPDU + APDU framing with internally consistent BVLC total length. Because the supplied sources enumerate service choices and high-level layering but do not provide full ASN.1 field encodings for these specific services, service parameter layouts are conservative BACnet/IP model-prior constructions intended as mutation-friendly parser-entry seeds; those inferred details are recorded as assumptions rather than verified source facts.",
+  "coverage_summary": [
+    "Covers four distinct confirmed-service parser entries: ConfirmedPrivateTransfer, ConfirmedEventNotification, ConfirmedCOVNotificationMultiple, and ConfirmedCOVNotification.",
+    "Uses BACnet/IP style layering with BVLC Original-Unicast-NPDU, NPDU control octet without routing fields, and confirmed-request APDU type.",
+    "Varies payload structure depth from compact vendor-private transfer parameters to nested multi-value notification content.",
+    "Preserves length consistency at BVLC level and keeps message count/order minimal as requested: one valid single-request seed per plan."
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-061",
+      "seed_id": "bacnet-pk-061",
+      "title": "ConfirmedPrivateTransfer minimal vendor-private confirmed request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ConfirmedPrivateTransfer",
+      "purpose": "Enter the confirmed private transfer service path with a short but structured BACnet/IP request using a vendor id, service number, and small private payload.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:f40200851055"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "confirmed_private_transfer_request",
+          "hex": "810a00120104000512190021009100"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize a BVLC-carried NPDU containing a Confirmed-Request-PDU for ConfirmedPrivateTransfer and either process it, reject it as unsupported/vendor-specific, or return a standards-consistent error path rather than failing in framing or dispatch.",
+      "constraints_preserved": [
+        "BVLC header present as required by supplied BACnet/IP layering overview.",
+        "BVLC total length field 0x0012 matches the 18-byte message size.",
+        "NPDU included between BVLC and APDU per supplied layered structure.",
+        "APDU first octet uses confirmed-request high nibble 0x0 per supplied PDU type reference.",
+        "Service choice byte 0x12 matches ConfirmedPrivateTransfer per supplied confirmed service catalog.",
+        "Assumed BVLC function 0x0a is Original-Unicast-NPDU based on conservative BACnet/IP prior, not explicitly verified in supplied excerpts.",
+        "Assumed NPDU version 0x01 and control 0x04 without routing fields are valid common BACnet/IP defaults; not explicitly verified in supplied excerpts.",
+        "Service parameter tags and lengths after the service choice are conservative inferred BACnet application/context encodings intended to remain structurally parseable, not source-verified."
+      ],
+      "issue_safety_notes": "No vulnerability claim is made. Seed is intended only for normal parser coverage with consistent outer framing and modest payload size."
+    },
+    {
+      "plan_id": "plan-062",
+      "seed_id": "bacnet-pk-062",
+      "title": "ConfirmedEventNotification compact alarm/event notification request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ConfirmedEventNotification",
+      "purpose": "Exercise the ConfirmedEventNotification service entry with a compact notification body containing process id, initiating and event object identifiers, timestamps, notification class, priority, and event type fields in a conservative layout.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:f40200851055"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "confirmed_event_notification_request",
+          "hex": "810a0020010400050204000000010c020000010c020000020904190001190010910001910002"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize the frame as a confirmed request for ConfirmedEventNotification and continue into service decoding, responding according to implementation support and parameter validation rather than rejecting outer framing.",
+      "constraints_preserved": [
+        "BVLC + NPDU + APDU layering follows supplied BACnet overview.",
+        "BVLC total length field 0x0020 matches the 32-byte message size.",
+        "Confirmed-request APDU type used, consistent with service being in the confirmed service catalog.",
+        "Service choice byte 0x02 matches ConfirmedEventNotification per supplied confirmed service catalog.",
+        "Single-message request shape preserved per plan.",
+        "Assumed BVLC function, NPDU version, and NPDU control are conservative common BACnet/IP values not explicitly shown in supplied excerpts.",
+        "Remaining bytes are a conservative inferred event-notification parameter skeleton with short integer/object-id style fields to keep structural diversity; precise tag semantics are not externally verified by the supplied sources."
+      ],
+      "issue_safety_notes": "No vulnerability inference. This is a bounded, structurally conservative request meant to widen service-dispatch and event-notification parsing coverage."
+    },
+    {
+      "plan_id": "plan-063",
+      "seed_id": "bacnet-pk-063",
+      "title": "ConfirmedCOVNotificationMultiple nested multi-value notification request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ConfirmedCOVNotificationMultiple",
+      "purpose": "Cover a deeper confirmed notification parser path using the multiple-value COV notification service with nested list-like content and more internal structure than the single-value notification variant.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:f40200851055"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "confirmed_cov_notification_multiple_request",
+          "hex": "810a0026010400051f04000000010c02000001090419003c1e090c3e2e0919553f1e091c3e2e1a4401003f3f"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should identify a confirmed request using service choice ConfirmedCOVNotificationMultiple and descend into nested service parsing, ultimately accepting, rejecting, or erroring based on implementation support and parameter checks.",
+      "constraints_preserved": [
+        "BVLC total length field 0x0026 matches the 38-byte message size.",
+        "Outer layer order is BVLC then NPDU then APDU as supplied.",
+        "Confirmed-request APDU first octet used consistently with confirmed service dispatch.",
+        "Service choice byte 0x1f matches ConfirmedCOVNotificationMultiple per supplied confirmed service catalog.",
+        "Seed intentionally includes nested open/close-tag style bytes as a conservative inferred BACnet encoding to drive deeper parser traversal; exact parameter grammar is not verified by supplied excerpts.",
+        "Assumed BVLC Original-Unicast-NPDU and simple NPDU defaults are conservative prior assumptions, not explicitly documented in the provided sources."
+      ],
+      "issue_safety_notes": "No vulnerability claim. The nested structure is kept short and length-consistent to reduce malformed-framing risk while still increasing parser depth."
+    },
+    {
+      "plan_id": "plan-064",
+      "seed_id": "bacnet-pk-064",
+      "title": "ConfirmedCOVNotification single changed-value confirmed request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ConfirmedCOVNotification",
+      "purpose": "Exercise the simpler confirmed change-of-value notification path with a compact subscriber process id, monitored object identifier, time remaining, and one property value element.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:function-text:f40200851055"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "confirmed_cov_notification_request",
+          "hex": "810a001f010400050104000000010c02000001090419003c1e0919553e2e1a4401003f"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should parse the frame as a ConfirmedCOVNotification request and continue into service-specific property-value decoding, with any response determined by support and semantic validation rather than framing errors.",
+      "constraints_preserved": [
+        "BVLC length field 0x001f matches the 31-byte message size.",
+        "BVLC, NPDU, and APDU layer sequence matches the supplied protocol overview.",
+        "Confirmed-request APDU type used per supplied APDU type table.",
+        "Service choice byte 0x01 matches ConfirmedCOVNotification per supplied confirmed service catalog.",
+        "This seed is structurally distinct from the multiple-notification seed by using a shorter single-notification body.",
+        "Application/context tag bytes in the service payload are conservative inferred BACnet encodings designed to resemble common COV notification structure; detailed field mapping is not verified in the supplied sources.",
+        "Assumed BACnet/IP BVLC function and NPDU defaults follow conservative prior knowledge and are recorded as assumptions."
+      ],
+      "issue_safety_notes": "No vulnerability claim. This is a normal-coverage seed emphasizing a separate confirmed service path with shallow nested property content."
+    }
+  ]
+}

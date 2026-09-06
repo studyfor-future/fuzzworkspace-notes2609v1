@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-027-v4",
+  "title": "Base Read Holding Registers request and response",
+  "strategy": "parser_depth",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Cover sequential parsing of a complete request and its matching multi-register response without adding an unrelated setup request.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Holding Registers request, unit 17, start 32, quantity 4",
+      "hex": "010000000006110300200004",
+      "byte_length": 12,
+      "sha256": "47cda025e7b22b026d064c5a5466c1cd8d4c0a33ea7710ae9472758bf7eb8813"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Holding Registers response, unit 17, four register values",
+      "hex": "01000000000b1103080001000200030004",
+      "byte_length": 17,
+      "sha256": "72f2fd8e81fcad143823bffa7f283d772b55891ad2d85a7495ce350c025c7723"
+    }
+  ],
+  "expected_behavior": "The server should parse the request as Read Holding Registers for unit 17 and return eight data bytes representing four registers, or return a protocol-level exception if the range is unavailable. The response matches the request transaction and unit identifiers.",
+  "constraints_preserved": [
+    "Both frames contain 7-byte MBAP headers with protocol identifier 0000.",
+    "The request MBAP length is 0006 and matches the unit identifier plus the 5-byte request PDU.",
+    "The response MBAP length is 000b and matches the unit identifier plus a function byte, byte-count byte, and eight data bytes.",
+    "Function code 03, starting address 0020, and quantity 0004 are ordered and complete.",
+    "The response byte count is 08, matching four two-byte registers.",
+    "The response transaction identifier 0100 and unit identifier 11 match the request."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This sequence is intended to exercise complete request and response parsing and does not encode a known issue or vulnerability claim.",
+  "sequence_sha256": "7aede91e42ab197c4fbf8fc96b1b5ed6edd771f5067607066f62097b03014682",
+  "total_bytes": 29,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d079b35b61579bf570b6f12eac85521ecd0226a9cdd9311df7d70082fc9b7998",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

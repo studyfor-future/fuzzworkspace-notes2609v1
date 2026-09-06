@@ -1,0 +1,564 @@
+{
+  "overall_score": 28,
+  "needs_revision": true,
+  "protocol_validity_score": 18,
+  "seed_utility_score": 31,
+  "diversity_score": 52,
+  "issue_enhancement_score": 0,
+  "global_feedback": [
+    "The library shows broad operation-name coverage, but protocol validity is weak because many seeds are not source-backed at the field/layout level and several frames appear internally inconsistent.",
+    "A major recurring defect is BVLC framing: multiple seeds use implausible or inconsistent BVLC type/function bytes, and many BVLC length fields do not match the actual byte count despite the stated constraint to keep the four-byte total length consistent.",
+    "Layering is often incorrect or undocumented. The supplied sources support BACnet/IP BVLC + NPDU + APDU layering, but many seeds omit NPDU semantics, split a single message into multiple artificial fragments, or use APDU-only/reply PDUs as standalone client requests without state context.",
+    "Evidence grounding is overstated in many entries. Several seeds cite nonexistent or unsupplied evidence ids, rely on model-prior service numbers for operations not documented in the excerpts, or label reject/abort/error reasons as if they were valid request operations.",
+    "Structural diversity is better than average at the operation-name level, but much of it is cosmetic because many payloads are placeholder zeros or minimally changed service-choice bytes rather than genuinely different, documented BACnet frame shapes.",
+    "Stateful depth is poor. Only isolated plans mention setup/stateful behavior, yet the final library is dominated by single-message standalone requests and includes response-only PDUs without prerequisite transactions.",
+    "Mutation utility is limited by low validity: malformed length fields, ambiguous NPDU/APDU boundaries, and unsupported service encodings reduce the chance that mutations will stay on-path in real BACnet parsers.",
+    "For PK-only review, issue enhancement is not applicable; no credit is warranted there.",
+    "Revision should focus on a smaller set of strongly documented seeds: Who-Is, I-Am, ReadProperty, ReadPropertyMultiple, WriteProperty, SubscribeCOV, ReadRange, AtomicReadFile, AtomicWriteFile, and DeviceCommunicationControl, all with verified BVLC length, explicit NPDU version/control, and service-choice bytes backed by supplied sources.",
+    "Remove or rewrite seeds for unsupported or weakly grounded operations such as WriteGroup, UnconfirmedAuditNotification, UnconfirmedCOVNotificationMultiple, response-only APDU PDUs, and ambiguous BVLC-only function frames unless full frame grammar is available from sources."
+  ],
+  "sequence_feedback": [
+    {
+      "seed_id": "005-a",
+      "score": 22,
+      "keep": false,
+      "problems": [
+        "BVLC length field appears inconsistent with actual message size.",
+        "Frame shape is not source-backed at the service-payload level for WritePropertyMultiple.",
+        "Payload is dominated by placeholder zeros, reducing confidence in parser-valid semantics.",
+        "Cites evidence id function_code:function:function-text:f40200851055, which is not present in supplied sources."
+      ],
+      "recommended_action": "Rewrite from a documented BACnet/IP Original-Unicast-NPDU frame with verified BVLC length, NPDU version/control, confirmed-request APDU header, service choice 0x10, and a minimal but structurally credible WritePropertyMultiple body."
+    },
+    {
+      "seed_id": "006-a",
+      "score": 26,
+      "keep": false,
+      "problems": [
+        "BVLC length field appears inconsistent with actual message size.",
+        "WriteProperty payload grammar is not verified by supplied excerpts.",
+        "Heavy use of zero-filled inferred fields makes validity doubtful.",
+        "Contains unsupplied evidence id f40200851055."
+      ],
+      "recommended_action": "Rebuild as a compact confirmed WriteProperty request with source-backed service choice 0x0F and conservative, clearly delimited object/property/value fields; verify total BVLC length against actual bytes."
+    },
+    {
+      "seed_id": "007-a",
+      "score": 5,
+      "keep": false,
+      "problems": [
+        "Target operation WriteGroup is not documented in the supplied confirmed or unconfirmed service catalogs.",
+        "Claimed as unconfirmed WriteGroup request without source support.",
+        "BVLC length and overall framing are not credible for BACnet/IP.",
+        "Contains unsupplied evidence ids."
+      ],
+      "recommended_action": "Remove this seed or replace it with a documented unconfirmed service such as Who-Is or I-Am."
+    },
+    {
+      "seed_id": "008-a",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "BVLC-only function frame lacks source-backed body grammar for Write-Broadcast-Distribution-Table.",
+        "BVLC type/function encoding is not demonstrated by supplied excerpts.",
+        "Length field likely inconsistent with actual frame size.",
+        "No NPDU/APDU layering, which is acceptable for some BVLC functions, but the specific function body is not evidenced here."
+      ],
+      "recommended_action": "Retain only if rewritten from explicit BVLC function documentation including function code and body structure; otherwise replace with Original-Unicast-NPDU carrying a documented APDU service."
+    },
+    {
+      "seed_id": "seed-001",
+      "score": 14,
+      "keep": false,
+      "problems": [
+        "Hex does not resemble a clearly valid BACnet/IP BVLC+NPDU+APDU Who-Is frame.",
+        "Service-choice and layering are not cleanly separable.",
+        "BVLC framing is not source-backed or length-verified."
+      ],
+      "recommended_action": "Replace with a canonical BACnet/IP Who-Is seed using verified BVLC type/function, correct total length, NPDU version/control, APDU 0x10, and Who-Is service choice."
+    },
+    {
+      "seed_id": "seed-002",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Who-Has service encoding is not validated by supplied excerpts.",
+        "Frame does not show a clearly parseable BACnet/IP layering boundary.",
+        "BVLC length consistency is doubtful."
+      ],
+      "recommended_action": "Rewrite only if you can provide a documented Who-Has APDU layout; otherwise prefer Who-Is and I-Am for discovery coverage."
+    },
+    {
+      "seed_id": "seed-003",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "VT-Open request body is not source-backed by supplied grammar.",
+        "Frame appears too short and under-specified for a credible confirmed request.",
+        "BVLC/NPDU/APDU separation is ambiguous."
+      ],
+      "recommended_action": "Drop unless you can reconstruct a complete confirmed-request frame with explicit invoke id and minimally credible VT-Open parameters from documentation."
+    },
+    {
+      "seed_id": "seed-004",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "VT-Data request body is not source-backed by supplied grammar.",
+        "Frame appears too short and under-specified for a credible confirmed request.",
+        "BVLC/NPDU/APDU separation is ambiguous."
+      ],
+      "recommended_action": "Drop unless full VT-Data parameter grammar is available and BVLC length is corrected."
+    },
+    {
+      "seed_id": "s-013",
+      "score": 36,
+      "keep": false,
+      "problems": [
+        "BVLC header is more plausible than many others, but expected behavior assumes a SimpleACK sequence without prior transaction context.",
+        "VT-Close payload is minimally specified and not source-backed beyond service choice.",
+        "Seed is a standalone request with very shallow mutation utility."
+      ],
+      "recommended_action": "Keep only after verifying total length and adding a more credible VT-Close request body or pair it with a preceding VT-Open stateful setup."
+    },
+    {
+      "seed_id": "s-015",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Unrecognized-Service is a reject reason, not a valid request operation.",
+        "Reject-PDU used as if it were a client request operation.",
+        "Reason code 0x11 is not supported by supplied reject-reason excerpt.",
+        "Expected behavior is nonsensical for PK-only valid-seed generation."
+      ],
+      "recommended_action": "Remove entirely; reject reasons should not be represented as standalone positive request seeds."
+    },
+    {
+      "seed_id": "s-016",
+      "score": 20,
+      "keep": false,
+      "problems": [
+        "UnconfirmedTextMessage operation is mentioned in planning notes but not documented in supplied service-choice excerpts.",
+        "Body grammar is entirely inferred.",
+        "BVLC length may be consistent, but semantic validity is weak."
+      ],
+      "recommended_action": "Replace with a documented unconfirmed service from the supplied catalog or add authoritative service-choice/body documentation before keeping."
+    },
+    {
+      "seed_id": "seed-002-2",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "BVLC type/function bytes are inconsistent with common BACnet/IP expectations and the note in constraints is self-contradictory.",
+        "Stated service choice 7 for UnconfirmedEventNotification is not evidenced in supplied excerpts.",
+        "Length commentary conflicts with actual hex.",
+        "Payload is placeholder-heavy and not source-backed."
+      ],
+      "recommended_action": "Remove or fully rewrite with documented unconfirmed service numbering and corrected BVLC framing."
+    },
+    {
+      "seed_id": "seed-003-2",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "UnconfirmedCOVNotificationMultiple is not documented in supplied unconfirmed service excerpts.",
+        "Service choice 0x1f is borrowed from confirmed services, making this likely invalid.",
+        "BVLC framing notes are inconsistent.",
+        "Highly speculative payload."
+      ],
+      "recommended_action": "Remove entirely; do not include undocumented service variants in PK-only corpus."
+    },
+    {
+      "seed_id": "seed-004-2",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "UnconfirmedCOVNotification service number is not established from supplied excerpts.",
+        "BVLC header commentary is inconsistent with actual bytes.",
+        "Payload has no documented field-level grounding."
+      ],
+      "recommended_action": "Rewrite only if unconfirmed service numbering and minimal body can be sourced; otherwise omit."
+    },
+    {
+      "seed_id": "bacnet-pk-021-audit",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "UnconfirmedAuditNotification is not documented in supplied excerpts.",
+        "Service choice 0x0c is explicitly admitted as model-prior inference and likely conflicts with documented ReadProperty confirmed service choice.",
+        "PK-only seeds should not rely on speculative service numbering when source support is absent.",
+        "Low interoperability value."
+      ],
+      "recommended_action": "Remove and replace with a documented service."
+    },
+    {
+      "seed_id": "bacnet-pk-022-whois",
+      "score": 72,
+      "keep": true,
+      "problems": [
+        "Uses model-prior Who-Is service choice rather than a supplied explicit excerpt for that number.",
+        "Minimalism limits mutation surface.",
+        "Evidence list includes template ids not present in supplied sources."
+      ],
+      "recommended_action": "Keep as one of the stronger seeds, but tighten evidence ids and verify BVLC function byte against authoritative source excerpt if available."
+    },
+    {
+      "seed_id": "bacnet-pk-023-timesync",
+      "score": 41,
+      "keep": false,
+      "problems": [
+        "TimeSynchronization service numbering and full body are not explicitly documented in supplied excerpts.",
+        "Application date/time encoding is plausible but admitted as prior-based.",
+        "Useful frame shape, but not strong enough for PK-only validity."
+      ],
+      "recommended_action": "Keep only if supported by explicit service-choice/body documentation; otherwise replace with I-Am or ReadProperty."
+    },
+    {
+      "seed_id": "bacnet-pk-024-covpm",
+      "score": 48,
+      "keep": false,
+      "problems": [
+        "Confirmed service choice 0x1e is source-backed, but the body is largely inferred.",
+        "Nested tags increase diversity, but exact grammar is not verified by supplied sources.",
+        "Would be stronger with clearly delimited BACnet context/application tags from documentation."
+      ],
+      "recommended_action": "Revise rather than discard: keep the operation, but rebuild the body from a documented SubscribeCOVPropertyMultiple example or tighter grammar reference."
+    },
+    {
+      "seed_id": "S025",
+      "score": 24,
+      "keep": false,
+      "problems": [
+        "Service choice 0x1C is documented, but body layout is not clearly valid.",
+        "BVLC field values are ambiguous and likely inconsistent.",
+        "Very short payload may not satisfy parser expectations."
+      ],
+      "recommended_action": "Rewrite as a documented confirmed SubscribeCOVProperty request with explicit invoke id and conservative object/property parameters."
+    },
+    {
+      "seed_id": "S026",
+      "score": 30,
+      "keep": false,
+      "problems": [
+        "SubscribeCOV service choice is source-backed, but body grammar is weak and under-specified.",
+        "BVLC length and framing need verification.",
+        "Frame is too skeletal to be high-confidence valid."
+      ],
+      "recommended_action": "Revise to a canonical SubscribeCOV request with explicit subscriber process id, object id, and lifetime fields."
+    },
+    {
+      "seed_id": "S027",
+      "score": 5,
+      "keep": false,
+      "problems": [
+        "SimpleACK-PDU is a response type, not a standalone request seed.",
+        "No corresponding request or transaction context is provided.",
+        "PK-only positive corpus should not prioritize isolated response PDUs unless clearly modeled as server-to-client stateful messages."
+      ],
+      "recommended_action": "Remove or place inside a stateful request-response sequence tied to a preceding confirmed request."
+    },
+    {
+      "seed_id": "S028",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "Services is an error class in supplied excerpts, not a confirmed service operation.",
+        "Frame semantics are invalid for PK-only positive seed generation.",
+        "Evidence grounding is incorrect."
+      ],
+      "recommended_action": "Remove entirely."
+    },
+    {
+      "seed_id": "plan029-001",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "SegmentACK-PDU is a response/control APDU, not a standalone client request seed.",
+        "Hex is too short and likely length-inconsistent.",
+        "Expected behavior mentions confirmed service choice although no such structure is present."
+      ],
+      "recommended_action": "Remove or include only in a properly stateful segmented exchange."
+    },
+    {
+      "seed_id": "seed-033",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Artificially splits one logical message into four fragments, reducing replay utility.",
+        "BVLC header bytes are implausible for BACnet/IP.",
+        "Request-Key-Update is a network-layer message, but the seed models it as BVLC+NPDU+APDU without clear support.",
+        "Contains unsupplied evidence ids."
+      ],
+      "recommended_action": "Remove unless you can produce a single complete NPDU network-layer message frame grounded in documentation."
+    },
+    {
+      "seed_id": "seed-034",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "Artificial multi-message decomposition hurts utility.",
+        "BVLC bytes are implausible and length-inconsistent.",
+        "Service choice is documented, but request body is speculative and too small.",
+        "Contains unsupplied evidence ids."
+      ],
+      "recommended_action": "Rewrite as one complete confirmed request frame with verified outer framing and a minimally credible RemoveListElement body."
+    },
+    {
+      "seed_id": "seed-035",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "Reject-PDU is not a positive standalone request operation.",
+        "Artificial decomposition into fragments.",
+        "Expected behavior incorrectly treats Reject-PDU as request traffic."
+      ],
+      "recommended_action": "Remove entirely."
+    },
+    {
+      "seed_id": "seed-036",
+      "score": 20,
+      "keep": false,
+      "problems": [
+        "Artificial multi-fragment representation instead of one message.",
+        "ReinitializeDevice service choice is documented, but body is speculative.",
+        "BVLC framing is implausible."
+      ],
+      "recommended_action": "Rewrite as a single compact confirmed request with a minimal documented reinitialization-state parameter."
+    },
+    {
+      "seed_id": "seed-037",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Register-Foreign-Device uses a BVLC function path, but the hex does not clearly use standard BACnet/IP BVLC type bytes.",
+        "Length field is not believable.",
+        "Expected behavior cites BVLC function code ambiguously as 1.0.",
+        "Payload looks synthetic rather than documented."
+      ],
+      "recommended_action": "Rebuild from explicit BVLC function documentation with correct 0x81 BVLC type and matching 16-bit length."
+    },
+    {
+      "seed_id": "seed-038",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "ReadRange service choice is documented, but the frame lacks clear BVLC/NPDU/APDU structure.",
+        "Hex is mostly filler bytes with no verified field delimiters.",
+        "Too weakly grounded for a positive seed."
+      ],
+      "recommended_action": "Rewrite as a canonical confirmed ReadRange request with explicit invoke id, object id, property id, and range specification."
+    },
+    {
+      "seed_id": "seed-041",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Read-Foreign-Device-Table is a BVLC function family operation, but expected behavior maps it to ReadProperty service choice 0x0C, which is incorrect.",
+        "Semantic mismatch between title, bytes, and expected parser path.",
+        "Not source-grounded."
+      ],
+      "recommended_action": "Remove or reclassify correctly as either a BVLC function frame or a ReadProperty APDU, not both."
+    },
+    {
+      "seed_id": "seed-042",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Read-Broadcast-Distribution-Table-Ack is an ack/response-style BVLC operation, not a positive request here.",
+        "Expected behavior incorrectly maps service choice 0x0D to ReadProperty handler.",
+        "Semantic mismatch and weak validity."
+      ],
+      "recommended_action": "Remove entirely."
+    },
+    {
+      "seed_id": "seed-043",
+      "score": 14,
+      "keep": false,
+      "problems": [
+        "Title suggests a BVLC table-read operation, but bytes/expected behavior treat it like confirmed service choice 0x0E ReadPropertyMultiple.",
+        "Operation identity is confused.",
+        "Not suitable as a grounded PK-only seed."
+      ],
+      "recommended_action": "Replace with either a real BVLC Read-BDT frame or a proper ReadPropertyMultiple APDU."
+    },
+    {
+      "seed_id": "seed-044",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "Original-Unicast-NPDU is a BVLC function, but header bytes do not clearly encode a standard BVLC header.",
+        "Frame is too short to provide useful parser depth.",
+        "Expected behavior mentions function 0x05 without explicit source-backed encoding."
+      ],
+      "recommended_action": "Rewrite as a canonical outer transport wrapper carrying a documented APDU such as Who-Is or ReadProperty."
+    },
+    {
+      "seed_id": "pk-046-001",
+      "score": 16,
+      "keep": false,
+      "problems": [
+        "LifeSafetyOperation service choice is documented, but framing and length commentary are inconsistent.",
+        "Expected behavior incorrectly mentions service choice 0x1B while hex interpretation is unclear.",
+        "Payload semantics are not source-backed."
+      ],
+      "recommended_action": "Rebuild with verified BVLC length and a conservative minimal LifeSafetyOperation body if documentation is available; otherwise omit."
+    },
+    {
+      "seed_id": "pk-048-001",
+      "score": 14,
+      "keep": false,
+      "problems": [
+        "I-Have is unconfirmed, but the claimed service choice 0x17 conflicts with common numbering and is not supplied in excerpts.",
+        "Frame semantics and length notes are inconsistent.",
+        "Payload is not a documented I-Have grammar."
+      ],
+      "recommended_action": "Replace with a documented I-Am seed or source-backed I-Have example."
+    },
+    {
+      "seed_id": "049",
+      "score": 22,
+      "keep": false,
+      "problems": [
+        "I-Am is a useful discovery seed, but this frame is under-specified and likely not a valid BACnet/IP packet.",
+        "Expected behavior is wrong for an unsolicited I-Am message.",
+        "No clear NPDU/APDU separation."
+      ],
+      "recommended_action": "Rewrite as a proper I-Am advertisement with correct unconfirmed service byte and minimally credible application data."
+    },
+    {
+      "seed_id": "050",
+      "score": 24,
+      "keep": false,
+      "problems": [
+        "GetEventInformation service choice is documented, but the frame is mostly filler and lacks clear confirmed-request structure.",
+        "Length notes appear unreliable.",
+        "Expected behavior is generic rather than grounded."
+      ],
+      "recommended_action": "Rewrite with explicit confirmed-request header fields and a minimal valid GetEventInformation request body."
+    },
+    {
+      "seed_id": "051",
+      "score": 24,
+      "keep": false,
+      "problems": [
+        "GetEnrollmentSummary service choice is documented, but the frame lacks credible parameter structure.",
+        "BVLC framing is unclear.",
+        "Too much placeholder data."
+      ],
+      "recommended_action": "Rewrite as a compact confirmed request with verified BVLC/NPDU/APDU boundaries."
+    },
+    {
+      "seed_id": "052",
+      "score": 26,
+      "keep": false,
+      "problems": [
+        "GetAlarmSummary service choice is documented, but the actual frame is weakly grounded.",
+        "Likely length inconsistencies.",
+        "Limited mutation utility from filler-heavy payload."
+      ],
+      "recommended_action": "Rewrite to a canonical confirmed GetAlarmSummary request with validated outer framing."
+    },
+    {
+      "seed_id": "seed-1",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Forwarded-NPDU title does not match payload labeled BVLC Who-Is.",
+        "Frame is extremely short and not a credible Forwarded-NPDU.",
+        "Expected behavior about I-Am response is mismatched."
+      ],
+      "recommended_action": "Remove and replace with a true Forwarded-NPDU only if full BVLC grammar is available."
+    },
+    {
+      "seed_id": "bacnet-pk-057",
+      "score": 32,
+      "keep": false,
+      "problems": [
+        "DeleteObject service choice is documented, but the frame appears to use speculative NPDU/APDU fields.",
+        "BVLC type/function bytes are not justified by supplied sources.",
+        "Body structure is inferred rather than documented."
+      ],
+      "recommended_action": "Revise to a simpler confirmed request with validated BVLC length and clearly delimited object identifier field."
+    },
+    {
+      "seed_id": "bacnet-pk-059",
+      "score": 32,
+      "keep": false,
+      "problems": [
+        "CreateObject service choice is documented, but the frame uses largely inferred body bytes.",
+        "Outer framing is not strongly evidenced.",
+        "Would benefit from a documented minimal object-specification layout."
+      ],
+      "recommended_action": "Revise rather than keep as-is; use a single object type/object identifier creation form from documentation."
+    },
+    {
+      "seed_id": "bacnet-pk-060",
+      "score": 28,
+      "keep": false,
+      "problems": [
+        "ConfirmedTextMessage service choice is documented, but payload grammar is unverified.",
+        "Frame structure depends heavily on prior assumptions.",
+        "Low confidence positive validity."
+      ],
+      "recommended_action": "Drop unless a documented ConfirmedTextMessage parameter example is available."
+    },
+    {
+      "seed_id": "bacnet-pk-061",
+      "score": 43,
+      "keep": false,
+      "problems": [
+        "Outer framing is more coherent than many seeds, and ConfirmedPrivateTransfer service choice is source-backed.",
+        "However, BVLC length statement claims 0x0012 while hex appears 15 bytes total, indicating mismatch.",
+        "Private transfer payload is admitted as inferred vendor-specific encoding."
+      ],
+      "recommended_action": "Fix the BVLC length and keep only if you want one vendor-private parser entry seed; otherwise deprioritize in favor of more standard services."
+    },
+    {
+      "seed_id": "bacnet-pk-062",
+      "score": 46,
+      "keep": false,
+      "problems": [
+        "ConfirmedEventNotification service choice is documented and the frame is more structured than average.",
+        "BVLC total length note appears inconsistent with actual byte count.",
+        "Body grammar remains inferred rather than source-verified."
+      ],
+      "recommended_action": "Revise and keep if length is corrected and one or two fields are simplified to a clearly valid minimal notification skeleton."
+    },
+    {
+      "seed_id": "bacnet-pk-063",
+      "score": 49,
+      "keep": false,
+      "problems": [
+        "Good structural diversity and deeper nesting.",
+        "ConfirmedCOVNotificationMultiple service choice is source-backed, but BVLC total length note appears inconsistent with actual bytes.",
+        "Nested payload grammar is still largely inferred."
+      ],
+      "recommended_action": "Revise rather than discard: correct length and retain as one deep-parser seed if you can strengthen tag grammar grounding."
+    },
+    {
+      "seed_id": "bacnet-pk-064",
+      "score": 51,
+      "keep": false,
+      "problems": [
+        "One of the better seeds: operation is documented and structure is reasonably coherent.",
+        "BVLC length note still appears inconsistent with actual byte count.",
+        "Service payload remains prior-driven rather than excerpt-verified."
+      ],
+      "recommended_action": "Revise and likely keep as a compact confirmed notification seed after correcting length and tightening field grammar."
+    }
+  ],
+  "coverage_gaps": [
+    "Canonical source-backed ReadProperty seed is missing despite being one of the strongest documented confirmed services.",
+    "Canonical source-backed ReadPropertyMultiple seed is missing or obscured by mislabeled table-read/BDT seeds.",
+    "AtomicReadFile is absent from final seeds even though it is a requested archetype and documented confirmed service.",
+    "AtomicWriteFile is absent from final seeds despite explicit plan coverage intent.",
+    "DeviceCommunicationControl is absent from final seeds despite being a requested archetype and documented service.",
+    "A strongly grounded I-Am seed is missing; discovery coverage is weak because both Who-Is and I-Am encodings are not convincingly valid.",
+    "No reliable stateful request-response pair is present; response PDUs appear without prerequisite transactions.",
+    "Network-layer message coverage is weakly grounded; Request-Master-Key and Request-Key-Update are not represented as convincing single complete NPDU messages.",
+    "BVLC function diversity is present nominally, but few seeds are believable BACnet/IP BVLC frames with correct 0x81 type and matching 16-bit total length.",
+    "Application-Data tagged payload coverage is thin; most seeds do not exercise documented BACnet application tag parsing in a source-backed way.",
+    "Subscription coverage would benefit from one strong SubscribeCOV and one strong SubscribeCOVPropertyMultiple seed rather than many speculative alternatives.",
+    "Secure-BVLL and Secure-Connect-Binding are mentioned in plans/notes but not represented by any reliable final seed."
+  ]
+}

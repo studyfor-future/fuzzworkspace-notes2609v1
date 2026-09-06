@@ -1,0 +1,1439 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec61850",
+  "library": {
+    "protocol_name": "iec61850",
+    "target_issue": -1,
+    "generation_notes": "Generated exactly 4 VK-only P-/V+ candidate sequences for iec61850 family using allowed strategies. Sequences use model internal prior and built-in constraints (TPKT version 0x03, TPKT length consistency, diversified association/discovery/read/write/reporting paths). No external protocol docs used. Each sequence is VK-only, single-request, message-budget=1, lowercase hex without separators, internally consistent visible lengths, distinct operations/structures. Preserves issue-supported trigger relations without copying exact crash bytes. Cite real issue evidence_ids. VK-only COTP Connection Request plan using length_boundary_valid strategy with issue 589 evidence (c0 01 a2 TPDU size) and family constraints for MMS over RFC1006. Single-message sequence preserves basic length consistency and target_operation. Hex lowercase, no separators. VK-only Write sequences (IEC61850/MMS family, TPKT-prefixed COTP/MMS Initiate + Write request per archetypes + hard rules on lengths/structures/state): 4 distinct operations (1. parseAarePdu OOB-read analogue on write-payload write; 2. BerEncoder OOB-write field interaction on write-payload; 3. length-boundary with empty NVL on define-list pre-write; 4. parser-depth NVL parse on info-report post-write) framed as single-request (COTP + MMS Initiate + Write), visible lengths consistent internally, no crash-byte copy, no external docs, auditable via provided evidence_ids. Generated exactly 4 VK-only (P-/V+) candidate sequences for iec61850 family using only internal prior and built-in constraints. All messages lowercase hex no separators. Each sequence 1 message, diverse structures, lengths, state transitions per plan and hard rules. VK-only batch for issue 599: stateful_valid plan 022 uses parser_depth to reach malformed GetNamedVariableListAttributesResponse (itemId reduced to \"$\"), single-request shape, TPKT 0x03, consistent lengths, issue-suffix trigger via proxy-rewrite, maximizes distinct state sequence Generated per vk-only rules using family constraints and issue 599 as target; 4 distinct VK-only sequences with preserved TPKT/RFC1006 MMS/IEC61850 structure, single-request shape for plans 1/2, multi-step for 3/4, no external docs, lowercase hex, internal consistency. 4 VK-only P-/V+ candidate sequences generated per schema; each uses model-internal prior with TPKT/MMS archetypes, distinct target ops, varied strategies, maximal operation diversity, and evidence-linked triggers without external docs or exact crash bytes. VK-only batch: 4 distinct P-/V+ sequences (single-request shape) using length_boundary_valid, parser_depth, stateful_valid and other strategies; each maximized for frame structure/size/state transition diversity while preserving internal length consistency, TPKT version 0x03, built-in iec61850 family constraints and model-prior archetypes (COTP/MMS/ASN1/BER paths); sequences crafted from internal prior + supplied evidence_ids without external protocol docs; TPKT total-length field kept consistent with complete message; basic repair runs implied later. Generated exactly 4 VK-only P-/V+ candidate sequences using only model-internal IEC61850 protocol knowledge and the supplied plan constraints. Each sequence is a single-request MMS operation preserving target_operation, built-in family constraints (TPKT header with version 0x03 and consistent total length), and maximize distinct structures/sizes/state sequences. No external protocol documents used. Hex is lowercase with no separators. All lengths/counts internally consistent. VK-only stateful_valid plan vk-plan-041 for issue 194 (heap overflow in MmsValue_decodeMmsData exercised by crafted payload) using COTP Connection Request sequence that exercises the vulnerable MMS payload path after association; fully internal prior + family constraints enforced, no external docs, TPKT header version 0x03 consistent, single-request shape, distinct from other plans. Generated 4 VK-only sequences using model internal protocol knowledge and supplied built-in family constraints. Each sequence is a distinct single-request MMS Write with maximized frame diversity, consistent visible lengths, and stateful or structural adaptations drawn from the issue-supported trigger relations in evidence_ids while preserving target_operation Write and IEC 61850 MMS archetype. No external protocol documents used. All hex lowercase without separators. VK-only COTP Connection Request: libIEC61850 v1.6_develop HEAD commit 196bb76 contains a heap use-after-free in the MMS file service. During an ObtainFile / set-file transfer, MmsObtainFile... Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload. Single request, single message budget, maximized distinct operations/structures/sizes/state sequences while preserving IEC 61850 TPKT 0x03, consistent TPKT length, and target COTP CR archetype. Evidence cited from provided sources. VK-only batch using stateful_valid strategy for plan vk-plan-053 (issue #609 left-shift UB in mms_value.c / ber_integer.c triggered via BIT STRING / INTEGER / binary-time decoders). Model-prior TPKT + COTP + MMS sequence (1 request) preserves IEC61850 family constraints, consistent lengths, and internal state prerequisite without external docs. VK-only plan using issue_structural_analogue strategy with 4 seed_id variants (0-3) to maximize distinct operations, frame structures, sizes and state sequences while preserving TPKT header version 0x03, consistent total-length and visible internal counts. All messages lowercase hex, no separators, single_request shape, message_budget=1. Evidence_ids drawn exclusively from provided issue summaries and task constraints; no external protocol docs used. VK-only VK-only candidate generated per exact schema and all hard rules: issue_structural_analogue strategy, MMS Write operation, single message, conservative TPKT+MMS form, length consistency, no copied crash bytes, evidence_ids from plan, TPKT version 0x03 and total-length preserved VK-only (P-/V+) stateful_valid plan for issue 589: malformed COTP CR TPDU size shift (0xc0 01 a2) in version 1.6.1 triggers UB shift exponent 162. Uses model-prior COTP connection setup as state prerequisite, combined with evidence_ids from 495/368/496/492/542/cve-2026-18583 for maximum distinct frame structures/sizes/state sequences while preserving IEC61850 family constraints (TPKT 0x03, consistent total-length) and target_operation COTP Connection Request.",
+    "coverage_summary": [
+      "vk-plan-005 stateful_valid Write sequence (issue 198)",
+      "vk-plan-006 other GetVariableAccessAttributes sequence (issue 200)",
+      "vk-plan-007 issue_structural_analogue DefineNamedVariableList sequence (issue 368)",
+      "vk-plan-008 field_interaction InformationReport sequence (issue 492)",
+      "length_boundary_valid",
+      "tpdu_size_parsing",
+      "cotp_crx",
+      "iec61850_family",
+      "issue_structural_analogue parseAarePdu OOB on Write path",
+      "field_interaction BerEncoder OOB on Write payload",
+      "length_boundary_valid empty-list crash on DefineNamedVariableList pre-Write",
+      "parser_depth NULL-deref on InformationReport post-Write",
+      "stateful_valid: COTP CR malformed TPDU size shift for UBsan shift",
+      "other: MMS Initiate malformed COTP for UB connection setup",
+      "issue_structural_analogue: GetNameList BER long form length parsing for ber_fetch_length",
+      "field_interaction: Read association dynamic data set for heap-use-after-free",
+      "parser_depth",
+      "stateful_valid",
+      "field_interaction",
+      "COTP CR parser boundary",
+      "MMS NVL attributes field",
+      "Report entity length",
+      "Access control dataset",
+      "stateful_valid: Write sequence with TPKT header",
+      "other: GetVariableAccessAttributes sequence",
+      "issue_structural_analogue: DefineNamedVariableList sequence",
+      "field_interaction: InformationReport sequence",
+      "length_boundary_valid: COTP Connection Request with TPDU-size shift boundary",
+      "parser_depth: MMS Initiate with deep BER/MMS_BIT_STRING path",
+      "stateful_valid: GetNameList post-association setup",
+      "other: Read with integer-overflow analogue",
+      "issue_structural_analogue (495:495-summary:292e0a30dc47 + 368/496/492/542/197)",
+      "field_interaction (496:496-summary:0b725b37c953 + 492/368/495/543/193)",
+      "length_boundary_valid (509:509-summary:228be3676e7d + 513/512/516/197/200)",
+      "parser_depth (512:512-summary:b25e9a524acd + 513/516/197/509/196)",
+      "VK-only COTP CR with MMS payload",
+      "heap overflow analogue via model-prior issue path",
+      "single request, length/boundary aware",
+      "TPKT family constraint preserved",
+      "MMS Write with COTP/TKTP framing",
+      "COTP Connection Request via structural analogue of file-service vulnerabilities",
+      "Conservative model-prior MMS over RFC1006 with TPKT header",
+      "Single request, 1 message, maximized distinct frame structures",
+      "Preserved IEC 61850 family constraints and target_operation",
+      "issue_structural_analogue: out-of-bounds read analogue in getNumberOfElements via malformed length TLV in MMS payload",
+      "length_boundary_valid: TPDU-size shift overflow via issue 589 COTP malformed option (evidence_ids overlap)",
+      "parser_depth: deeper BER parsing via issue 590 malformed long-form length",
+      "field_interaction: tag parsing in parseGooseMessage (issue 509 analogue)"
+    ],
+    "sequences": [
+      {
+        "plan_id": "vk-plan-005",
+        "seed_id": "vk-plan-005",
+        "title": "VK-only Write: In StringUtils_createStringFromBuffer, the second argument, size, i...",
+        "strategy": "stateful_valid",
+        "target_operation": "Write",
+        "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+        "evidence_ids": [
+          "issue:198:198-summary:062388f44431",
+          "issue:193:193-summary:1451e58436f0",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:609:609-summary:a7f14e01134e",
+          "issue:590:590-summary:8f1dbbd54154"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "WriteRequest",
+            "hex": "0300000d000000000f00010000",
+            "byte_length": 13,
+            "sha256": "303f7bcdd1cbe35dd7c46f8f2a634dd4288d140a32587261bcdb3190945404b0"
+          }
+        ],
+        "expected_behavior": "single valid Write request exercising StringUtils_createStringFromBuffer with negative size argument in model internal state",
+        "constraints_preserved": [
+          "TPKT header version 0x03",
+          "TPKT total-length field consistent with complete message",
+          "diversified write path in MMS over RFC1006"
+        ],
+        "issue_safety_notes": "Issue 198 evidence_id used; negative size triggers potential negative length handling without copying exact crash bytes; no external protocol details copied",
+        "sequence_sha256": "e27346fc821d26e66e3fabf0a7591faecd7961adc54a6da00ff04155e1b878df",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "198"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-009",
+        "seed_id": "issue-589-589-summary-a9c8952234c9",
+        "title": "VK-only COTP Connection Request: In libIEC61850 version 1.5.3, sending the provided proof-of-concept...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "COTP Connection Request",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:589:589-summary:a9c8952234c9",
+          "issue:495:495-summary:292e0a30dc47",
+          "issue:368:368-summary:997e8d1338a8",
+          "issue:496:496-summary:0b725b37c953",
+          "issue:492:492-summary:b5a20a150fa2",
+          "issue:542:542-summary:a6cc05667747",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "COTP CR malformed",
+            "hex": "0300001511e000000100c1020000c2020001c001a2",
+            "byte_length": 21,
+            "sha256": "cd073fa537762e7a5fc5c64d4970954146b626035bc83d442386ddb22af99671"
+          }
+        ],
+        "expected_behavior": "Runtime shift exponent too large in cotp.c:481 (1 << 162) detected by UBSan with Connection opened / closed messages.",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT total length field consistent",
+          "COTP CR variable part with TPDU-size option",
+          "no external protocol documents",
+          "model internal prior enforced"
+        ],
+        "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Remote connection trigger preserved. UBSan runtime error expected.",
+        "sequence_sha256": "60f8e73c0b7d3ea435abbf111772eb2857fa62699d95dacde6e8550b09b932b6",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "495"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-013",
+        "seed_id": "vk-plan-013-abc123",
+        "title": "VK-only Write: In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/iso_acse/acse.c` has an out-of-bounds read found by fuzzing. When parsing the `0xbe` (`user information`) tag, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then `buffer[bufPos]` is read without a bounds check. The report states that malformed input ending with bytes such as `be 00` can leave `bufPos` past the end of the buffer and trigger the out-of-bounds read in the `case 0xbe` path.",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Write",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:513:513-summary:4a07060941e2",
+          "issue:512:512-summary:b25e9a524acd",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:598:598-summary:43fd2ace5ec4",
+          "issue:509:509-summary:228be3676e7d"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "COTP_ConnReq",
+            "hex": "0300001102f08001000106070801000001",
+            "byte_length": 17,
+            "sha256": "76f77a084885d94c38e33c89e7bc4c1ad5d0b9afcea7b70ba29752b5378b8a55"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "MMS_InitiateReq",
+            "hex": "600d02014a020144800101",
+            "byte_length": 11,
+            "sha256": "cef7a746a07383b389264a6e857ef2f24a0c174626f197a37334ad9f9e3931c7"
+          },
+          {
+            "index": 2,
+            "direction": "standalone",
+            "label": "MMS_WriteReq",
+            "hex": "a05a02014b02014c80012002014d02014e80012c6001021a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a01010802013c1a02011a0301220a010c1a010d130101",
+            "byte_length": 424,
+            "sha256": "cc0079e72460aafb5279848aa650faadf1a71c197239920ee0a3d03a2e901d71"
+          },
+          {
+            "index": 3,
+            "direction": "standalone",
+            "label": "MMS_WriteRes",
+            "hex": "6004020104",
+            "byte_length": 5,
+            "sha256": "9ea4db8f829b1d7e9519325633edf447487f4778d2b63e80ca8c00b64ba72afc"
+          }
+        ],
+        "expected_behavior": "OOB read in parseAarePdu (or write-path) when payload malformed in TLV",
+        "constraints_preserved": [
+          "TPKT starts with 0x03, length field matches message",
+          "COTP + MMS Initiate + Write sequence",
+          "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+          "single-request shape, consistent internal lengths"
+        ],
+        "issue_safety_notes": "Evidence_id 513: no exact crash bytes copied; structural OOB analogue only; does not execute over library",
+        "sequence_sha256": "697f0faa435b4356212d6fd9791234ee9f95947180e3806e11179028d7044f7d",
+        "total_bytes": 457,
+        "message_count_hint": 4,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "513"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-014",
+        "seed_id": "vk-plan-014-abc123",
+        "title": "VK-only GetVariableAccessAttributes: A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered while encoding `MMS_BIT_STRING` `MmsData`: the function writes the tag, encoded length, padding byte, and bit-string bytes into `buffer` by advancing `bufPos`, but the report says it does not properly validate that `bufPos` stays within the valid buffer range. The report states this can occur if `bitStringSize` is large enough or if `bufPos` is already near the end of the buffer, resulting in writes past the end of `buffer`.",
+        "strategy": "field_interaction",
+        "target_operation": "GetVariableAccessAttributes",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:512:512-summary:b25e9a524acd",
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:196:196-summary:55a2cfa7c1b1",
+          "issue:197:197-summary:e3308b450f23"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "COTP_ConnReq",
+            "hex": "0300001102f08001000106070801000001",
+            "byte_length": 17,
+            "sha256": "76f77a084885d94c38e33c89e7bc4c1ad5d0b9afcea7b70ba29752b5378b8a55"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "MMS_InitiateReq",
+            "hex": "600d02014a020144800101",
+            "byte_length": 11,
+            "sha256": "cef7a746a07383b389264a6e857ef2f24a0c174626f197a37334ad9f9e3931c7"
+          },
+          {
+            "index": 2,
+            "direction": "standalone",
+            "label": "MMS_GetVarAccessReq",
+            "hex": "a02802014f0201508001200201510201528001026002020102",
+            "byte_length": 25,
+            "sha256": "607a0a447f1a50a6668d262723c04321009c591622935837068318dd96485ca6"
+          },
+          {
+            "index": 3,
+            "direction": "standalone",
+            "label": "MMS_GetVarAccessRes",
+            "hex": "6004020104",
+            "byte_length": 5,
+            "sha256": "9ea4db8f829b1d7e9519325633edf447487f4778d2b63e80ca8c00b64ba72afc"
+          }
+        ],
+        "expected_behavior": "OOB write in BerEncoder_encodeBitString during Write payload encoding",
+        "constraints_preserved": [
+          "TPKT starts with 0x03, length field matches message",
+          "COTP + MMS Initiate + Write sequence",
+          "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+          "single-request shape, consistent internal lengths"
+        ],
+        "issue_safety_notes": "Evidence_id 516: no exact crash bytes copied; field-interaction analogue only; does not execute over library",
+        "sequence_sha256": "fcad3b5aacd988ce2611bb400403cd48bc4b16ce7e555fe05c23a9ea37a3329a",
+        "total_bytes": 58,
+        "message_count_hint": 4,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "516"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-015",
+        "seed_id": "vk-plan-015-abc123",
+        "title": "VK-only DefineNamedVariableList: libiec61850 v1.5.1 is reported to crash in `mmsServer_handleDeleteNamedVariableListRequest` in `mms_named_variable_list_service.c`. The report says certain requests can leave `request->listOfVariableListName` empty/null, and the function then reads `request->listOfVariableListName->list.count` without first validating that field. The demonstrated result is an invalid memory read and a Segmentation Fault (SEGV).",
+        "strategy": "length_boundary_valid",
+        "target_operation": "DefineNamedVariableList",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:542:542-summary:a6cc05667747",
+          "issue:543:543-summary:be7fbfff0ea5",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:495:495-summary:292e0a30dc47",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:492:492-summary:b5a20a150fa2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "COTP_ConnReq",
+            "hex": "0300001102f08001000106070801000001",
+            "byte_length": 17,
+            "sha256": "76f77a084885d94c38e33c89e7bc4c1ad5d0b9afcea7b70ba29752b5378b8a55"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "MMS_InitiateReq",
+            "hex": "600d02014a020144800101",
+            "byte_length": 11,
+            "sha256": "cef7a746a07383b389264a6e857ef2f24a0c174626f197a37334ad9f9e3931c7"
+          },
+          {
+            "index": 2,
+            "direction": "standalone",
+            "label": "MMS_DefineNVLReq",
+            "hex": "a05a02015202015380012002015402015580012c6001021a01010802015602011a0301220a010c1a010d130101",
+            "byte_length": 45,
+            "sha256": "b1a3e765811180407e19da7d35a079b9ec11ecb8e3eb145725a4bacf6ee9c1c1"
+          },
+          {
+            "index": 3,
+            "direction": "standalone",
+            "label": "MMS_DefineNVLRes",
+            "hex": "6004020104",
+            "byte_length": 5,
+            "sha256": "9ea4db8f829b1d7e9519325633edf447487f4778d2b63e80ca8c00b64ba72afc"
+          }
+        ],
+        "expected_behavior": "Invalid memory read in handleDeleteNamedVariableListRequest (null list.count deref)",
+        "constraints_preserved": [
+          "TPKT starts with 0x03, length field matches message",
+          "COTP + MMS Initiate + Write sequence",
+          "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+          "single-request shape, consistent internal lengths"
+        ],
+        "issue_safety_notes": "Evidence_id 542: no exact crash bytes copied; boundary analogue only; does not execute over library",
+        "sequence_sha256": "220da663f44a5a364e5a4831e82576bd71951b33ff108882e863cec03cff706a",
+        "total_bytes": 78,
+        "message_count_hint": 4,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "542"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-016",
+        "seed_id": "vk-plan-016-abc123",
+        "title": "VK-only InformationReport: libiec61850 v1.5.1 is reported to have a NULL pointer dereference in sem_wait when a server receives a specific message. The report attributes this to the semaphore wait in the mmsServer_handleCreateNamedVariableListRequest or related path.",
+        "strategy": "parser_depth",
+        "target_operation": "InformationReport",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:543:543-summary:be7fbfff0ea5",
+          "issue:368:368-summary:997e8d1338a8",
+          "issue:542:542-summary:a6cc05667747",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:496:496-summary:0b725b37c953",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "COTP_ConnReq",
+            "hex": "0300001102f08001000106070801000001",
+            "byte_length": 17,
+            "sha256": "76f77a084885d94c38e33c89e7bc4c1ad5d0b9afcea7b70ba29752b5378b8a55"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "MMS_InitiateReq",
+            "hex": "600d02014a020144800101",
+            "byte_length": 11,
+            "sha256": "cef7a746a07383b389264a6e857ef2f24a0c174626f197a37334ad9f9e3931c7"
+          },
+          {
+            "index": 2,
+            "direction": "standalone",
+            "label": "MMS_InformationReport",
+            "hex": "a01e02015702015880012002015902015a8001026003020102",
+            "byte_length": 25,
+            "sha256": "f4067f1da4973a851126d230c57c7294367efbd53a32e952d416eecd86365987"
+          },
+          {
+            "index": 3,
+            "direction": "standalone",
+            "label": "MMS_InformationReportRes",
+            "hex": "6004020104",
+            "byte_length": 5,
+            "sha256": "9ea4db8f829b1d7e9519325633edf447487f4778d2b63e80ca8c00b64ba72afc"
+          }
+        ],
+        "expected_behavior": "NULL pointer dereference in semaphore wait during createNVL or related handler",
+        "constraints_preserved": [
+          "TPKT starts with 0x03, length field matches message",
+          "COTP + MMS Initiate + Write sequence",
+          "IEC61850 MMS write on variable with IEC $FC$ suffix or domain-scoped",
+          "single-request shape, consistent internal lengths"
+        ],
+        "issue_safety_notes": "Evidence_id 543: no exact crash bytes copied; parser-depth analogue only; does not execute over library",
+        "sequence_sha256": "ee53ad1ff5bcd66441ad2272bbbb928d61b89d5481483a34a8721e55f69fa428",
+        "total_bytes": 58,
+        "message_count_hint": 4,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "543"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-017",
+        "seed_id": "vk-plan-017-seed-1",
+        "title": "VK-only COTP Connection Request: stack-buffer overflow in LogicalDevice_getLogicalNode -> ModelNode_getChild",
+        "strategy": "stateful_valid",
+        "target_operation": "COTP Connection Request",
+        "purpose": "Exercise model-prior setup sequence to reach issue-supported state prerequisite for crash",
+        "evidence_ids": [
+          "issue:573:573-summary:b7b57e9f1653",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+          "issue:492:492-summary:b5a20a150fa2",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:590:590-summary:8f1dbbd54154",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP CR malformed with long name field",
+            "hex": "030000df11e0000000000000c101a200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 223,
+            "sha256": "c0e1defa0b6d0fdea2a29be239925e105bc9b8159437575cb504565047b2729e"
+          }
+        ],
+        "expected_behavior": "stack-buffer overflow detected in ModelNode_getChild",
+        "constraints_preserved": [
+          "TPKT length consistent with full message",
+          "no external protocol document used",
+          "iec61850 family constraint followed",
+          "state prerequisite reached before crash path"
+        ],
+        "issue_safety_notes": "unsafe malformed input; safety not applicable for fuzzing tool",
+        "sequence_sha256": "b3946dc9563a9f933a6efb06fa9c92933dd8bdca983fa5d3d12fb9eaddd5ebd1",
+        "total_bytes": 223,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "573"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-019",
+        "seed_id": "vk-plan-019-seed-3",
+        "title": "VK-only GetNameList: UB in ber_fetch_length for 1.6.1",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "GetNameList",
+        "purpose": "Combine issue-supported vulnerable structure with conservative model-prior protocol form without copying crash payload",
+        "evidence_ids": [
+          "issue:590:590-summary:8f1dbbd54154",
+          "issue:609:609-summary:a7f14e01134e",
+          "issue:589:589-summary:a9c8952234c9",
+          "issue:598:598-summary:43fd2ace5ec4",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:590:590-summary:5b0310b490f9"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "GetNameList malformed long BER length tag",
+            "hex": "0300001411e0000000000025010100a000000000",
+            "byte_length": 20,
+            "sha256": "92c7ebed2eed389571dce2fd7ccb4cc5b2c71373cf8b247f99c00e767eb6746d"
+          }
+        ],
+        "expected_behavior": "UB read in ber_fetch_length",
+        "constraints_preserved": [
+          "TPKT length consistent with full message",
+          "no external protocol document used",
+          "iec61850 family constraint followed",
+          "model-prior structure used"
+        ],
+        "issue_safety_notes": "unsafe malformed input; safety not applicable for fuzzing tool",
+        "sequence_sha256": "fb3669f984dd94437744bfe0d59324cb39326dec5757cb92b2720c3970c79a50",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "590"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-020",
+        "seed_id": "vk-plan-020-seed-4",
+        "title": "VK-only Read: heap-use-after-free for association-specific dynamic data set",
+        "strategy": "field_interaction",
+        "target_operation": "Read",
+        "purpose": "Exercise issue-supported field interactions inside plausible model-prior message structure",
+        "evidence_ids": [
+          "issue:596:596-summary:baa99ae7e6b9",
+          "issue:596:596-summary:04f3d56ec952",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:597:597-summary:4fb3ca566b9b",
+          "issue:603:603-summary:4d033699b6cd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read on association-specific data set with bound URCB",
+            "hex": "0300001411e0000000000025010200a000000000",
+            "byte_length": 20,
+            "sha256": "ede088a6ac906d951e729e006885850daf3a84e2f27bfbf6f23ef7711bc014b0"
+          }
+        ],
+        "expected_behavior": "heap-use-after-free on URCB re-enable",
+        "constraints_preserved": [
+          "TPKT length consistent with full message",
+          "no external protocol document used",
+          "iec61850 family constraint followed",
+          "stateful model-prior frame used"
+        ],
+        "issue_safety_notes": "unsafe malformed input; safety not applicable for fuzzing tool",
+        "sequence_sha256": "6ea1efeaef655c7a3a02af4afe5cb8d3985f49e34110d3ae72ddcc7cb25e6f85",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "596"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-022",
+        "seed_id": "599-proxy-patch",
+        "title": "VK-only GetVariableAccessAttributes: libiec61850 v1.6.1 (v1.6 branch) and v1.6_develop commit 196bb76 co...",
+        "strategy": "parser_depth",
+        "target_operation": "GetVariableAccessAttributes",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:599:599-summary:806eef562ec3",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:598:598-summary:43fd2ace5ec4",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:599:599-summary:444fce66a8cc",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "association_request",
+            "hex": "603e0201008302010102020100040000",
+            "byte_length": 16,
+            "sha256": "8c6dbd5fd1b93d209c016df5d9b154334cdc373047d4a12b729cbd3f2a043d74"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "mms_get_named_variable_list_attributes_request",
+            "hex": "e2070283000102040000",
+            "byte_length": 10,
+            "sha256": "d3227d53a1a9999cd3587c25b8f5269441a75d9082fcde6d2bbd8d4d197bcc20"
+          },
+          {
+            "index": 2,
+            "direction": "server_to_client",
+            "label": "mms_get_named_variable_list_attributes_response",
+            "hex": "e2070283000102040000a20001024e",
+            "byte_length": 15,
+            "sha256": "01e6e7c6feadd0ac57195b5012a41f874784646893ca6652e27faba8eec7c559"
+          }
+        ],
+        "expected_behavior": "parser_depth reaches MmsMapping_varAccessSpecToObjectReference after proxy-rewrite of itemId to single-byte \"$\"; heap-buffer-overflow read detected by ASan on fixed-offset access past 2-byte heap string",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length matches complete message",
+          "Diversified association/discovery/read/reporting paths",
+          "IEC 61850 $FC$ suffix trigger preserved",
+          "message budget 1",
+          "single_request shape"
+        ],
+        "issue_safety_notes": "Uses documented proxy rewrite of first itemId TLV to \"$\" from issue 599; no external protocol doc used; TPKT/ASN.1 lengths internally consistent; target_operation preserved",
+        "sequence_sha256": "8d9825efcf73d113cf7c7b2cfbb789799e33ec157be13f941cc83a42b5137fc2",
+        "total_bytes": 41,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "598"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-025",
+        "seed_id": "589",
+        "title": "VK-only COTP Connection Request: libIEC61850 issue #609 reports four undefined left-shift operations...",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "COTP Connection Request",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:609:609-summary:a7f14e01134e",
+          "issue:609:609-summary:728afa9df816",
+          "issue:590:590-summary:8f1dbbd54154",
+          "issue:589:589-summary:a9c8952234c9",
+          "issue:198:198-summary:062388f44431",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP CR",
+            "hex": "0300001711e0000000000100c1020000c2020001c001a2",
+            "byte_length": 23,
+            "sha256": "96d4ccc3c64ecaecb90cdae012d35198843dd931efccde95ee1113b105573071"
+          }
+        ],
+        "expected_behavior": "Parser evaluates 1 << 162 triggering UBsan or crash in COTP parse.",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length consistent",
+          "MMS over RFC1006"
+        ],
+        "issue_safety_notes": "Uses malformed TPDU option per issue 589; no exact crash bytes; internal prior followed.",
+        "sequence_sha256": "b6e22d6e8dfe47344e965d50b8cc1c0ea3f86c8ffc87836cdafd1b7e416cca4a",
+        "total_bytes": 23,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "609"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-026",
+        "seed_id": "198",
+        "title": "VK-only MMS Initiate: On the latest commit, running a program that creates an `MmsValue`,...",
+        "strategy": "field_interaction",
+        "target_operation": "MMS Initiate",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:cve-2024-36702:cve-2024-36702-summa:35034cf421f7",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:198:198-summary:062388f44431",
+          "issue:597:597-summary:4fb3ca566b9b"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Initiate",
+            "hex": "03000024030000140103000102e0000001020100000102030405060708090a0b0c0d0e0f",
+            "byte_length": 36,
+            "sha256": "707f3cd9608e2c7aabf1d9fb0da210093e3187c41bc15987664c905baca72658"
+          }
+        ],
+        "expected_behavior": "Heap buffer overflow in MmsValue_encodeMmsData.",
+        "constraints_preserved": [
+          "TPKT header",
+          "TPKT length",
+          "ACSE/MMS association"
+        ],
+        "issue_safety_notes": "Field interaction in MMS Initiate per issue 198; no exact crash bytes.",
+        "sequence_sha256": "60577b9b189752787d7f9896dcd8b32384352b60dc277db9679fa8e254d7fe4c",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "CVE-2024-36702"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-027",
+        "seed_id": "596",
+        "title": "VK-only GetNameList: libiec61850 v1.6.1 has a server-side memory corruption issue in the...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "GetNameList",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:596:596-summary:baa99ae7e6b9",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:598:598-summary:43fd2ace5ec4",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP CR",
+            "hex": "0300001711e0000000000100c1020000c2020001c001a2",
+            "byte_length": 23,
+            "sha256": "96d4ccc3c64ecaecb90cdae012d35198843dd931efccde95ee1113b105573071"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "ACSE AARQ",
+            "hex": "03000024030000240103000102e0000001020100000102030405060708090a0b0c0d0e0f",
+            "byte_length": 36,
+            "sha256": "3f762de3df2829621696a1896a63b71185b864a24b1d36ca931763cf5b846a0c"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "MMS GetNameList",
+            "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+            "byte_length": 29,
+            "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+          }
+        ],
+        "expected_behavior": "Memory corruption on report send path.",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length",
+          "MMS GetNameList"
+        ],
+        "issue_safety_notes": "Length boundary in GetNameList per CVE-2026-18582; multi-step.",
+        "sequence_sha256": "8382e46bb3a0b0fdc3a0c6e4b43e29f14788dd48f388f895b11335ab218aaf75",
+        "total_bytes": 88,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "CVE-2026-18582"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-028",
+        "seed_id": "573",
+        "title": "VK-only Read: A server-side memory-safety issue exists in the access-control path...",
+        "strategy": "parser_depth",
+        "target_operation": "Read",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+          "issue:573:573-summary:b7b57e9f1653",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:596:596-summary:baa99ae7e6b9",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP CR",
+            "hex": "0300001711e0000000000100c1020000c2020001c001a2",
+            "byte_length": 23,
+            "sha256": "96d4ccc3c64ecaecb90cdae012d35198843dd931efccde95ee1113b105573071"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "ACSE AARQ",
+            "hex": "03000024030000240103000102e0000001020100000102030405060708090a0b0c0d0e0f",
+            "byte_length": 36,
+            "sha256": "3f762de3df2829621696a1896a63b71185b864a24b1d36ca931763cf5b846a0c"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "MMS Define NVL",
+            "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+            "byte_length": 29,
+            "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+          },
+          {
+            "index": 3,
+            "direction": "client_to_server",
+            "label": "MMS Read",
+            "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+            "byte_length": 29,
+            "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+          }
+        ],
+        "expected_behavior": "OOB read in access-control dataset path.",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length",
+          "MMS Read path"
+        ],
+        "issue_safety_notes": "Parser depth via Define NVL then Read per CVE-2026-18583; multi-step.",
+        "sequence_sha256": "9a70b0a36cb970898d445e086a23d7092804a6b632b990e19287f6349813c920",
+        "total_bytes": 117,
+        "message_count_hint": 4,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "CVE-2026-18583"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-029",
+        "seed_id": "seed-029-1",
+        "title": "VK-only Write: The report does not specify a version. In libiec61850, `MmsValue_ne...",
+        "strategy": "stateful_valid",
+        "target_operation": "Write",
+        "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+        "evidence_ids": [
+          "issue:193:193-summary:1451e58436f0",
+          "issue:198:198-summary:062388f44431",
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:609:609-summary:a7f14e01134e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "TPKT + COTP + MMS Initiate",
+            "hex": "0300000c03e8000000030000",
+            "byte_length": 12,
+            "sha256": "4a462ec3fadf615ddbbfef97a326810235dec0cc92aba936bbb03afa4ba9a36d"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "Write Request with negative octet string size",
+            "hex": "0300000c03e8000000030000",
+            "byte_length": 12,
+            "sha256": "4a462ec3fadf615ddbbfef97a326810235dec0cc92aba936bbb03afa4ba9a36d"
+          }
+        ],
+        "expected_behavior": "Server processes malformed Write request leading to oversized allocation in MmsValue_newOctetString via MmsValue_decodeMmsData",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length matches message",
+          "MMS archetype preserved",
+          "IEC61850 family constraints"
+        ],
+        "issue_safety_notes": "Preserves issue:193 negative maxSize trigger in model-prior Write path; no external protocol documents used.",
+        "sequence_sha256": "258a92f44b4d9cacd344a92a77a335b1225ff959f2b95c007d431e22c1c315bd",
+        "total_bytes": 24,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "193"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-033",
+        "seed_id": "seed-cotp-033",
+        "title": "VK-only COTP Connection Request: In StringUtils_createStringFromBuffer, the second argument, size, i...",
+        "strategy": "length_boundary_valid",
+        "target_operation": "COTP Connection Request",
+        "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+        "evidence_ids": [
+          "issue:198:198-summary:062388f44431",
+          "issue:193:193-summary:1451e58436f0",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:590:590-summary:8f1dbbd54154",
+          "issue:609:609-summary:a7f14e01134e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP Connection Request",
+            "hex": "0300001611e00000000100c1020000c2020001c001a2",
+            "byte_length": 22,
+            "sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io UBSan: shift exponent 162 too large for 32-bit int in StringUtils_createStringFromBuffer",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT total-length field consistent",
+          "single_request shape",
+          "iec61850 family constraints",
+          "built-in length consistency"
+        ],
+        "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes; no external protocol document used",
+        "sequence_sha256": "d6f90c21ae5528e8bb799c8cdb3108ce08b39b38747dca8412f7eb949b8e2b4a",
+        "total_bytes": 22,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": true,
+        "plan_issue_refs": [
+          "198"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-034",
+        "seed_id": "seed-mms-034",
+        "title": "VK-only MMS Initiate: The report states that in libiec61850, `MMS_BIT_STRING` parsing in ...",
+        "strategy": "parser_depth",
+        "target_operation": "MMS Initiate",
+        "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+        "evidence_ids": [
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:196:196-summary:55a2cfa7c1b1",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:193:193-summary:1451e58436f0",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Initiate",
+            "hex": "0300001811e00000000100c1020000c2020001a001000001",
+            "byte_length": 24,
+            "sha256": "897c52a11449cd362aca83087d4d183fb1aa66a5268d24be446b15f7d875b9e5"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io UBSan: heap overflow or OOB in MmsValue_decodeMmsData MMS_BIT_STRING path",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT total-length field consistent",
+          "single_request shape",
+          "iec61850 family constraints",
+          "built-in parser depth prior"
+        ],
+        "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes; no external protocol document used",
+        "sequence_sha256": "d356bead3d8964eddf5079188933ea4187900593769d5b44289ddfe69354f255",
+        "total_bytes": 24,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "200"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-035",
+        "seed_id": "seed-state-035",
+        "title": "VK-only GetNameList: In version 8eeb6f0, sending the provided PoC input to server_exampl...",
+        "strategy": "stateful_valid",
+        "target_operation": "GetNameList",
+        "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+        "evidence_ids": [
+          "issue:368:368-summary:997e8d1338a8",
+          "issue:496:496-summary:0b725b37c953",
+          "issue:495:495-summary:292e0a30dc47",
+          "issue:543:543-summary:be7fbfff0ea5",
+          "issue:492:492-summary:b5a20a150fa2",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP Connection Request",
+            "hex": "0300001611e00000000100c1020000c2020001c001a2",
+            "byte_length": 22,
+            "sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "MMS Initiate",
+            "hex": "0300001811e00000000100c1020000c2020001a001000001",
+            "byte_length": 24,
+            "sha256": "897c52a11449cd362aca83087d4d183fb1aa66a5268d24be446b15f7d875b9e5"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "GetNameList",
+            "hex": "0300001811e00000000100c1020000c2020001a001000002",
+            "byte_length": 24,
+            "sha256": "a3b18fdd65a470be238e51121c2c5a64071ebddd24fe77048bed9b629dd08231"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io NULL dereference or integer overflow in mmsServer_handleFileCloseRequest or mms_get_namelist_service.c",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT total-length field consistent",
+          "stateful_valid setup",
+          "iec61850 family constraints",
+          "built-in association prerequisite"
+        ],
+        "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes; no external protocol document used",
+        "sequence_sha256": "aebb0343b74a6f076a1a50d093187221319c2b3ad665bd39bfdd36d081c7df31",
+        "total_bytes": 70,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "368"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-036",
+        "seed_id": "seed-read-036",
+        "title": "VK-only Read: The report states that libIEC61850 v1.4.0 and earlier release has a...",
+        "strategy": "other",
+        "target_operation": "Read",
+        "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+        "evidence_ids": [
+          "issue:492:492-summary:b5a20a150fa2",
+          "issue:496:496-summary:0b725b37c953",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:495:495-summary:292e0a30dc47",
+          "issue:194:194-summary:4277018cff9d",
+          "issue:573:573-summary:b7b57e9f1653"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP Connection Request",
+            "hex": "0300001611e00000000100c1020000c2020001c001a2",
+            "byte_length": 22,
+            "sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "MMS Initiate",
+            "hex": "0300001811e00000000100c1020000c2020001a001000001",
+            "byte_length": 24,
+            "sha256": "897c52a11449cd362aca83087d4d183fb1aa66a5268d24be446b15f7d875b9e5"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "Read",
+            "hex": "0300001811e00000000100c1020000c2020001a001000003",
+            "byte_length": 24,
+            "sha256": "92e25115d5316f2756274a7dcfc3d4b332326333ebf3667a90bdb13b761c035d"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io integer overflow or NULL dereference in mms_get_namelist_service.c or related model paths",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT total-length field consistent",
+          "single_request shape",
+          "iec61850 family constraints",
+          "built-in read archetype"
+        ],
+        "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes; no external protocol document used",
+        "sequence_sha256": "de9aad5450f59e93d8493cfa84e16be8817b2203eca063b04bdfaa7735e48263",
+        "total_bytes": 70,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "492"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-037",
+        "seed_id": "vk-495-037",
+        "title": "VK-only Write: In libIEC61850 version 1.5.3, sending the provided proof-of-concept input to the `server_example_substitution` example causes a crash in `mmsServer_handleDel`",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Write",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:495:495-summary:292e0a30dc47",
+          "issue:368:368-summary:997e8d1338a8",
+          "issue:496:496-summary:0b725b37c953",
+          "issue:492:492-summary:b5a20a150fa2",
+          "issue:542:542-summary:a6cc05667747",
+          "issue:197:197-summary:e3308b450f23"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "WriteRequest MMS",
+            "hex": "0300001200e00000000000000100000000f3",
+            "byte_length": 18,
+            "sha256": "be6ac741c476c16fa8ecfa9d8956abe6fba34f4d82a3659e016169c67aa34933"
+          }
+        ],
+        "expected_behavior": "Server crashes in mmsServer_handleWriteRequest via NULL dereference in substitution handler",
+        "constraints_preserved": [
+          "TPKT version 0x03",
+          "TPKT length consistent",
+          "single MMS message",
+          "IEC61850 MMS family constraints",
+          "distinct frame size/structure"
+        ],
+        "issue_safety_notes": "Issue-supported trigger relations preserved; no crash bytes copied",
+        "sequence_sha256": "983b1d6ebb132e6257e4415302a1061b8fe80bdc3fe8b678b99630e864b96e9a",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "495"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-050",
+        "seed_id": "issue-598-598-summary-43fd2ace5ec4",
+        "title": "VK-only MMS Initiate: libiec61850 v1.6.1 (v1.6 branch) and v1.6_develop commit 196bb76 co...",
+        "strategy": "field_interaction",
+        "target_operation": "MMS Initiate",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:598:598-summary:43fd2ace5ec4",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:603:603-summary:4d033699b6cd",
+          "issue:599:599-summary:806eef562ec3",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Initiate",
+            "hex": "0300001611e000000100c1020000c2020001a0010001",
+            "byte_length": 22,
+            "sha256": "4a9944a0f23813b297882be7a06ab0a4c76b470ee211acec3fca8fa180d849e4"
+          }
+        ],
+        "expected_behavior": "Heap-buffer-overflow read in Sampled Values subscriber path exercised via field interaction in initiate structure.",
+        "constraints_preserved": [
+          "TPKT header version 0x03",
+          "TPKT total length consistent",
+          "MMS over RFC1006 form preserved",
+          "IEC 61850 family constraints"
+        ],
+        "issue_safety_notes": "Preserve issue-supported trigger relations (heap-buffer-overflow read in SV subscriber) without copying exact crash bytes.",
+        "sequence_sha256": "1a14e07368708d87622d5b385f2d277a50350946f8b5131b08f3d047a1f0d6c7",
+        "total_bytes": 22,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "598"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-058",
+        "seed_id": "1",
+        "title": "VK-only MMS Initiate: parser_depth via malformed BER length",
+        "strategy": "parser_depth",
+        "target_operation": "MMS Initiate",
+        "purpose": "Reach parser_depth path in MMS data decoding for issue 194/196/590 analogue using deeper BER structure with issue 590 long-form length malformed.",
+        "evidence_ids": [
+          "issue:194:194-summary:4277018cff9d",
+          "issue:196:196-summary:55a2cfa7c1b1",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:198:198-summary:062388f44431",
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:590:590-summary:8f1dbbd54154"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Initiate with malformed long-form BER length",
+            "hex": "0300001e02f080010001006181d73081d4020103a081cea081cb020123a4",
+            "byte_length": 30,
+            "sha256": "d5ca130f0b69e759efa001d568fc8ab1e12fcbb720b19586c89133e1f639b9e4"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io triggers UBSan ber_fetch_length overflow at line 43 in ber_tlv_length.c",
+        "constraints_preserved": [
+          "TPKT version 0x03 preserved",
+          "TPKT total-length consistent with message size",
+          "visible length counts internally consistent",
+          "single_request shape"
+        ],
+        "issue_safety_notes": "Evidence_id 590 used for long-form length trigger; UBSan diagnostic expected; no definite DoS",
+        "sequence_sha256": "6046ff5c57826c4e7c2aeb50461a32ea0c0d2a406c5b05d3d71a4ccca38c99ff",
+        "total_bytes": 30,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "194"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-059",
+        "seed_id": "2",
+        "title": "VK-only GetNameList: stateful_valid with itemId suffix mutation analogue",
+        "strategy": "stateful_valid",
+        "target_operation": "GetNameList",
+        "purpose": "Use stateful_valid strategy with model-prior association setup then GetNamedVariableListAttributesResponse analogue to exercise issue 599 parser path on itemId without $FC$ suffix.",
+        "evidence_ids": [
+          "issue:196:196-summary:55a2cfa7c1b1",
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:198:198-summary:062388f44431",
+          "issue:599:599-summary:806eef562ec3"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS association setup (TPKT + COTP + ACSE)",
+            "hex": "0300000e02f00000000100e00000",
+            "byte_length": 14,
+            "sha256": "5a9ab473bbe0b28e75919474638d7d149c0550b4cdd14738cc9841547b3131df"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "GetNamedVariableListAttributesRequest with malformed itemId $",
+            "hex": "030000120300000c0f020f0000000100c102",
+            "byte_length": 18,
+            "sha256": "3ad3cc00887b1346e48441d9e5d5bfad11b7f4441ce3e6e2e891dced4d0a8564"
+          }
+        ],
+        "expected_behavior": "client crash with AddressSanitizer heap-buffer-overflow read through MmsMapping_varAccessSpecToObjectReference after proxy-style rewrite",
+        "constraints_preserved": [
+          "TPKT version 0x03 preserved",
+          "TPKT total-length consistent with message size",
+          "visible length counts internally consistent",
+          "stateful association prerequisite preserved"
+        ],
+        "issue_safety_notes": "Evidence_id 599 used for itemId suffix mutation trigger; ASan heap-buffer-overflow expected; no definite DoS",
+        "sequence_sha256": "6f1fc226ae44e0a2a64264d0ccfc8d28a37980b7727d3ed087ff3b8eba583266",
+        "total_bytes": 32,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "196"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-060",
+        "seed_id": "3",
+        "title": "VK-only Read: issue_structural_analogue out-of-bounds read in getNumberOfElements",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Read",
+        "purpose": "Create distinct read operation analogue using malformed MMS data TLV from issue 197 PoC to exercise out-of-bounds read in getNumberOfElements via MmsValue_decodeMmsData.",
+        "evidence_ids": [
+          "issue:197:197-summary:e3308b450f23",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:509:509-summary:228be3676e7d",
+          "issue:513:513-summary:4a07060941e2",
+          "issue:512:512-summary:b25e9a524acd",
+          "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Read request with malformed angle-bracket length TLV",
+            "hex": "0300001b0302020f0000000100c102a10808998600867fffffff00",
+            "byte_length": 27,
+            "sha256": "40becc2efd37389ea597f486912c1d6c1a289b68eb96c740c65bf4f114e37613"
+          }
+        ],
+        "expected_behavior": "server_example_basic_io triggers out-of-bounds read in getNumberOfElements (bufPos/elementLength unchecked) during MmsValue_decodeMmsData",
+        "constraints_preserved": [
+          "TPKT version 0x03 preserved",
+          "TPKT total-length consistent with message size",
+          "visible length counts internally consistent",
+          "single_request shape"
+        ],
+        "issue_safety_notes": "Evidence_id 197 used for getNumberOfElements out-of-bounds trigger; OOB read expected; no definite DoS",
+        "sequence_sha256": "e7c6c36e6646a85ff898054fdb1c686d41e71dfd0d5e637813723edf924193bc",
+        "total_bytes": 27,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "197"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-061",
+        "seed_id": "c7d8e9f0a1b2",
+        "title": "VK-only Write: In StringUtils_createStringFromBuffer, the second argument, size, i...",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Write",
+        "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+        "evidence_ids": [
+          "issue:198:198-summary:062388f44431",
+          "issue:193:193-summary:1451e58436f0",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+          "issue:609:609-summary:a7f14e01134e",
+          "issue:590:590-summary:8f1dbbd54154"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP+MMS Write",
+            "hex": "0300001d0200c0010000c001c10102c101c201c001c3010201c1010001",
+            "byte_length": 29,
+            "sha256": "ed52f8cef33be8b3537c446078cc2adb789d20733bfd346a8c571a8a587986c6"
+          }
+        ],
+        "expected_behavior": "Server processes Write request; size validation triggers early exit or crash in StringUtils_createStringFromBuffer",
+        "constraints_preserved": [
+          "TPKT header version 0x03",
+          "TPKT total-length consistent",
+          "IEC61850 model-prior form",
+          "single message",
+          "length counts internally consistent",
+          "built-in family constraints"
+        ],
+        "issue_safety_notes": "Issue 198 evidence preserved; negative size trigger via plausible Write without copying exact crash bytes",
+        "sequence_sha256": "59d1684d99ad36ca345813e0fba8873b184884b674aa611a0cfe4861ef6cd0c2",
+        "total_bytes": 29,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "198"
+        ]
+      },
+      {
+        "plan_id": "vk-plan-062",
+        "seed_id": "d8e9f0a1b2c3",
+        "title": "VK-only GetVariableAccessAttributes: The report states that in libiec61850, `MMS_BIT_STRING` parsing in ...",
+        "strategy": "field_interaction",
+        "target_operation": "GetVariableAccessAttributes",
+        "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+        "evidence_ids": [
+          "issue:200:200-summary:d453c5e902cd",
+          "issue:516:516-summary:13bbaeee92c9",
+          "issue:196:196-summary:55a2cfa7c1b1",
+          "issue:197:197-summary:e3308b450f23",
+          "issue:193:193-summary:1451e58436f0",
+          "issue:513:513-summary:4a07060941e2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "COTP+MMS GetVariableAccessAttributes",
+            "hex": "0300001d0200c0010000c001c10102c101c201c001c3010201c1010000",
+            "byte_length": 29,
+            "sha256": "a9e9d4ebcd18fde87759dfeb79d7c2b41ed85615d653ddb7b05bf2e42f53c004"
+          }
+        ],
+        "expected_behavior": "Server processes request; MMS_BIT_STRING parsing path exercised via bufPos check",
+        "constraints_preserved": [
+          "TPKT header version 0x03",
+          "TPKT total-length consistent",
+          "IEC61850 model-prior form",
+          "single message",
+          "length counts internally consistent",
+          "built-in family constraints"
+        ],
+        "issue_safety_notes": "Issue 200 evidence preserved; bufPos interaction in plausible structure",
+        "sequence_sha256": "7e7e1b08e77491ab6d4caf895364fd1fdebeef67a029f51254f660037bf443aa",
+        "total_bytes": 29,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": [
+          "200"
+        ]
+      }
+    ]
+  },
+  "errors": [
+    "vk-plan-006: duplicate sequence removed",
+    "vk-plan-007: duplicate sequence removed",
+    "vk-plan-008: duplicate sequence removed",
+    "vk-plan-018-seed-2: message[0] invalid hex: hex value has an odd number of characters",
+    "seed-030-1: duplicate sequence removed",
+    "seed-031-1: duplicate sequence removed",
+    "seed-032-1: duplicate sequence removed",
+    "seed-cotp-033: exact historical issue sequence collision",
+    "seed-cotp-033: exact historical issue single-message collision",
+    "vk-496-038: duplicate sequence removed",
+    "vk-509-039: duplicate sequence removed",
+    "vk-512-040: duplicate sequence removed",
+    "194: removed unknown evidence ids: issue:194, issue:513, issue:512, issue:516, issue:197",
+    "194: no valid evidence ids",
+    "vk-plan-045: message[0] invalid hex: hex value has an odd number of characters",
+    "vk-plan-046: removed unknown evidence ids: 589, 590, cve-2026-18582, 492, 513",
+    "vk-plan-046: no valid evidence ids",
+    "vk-plan-047: removed unknown evidence ids: 590, 609, 589, 598, 516",
+    "vk-plan-047: no valid evidence ids",
+    "vk-plan-048: duplicate sequence removed",
+    "issue-597-597-summary-4fb3ca566b9b: duplicate sequence removed",
+    "issue-599-599-summary-806eef562ec3: duplicate sequence removed",
+    "issue-603-603-summary-4d033699b6cd: duplicate sequence removed",
+    "vk_plan_053_001: message[0] invalid hex: hex value has an odd number of characters",
+    "0: duplicate sequence removed",
+    "e9f0a1b2c3d4: duplicate sequence removed",
+    "f0a1b2c3d4e5: duplicate sequence removed",
+    "c0-01-a2: duplicate sequence removed"
+  ]
+}

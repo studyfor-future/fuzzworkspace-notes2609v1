@@ -1,0 +1,713 @@
+{
+  "overall_score": 14,
+  "needs_revision": true,
+  "protocol_validity_score": 8,
+  "seed_utility_score": 12,
+  "diversity_score": 28,
+  "issue_enhancement_score": 0,
+  "global_feedback": [
+    "The library does not match the requested 65 final seeds in any reviewable clean form. It contains a large mixed dump of mutually inconsistent revisions, duplicate concepts, empty/unknown plan_ids, and far more than a coherent final set.",
+    "Protocol validity is weak overall because many sequences have BVLC length mismatches, implausible or contradictory APDU/service mappings, malformed layering claims, and response/request role confusion.",
+    "Source grounding is frequently overstated. Supplied sources support BACnet/IP layering basics, APDU PDU types, and many service-choice enumerations, but they do not support many of the claimed per-field payload layouts or several assertions in expected_behavior and constraints_preserved.",
+    "Multiple seeds cite evidence ids not present in the supplied sources, including function_code:function:function-text:11fb5f769689, function_code:function:function-text:95a473051f77, function_code:function:function-text:f40200851055, function_code:function:operation-catalog:64bab0235519, function_code:function:operation-catalog:77a3af392c60, and protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e. This materially weakens trust in those seeds.",
+    "Deterministic errors mention unknown plan_id entries at sequence indices 28-31, and the candidate still includes at least one empty plan_id. That alone requires revision.",
+    "Several sequences misuse operation semantics, e.g. claiming I-Am as confirmed, using reject/abort/error reason names as target operations in plan space, or treating response-only/ack-like constructs as standalone corpus seeds without valid prerequisite state.",
+    "There is heavy cosmetic and structural duplication around the same small set of services with different IDs and contradictory framing notes, which reduces corpus quality despite nominal operation count.",
+    "Some of the better seeds are the compact pk-rev-* entries near the top because they at least present plausible BVLC+NPDU+APDU layering and internally consistent lengths, but even those rely on model-prior payloads beyond what sources prove.",
+    "For PK-only mode, priority should be a smaller, clean, source-backed corpus with complete framing and internally checked lengths rather than a concatenated history of revisions."
+  ],
+  "sequence_feedback": [
+    {
+      "seed_id": "pk-rev-001",
+      "score": 72,
+      "keep": true,
+      "problems": [
+        "Hex length is 8 bytes while constraints claim BVLC length 0x000c and 12-byte frame.",
+        "Who-Is service-choice byte is not source-backed in supplied excerpts.",
+        "Seed is compact and plausibly layered, but documentation claims exceed evidence."
+      ],
+      "recommended_action": "Keep only after fixing BVLC length to match actual bytes and downgrading unverified Who-Is payload claims to explicit assumptions."
+    },
+    {
+      "seed_id": "pk-rev-002",
+      "score": 70,
+      "keep": true,
+      "problems": [
+        "Uses plausible confirmed ReadProperty service choice 0x0c, but object/property body layout is model-prior rather than source-proven.",
+        "Would benefit from clearer APDU field decomposition and byte-count cross-checking."
+      ],
+      "recommended_action": "Keep as one of the stronger seeds, but mark payload grammar as inferred and verify total length and APDU field boundaries."
+    },
+    {
+      "seed_id": "pk-rev-003",
+      "score": 68,
+      "keep": true,
+      "problems": [
+        "AtomicReadFile service choice is source-backed, but body fields are inferred.",
+        "Expected_behavior overclaims valid file semantics not supported by supplied grammar excerpts."
+      ],
+      "recommended_action": "Keep after trimming unsupported semantic claims and preserving it as a mutation-friendly file-service parser-entry seed."
+    },
+    {
+      "seed_id": "pk-rev-004",
+      "score": 74,
+      "keep": true,
+      "problems": [
+        "Stateful pair is more useful than most entries.",
+        "Request body for DeviceCommunicationControl is under-specified and inferred.",
+        "Should state only parser plausibility, not guaranteed acceptance."
+      ],
+      "recommended_action": "Keep as one of the few stateful seeds after tightening claims and validating each frame length."
+    },
+    {
+      "seed_id": "seed-001",
+      "score": 5,
+      "keep": false,
+      "problems": [
+        "Evidence ids include unknown/non-supplied identifiers.",
+        "Hex does not plausibly represent BACnet/IP BVLC+NPDU+APDU layering.",
+        "Standalone direction plus framing claims are unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-002",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "I-Am incorrectly described as confirmed response.",
+        "Evidence ids include unknown identifiers.",
+        "Hex/framing not credibly source-backed."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-003",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "plan_id mismatched to target operation.",
+        "Evidence ids include unknown identifiers.",
+        "Hex is not a credible complete BACnet/IP ReadProperty request."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-004",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "plan_id mismatched to operation.",
+        "Evidence ids include unknown identifiers.",
+        "Malformed and weakly grounded framing."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "s-013-revised",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "plan_id does not match provided plan catalog title/operation.",
+        "Unknown evidence ids.",
+        "BVLC/function/APDU bytes do not align with claims."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "s-005-revised",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "plan_id mismatched to supplied plan-005.",
+        "Unknown evidence ids.",
+        "Two-message stateful sequence is not clearly valid and byte mapping is unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "s-006-revised",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "plan_id mismatched to supplied plan-006.",
+        "Unknown evidence ids.",
+        "Framing and service encoding unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-001-revised",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Claims canonical validity but constraints mention impossible BVLC header details.",
+        "Length/framing commentary contradicts bytes.",
+        "Overclaims source-backing."
+      ],
+      "recommended_action": "Remove or fully rewrite from scratch."
+    },
+    {
+      "seed_id": "seed-002-revised",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Called stateful but only one message present.",
+        "BVLC header commentary contradictory.",
+        "Payload structure not source-backed."
+      ],
+      "recommended_action": "Remove or rewrite as an actual multi-message stateful sequence."
+    },
+    {
+      "seed_id": "seed-003-revised",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Boundary-valid claim unsupported.",
+        "BVLC/header commentary inconsistent.",
+        "Body grammar inferred without clear limits."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "bacnet-pk-021-whois",
+      "score": 60,
+      "keep": true,
+      "problems": [
+        "References non-supplied evidence ids.",
+        "Claims Who-Is service choice 0x08, which is not demonstrated in supplied sources.",
+        "Otherwise compact and structurally plausible."
+      ],
+      "recommended_action": "Keep only if evidence is corrected and Who-Is opcode is backed by supplied material or clearly marked as model-prior."
+    },
+    {
+      "seed_id": "bacnet-pk-022-atomreadfile",
+      "score": 48,
+      "keep": false,
+      "problems": [
+        "BVLC length claim appears inconsistent with the provided hex length.",
+        "Uses unknown evidence id operation-catalog:30d3483f070c is present, but operation-catalog:77a3af392c60 elsewhere suggests systemic citation instability.",
+        "Body field semantics not source-backed."
+      ],
+      "recommended_action": "Rewrite if file-service coverage is needed; otherwise discard in favor of a cleaner file seed."
+    },
+    {
+      "seed_id": "bacnet-pk-023-atomwritefile",
+      "score": 48,
+      "keep": false,
+      "problems": [
+        "Same structural issues as bacnet-pk-022-atomreadfile.",
+        "Length and field commentary not trustworthy enough.",
+        "Payload grammar inferred."
+      ],
+      "recommended_action": "Rewrite or discard."
+    },
+    {
+      "seed_id": "bacnet-pk-024-covpm",
+      "score": 52,
+      "keep": false,
+      "problems": [
+        "Nested-property coverage is useful in principle.",
+        "Balanced context-tag and semantic claims are not supported by supplied excerpts.",
+        "Evidence set includes non-supplied references elsewhere in this family."
+      ],
+      "recommended_action": "Rewrite with clearer separation between source-backed service choice and inferred body grammar."
+    },
+    {
+      "seed_id": "S001",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Unknown evidence ids.",
+        "Expected behavior claims service confirmation for Who-Is are wrong.",
+        "Hex does not support claimed structure."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "S002",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "I-Am treated as request/stateful confirmed path incorrectly.",
+        "Unknown evidence ids.",
+        "Malformed framing and semantics."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "S003",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Length-boundary claim unsupported.",
+        "Unknown evidence ids.",
+        "Not reliably source-backed."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-rev-001-2",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "BVLC length commentary contradicts bytes.",
+        "Minimal valid object/property references are not in supplied sources.",
+        "Framing plausibility too weak for keep."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-rev-002-2",
+      "score": 22,
+      "keep": false,
+      "problems": [
+        "Stateful structure is useful but framing notes are contradictory.",
+        "Who-Is setup still not source-backed enough.",
+        "Length commentary inconsistent."
+      ],
+      "recommended_action": "Rewrite if stateful discovery-to-read path is desired."
+    },
+    {
+      "seed_id": "pk-rev-003-2",
+      "score": 20,
+      "keep": false,
+      "problems": [
+        "Boundary claim unsupported.",
+        "Length commentary inconsistent.",
+        "Body semantics inferred."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-rev-004-2",
+      "score": 24,
+      "keep": false,
+      "problems": [
+        "Parser-depth intent is good.",
+        "Nested references claim unsupported by sources.",
+        "Length commentary inconsistent."
+      ],
+      "recommended_action": "Rewrite from a verified RPM template only."
+    },
+    {
+      "seed_id": "pk9-001",
+      "score": 55,
+      "keep": true,
+      "problems": [
+        "Empty plan_id violates cleanliness expectations and deterministic errors mention unknown plan issues.",
+        "Who-Is body omitted, which limits utility but may still be acceptable as APDU dispatch seed.",
+        "Relies on model-prior BVLC function meaning."
+      ],
+      "recommended_action": "Keep only after assigning a valid plan_id and clearly documenting inferred fields."
+    },
+    {
+      "seed_id": "pk9-002",
+      "score": 62,
+      "keep": true,
+      "problems": [
+        "One of the more plausible confirmed-service seeds.",
+        "Property/object body still inferred.",
+        "Empty plan_id needs correction."
+      ],
+      "recommended_action": "Keep after plan_id repair and explicit distinction between source-backed service choice and inferred payload."
+    },
+    {
+      "seed_id": "pk9-003",
+      "score": 58,
+      "keep": true,
+      "problems": [
+        "Good file-service diversity.",
+        "Field-interaction strategy not in supplied plan list.",
+        "Empty plan_id and inferred file body reduce trust."
+      ],
+      "recommended_action": "Keep only if normalized into a valid plan and length-checked byte-for-byte."
+    },
+    {
+      "seed_id": "pk9-004",
+      "score": 61,
+      "keep": true,
+      "problems": [
+        "Useful subscription/state-oriented coverage.",
+        "Empty plan_id.",
+        "Detailed subscription field semantics are model-prior."
+      ],
+      "recommended_action": "Keep after assigning valid plan_id and simplifying unsupported semantic claims."
+    },
+    {
+      "seed_id": "seed-037",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "Hex does not begin with credible BACnet/IP BVLC bytes despite claim.",
+        "Expected behavior and constraints contradict actual bytes.",
+        "Plan/operation alignment poor."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-001-2",
+      "score": 14,
+      "keep": false,
+      "problems": [
+        "Length and field commentary untrustworthy.",
+        "Payload too synthetic.",
+        "No strong source support for object/property encoding."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-002-2",
+      "score": 16,
+      "keep": false,
+      "problems": [
+        "Stateful claim unsupported by single request.",
+        "Length commentary inconsistent.",
+        "Synthetic payload."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-003-2",
+      "score": 16,
+      "keep": false,
+      "problems": [
+        "Boundary claim unsupported.",
+        "Framing comments inconsistent.",
+        "Synthetic all-zero body."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-004-2",
+      "score": 16,
+      "keep": false,
+      "problems": [
+        "Parser-depth claim unsupported by bytes.",
+        "Synthetic body.",
+        "Weak grounding."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-045-001",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "Standalone message with unrealistic long zero padding.",
+        "Constraints claim impossible BVLC total length format.",
+        "Who-Is mapping and behavior unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-046-001",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "I-Am treated as confirmed service with service choice 0x20, which is wrong in supplied service enumerations.",
+        "Behavior unsupported.",
+        "Overall malformed semantics."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-047-001",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Length notes contradictory.",
+        "Payload mostly synthetic zeros.",
+        "No source-backed property grammar."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-048-001",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Same synthetic pattern as neighboring seeds.",
+        "Length commentary contradictory.",
+        "Weak utility."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-045-002",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Synthetic repeated-zero structure.",
+        "Not convincingly valid WriteProperty grammar.",
+        "Overclaimed validity."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "pk-046-002",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Synthetic body not credible for SubscribeCOV.",
+        "Contradictory BVLC length note.",
+        "Weak mutation utility beyond trivial byte churn."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "049",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Expected behavior is nonsensical for Who-Is.",
+        "Payload is obvious filler bytes.",
+        "BVLC/APDU claims incorrect."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "050",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Expected behavior wrong for I-Am.",
+        "Payload filler.",
+        "Length note incorrect."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "051",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "Payload filler with no credible object/property structure.",
+        "Length note incorrect.",
+        "Overclaims validity."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "052",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Extreme filler payload with cosmetic repetition.",
+        "APDU/service note incorrect.",
+        "Very poor mutation utility due to low semantic grounding."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-1",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Unknown evidence ids.",
+        "Service and BVLC function claims unsupported.",
+        "Malformed minimal frame."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-2",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "I-Am semantics wrong.",
+        "Unknown evidence ids.",
+        "Malformed frame."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-3",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Some apparent service byte intent, but framing remains weakly grounded.",
+        "Unknown evidence ids.",
+        "Property grammar unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-4",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Weakly grounded synthetic frame.",
+        "Unknown evidence ids.",
+        "Stateful-depth claim unsupported."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-5",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Synthetic WriteProperty frame with unsupported body.",
+        "Unknown evidence ids.",
+        "Length commentary absent or unverified."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-6",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "Subscription diversity is desirable, but body grammar is unsupported.",
+        "Unknown evidence ids.",
+        "Likely invalid complete framing."
+      ],
+      "recommended_action": "Remove or replace with a cleaner subscription seed."
+    },
+    {
+      "seed_id": "seed-7",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "ReadRange is useful coverage, but service byte/body quality is poor.",
+        "Unknown evidence ids.",
+        "Weak protocol validity."
+      ],
+      "recommended_action": "Replace with a cleaner ReadRange seed."
+    },
+    {
+      "seed_id": "seed-8",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "AtomicReadFile coverage useful in theory.",
+        "Unknown evidence ids.",
+        "Frame still synthetic and under-grounded."
+      ],
+      "recommended_action": "Replace with verified file-service seed."
+    },
+    {
+      "seed_id": "seed-9",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "AtomicWriteFile diversity useful in theory.",
+        "Unknown evidence ids.",
+        "Frame synthetic and weakly grounded."
+      ],
+      "recommended_action": "Replace with verified file-service seed."
+    },
+    {
+      "seed_id": "bacnet-pk-057",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "Who-Is service choice/expected behavior incorrect.",
+        "Unknown evidence ids.",
+        "Frame too short for claimed layering."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "bacnet-pk-058",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "I-Am response semantics and expected behavior incorrect.",
+        "Unknown evidence ids.",
+        "Framing not trustworthy."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "bacnet-pk-059",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Some plausible intent for confirmed ReadProperty.",
+        "Unknown evidence ids.",
+        "Length/body semantics unverified."
+      ],
+      "recommended_action": "Discard in favor of stronger pk-rev-002 or pk9-002."
+    },
+    {
+      "seed_id": "bacnet-pk-060",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Some plausible intent for confirmed RPM.",
+        "Unknown evidence ids.",
+        "Length/body semantics unverified."
+      ],
+      "recommended_action": "Discard in favor of a single cleaner RPM seed."
+    },
+    {
+      "seed_id": "bacnet-pk-009",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Who-Is mapped to service choice 0x19 in commentary, which is unsupported and likely wrong.",
+        "Uses non-supplied evidence ids.",
+        "Length commentary does not match bytes."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "bacnet-pk-010",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "I-Am described as confirmed request with service choice 0x0D, which is wrong.",
+        "Length commentary incorrect.",
+        "Uses non-supplied evidence ids."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "bacnet-pk-011",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "ReadProperty service choice is plausible, but total-length commentary is clearly inconsistent.",
+        "Uses non-supplied evidence ids.",
+        "Property body not source-backed."
+      ],
+      "recommended_action": "Remove or completely recalculate and re-ground."
+    },
+    {
+      "seed_id": "bacnet-pk-012",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "SubscribeCOV mislabeled with service choice 0x0C in commentary.",
+        "Length commentary inconsistent.",
+        "Uses non-supplied evidence ids."
+      ],
+      "recommended_action": "Remove."
+    },
+    {
+      "seed_id": "seed-001-3",
+      "score": 15,
+      "keep": false,
+      "problems": [
+        "Breaks one message into multiple pseudo-messages, reducing replay utility.",
+        "Claims full framing but BVLC length 0x0004 cannot cover the appended separate segments as given.",
+        "Object type/property assumptions not source-backed."
+      ],
+      "recommended_action": "Collapse into one coherent frame or remove."
+    }
+  ],
+  "coverage_gaps": [
+    "A clean final corpus of exactly 65 seeds is missing; submit one normalized deduplicated set only.",
+    "Need one verified canonical seed each for the requested archetypes: Who-Is, I-Am, ReadProperty, ReadPropertyMultiple, WriteProperty, SubscribeCOV, ReadRange, AtomicReadFile, AtomicWriteFile, DeviceCommunicationControl.",
+    "Need stronger source-backed distinction between APDU type, service choice, and payload grammar. Only enumerate what sources actually prove.",
+    "Need more valid stateful sequences beyond one request/ack pair, especially transaction-linked confirmed request to ACK/error flows with matching invoke_id.",
+    "Need consistent use of only supplied evidence ids; remove every seed depending on unknown ids.",
+    "Need elimination of response-only or semantically invalid standalone seeds unless paired with prerequisite messages.",
+    "Need byte-accurate BVLC total-length verification for every frame and removal of contradictory textual claims.",
+    "Need structural diversity through truly distinct frame shapes, not repeated zero-filled placeholders under many seed ids.",
+    "Need cleaner NPDU variation if supported, but only with valid documented control usage.",
+    "Need at least one high-quality nested/deeper structure seed such as a defensible ReadPropertyMultiple or SubscribeCOVPropertyMultiple request with clearly marked inferred fields."
+  ]
+}

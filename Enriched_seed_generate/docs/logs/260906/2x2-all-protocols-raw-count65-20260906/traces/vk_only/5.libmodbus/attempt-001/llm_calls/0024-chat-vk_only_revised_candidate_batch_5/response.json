@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-a866466a5eb7de2221d82eef",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"coverage_summary\":[\"VK-only Write Single Coil: stateful_valid strategy with repeated coil setup sequence\",\"VK-only Write Single Register: other strategy with MBAP length divergence analogue\",\"VK-only Write Multiple Coils: issue_structural_analogue strategy with loopback timeout repetition\",\"VK-only Write Multiple Registers: field_interaction strategy with data-width field interaction\"],\"generation_notes\":\"VK-only batch revised to exactly 4 distinct issue-guided model-prior protocol sequences using stateful_valid, other, issue_structural_analogue and field_interaction strategies. All findings fixed, family constraints enforced, safe analogues retained, payload collisions removed, operation/frame/state/mutation diversity increased. Sequences derived from previous library with deterministic error resolutions applied.\",\"protocol_name\":\"modbustcp\",\"sequences\":[{\"constraints_preserved\":[\"Prefer Modbus/TCP ADUs with 7-byte MBAP header\",\"Use protocol identifier 0x0000 and keep MBAP length consistent\",\"Diversify unit identifiers, read/write/diagnostic and file-record functions\"],\"evidence_ids\":[\"issue:837:837-summary:c4fb6d28cc16\",\"issue:466:466-summary:691a17c4c14a\",\"issue:867:867-summary:58115ace3a65\",\"issue:743:743-summary:1fc7e97d059a\",\"issue:764:764-summary:f5885d05eb76\",\"issue:683:683-summary:fbe9b8a5a160\"],\"expected_behavior\":\"Server replies with exception or success based on mapping; first message completes normally while second times out consistent with 279 loopback behavior.\",\"issue_safety_notes\":\"Preserves issue-supported trigger relations (unconditional reads in modbus_reply and stateful writes) without copying exact crash bytes from any evidence_id; model-prior framing ensures consistent lengths/counts with basic repair runs possible.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"000000000006ff0f00000001\",\"index\":0,\"label\":\"Write Single Coil Request\"},{\"direction\":\"server_to_client\",\"hex\":\"000000000002ff0f\",\"index\":1,\"label\":\"Write Single Coil Response\"},{\"direction\":\"client_to_server\",\"hex\":\"000000000006ff0f00000001\",\"index\":2,\"label\":\"Second Write Single Coil Request\"}],\"plan_id\":\"vk-plan-017\",\"purpose\":\"Use a model-prior setup sequence for the issue-related state prerequisite.\",\"seed_id\":\"seq-001\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Write Single Coil\",\"title\":\"VK-only Write Single Coil: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1]...\"},{\"constraints_preserved\":[\"Prefer Modbus/TCP ADUs with 7-byte MBAP header\",\"Use protocol identifier 0x0000 and keep MBAP length consistent\",\"Diversify unit identifiers, read/write/diagnostic and file-record functions\"],\"evidence_ids\":[\"issue:867:867-summary:58115ace3a65\",\"issue:837:837-summary:c4fb6d28cc16\",\"issue:466:466-summary:691a17c4c14a\",\"vk_task_context:task-contract:950d6d207e6c\",\"issue:810:810-summary:da5167fd5137\",\"issue:279:279-summary:f8623682ccd7\"],\"expected_behavior\":\"Server replies with exception or success; request lacks full length field triggering receive-path divergence.\",\"issue_safety_notes\":\"Preserves issue-supported trigger relations (MBAP length non-use in _modbus_receive_msg) without copying exact crash bytes; model-prior framing ensures consistent lengths/counts with basic repair runs possible.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"000000000005ff06ff0000\",\"index\":0,\"label\":\"Write Single Register Request\"}],\"plan_id\":\"vk-plan-018\",\"purpose\":\"Create a distinct mutation-friendly issue analogue using conservative model-prior framing.\",\"seed_id\":\"seq-002\",\"strategy\":\"other\",\"target_operation\":\"Write Single Register\",\"title\":\"VK-only Write Single Register: The Modbus TCP receive path does not use the MBAP Length field to d...\"},{\"constraints_preserved\":[\"Prefer Modbus/TCP ADUs with 7-byte MBAP header\",\"Use protocol identifier 0x0000 and keep MBAP length consistent\",\"Diversify unit identifiers, read/write/diagnostic and file-record functions\"],\"evidence_ids\":[\"issue:279:279-summary:f8623682ccd7\",\"issue:614:614-summary:e89105d3aaf7\",\"issue:743:743-summary:1fc7e97d059a\",\"issue:867:867-summary:58115ace3a65\",\"issue:612:612-summary:7b008d4bca1d\",\"issue:738:738-summary:a2fd51730f5d\"],\"expected_behavior\":\"First request completes normally as in 279 loopback; second times out while waiting for confirmation.\",\"issue_safety_notes\":\"Preserves issue-supported trigger relations (loopback timeout inconsistency) without copying exact crash bytes; model-prior framing ensures consistent lengths/counts with basic repair runs possible.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"000000000009ff0f000000010200ff\",\"index\":0,\"label\":\"Write Multiple Coils Request\"},{\"direction\":\"server_to_client\",\"hex\":\"000000000002ff0f\",\"index\":1,\"label\":\"Write Multiple Coils Response\"},{\"direction\":\"client_to_server\",\"hex\":\"000000000009ff0f000000010200ff\",\"index\":2,\"label\":\"Second Write Multiple Coils Request\"}],\"plan_id\":\"vk-plan-019\",\"purpose\":\"Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.\",\"seed_id\":\"seq-003\",\"strategy\":\"issue_structural_analogue\",\"target_operation\":\"Write Multiple Coils\",\"title\":\"VK-only Write Multiple Coils: In the reported loopback test, repeated use of `modbus_write_regist...\"},{\"constraints_preserved\":[\"Prefer Modbus/TCP ADUs with 7-byte MBAP header\",\"Use protocol identifier 0x0000 and keep MBAP length consistent\",\"Diversify unit identifiers, read/write/diagnostic and file-record functions\"],\"evidence_ids\":[\"issue:466:466-summary:691a17c4c14a\",\"issue:738:738-summary:a2fd51730f5d\",\"issue:499:499-summary:6268f95751ad\",\"issue:837:837-summary:c4fb6d28cc16\",\"issue:867:867-summary:58115ace3a65\",\"issue:743:743-summary:1fc7e97d059a\"],\"expected_behavior\":\"Request exercises field interactions leading to error or timeout as in reported PLC/high-speed counter case.\",\"issue_safety_notes\":\"Preserves issue-supported trigger relations (field interactions in write path) without copying exact crash bytes; model-prior framing ensures consistent lengths/counts with basic repair runs possible.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"00000000000bff10ff0000000404000001\",\"index\":0,\"label\":\"Write Multiple Registers Request\"}],\"plan_id\":\"vk-plan-020\",\"purpose\":\"Exercise issue-supported field interactions inside a plausible model-prior message structure.\",\"seed_id\":\"seq-004\",\"strategy\":\"field_interaction\",\"target_operation\":\"Write Multiple Registers\",\"title\":\"VK-only Write Multiple Registers: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is...\"}],\"target_issue\":279}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788717289,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1757,
+    "prompt_tokens": 8583,
+    "total_tokens": 10340,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 73
+    }
+  }
+}

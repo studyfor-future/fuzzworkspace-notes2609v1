@@ -1,0 +1,175 @@
+{
+  "coverage_summary": [
+    "Repeated Read Coils requests with varied transaction identifiers, unit identifiers, addresses, and quantities",
+    "Read Discrete Inputs request using the issue-associated high address and quantity-one interaction",
+    "Read Holding Registers quantity boundary at the conventional upper request size",
+    "Read Input Registers request matching the issue-associated address-zero and quantity-seven shape",
+    "Covers Write Single Coil, Write Single Register, Write Multiple Coils, and Write Multiple Registers.",
+    "Exercises distinct unit identifiers, transaction identifiers, addresses, coil packing, register payload sizes, and quantity fields.",
+    "Includes issue-analogue variations related to mutated unit identifiers, crafted server requests, repeated processing, and seven-register boundary behavior.",
+    "All candidates are single client-to-server requests with consistent MBAP protocol identifiers and length fields.",
+    "Diagnostics boundary request with a compact fixed-size PDU",
+    "Read File Record nested subrequest parsing",
+    "Read/Write Multiple Registers compound address and data fields",
+    "Encapsulated Interface Transport MEI subfunction parsing",
+    "All messages use protocol identifier 0000 and consistent MBAP length fields",
+    "issue_structural_analogue: single request with PLC-like function 03 and byte-count mismatch",
+    "field_interaction: pointer-related malformed length field",
+    "length_boundary_valid: crafted length field triggering double-free path",
+    "parser_depth: multi-step stateful with incorrect length values",
+    "stateful_valid",
+    "other",
+    "issue_structural_analogue",
+    "field_interaction",
+    "parser_depth: issue-relevant parser path",
+    "length_boundary_valid: MBAP length trigger",
+    "function_code_coverage: minimal FC07",
+    "MBAP header integrity",
+    "Function code 0x07 without address field",
+    "Minimal PDU data path",
+    "Parser depth for offset access",
+    "Covers single-coil, single-register, multiple-coil, and multiple-register write operations.",
+    "Uses distinct transaction identifiers, unit identifiers, function codes, payload sizes, and value encodings.",
+    "Preserves protocol identifier 0x0000 and internally consistent MBAP length fields.",
+    "Exercises issue-related server request handling while retaining recognizable valid request structures.",
+    "Diagnostics request with a compact fixed subfunction structure",
+    "Read File Record request with nested record metadata",
+    "Two-step Read/Write Multiple Registers state sequence",
+    "Encapsulated Interface Transport request with MEI framing",
+    "Repeated client requests and varied unit identifiers for Read Coils, reflecting the reported inconsistent repeated-call behavior.",
+    "High address and quantity interaction for a discrete-input request, analogous to issue-reported register addressing and data-width sensitivity.",
+    "Maximum conventional Read Holding Registers quantity of 125 to exercise a valid length boundary.",
+    "Read Input Registers request for seven registers to cover the issue-associated operation and parser path with a valid frame.",
+    "Covers Write Single Coil, Write Single Register, Write Multiple Coils, and Write Multiple Registers operations.",
+    "Varies transaction identifiers, unit identifiers, addresses, quantities, payload sizes, and write data patterns.",
+    "Preserves valid MBAP lengths, protocol identifiers, function-code layouts, byte counts, and request field relationships.",
+    "Provides distinct structural analogues for server reply handling, client buffer handling, repeated-write behavior, and register field interactions.",
+    "Covers four distinct target operations: Diagnostics, Read File Record, Read/Write Multiple Registers, and Encapsulated Interface Transport.",
+    "Varies function classes across simple fixed-format, nested subrequest, mixed read/write, and MEI-style encapsulated frames.",
+    "Exercises issue-related relations including short-but-valid request shapes, deeper parser structures, mixed-length subfields, and state-sensitive write/read combinations.",
+    "Diversifies transaction identifiers, unit identifiers, addresses, counts, record metadata, and payload sizes while preserving internal framing consistency."
+  ],
+  "generation_notes": "VK-only candidates use conservative Modbus/TCP ADUs with internally consistent MBAP lengths. Model internal prior is permitted but not externally verified. Historical issue evidence is used only to preserve operation, repetition, field-interaction, boundary, and parser-path relationships without copying exact crash bytes. Four VK-only candidate sequences generated via the four supplied plans using model-internal prior for plausible ADU form, 7-byte MBAP, consistent lengths, target_operation preserved; no crash bytes copied. Exactly 4 VK-only sequences generated via issue_structural_analogue, field_interaction, length_boundary_valid, parser_depth strategies per plan; each uses model internal prior for plausible ADU form, 7-byte MBAP, consistent lengths, target_operation preserved; no crash bytes copied. VK-only candidates enforce built-in modbus constraints (MBAP 7-byte header with consistent length, protocol 0x0000, unit id variation) and model-prior message archetypes while applying supplied strategies to the task-specific evidence_id per plan for stateful write operation diversity across coil/register variants. VK-only sequences combine issue-supported trigger relations with conservative model-prior Modbus/TCP ADU form and built-in family constraints. No external protocol documents used. Four VK-only candidates follow the supplied plans and use conservative Modbus/TCP ADUs. Issue evidence guides operation and trigger-shape selection; model-prior protocol details are fallible and not externally verified. No exact historical crash payload is copied. Exactly 4 VK-only (P-/V+) candidate sequences generated, one per plan.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Modbus/TCP MBAP header is 7 bytes.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 equals unit identifier plus the six-byte Write Single Coil PDU.",
+        "Unit identifier, function code, address, and coil value use recognizable field forms."
+      ],
+      "evidence_ids": [
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:614:614-summary:e89105d3aaf7"
+      ],
+      "expected_behavior": "A conforming server should parse the request and return a normal Write Single Coil response echoing the address and value; malformed or unsupported server behavior may instead produce an exception response or connection error.",
+      "issue_safety_notes": "This is a valid structural analogue only. It does not copy any reported crash payload and does not assert that the cited issue is triggered by this request.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00010000000605050012ff00",
+          "index": 0,
+          "label": "write single coil at address 18, enabled"
+        }
+      ],
+      "plan_id": "vk-plan-005",
+      "purpose": "Exercise the server reply path with a valid single-coil write while varying the unit identifier and transaction context associated with issue-supported reply and repeated-processing concerns.",
+      "seed_id": "modbustcp-write-single-coil-001",
+      "strategy": "stateful_valid",
+      "target_operation": "Write Single Coil",
+      "title": "VK-only Write Single Coil with alternate unit and ordinary coil value"
+    },
+    {
+      "constraints_preserved": [
+        "Modbus/TCP MBAP header is 7 bytes.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 matches the unit identifier and Write Single Register PDU.",
+        "The request uses a valid two-byte register address and two-byte register value."
+      ],
+      "evidence_ids": [
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:498:498-summary:43dc6fe7600e",
+        "issue:499:499-summary:6268f95751ad"
+      ],
+      "expected_behavior": "A conforming server should accept or reject the address according to its mapping and return either the normal echoed write response or a Modbus exception response without terminating the connection.",
+      "issue_safety_notes": "The crafted-request and test-server evidence motivates coverage of the reply/parser path, but this candidate is not the documented historical byte sequence and no crash outcome is claimed.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00020000000602060064a55a",
+          "index": 0,
+          "label": "write single register at address 100 with patterned value"
+        }
+      ],
+      "plan_id": "vk-plan-006",
+      "purpose": "Provide a distinct mutation-friendly server request for the single-register reply path, retaining a compact valid structure while changing address and data fields.",
+      "seed_id": "modbustcp-write-single-register-002",
+      "strategy": "other",
+      "target_operation": "Write Single Register",
+      "title": "VK-only Write Single Register with nondefault transaction and register value"
+    },
+    {
+      "constraints_preserved": [
+        "Modbus/TCP MBAP header is 7 bytes.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0008 equals unit identifier plus the seven-byte request PDU.",
+        "Quantity 0009 requires byte count 02, and two packed data bytes are present.",
+        "Unit identifier 7c varies the response-routing field without changing PDU layout."
+      ],
+      "evidence_ids": [
+        "issue:683:683-summary:fbe9b8a5a160",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:743:743-summary:1fc7e97d059a"
+      ],
+      "expected_behavior": "A conforming server should parse nine coil values from two data bytes and return the normal Write Multiple Coils acknowledgment or an address/value exception response.",
+      "issue_safety_notes": "The unit-identifier variation is an issue-supported structural relation, not a reproduction claim. Historical crash bytes are not copied; the request remains internally length-consistent and valid.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0003000000097c0f000a0009025501",
+          "index": 0,
+          "label": "write nine packed coils from alternate unit identifier"
+        }
+      ],
+      "plan_id": "vk-plan-007",
+      "purpose": "Exercise coil-count, byte-count, packed-bit data, and unit-identifier interactions in a valid multi-coil request related structurally to the reported read-IO-status unit mutation evidence.",
+      "seed_id": "modbustcp-write-multiple-coils-003",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Write Multiple Coils",
+      "title": "VK-only Write Multiple Coils with alternate unit and packed boundary-adjacent data"
+    },
+    {
+      "constraints_preserved": [
+        "Modbus/TCP MBAP header is 7 bytes.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0015 equals unit identifier plus the twenty-byte Write Multiple Registers PDU.",
+        "Quantity 0007 and byte count 0e agree, with fourteen payload bytes present.",
+        "The transaction identifier and unit identifier differ from the other candidates."
+      ],
+      "evidence_ids": [
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:683:683-summary:fbe9b8a5a160"
+      ],
+      "expected_behavior": "A conforming server should parse the complete fourteen-byte register payload and return the normal Write Multiple Registers acknowledgment or a mapping-related exception response; a stateful harness may repeat the request to observe consistency.",
+      "issue_safety_notes": "Seven-register coverage is an analogue to the quantity reported in issue 738, while repeated-write behavior is informed by issue 279. Neither issue is claimed to be reproduced, and no exact historical crash payload is used.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0004000000150310002000070e0001000200030004000500060007",
+          "index": 0,
+          "label": "write seven consecutive registers with fourteen-byte payload"
+        }
+      ],
+      "plan_id": "vk-plan-008",
+      "purpose": "Exercise interaction among a seven-register quantity, fourteen-byte payload, byte count, address, and MBAP length while covering the write confirmation path associated with repeated-operation evidence.",
+      "seed_id": "modbustcp-write-multiple-registers-004",
+      "strategy": "field_interaction",
+      "target_operation": "Write Multiple Registers",
+      "title": "VK-only Write Multiple Registers with seven-register payload"
+    }
+  ],
+  "target_issue": -1
+}

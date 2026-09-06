@@ -1,0 +1,151 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": 564,
+  "generation_notes": "Revised to exactly four distinct, mechanically length-consistent EtherNet/IP seeds using the documented 24-byte encapsulation header and little-endian payload length. The batch now emphasizes real framing diversity across discovery, session lifecycle, unconnected explicit messaging, and connected-data encapsulation. Source-backed facts were limited to encapsulation commands, header fields, CPF item IDs, and the issue summary showing RegisterSession followed by SendRRData with Null+UCMM for the affected parser family. CIP service/path details not fully present in the supplied sources were completed conservatively and labeled as inferred assumptions in constraints_preserved. Exact historical malformed ForwardOpen/LargeForwardOpen collision bytes were avoided; the issue-guided seed is a safe structural analogue with sufficient payload rather than an underlength trigger.",
+  "coverage_summary": [
+    "24-byte EtherNet/IP encapsulation header used in all seeds",
+    "Little-endian Command, Length, Session Handle, Status, and Options fields preserved",
+    "Discovery coverage via ListServices empty-payload request",
+    "Session lifecycle coverage via RegisterSession followed by UnregisterSession with negotiated-handle substitution point",
+    "Explicit unconnected coverage via SendRRData with documented Null Address Item plus Unconnected Data Item",
+    "Connected encapsulation coverage via SendUnitData with documented Connected Address Item plus Connected Data Item",
+    "Issue-adjacent parser path covered safely by RegisterSession then SendRRData carrying a bounded Connection Manager ForwardOpen analogue",
+    "Distinct operation/frame/state diversity without cosmetic duplicates"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-058",
+      "seed_id": "ethernetip-rev-058",
+      "title": "ListServices discovery request",
+      "strategy": "baseline_valid",
+      "target_operation": "ListServices",
+      "purpose": "Provide a minimal, source-backed discovery frame with no payload to exercise encapsulation-command parsing independently of session or CPF handling.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "listservices-request",
+          "hex": "040000000000000000000000112233445566778800000000"
+        }
+      ],
+      "expected_behavior": "A compliant parser should accept the 24-byte encapsulation header, recognize ListServices, and either generate a normal service-list response or ignore it according to transport context; framing itself should be valid.",
+      "constraints_preserved": [
+        "Command 0x0004 ListServices encoded little-endian as 04 00.",
+        "Length is 0, so the frame is exactly the 24-byte encapsulation header with no trailing payload.",
+        "Session Handle, Status, and Options are zeroed for a simple discovery request.",
+        "Sender Context is present as 8 bytes as required by the 24-byte header form."
+      ],
+      "issue_safety_notes": "Not issue-guided; this seed is a simple valid discovery request and does not touch the vulnerable connection-manager parser path."
+    },
+    {
+      "plan_id": "plan-060",
+      "seed_id": "ethernetip-rev-060",
+      "title": "RegisterSession then UnregisterSession lifecycle pair",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession / UnregisterSession",
+      "purpose": "Cover encapsulation session establishment and teardown with an explicit runtime session-handle transition instead of a static placeholder-only request.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "registersession-request",
+          "hex": "650004000000000000000000a1a2a3a4a5a6a7a80000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "unregistersession-request-with-runtime-handle",
+          "hex": "66000000ffffffff00000000b1b2b3b4b5b6b7b800000000"
+        }
+      ],
+      "expected_behavior": "The first message should be parsed as a valid RegisterSession request. If the target allocates a session, the harness should substitute the returned nonzero session handle into message 1 in place of ffffffff before sending UnregisterSession. The parser should then accept a normal unregister path.",
+      "constraints_preserved": [
+        "RegisterSession uses command 0x0065 and 4 bytes of payload, matching Length 0x0004.",
+        "The RegisterSession payload is conservatively encoded as protocol version 0x0001 and option flags 0x0000, a common EtherNet/IP form inferred from standard behavior.",
+        "UnregisterSession uses command 0x0066 with zero payload length.",
+        "Both messages use full 24-byte encapsulation headers.",
+        "Message 1 contains a deliberate runtime substitution point for the negotiated Session Handle; the literal ffffffff is a placeholder for harness replacement, not a claim of validity if sent unchanged."
+      ],
+      "issue_safety_notes": "Safe stateful coverage only. This sequence does not enter CPF or CIP parsing and is unrelated to the historical malformed ForwardOpen underlength trigger."
+    },
+    {
+      "plan_id": "plan-057",
+      "seed_id": "ethernetip-rev-057",
+      "title": "RegisterSession plus bounded SendRRData ForwardOpen analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ForwardOpen",
+      "purpose": "Safely exercise the same high-level path named in the issue summary: RegisterSession followed by SendRRData with Null Address Item and Unconnected Data Item carrying a Connection Manager ForwardOpen-family request, while keeping all nested lengths consistent and avoiding underlength data.",
+      "evidence_ids": [
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:314:314-summary:3abfe4f839d0",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "registersession-request",
+          "hex": "65000400000000000000000001020304050607080000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata-forwardopen-analogue",
+          "hex": "6f001e00ffffffff0000000010203040506070800000000000000000020000000000b2001000540220062401aabbccddeeff1122"
+        }
+      ],
+      "expected_behavior": "After a successful RegisterSession response, the harness should substitute the negotiated session handle into the second message. The target should parse the SendRRData header, the two CPF items, and the bounded UCMM payload as a Connection Manager request. Ordinary CIP-level rejection, unsupported-service handling, or object/path errors are acceptable; parser overread or framing failure is not expected from the seed itself.",
+      "constraints_preserved": [
+        "The issue summary explicitly identifies the reproduction family as RegisterSession followed by SendRRData using Null and UCMM CPF items; that structure is preserved.",
+        "SendRRData command 0x006F is encoded little-endian with payload Length 0x001e, matching 30 CPF bytes.",
+        "CPF item count is 2, followed by Null Address Item type 0x0000 length 0 and Unconnected Data Item type 0x00B2 length 16.",
+        "The UCMM payload is intentionally nontruncated and exactly 16 bytes long.",
+        "CIP details beyond the service family are conservative inferred assumptions: service 0x54 is used as ForwardOpen per the issue text; path bytes 20 06 24 01 are a common Connection Manager class/instance form; trailing request data bytes are bounded filler for mutation-friendly coverage.",
+        "The placeholder session handle ffffffff in message 1 is intended for runtime substitution from the RegisterSession reply."
+      ],
+      "issue_safety_notes": "This is a structural analogue, not a reproduction. It preserves the documented parser path but removes the dangerous historical condition by supplying a bounded non-underlength UCMM payload and by not copying any reported PoC bytes or exact malformed field pattern."
+    },
+    {
+      "plan_id": "plan-059",
+      "seed_id": "ethernetip-rev-059",
+      "title": "SendUnitData connected-item encapsulation seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "SendUnitData",
+      "purpose": "Add connected-data encapsulation coverage with the documented Connected Address Item plus Connected Data Item combination, distinct from the unconnected SendRRData path.",
+      "evidence_ids": [
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "sendunitdata-connected-seed",
+          "hex": "700016000403020100000000998877665544332200000000020000000001040078563412b1000600010000001122"
+        }
+      ],
+      "expected_behavior": "A parser should accept the encapsulation header and CPF layout for SendUnitData, then parse a Connected Address Item carrying a 4-byte connection identifier and a Connected Data Item carrying 6 bytes of data. Because no real ForwardOpen-established connection is implied, higher-layer acceptance may fail normally after framing succeeds.",
+      "constraints_preserved": [
+        "Command 0x0070 SendUnitData encoded little-endian.",
+        "24-byte encapsulation header used with Length 0x0016 matching 22 CPF bytes.",
+        "CPF item count is 2, using the documented common SendUnitData combination: Connected Address Item type 0x0100 length 4, then Connected Data Item type 0x00B1 length 6.",
+        "Connected Address Item data is a 4-byte placeholder connection identifier; Connected Data Item begins with a 2-byte sequence-style value followed by payload bytes as a conservative connected-data shape.",
+        "Marked standalone because a real connected exchange would require prior connection establishment not supplied by the source material."
+      ],
+      "issue_safety_notes": "This seed is not derived from the historical crash path. It broadens parser coverage into connected CPF handling while remaining fully length-consistent and independent of malformed ForwardOpen parsing."
+    }
+  ]
+}

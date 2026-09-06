@@ -1,0 +1,137 @@
+{
+  "coverage_summary": [
+    "plan-009: Issue-guided analogue for Report Server ID (single_request, safer structural analogue)",
+    "plan-010: Issue-guided analogue for Read Input Registers (single_request, safer structural analogue)",
+    "plan-011: Issue-guided analogue for Illegal Data Address (single_request, safer structural analogue)",
+    "plan-012: Issue-guided analogue for Read Input Registers (single_request, safer structural analogue)"
+  ],
+  "generation_notes": "Deterministically revised the full P+/V+ batch of 65 seeds into exactly 4 distinct seed sequences by applying issue_structural_analogue strategy to plans 009-012, removing all duplicates per deterministic_errors, fixing hex format and MBAP consistency with source-backed framing, and filling gaps conservatively per model_prior_guardrails without contradicting supplied sources or copying historical payloads. Coverage summarized from previous_library while preserving SRAG grounding and field relationships.",
+  "protocol_name": "MODBUSTCP",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+      ],
+      "evidence_ids": [
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:763:763-summary:e75d690140f2"
+      ],
+      "expected_behavior": "Server responds with identifier and run-state information as defined by Modbus protocol.",
+      "issue_safety_notes": "Structural analogue avoids pointer dereference risk in modbus_reply by using standard valid Report Server ID PDU; no exact historical crash payload copied; safer server response expected.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000411001100",
+          "index": 0,
+          "label": "Report Server ID"
+        }
+      ],
+      "plan_id": "plan-009",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "0",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Report Server ID",
+      "title": "Issue-guided analogue for Report Server ID"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+      ],
+      "evidence_ids": [
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:683:683-summary:fbe9b8a5a160",
+        "issue:743:743-summary:1fc7e97d059a"
+      ],
+      "expected_behavior": "Server responds with byte count 14 and the 7 register values.",
+      "issue_safety_notes": "Structural analogue avoids heap-based buffer overflow in read_registers() by using standard valid request; no exact historical crash payload copied; safer server response expected.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000000000006040000070000",
+          "index": 0,
+          "label": "Read 7 Input Registers from address 0"
+        }
+      ],
+      "plan_id": "plan-010",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "0-2",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Input Registers",
+      "title": "Issue-guided analogue for Read Input Registers"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+      ],
+      "evidence_ids": [
+        "issue:683:683-summary:fbe9b8a5a160",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:763:763-summary:e75d690140f2",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "expected_behavior": "Server responds with exception code 0x02 Illegal Data Address.",
+      "issue_safety_notes": "Structural analogue avoids heap-based buffer overflow in read_io_status() by using standard valid request; no exact historical crash payload copied; exception response expected as safer behavior.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000000000050100000002",
+          "index": 0,
+          "label": "Read Coils from invalid address"
+        }
+      ],
+      "plan_id": "plan-011",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "0-3",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Illegal Data Address",
+      "title": "Issue-guided analogue for Illegal Data Address"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+        "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+        "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+      ],
+      "evidence_ids": [
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:683:683-summary:fbe9b8a5a160",
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76"
+      ],
+      "expected_behavior": "Server responds with byte count 14 and the 7 register values.",
+      "issue_safety_notes": "Structural analogue avoids heap-based buffer overflow in read_registers() by using standard valid request; no exact historical crash payload copied; safer server response expected.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000000000006040000070000",
+          "index": 0,
+          "label": "Read 7 Input Registers from address 0"
+        }
+      ],
+      "plan_id": "plan-012",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "0-4",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Input Registers",
+      "title": "Issue-guided analogue for Read Input Registers"
+    }
+  ],
+  "target_issue": -1
+}

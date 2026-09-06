@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-plan-004",
+  "title": "Read/Write Multiple Registers payload exchange",
+  "strategy": "field_interaction",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Cover FC17 field interaction with separate read and write ranges, a variable-length write payload, and a matching read response.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ReadWriteMultipleRegistersRequest",
+      "hex": "02020000000f7f1700100002002000020411112222",
+      "byte_length": 21,
+      "sha256": "7827728b5e10a10ba91ac2a6cc86ad38155b5f0243bedf13e41d62d7c9c78dd2"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ReadWriteMultipleRegistersResponse",
+      "hex": "0202000000077f170411112222",
+      "byte_length": 13,
+      "sha256": "7459ed1e3fb041a3dadbce3abe14af820668882a504f8d34a8b43efc5367f5bc"
+    }
+  ],
+  "expected_behavior": "The server may process the two-register write range at 0020 and return four bytes for the two-register read range at 0010, retaining transaction identifier 0202 and unit identifier 7f.",
+  "constraints_preserved": [
+    "7-byte MBAP header on both messages",
+    "protocol identifier 0x0000 on both messages",
+    "request MBAP length 000f matches unit plus fourteen-byte FC17 PDU",
+    "write byte count 04 matches two register values",
+    "response MBAP length 0007 matches unit plus response byte count and data",
+    "transaction identifier and unit identifier match across the exchange"
+  ],
+  "issue_safety_notes": "This is a structurally diverse model-prior seed for field interaction; validity is not externally verified and it makes no vulnerability or issue claim.",
+  "sequence_sha256": "64c580079e77951bb49e57ca4ba0ddd27cf633b19ed4e491b21318552501fd56",
+  "total_bytes": 34,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "981a49ec11cff1ed795510e03d72ea28968743bd61ad7b49ea6d007455cf11e0",
+    "encoded_bytes": 34,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 21,
+        "payload_offset": 21,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ]
+  }
+}

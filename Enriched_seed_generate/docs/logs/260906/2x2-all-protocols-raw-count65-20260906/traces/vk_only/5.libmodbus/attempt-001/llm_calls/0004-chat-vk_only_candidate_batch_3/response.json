@@ -1,0 +1,41 @@
+{
+  "id": "resp_0d2e6cce02bb15d8016a9da36df5b887d09f67ec0f0430fed1",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"modbustcp\",\"target_issue\":743,\"generation_notes\":\"VK-only candidates use conservative Modbus/TCP MBAP framing and internally consistent lengths. Model-prior protocol details are fallible and not externally verified. Issue evidence is used for structural and trigger-shape guidance without reproducing historical crash bytes.\",\"coverage_summary\":[\"Diagnostics boundary request with a compact fixed-size PDU\",\"Read File Record nested subrequest parsing\",\"Read/Write Multiple Registers compound address and data fields\",\"Encapsulated Interface Transport MEI subfunction parsing\",\"All messages use protocol identifier 0000 and consistent MBAP length fields\"],\"sequences\":[{\"plan_id\":\"vk-plan-009\",\"seed_id\":\"seed-diagnostics-boundary-01\",\"title\":\"VK-only Diagnostics boundary analogue\",\"strategy\":\"length_boundary_valid\",\"target_operation\":\"Diagnostics\",\"purpose\":\"Exercise a compact diagnostics request with a valid subfunction and data field while preserving recognizable framing and providing a mutation-friendly boundary around a short payload.\",\"evidence_ids\":[\"issue:743:743-summary:1fc7e97d059a\",\"issue:837:837-summary:c4fb6d28cc16\",\"issue:466:466-summary:691a17c4c14a\",\"issue:499:499-summary:6268f95751ad\",\"issue:614:614-summary:e89105d3aaf7\",\"issue:683:683-summary:fbe9b8a5a160\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"diagnostics_loopback_request\",\"hex\":\"100100000006010800001234\"}],\"expected_behavior\":\"The server should parse one complete Diagnostics request and either return a normal diagnostics response or a protocol-level exception without consuming bytes beyond the declared ADU.\",\"constraints_preserved\":[\"Modbus/TCP 7-byte MBAP header\",\"Protocol identifier is 0000\",\"MBAP length 0006 equals unit identifier plus six-byte PDU\",\"Single complete request with valid diagnostics subfunction and two data bytes\"],\"issue_safety_notes\":\"This is a structural analogue for issue-related short or boundary-sensitive parsing. It does not copy the reported write-bits bytes and does not assert that the issue mechanism applies to Diagnostics.\"},{\"plan_id\":\"vk-plan-010\",\"seed_id\":\"seed-read-file-record-01\",\"title\":\"VK-only Read File Record nested parser\",\"strategy\":\"parser_depth\",\"target_operation\":\"Read File Record\",\"purpose\":\"Reach a deeper parser structure through one valid file-record subrequest, exposing byte-count, reference type, file number, record number, and record length fields to mutation.\",\"evidence_ids\":[\"issue:748:748-summary:90052b7dfbe9\",\"issue:763:763-summary:e75d690140f2\",\"issue:738:738-summary:a2fd51730f5d\",\"issue:614:614-summary:e89105d3aaf7\",\"issue:612:612-summary:7b008d4bca1d\",\"issue:279:279-summary:f8623682ccd7\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"read_file_record_single_subrequest\",\"hex\":\"20020000000a01140706000100000001\"}],\"expected_behavior\":\"The server should recognize a complete Read File Record request with one subrequest and return a valid response or a normal exception for unsupported file access.\",\"constraints_preserved\":[\"Modbus/TCP 7-byte MBAP header\",\"Protocol identifier is 0000\",\"MBAP length 000a equals unit identifier plus ten-byte PDU\",\"Read File Record byte count 07 matches the seven-byte nested subrequest\",\"Nested reference type and three two-byte fields are present\"],\"issue_safety_notes\":\"The sequence explores nested parsing associated with the issue family while retaining consistent visible lengths. It is not the historical PoC and does not claim that modbus_mapping_free is directly reachable from this request.\"},{\"plan_id\":\"vk-plan-011\",\"seed_id\":\"seed-read-write-registers-01\",\"title\":\"VK-only Read/Write Multiple Registers compound request\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Read/Write Multiple Registers\",\"purpose\":\"Exercise a compound request containing independent read and write ranges plus a counted write payload, providing stateful server handling and several mutation points.\",\"evidence_ids\":[\"issue:749:749-summary:29b9071582b0\",\"issue:764:764-summary:f5885d05eb76\",\"issue:738:738-summary:a2fd51730f5d\",\"issue:763:763-summary:e75d690140f2\",\"issue:614:614-summary:e89105d3aaf7\",\"issue:750:750-summary:3dcb92ca7c5d\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"read_write_multiple_registers_request\",\"hex\":\"30030000000dff170000000100100001020000\"}],\"expected_behavior\":\"The server should parse the read and write ranges, apply or reject the write portion according to normal device policy, and return a response containing the requested read register value or a standard exception.\",\"constraints_preserved\":[\"Modbus/TCP 7-byte MBAP header\",\"Protocol identifier is 0000\",\"MBAP length 000d equals unit identifier plus twelve-byte PDU\",\"Read and write quantities are one register each\",\"Write byte count 02 matches one two-byte register value\"],\"issue_safety_notes\":\"The request is a fresh compound analogue for issue-related unit-test-server state handling. It avoids the historical multi-message crash stream and does not assume the reported use-after-free cause is confirmed.\"},{\"plan_id\":\"vk-plan-012\",\"seed_id\":\"seed-encapsulated-interface-01\",\"title\":\"VK-only Encapsulated Interface Transport device identification\",\"strategy\":\"other\",\"target_operation\":\"Encapsulated Interface Transport\",\"purpose\":\"Cover a distinct transport function and MEI subfunction with a compact but nested request suitable for mutations of device-identification code and object identifier fields.\",\"evidence_ids\":[\"issue:750:750-summary:3dcb92ca7c5d\",\"issue:764:764-summary:f5885d05eb76\",\"issue:763:763-summary:e75d690140f2\",\"issue:614:614-summary:e89105d3aaf7\",\"issue:803:803-summary:fea416ab8355\",\"issue:499:499-summary:6268f95751ad\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"encapsulated_interface_device_id_request\",\"hex\":\"400400000005012b0e0100\"}],\"expected_behavior\":\"The server should parse the Encapsulated Interface Transport request and return device-identification data or a standard exception when that MEI service is unavailable.\",\"constraints_preserved\":[\"Modbus/TCP 7-byte MBAP header\",\"Protocol identifier is 0000\",\"MBAP length 0005 equals unit identifier plus four-byte PDU\",\"Function code 2b includes MEI type 0e and two service fields\",\"Single complete request with no trailing bytes\"],\"issue_safety_notes\":\"This is a conservative issue analogue targeting receive and dispatch paths without reproducing any reported crafted message. Model-prior meanings of the MEI fields are not externally verified here.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788715968,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2016,
+    "prompt_tokens": 10661,
+    "total_tokens": 12677,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 516,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

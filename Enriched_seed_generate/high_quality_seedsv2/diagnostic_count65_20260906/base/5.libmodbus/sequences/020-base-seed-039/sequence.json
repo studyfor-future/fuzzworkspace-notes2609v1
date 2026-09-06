@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-039",
+  "title": "Base Read Holding Registers variant 4",
+  "strategy": "stateful_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Use a boundary-adjacent Read Holding Registers request for 125 registers, producing a large but structurally ordinary request.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Boundary Read Holding Registers request, unit 13, address 0x0100, quantity 125",
+      "hex": "0003000000060d030100007d",
+      "byte_length": 12,
+      "sha256": "86c8be9d363d61a450ce1fe6689698e8135db1e296b2e74f18a3a90594e7f5da"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Holding Registers response (register data bytes)",
+      "hex": "0003000000060d0301010100",
+      "byte_length": 12,
+      "sha256": "b45754a5fe18c531be39853da166f4ded5a05d401ea366346fd0ecaa7be22bff"
+    }
+  ],
+  "expected_behavior": "The server should parse the request as a large Read Holding Registers operation and return the requested register data when supported, or a normal Modbus exception response.",
+  "constraints_preserved": [
+    "Both frames contain 7-byte MBAP headers.",
+    "Protocol identifier is 0000.",
+    "Request MBAP length is 0006 because the unit identifier and five-byte PDU are included.",
+    "Function code 03, starting address, and quantity fields remain ordered and width-consistent.",
+    "The target quantity 007d represents 125 registers, a conservative boundary-adjacent read quantity.",
+    "Transaction identifiers are distinct."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The larger request is intended for length and size coverage while preserving plausible protocol relationships, not to encode a known vulnerability.",
+  "sequence_sha256": "b38d793e78550e0f54cc98b75cb8a5f1871711a82a2aa913f911c4b5ae9e7690",
+  "total_bytes": 24,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "547853cbdf65605813404172f7d046538fb2735976a199043bbe9625455cde78",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

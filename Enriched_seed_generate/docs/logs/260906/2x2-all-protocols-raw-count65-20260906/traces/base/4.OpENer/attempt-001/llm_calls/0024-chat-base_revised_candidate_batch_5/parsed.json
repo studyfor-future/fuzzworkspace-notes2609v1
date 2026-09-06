@@ -1,0 +1,131 @@
+{
+  "protocol_name": "OpENer",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly four distinct model-prior seed sequences, one per supplied plan. Deterministic odd-length and duplicate issues were removed. Messages use conservative EtherNet/IP-style encapsulation with 24-byte headers and little-endian length fields where selected, keeping internal byte counts consistent within each frame. Diversity was improved across stateful setup, explicit messaging, nested UnconnectedSend content, and CIP path selections including non-zero instance or element use where plausible under model prior. All protocol details are based only on internal model prior and trusted base constraints, not external verification.",
+  "coverage_summary": [
+    "stateful_valid GetAttributeSingle with RegisterSession setup and non-zero instance path",
+    "length_boundary_valid SetAttributeSingle explicit request with non-zero instance and element-style trailing path segment",
+    "field_interaction ForwardOpen explicit request with varied connection identifiers and distinct CIP class-instance combination",
+    "parser_depth UnconnectedSend explicit request carrying nested embedded explicit message and conservative timeout fields"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-017",
+      "seed_id": "base-plan-017-001",
+      "title": "Base GetAttributeSingle variant 2",
+      "strategy": "stateful_valid",
+      "target_operation": "GetAttributeSingle",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required, while adding non-zero instance coverage in the explicit request path.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "SendRRData GetAttributeSingle request",
+          "hex": "6f001a00112233440000000000000000000000000000000000000000000000000200000000000000b2000a000e03200424013001"
+        }
+      ],
+      "expected_behavior": "A conservative stateful sequence should first establish a session and then deliver an unconnected explicit GetAttributeSingle request with a short non-zero-instance path. Parser should accept framing and either process the service or return a protocol-level status without transport desynchronization.",
+      "constraints_preserved": [
+        "exactly one sequence for the supplied plan_id",
+        "24-byte encapsulation header used for each EtherNet/IP-style frame",
+        "little-endian encapsulation length fields are internally consistent",
+        "lowercase hexadecimal without separators",
+        "stateful setup_then_request shape preserved"
+      ],
+      "issue_safety_notes": "This sequence is based on fallible model prior only. It avoids vulnerability claims and keeps lengths and item counts conservative for safe corpus seeding."
+    },
+    {
+      "plan_id": "base-plan-018",
+      "seed_id": "base-plan-018-001",
+      "title": "Base SetAttributeSingle variant 2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SetAttributeSingle",
+      "purpose": "Exercise a conservative boundary-adjacent explicit-message size while retaining internal length consistency and covering non-zero instance and trailing element-style path content.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData SetAttributeSingle request",
+          "hex": "6f002000214365870000000000000000000000000000000000000000000000000200000000000000b200100f0420042403300128013412"
+        }
+      ],
+      "expected_behavior": "A conservative standalone explicit SetAttributeSingle request should parse cleanly with a slightly larger embedded data area than the GetAttributeSingle seed, reaching attribute-write handling or a normal application-level rejection.",
+      "constraints_preserved": [
+        "exactly one sequence for the supplied plan_id",
+        "24-byte encapsulation header used",
+        "little-endian payload length matches payload bytes",
+        "single_request shape preserved",
+        "lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "Model-prior seed only. The frame is kept structurally conservative and mutation-friendly, with no claim that the specific object path or write semantics are externally verified."
+    },
+    {
+      "plan_id": "base-plan-019",
+      "seed_id": "base-plan-019-001",
+      "title": "Base ForwardOpen variant 2",
+      "strategy": "field_interaction",
+      "target_operation": "ForwardOpen",
+      "purpose": "Vary a meaningful pair of connection-related fields while preserving likely structural relationships and using a distinct class-instance combination from the attribute seeds.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData ForwardOpen request",
+          "hex": "6f003000102030400000000000000000000000000000000000000000000000000200000000000000b200204f0620062401240267452301efcdab896745230400f43d20010000"
+        }
+      ],
+      "expected_behavior": "The explicit message should reach ForwardOpen-oriented parsing with a compact but distinct field set, exercising interaction between two connection identifiers and timeout or parameter-like bytes while preserving framing consistency.",
+      "constraints_preserved": [
+        "exactly one sequence for the supplied plan_id",
+        "24-byte encapsulation header used",
+        "little-endian payload length matches payload bytes",
+        "single_request shape preserved",
+        "distinct operation and CIP path from other seeds"
+      ],
+      "issue_safety_notes": "This is a conservative structural analogue derived from model prior, intended for parser and state-machine coverage rather than asserting any verified endpoint behavior."
+    },
+    {
+      "plan_id": "base-plan-020",
+      "seed_id": "base-plan-020-001",
+      "title": "Base UnconnectedSend variant 2",
+      "strategy": "parser_depth",
+      "target_operation": "UnconnectedSend",
+      "purpose": "Use a deeper nested explicit-message form with conservative timeout fields and an embedded service request to reach additional parser logic.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData UnconnectedSend request with nested explicit payload",
+          "hex": "6f002600556677880000000000000000000000000000000000000000000000000200000000000000b2001652042006240124040a000e03200424023001"
+        }
+      ],
+      "expected_behavior": "The request should be framed as an unconnected explicit send carrying an inner GetAttributeSingle-style payload. A target may parse nested content, reject at service level, or return an encapsulation/CIP error while maintaining synchronization.",
+      "constraints_preserved": [
+        "exactly one sequence for the supplied plan_id",
+        "24-byte encapsulation header used",
+        "little-endian payload length matches payload bytes",
+        "single_request parser_depth shape preserved",
+        "nested inner explicit payload kept short and internally consistent"
+      ],
+      "issue_safety_notes": "Only model-prior plausibility is assumed. The nested payload is intentionally compact to preserve safe, mutation-friendly structure without relying on externally verified OpENer specifics."
+    }
+  ]
+}

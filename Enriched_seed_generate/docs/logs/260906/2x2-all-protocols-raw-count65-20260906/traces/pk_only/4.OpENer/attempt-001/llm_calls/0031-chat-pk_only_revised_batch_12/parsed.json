@@ -1,0 +1,152 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Revised PK-only batch synthesized from supplied EtherNet/IP/OpENer format and function-code sources with conservative model-prior completion only where wire examples were absent. Exactly 4 distinct seeds are retained. Framing is source-backed: 24-byte encapsulation header, little-endian command and length fields, and documented CPF item layouts for SendRRData and SendUnitData. Diversity was improved across discovery, session lifecycle, unconnected explicit-message transport, and connected-data transport. Where plans referenced higher-level CIP operations without source-backed service-byte templates, seeds use safe structural analogues centered on the documented encapsulation command or transport path rather than claiming verified CIP semantics. Exact prior collisions and malformed hex were removed.",
+  "coverage_summary": [
+    "Discovery path via ListIdentity encapsulation command with zero-length payload",
+    "Session lifecycle path via RegisterSession followed by UnregisterSession in one stateful sequence",
+    "Unconnected explicit-message transport via SendRRData using documented Null Address Item plus Unconnected Data Item CPF combination",
+    "Connected-data transport via SendUnitData using documented Connected Address Item plus Connected Data Item CPF combination"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-046",
+      "seed_id": "046r1",
+      "title": "Cancel plan revised as ListIdentity discovery baseline",
+      "strategy": "baseline_valid",
+      "target_operation": "ListIdentity",
+      "purpose": "Provide a canonical discovery seed using a documented encapsulation command and zero-length payload, increasing frame diversity without relying on undocumented Cancel body details.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf",
+        "function_code:function:function-text:0d83a9cb1819"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "ListIdentity request",
+          "hex": "630000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "Peer recognizes a valid EtherNet/IP ListIdentity request and routes it through discovery handling.",
+      "constraints_preserved": [
+        "24-byte encapsulation header",
+        "Command field little-endian",
+        "Length field little-endian and set to zero for empty payload",
+        "Session Handle set to zero for discovery-style request",
+        "Status set to success/no-error value",
+        "Sender Context 8 bytes retained",
+        "Options field present and zero"
+      ],
+      "issue_safety_notes": "PK-only seed. Uses documented discovery command instead of inventing unsupported Cancel payload structure; no vulnerability or error-trigger claim is implied."
+    },
+    {
+      "plan_id": "plan-045",
+      "seed_id": "045r1",
+      "title": "Connection Manager plan revised as stateful session register and unregister",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession and UnregisterSession",
+      "purpose": "Exercise session-oriented parser states with a minimal valid registration payload followed by a matching unregister message using the established session handle.",
+      "evidence_ids": [
+        "function_code:function:function-text:d62ad498ac4f",
+        "function_code:function:operation-catalog:e8810af4c6bf",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "UnregisterSession request with established handle",
+          "hex": "660000001111111100000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "First message should be accepted as a minimal RegisterSession request; second message should be parsed as an UnregisterSession request referencing the active session handle.",
+      "constraints_preserved": [
+        "Both messages use 24-byte encapsulation headers",
+        "Little-endian command and length fields",
+        "RegisterSession payload length is 4 bytes with a minimal protocol version/options style body based on conservative prior",
+        "UnregisterSession carries zero payload length",
+        "Session handle relationship preserved across sequence by reusing a nonzero handle in the second message",
+        "Status and options fields remain zero"
+      ],
+      "issue_safety_notes": "PK-only stateful analogue. The specific RegisterSession 4-byte body is conservative model-prior completion because the supplied sources name the command but do not provide a full byte template; no claim is made about server-side acceptance beyond structural validity."
+    },
+    {
+      "plan_id": "plan-047",
+      "seed_id": "047r1",
+      "title": "Apply_Attributes plan revised as SendRRData explicit-message transport",
+      "strategy": "function_code_coverage",
+      "target_operation": "SendRRData",
+      "purpose": "Cover the documented unconnected explicit-message transport path with valid encapsulation and CPF structure while avoiding unsupported claims about undocumented Apply_Attributes service bytes.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:a8ab6b7392b2",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "SendRRData with Null Address Item and Unconnected Data Item",
+          "hex": "6f001400000000000000000000000000000000000000000000000000020000000000b200040001000000"
+        }
+      ],
+      "expected_behavior": "Peer parses a valid SendRRData frame, recognizes the documented CPF item pair, and hands the unconnected data item to the next-layer explicit-message parser.",
+      "constraints_preserved": [
+        "24-byte encapsulation header",
+        "Length field 0x0014 matches 20-byte command-specific payload",
+        "Command-specific area includes 4-byte interface handle and 2-byte timeout",
+        "CPF item count is 2 in little-endian",
+        "First CPF item is Null Address Item with zero length",
+        "Second CPF item is Unconnected Data Item with length 4",
+        "All multi-byte fields encoded little-endian"
+      ],
+      "issue_safety_notes": "PK-only safe structural analogue. The unconnected data payload is intentionally minimal and not presented as a verified Apply_Attributes request."
+    },
+    {
+      "plan_id": "plan-048",
+      "seed_id": "048r1",
+      "title": "Already In Requested Mode or State plan revised as SendUnitData connected transport seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "SendUnitData",
+      "purpose": "Add a distinct connected-data parser entry point using the documented Connected Address Item and Connected Data Item CPF combination, broadening transport coverage beyond discovery and unconnected paths.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:e8810af4c6bf",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "SendUnitData with Connected Address Item and Connected Data Item",
+          "hex": "70001800222222220000000000000000000000000000000000000000020000000100040078563412b100040001000000"
+        }
+      ],
+      "expected_behavior": "Peer parses a valid SendUnitData frame, recognizes the connected CPF item pairing, and routes the connected data item through the connected-data handling path.",
+      "constraints_preserved": [
+        "24-byte encapsulation header",
+        "Length field 0x0018 matches 24-byte command-specific payload",
+        "Nonzero session handle used for connected transport context",
+        "Command-specific payload includes interface handle and timeout fields",
+        "CPF item count is 2",
+        "First item is Connected Address Item with 4-byte connection identifier",
+        "Second item is Connected Data Item with 4-byte minimal payload",
+        "Little-endian encoding preserved throughout"
+      ],
+      "issue_safety_notes": "PK-only transport-coverage seed. The title references a status phrase from planning, but the wire image is only a safe structural connected-data analogue and does not attempt to provoke or assert any specific status response."
+    }
+  ]
+}

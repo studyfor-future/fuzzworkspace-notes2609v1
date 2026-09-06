@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELANvy5m5ud5j3xix29j0522Uxuid",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"OpENer\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised exactly four distinct model-prior seed sequences, one per supplied plan. Deterministic odd-length and duplicate issues were removed. Messages use conservative EtherNet/IP-style encapsulation with 24-byte headers and little-endian length fields where selected, keeping internal byte counts consistent within each frame. Diversity was improved across stateful setup, explicit messaging, nested UnconnectedSend content, and CIP path selections including non-zero instance or element use where plausible under model prior. All protocol details are based only on internal model prior and trusted base constraints, not external verification.\",\n  \"coverage_summary\": [\n    \"stateful_valid GetAttributeSingle with RegisterSession setup and non-zero instance path\",\n    \"length_boundary_valid SetAttributeSingle explicit request with non-zero instance and element-style trailing path segment\",\n    \"field_interaction ForwardOpen explicit request with varied connection identifiers and distinct CIP class-instance combination\",\n    \"parser_depth UnconnectedSend explicit request carrying nested embedded explicit message and conservative timeout fields\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-017\",\n      \"seed_id\": \"base-plan-017-001\",\n      \"title\": \"Base GetAttributeSingle variant 2\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"GetAttributeSingle\",\n      \"purpose\": \"Use a plausible setup-then-target sequence when protocol state is likely required, while adding non-zero instance coverage in the explicit request path.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"RegisterSession request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendRRData GetAttributeSingle request\",\n          \"hex\": \"6f001a00112233440000000000000000000000000000000000000000000000000200000000000000b2000a000e03200424013001\"\n        }\n      ],\n      \"expected_behavior\": \"A conservative stateful sequence should first establish a session and then deliver an unconnected explicit GetAttributeSingle request with a short non-zero-instance path. Parser should accept framing and either process the service or return a protocol-level status without transport desynchronization.\",\n      \"constraints_preserved\": [\n        \"exactly one sequence for the supplied plan_id\",\n        \"24-byte encapsulation header used for each EtherNet/IP-style frame\",\n        \"little-endian encapsulation length fields are internally consistent\",\n        \"lowercase hexadecimal without separators\",\n        \"stateful setup_then_request shape preserved\"\n      ],\n      \"issue_safety_notes\": \"This sequence is based on fallible model prior only. It avoids vulnerability claims and keeps lengths and item counts conservative for safe corpus seeding.\"\n    },\n    {\n      \"plan_id\": \"base-plan-018\",\n      \"seed_id\": \"base-plan-018-001\",\n      \"title\": \"Base SetAttributeSingle variant 2\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"SetAttributeSingle\",\n      \"purpose\": \"Exercise a conservative boundary-adjacent explicit-message size while retaining internal length consistency and covering non-zero instance and trailing element-style path content.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendRRData SetAttributeSingle request\",\n          \"hex\": \"6f002000214365870000000000000000000000000000000000000000000000000200000000000000b200100f0420042403300128013412\"\n        }\n      ],\n      \"expected_behavior\": \"A conservative standalone explicit SetAttributeSingle request should parse cleanly with a slightly larger embedded data area than the GetAttributeSingle seed, reaching attribute-write handling or a normal application-level rejection.\",\n      \"constraints_preserved\": [\n        \"exactly one sequence for the supplied plan_id\",\n        \"24-byte encapsulation header used\",\n        \"little-endian payload length matches payload bytes\",\n        \"single_request shape preserved\",\n        \"lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"Model-prior seed only. The frame is kept structurally conservative and mutation-friendly, with no claim that the specific object path or write semantics are externally verified.\"\n    },\n    {\n      \"plan_id\": \"base-plan-019\",\n      \"seed_id\": \"base-plan-019-001\",\n      \"title\": \"Base ForwardOpen variant 2\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"ForwardOpen\",\n      \"purpose\": \"Vary a meaningful pair of connection-related fields while preserving likely structural relationships and using a distinct class-instance combination from the attribute seeds.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendRRData ForwardOpen request\",\n          \"hex\": \"6f003000102030400000000000000000000000000000000000000000000000000200000000000000b200204f0620062401240267452301efcdab896745230400f43d20010000\"\n        }\n      ],\n      \"expected_behavior\": \"The explicit message should reach ForwardOpen-oriented parsing with a compact but distinct field set, exercising interaction between two connection identifiers and timeout or parameter-like bytes while preserving framing consistency.\",\n      \"constraints_preserved\": [\n        \"exactly one sequence for the supplied plan_id\",\n        \"24-byte encapsulation header used\",\n        \"little-endian payload length matches payload bytes\",\n        \"single_request shape preserved\",\n        \"distinct operation and CIP path from other seeds\"\n      ],\n      \"issue_safety_notes\": \"This is a conservative structural analogue derived from model prior, intended for parser and state-machine coverage rather than asserting any verified endpoint behavior.\"\n    },\n    {\n      \"plan_id\": \"base-plan-020\",\n      \"seed_id\": \"base-plan-020-001\",\n      \"title\": \"Base UnconnectedSend variant 2\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"UnconnectedSend\",\n      \"purpose\": \"Use a deeper nested explicit-message form with conservative timeout fields and an embedded service request to reach additional parser logic.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendRRData UnconnectedSend request with nested explicit payload\",\n          \"hex\": \"6f002600556677880000000000000000000000000000000000000000000000000200000000000000b2001652042006240124040a000e03200424023001\"\n        }\n      ],\n      \"expected_behavior\": \"The request should be framed as an unconnected explicit send carrying an inner GetAttributeSingle-style payload. A target may parse nested content, reject at service level, or return an encapsulation/CIP error while maintaining synchronization.\",\n      \"constraints_preserved\": [\n        \"exactly one sequence for the supplied plan_id\",\n        \"24-byte encapsulation header used\",\n        \"little-endian payload length matches payload bytes\",\n        \"single_request parser_depth shape preserved\",\n        \"nested inner explicit payload kept short and internally consistent\"\n      ],\n      \"issue_safety_notes\": \"Only model-prior plausibility is assumed. The nested payload is intentionally compact to preserve safe, mutation-friendly structure without relying on externally verified OpENer specifics.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788713515,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1709,
+    "prompt_tokens": 5565,
+    "total_tokens": 7274,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 11,
+      "engine_ttft_ms": 225,
+      "engine_ttlt_ms": 18853,
+      "pre_inference_ms": 124,
+      "service_tbt_ms": 11,
+      "service_ttft_ms": 562,
+      "service_ttlt_ms": 19185,
+      "user_visible_ttft_ms": 438
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818172145-722f0c28-default-r1-dp0-default"
+  }
+}

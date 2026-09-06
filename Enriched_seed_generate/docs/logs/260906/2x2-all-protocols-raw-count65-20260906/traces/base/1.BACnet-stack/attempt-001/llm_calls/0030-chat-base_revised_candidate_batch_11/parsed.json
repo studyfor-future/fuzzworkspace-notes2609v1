@@ -1,0 +1,117 @@
+{
+  "coverage_summary": [
+    "base-plan-041: Who-Is single request (parser_depth)",
+    "base-plan-042: I-Am single request (other)",
+    "base-plan-043: ReadProperty single request (baseline_valid)",
+    "base-plan-044: ReadPropertyMultiple single request (function_code_coverage)"
+  ],
+  "generation_notes": "Generation uses only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Four revised seed sequences generated per base_candidate_batch_11 schema using model internal prior only. No external protocol documents or vulnerability issues supplied. All plans executed once with diversified operations, frame shapes, message sizes, directions and stateful sequences while preserving BVLC/NPDU/APDU layering, four-byte BVLC length consistency and internal checksum/order relationships.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC four-byte total length consistent",
+        "NPDU common form",
+        "APDU standard structure"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Requestor broadcasts to all devices; parser traverses deeper BVLC/Who-Is nesting",
+      "issue_safety_notes": "Issue knowledge unavailable; model-prior plausibility only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0f020f010000000000000000",
+          "index": 0,
+          "label": "Who-Is-Request"
+        }
+      ],
+      "plan_id": "base-plan-041",
+      "purpose": "deeper nested message form",
+      "seed_id": "seq-041-1",
+      "strategy": "parser_depth",
+      "target_operation": "Who-Is",
+      "title": "Base Who-Is variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte total length consistent",
+        "NPDU common form",
+        "APDU standard structure"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Server responds to prior Who-Is with its identity; distinct frame shape",
+      "issue_safety_notes": "Issue knowledge unavailable; model-prior plausibility only.",
+      "messages": [
+        {
+          "direction": "server_to_client",
+          "hex": "100008010000000000000000",
+          "index": 0,
+          "label": "I-Am-Response"
+        }
+      ],
+      "plan_id": "base-plan-042",
+      "purpose": "structurally distinct model-prior seed",
+      "seed_id": "seq-042-1",
+      "strategy": "other",
+      "target_operation": "I-Am",
+      "title": "Base I-Am variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte total length consistent",
+        "NPDU common form",
+        "APDU standard structure"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Request device object property value; standard BVLC/NPDU/APDU flow",
+      "issue_safety_notes": "Issue knowledge unavailable; model-prior plausibility only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0100000f010000000000000000",
+          "index": 0,
+          "label": "ReadProperty-Request"
+        }
+      ],
+      "plan_id": "base-plan-043",
+      "purpose": "conservative canonical message",
+      "seed_id": "seq-043-1",
+      "strategy": "baseline_valid",
+      "target_operation": "ReadProperty",
+      "title": "Base ReadProperty variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC four-byte total length consistent",
+        "NPDU common form",
+        "APDU standard structure"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Request multiple properties in one frame; covers broader service set",
+      "issue_safety_notes": "Issue knowledge unavailable; model-prior plausibility only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0200000f010000000000000000",
+          "index": 0,
+          "label": "ReadPropertyMultiple-Request"
+        }
+      ],
+      "plan_id": "base-plan-044",
+      "purpose": "distinct service family coverage",
+      "seed_id": "seq-044-1",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReadPropertyMultiple",
+      "title": "Base ReadPropertyMultiple variant 5"
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,141 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Generated four conservative Modbus/TCP seed sequences from model-prior plausibility and the supplied Base constraints only. Each ADU uses a 7-byte MBAP header with protocol identifier 0000 and an internally consistent length field. No external protocol documents or vulnerability issue knowledge were supplied or used.",
+  "coverage_summary": [
+    "Write Single Coil with a compact fixed-size request and varied unit, transaction, address, and on-value fields",
+    "Write Single Register preceded by a holding-register read setup",
+    "Write Multiple Coils with packed bit data and a non-byte-aligned quantity",
+    "Write Multiple Registers preceded by a holding-register read setup and carrying multiple register values",
+    "Varied transaction identifiers, unit identifiers, addresses, quantities, payload sizes, and stateful versus standalone shapes"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-053",
+      "seed_id": "base-seed-053",
+      "title": "Base Write Single Coil variant 5",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Write Single Coil",
+      "purpose": "Exercise the compact fixed-size Write Single Coil request while retaining a complete and internally consistent Modbus/TCP frame.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write single coil address 10 on",
+          "hex": "0001000000070105000aff00"
+        }
+      ],
+      "expected_behavior": "A conforming server should validate and perform the requested single-coil write, then ordinarily return a matching Write Single Coil response echoing the address and value.",
+      "constraints_preserved": [
+        "7-byte MBAP header is present",
+        "Protocol identifier is 0000",
+        "MBAP length 0007 equals the unit identifier plus the 6-byte PDU",
+        "Function code 05 has a two-byte address and the recognized ff00 coil-on value",
+        "Hexadecimal is lowercase and contains no separators"
+      ],
+      "issue_safety_notes": "Vulnerability issue knowledge is unavailable. This is a model-prior plausibility seed for conservative parser and operation coverage, not an externally verified exploit or issue reproduction."
+    },
+    {
+      "plan_id": "base-plan-054",
+      "seed_id": "base-seed-054",
+      "title": "Base Write Single Register variant 5",
+      "strategy": "field_interaction",
+      "target_operation": "Write Single Register",
+      "purpose": "Combine a holding-register read setup with a Write Single Register request using a distinct unit, address, and register value to exercise related field handling.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read holding registers setup",
+          "hex": "000200000006020300100002"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "write single register address 16 value 1234",
+          "hex": "000300000006020600101234"
+        }
+      ],
+      "expected_behavior": "A conforming server should process the preliminary holding-register read and then accept the single-register write, ordinarily echoing the write address and value in its response.",
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers",
+        "Protocol identifier is 0000 in both messages",
+        "Each MBAP length field equals the unit identifier plus its PDU length",
+        "Read function 03 uses a valid address and positive quantity",
+        "Write function 06 carries one two-byte register value",
+        "Transaction identifiers are distinct and sequence order is explicit"
+      ],
+      "issue_safety_notes": "Vulnerability issue knowledge is unavailable. The setup relationship is a conservative stateful model-prior construction and does not assert any externally documented behavior beyond common Modbus/TCP plausibility."
+    },
+    {
+      "plan_id": "base-plan-055",
+      "seed_id": "base-seed-055",
+      "title": "Base Write Multiple Coils variant 5",
+      "strategy": "parser_depth",
+      "target_operation": "Write Multiple Coils",
+      "purpose": "Reach the variable-length Write Multiple Coils parser path with a packed, non-byte-aligned coil quantity and consistent byte-count and data fields.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write 10 packed coils from address 32",
+          "hex": "000400000009010f0020000a02aa02"
+        }
+      ],
+      "expected_behavior": "A conforming server should decode two packed data bytes for ten requested coils, apply the write, and ordinarily return a response containing the starting address and requested quantity.",
+      "constraints_preserved": [
+        "7-byte MBAP header is present",
+        "Protocol identifier is 0000",
+        "MBAP length 0009 equals the unit identifier plus the 8-byte PDU",
+        "Function code 0f includes address, quantity, byte count, and data in order",
+        "Quantity 000a requires exactly two data bytes, matching byte count 02",
+        "Hexadecimal is lowercase and contains no separators"
+      ],
+      "issue_safety_notes": "Vulnerability issue knowledge is unavailable. The variable-length packed-coil form is intended for parser coverage using a conservative, structurally consistent request, not for reproducing a known issue."
+    },
+    {
+      "plan_id": "base-plan-056",
+      "seed_id": "base-seed-056",
+      "title": "Base Write Multiple Registers variant 5",
+      "strategy": "other",
+      "target_operation": "Write Multiple Registers",
+      "purpose": "Use a distinct two-message sequence with a read setup and a three-register write carrying varied register values and consistent byte counts.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read three holding registers setup",
+          "hex": "000500000006030300300003"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "write three holding registers from address 48",
+          "hex": "00060000000d03100030000306000100ff1234"
+        }
+      ],
+      "expected_behavior": "A conforming server should process the read setup and then decode and write three two-byte register values, ordinarily returning the starting address and quantity in the write response.",
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers",
+        "Protocol identifier is 0000 in both messages",
+        "The setup read length 0006 matches its five-byte PDU plus unit identifier",
+        "The write length 000d matches its twelve-byte PDU plus unit identifier",
+        "Write function 10 has quantity 0003, byte count 06, and exactly six data bytes",
+        "Transaction identifiers, unit identifier, addresses, and message order are consistent"
+      ],
+      "issue_safety_notes": "Vulnerability issue knowledge is unavailable. This structurally distinct multi-register sequence is based only on model-prior plausibility and supplied Base constraints, with no claim of external verification or issue relevance."
+    }
+  ]
+}

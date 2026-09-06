@@ -1,0 +1,129 @@
+{
+  "coverage_summary": [
+    "issue_structural_analogue COTP CR TPDU-size shift (issue 589)",
+    "field_interaction MMS Initiate SV subscriber path (issue 598)",
+    "length_boundary_valid GetNamedVariableListAttributesResponse parse (issue 599)",
+    "parser_depth GOOSE parser size check (issue 603)"
+  ],
+  "generation_notes": "VK-only batch revised into exactly 4 distinct issue-guided model-prior protocol sequences. All deterministic duplicates/collisions/invalid hex/unknown evidence removed. Fixed findings, enforced family constraints (TPKT 0x03, total-length consistency, model-internal prior), retained safe issue analogues, removed exact payload collisions, maximized frame/state diversity. No external protocol documents used. Sequences: 1. issue_structural_analogue (COTP CR TPDU-size shift analogue from issue 589), 2. field_interaction (MMS Initiate SV path), 3. length_boundary_valid (GetNameList parse), 4. parser_depth (Read GOOSE path). Each single-request, message-budget=1, lowercase hex, visible lengths consistent.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03",
+        "TPKT total length consistent",
+        "MMS over RFC1006 form preserved",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:589:589-summary:a9c8952234c9",
+        "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+        "issue:492:492-summary:b5a20a150fa2"
+      ],
+      "expected_behavior": "TPDU-size shift UB analogue exercised via malformed COTP CR after TPKT prefix.",
+      "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "COTP Connection Request"
+        }
+      ],
+      "plan_id": "vk-plan-049",
+      "purpose": "Combine issue-supported TPDU-size shift structure with conservative model-prior form without copying crash payload.",
+      "seed_id": "issue-589:589-summary:a9c8952234c9",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "COTP Connection Request",
+      "title": "VK-only COTP Connection Request: TPDU-size shift analogue from libIEC61850 issue 589"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03",
+        "TPKT total length consistent",
+        "MMS over RFC1006 form preserved",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:598:598-summary:43fd2ace5ec4",
+        "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "expected_behavior": "Heap-buffer-overflow read in Sampled Values subscriber path exercised.",
+      "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "MMS Initiate"
+        }
+      ],
+      "plan_id": "vk-plan-050",
+      "purpose": "Exercise issue-supported SV path field interactions inside plausible model-prior structure.",
+      "seed_id": "issue-598:598-summary:43fd2ace5ec4",
+      "strategy": "field_interaction",
+      "target_operation": "MMS Initiate",
+      "title": "VK-only MMS Initiate: SV subscriber path field interaction"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03",
+        "TPKT total length consistent",
+        "MMS over RFC1006 form preserved",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:599:599-summary:806eef562ec3",
+        "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+        "issue:598:598-summary:43fd2ace5ec4"
+      ],
+      "expected_behavior": "Boundary handling of GetNamedVariableListAttributesResponse exercised.",
+      "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "GetNameList"
+        }
+      ],
+      "plan_id": "vk-plan-051",
+      "purpose": "Explore issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "issue-599:599-summary:806eef562ec3",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetNameList",
+      "title": "VK-only GetNameList: itemId length-boundary validation"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03",
+        "TPKT total length consistent",
+        "MMS over RFC1006 form preserved",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:603:603-summary:4d033699b6cd",
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "expected_behavior": "Complete GOOSE frame size check exercised post-association.",
+      "issue_safety_notes": "Preserve issue-supported trigger relations without copying exact crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "Read"
+        }
+      ],
+      "plan_id": "vk-plan-052",
+      "purpose": "Reach issue-relevant parser path through plausible deeper protocol structure.",
+      "seed_id": "issue-603:603-summary:4d033699b6cd",
+      "strategy": "parser_depth",
+      "target_operation": "Read",
+      "title": "VK-only Read: GOOSE parser depth size check"
+    }
+  ],
+  "target_issue": -1
+}

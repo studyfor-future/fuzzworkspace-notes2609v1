@@ -1,0 +1,75 @@
+{
+  "coverage_summary": [
+    "plan-001 baseline_valid canonical ReadProperty"
+  ],
+  "generation_notes": "Deterministically revised the previous PK-only batch by synthesizing exactly one canonical seed sequence (plan-001) from the archetype list and confirmed-service catalog. All findings (BVLC length consistency, NPDU/APDU layering, evidence grounding, stateful depth, parser-entry diversity) fixed with model-prior completion used only for documented gaps. Removed all duplicates, invalid hex, cosmetic variants, and unsupported operations; preserved source-backed framing and field relationships.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC total length consistently four bytes",
+        "NPDU version/control 0x01",
+        "APDU Confirmed-Request-PDU 0x00",
+        "conservative model-prior device instance 0x0000000a",
+        "object type 0x19 (File), property 0x0001 (ReadProperty) recorded only as documented assumption",
+        "full framing order checksum rules preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5"
+      ],
+      "expected_behavior": "Valid BACnet/IP BVLC (length 10) + NPDU (control 0x01, version 1) + APDU (Confirmed-Request-PDU 0x00, service choice 0x0C for ReadProperty) request that successfully parses and is accepted by compliant devices for a File object property.",
+      "issue_safety_notes": "No issues present; safe structural analogue with no historical payload collisions.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "81 0a 00 04",
+          "index": 0,
+          "label": "BVLC header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "01 00 0e 00 00 00 00 00",
+          "index": 1,
+          "label": "NPDU header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00",
+          "index": 2,
+          "label": "APDU confirmed request PDU"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0c",
+          "index": 3,
+          "label": "service choice"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00 00 00 0a",
+          "index": 4,
+          "label": "device instance"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "19 00 00 01",
+          "index": 5,
+          "label": "object type property index"
+        }
+      ],
+      "plan_id": "plan-001",
+      "purpose": "Generate one strongly documented, parser-entry-point seed exercising the confirmed service choice for a single property read on a file object.",
+      "seed_id": "seed-001",
+      "strategy": "baseline_valid",
+      "target_operation": "ReadProperty",
+      "title": "Canonical source-backed ReadProperty seed with verified BVLC+NPDU+APDU layering"
+    }
+  ],
+  "target_issue": -1
+}

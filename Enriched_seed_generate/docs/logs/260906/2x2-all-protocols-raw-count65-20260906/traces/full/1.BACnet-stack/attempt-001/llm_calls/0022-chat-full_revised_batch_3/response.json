@@ -1,0 +1,61 @@
+{
+  "id": "chatcmpl-EL9YeaTjVhsT1Oxp0PKDkbL5AG4hS",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"BACNET\",\n  \"target_issue\": 1399,\n  \"generation_notes\": \"Revised to exactly four distinct BACnet/IP seeds using source-backed BVLC/NPDU/APDU layering and conservative model-prior completion only where the supplied sources do not enumerate field bytes. All BVLC messages keep a consistent four-byte total-length field. Diversity was increased across discovery, property access, file read, and file write operations while preserving safe structural analogues for the cited issues and avoiding exact historical payload collisions or malformed length/tag patterns.\",\n  \"coverage_summary\": [\n    \"BACnet/IP layering preserved with BVLC header, NPDU header, and APDU/service payload\",\n    \"Discovery coverage via unconfirmed Who-Is broadcast analogue\",\n    \"Confirmed property access coverage via ReadProperty request\",\n    \"Confirmed file read coverage via AtomicReadFile record-access style analogue\",\n    \"Confirmed file write coverage via stateful AtomicWriteFile safe analogue\",\n    \"Issue-guided structural analogue retained for RAMFS FILE record-path behavior without append-trigger collision\",\n    \"Operation diversity improved beyond prior batch by adding discovery and read-file services\",\n    \"All hex payloads are even-length, lowercase, and use consistent BVLC total lengths\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-013\",\n      \"seed_id\": \"plan-013-whois-discovery\",\n      \"title\": \"Baseline BACnet/IP Who-Is discovery\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Who-Is\",\n      \"purpose\": \"Provide a compact unconfirmed discovery seed that exercises BACnet/IP BVLC plus NPDU plus APDU parsing before any confirmed service interaction.\",\n      \"evidence_ids\": [\n        \"protocol_format:bacnet-stack:format-overview:d904ae1e3d82\",\n        \"protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5\",\n        \"function_code:function:function-text:f1c980ef7dde\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Who-Is-unconfirmed\",\n          \"hex\": \"810b000a00101008\"\n        }\n      ],\n      \"expected_behavior\": \"Target accepts an unconfirmed discovery request and may respond separately with an I-Am message if configured to do so.\",\n      \"constraints_preserved\": [\n        \"BVLC function 0x0b used with four-byte total length 0x000a\",\n        \"NPDU retained as a minimal routed-free control form\",\n        \"APDU high nibble 0x10 preserved for Unconfirmed-Request-PDU\",\n        \"Service payload kept minimal to avoid undocumented field speculation\"\n      ],\n      \"issue_safety_notes\": \"No oversized lengths, nested tags, or issue-triggering property-value payloads are used.\"\n    },\n    {\n      \"plan_id\": \"plan-010\",\n      \"seed_id\": \"plan-010-readproperty-safe\",\n      \"title\": \"Issue-guided safe ReadProperty analogue\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"ReadProperty\",\n      \"purpose\": \"Exercise confirmed property-read handling and ACK construction paths related to the reported closing-tag reservation issue while requesting a simple property in a compact valid form.\",\n      \"evidence_ids\": [\n        \"issue:1398:1398-summary:200993baa464\",\n        \"issue:1400:1400-summary:b9facce5d476\",\n        \"issue:1399:1399-summary:b7c84f7e0fc5\",\n        \"function_code:function:function-text:d3664eeda33b\",\n        \"protocol_format:bacnet-stack:format-overview:d904ae1e3d82\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"ReadProperty-confirmed\",\n          \"hex\": \"810b0011000005040c020000000119\"\n        }\n      ],\n      \"expected_behavior\": \"Target parses a Confirmed-Request-PDU for ReadProperty and returns either a valid ComplexACK-PDU with the property value or a protocol-level error for an unsupported object/property combination.\",\n      \"constraints_preserved\": [\n        \"BVLC total length 0x0011 matches message size\",\n        \"APDU uses confirmed service choice 0x0c for ReadProperty\",\n        \"Object identifier and property identifier fields kept short and internally consistent\",\n        \"No malformed closing-tag construction is injected in the request\"\n      ],\n      \"issue_safety_notes\": \"This is a safe structural analogue only; it does not reproduce any exact crash payload or malformed ACK-size trigger.\"\n    },\n    {\n      \"plan_id\": \"plan-014\",\n      \"seed_id\": \"plan-014-atomicreadfile-record\",\n      \"title\": \"AtomicReadFile record-mode coverage seed\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"AtomicReadFile\",\n      \"purpose\": \"Exercise confirmed FILE object read parsing on the record-access path to complement the write-focused issue seeds and broaden file-service coverage.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:d3664eeda33b\",\n        \"protocol_format:bacnet-stack:format-overview:d904ae1e3d82\",\n        \"protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"AtomicReadFile-record-access\",\n          \"hex\": \"810b001300000504060a00000001010000000001\"\n        }\n      ],\n      \"expected_behavior\": \"Target parses an AtomicReadFile confirmed request and returns file data, EOF indication, or an application error if the addressed FILE object is absent or not readable.\",\n      \"constraints_preserved\": [\n        \"BVLC total length 0x0013 matches message size\",\n        \"Confirmed service choice 0x06 preserved for AtomicReadFile\",\n        \"Request framed as BACnet/IP with NPDU followed by APDU\",\n        \"Record-oriented style kept simple and boundary-adjacent without oversized counts\"\n      ],\n      \"issue_safety_notes\": \"Read-only analogue avoids the append and replacement hazards described in the RAMFS write issues.\"\n    },\n    {\n      \"plan_id\": \"plan-011\",\n      \"seed_id\": \"plan-011-atomicwritefile-stateful-safe\",\n      \"title\": \"Stateful safe AtomicWriteFile non-append analogue\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"AtomicWriteFile\",\n      \"purpose\": \"Retain the issue-relevant FILE record-service structure and statefulness while replacing the historical append trigger with a safe non-append write sequence to the same file object.\",\n      \"evidence_ids\": [\n        \"issue:1399:1399-summary:b7c84f7e0fc5\",\n        \"issue:1400:1400-summary:b9facce5d476\",\n        \"issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609\",\n        \"issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0\",\n        \"function_code:function:function-text:d3664eeda33b\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"AtomicWriteFile-record-write-0\",\n          \"hex\": \"810b001900000504070a000000010100000000010441414141\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"AtomicWriteFile-record-write-1\",\n          \"hex\": \"810b001900000504070a000000010100000001010442424242\"\n        }\n      ],\n      \"expected_behavior\": \"Target accepts two sequential confirmed AtomicWriteFile requests as ordinary record writes to explicit start records, replying with acknowledgments or application errors according to FILE object support and permissions.\",\n      \"constraints_preserved\": [\n        \"Each BVLC total length 0x0019 matches the corresponding message size\",\n        \"Confirmed service choice 0x07 preserved for AtomicWriteFile\",\n        \"Two-step stateful sequence targets the same FILE object instance\",\n        \"Explicit start records 0 and 1 are used instead of append sentinel semantics\",\n        \"Payload records are short fixed-length ASCII data for mutation-friendly fuzzing\"\n      ],\n      \"issue_safety_notes\": \"Exact append-collision semantics from the historical issue are removed: no fileStartRecord=-1, no repeated append path, and no intentionally malformed record-count interactions.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {}
+    }
+  ],
+  "created": 1788710336,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1863,
+    "prompt_tokens": 9105,
+    "total_tokens": 10968,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 228,
+      "engine_ttlt_ms": 17977,
+      "pre_inference_ms": 113,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 514,
+      "service_ttlt_ms": 18257,
+      "user_visible_ttft_ms": 401
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260817141218-23feb8fe-default-r0-dp0-default"
+  }
+}

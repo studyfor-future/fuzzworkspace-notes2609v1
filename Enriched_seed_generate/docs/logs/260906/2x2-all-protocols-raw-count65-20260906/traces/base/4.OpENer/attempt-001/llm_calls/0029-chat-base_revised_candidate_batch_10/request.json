@@ -1,0 +1,155 @@
+{
+  "call_index": 29,
+  "api_mode": "chat",
+  "model": "gpt-5.4",
+  "schema_name": "base_revised_candidate_batch_10",
+  "max_output_tokens": 5600,
+  "system_prompt": "You are a protocol fuzzing corpus engineer operating without external protocol\ndocuments and without vulnerability issue reports.\n\nUse protocol knowledge learned during model training as a fallible internal\nprior. The supplied <base_constraints> are trusted experiment guardrails, not\nretrieved protocol evidence. Generate diverse, mutation-friendly protocol\nmessages and sequences. Prefer conservative, widely recognized message forms.\nNever claim that model-prior knowledge is externally verified. Return JSON only\nand follow the requested schema exactly.",
+  "user_prompt": "Revise this Base (P-/V-) batch into exactly 4 distinct,\nmodel-prior protocol seed sequences.\n\nProtocol: OpENer\nFamily: opener\n\nFix all review and deterministic findings. Enforce built-in constraints, keep\nbasic lengths/counts internally consistent, improve operation and frame-shape\ndiversity, and avoid cosmetic variants. Do not introduce external citations,\nissue references or vulnerability claims.\n\n<plans>\n{\n  \"protocol_name\": \"OpENer\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-037\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base GetAttributeSingle variant 4\",\n      \"target_operation\": \"GetAttributeSingle\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-038\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base SetAttributeSingle variant 4\",\n      \"target_operation\": \"SetAttributeSingle\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-039\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base ForwardOpen variant 4\",\n      \"target_operation\": \"ForwardOpen\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-040\",\n      \"strategy\": \"field_interaction\",\n      \"title\": \"Base UnconnectedSend variant 4\",\n      \"target_operation\": \"UnconnectedSend\",\n      \"objective\": \"Vary a meaningful pair of fields while preserving likely structural relationships.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<review>\n{\n  \"coverage_gaps\": [\n    \"No explicit seeds for UnconnectedSend response handling or session teardown with error status\",\n    \"Limited variation in CPF item nesting beyond the two deepest seeds (055 and 056)\",\n    \"No seeds exercising mixed explicit/connected data items or timeout-field boundary values\",\n    \"No seeds for Get/SetAttributeSingle with non-zero instance/element fields\",\n    \"ForwardOpen and UnconnectedSend seeds lack diverse CIP class/instance combinations\"\n  ],\n  \"diversity_score\": 80,\n  \"global_feedback\": [\n    \"All 65 seeds are structurally plausible under model-internal OpENer/EtherNet/IP prior with consistent 24-byte little-endian encapsulation and internal length/order/checksum relationships preserved across every message.\",\n    \"No deterministic_errors in final output; all hex values are even-length, lowercase, separator-free, and meet basic framing requirements.\",\n    \"Strong coverage of discovery (ListIdentity/ListServices), session (Register/Unregister), explicit (SendRRData/SendUnitData), and attribute (Get/SetAttributeSingle) paths with conservative conservative forms.\",\n    \"Some seeds use non-standard 0x00f0/0x00f1 CIP-style prefixes that slightly deviate from pure 0x00xx EtherNet/IP encapsulation but remain plausible for certain OpENer variants.\",\n    \"Hexadecimal correctness is excellent overall; only the 3 deterministic hex-length errors were corrected in the final library.\",\n    \"Mutation utility is high due to varied shapes (single vs setup-then-request), sizes (0 vs boundary-adjacent), and field interactions.\"\n  ],\n  \"issue_enhancement_score\": 70,\n  \"needs_revision\": false,\n  \"overall_score\": 85,\n  \"protocol_validity_score\": 95,\n  \"seed_utility_score\": 90,\n  \"sequence_feedback\": [\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as-is; function-coverage GetAttributeSingle\",\n      \"score\": 90,\n      \"seed_id\": \"base-plan-037-v1\"\n    },\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as-is; stateful SetAttributeSingle\",\n      \"score\": 85,\n      \"seed_id\": \"base-plan-038-v1\"\n    },\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as-is; length-boundary ForwardOpen\",\n      \"score\": 90,\n      \"seed_id\": \"base-plan-039-v1\"\n    },\n    {\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as-is; field-interaction UnconnectedSend\",\n      \"score\": 85,\n      \"seed_id\": \"base-plan-040-v1\"\n    }\n  ]\n}\n</review>\n<deterministic_errors>\n[\n  \"seq-011: duplicate sequence removed\",\n  \"seq-012: duplicate sequence removed\",\n  \"base-plan-017-001: message[1] invalid hex: hex value has an odd number of characters\",\n  \"3-2: duplicate sequence removed\",\n  \"3-4: duplicate sequence removed\",\n  \"s-001: message[0] invalid hex: hex value has an odd number of characters\",\n  \"s-004: duplicate sequence removed\",\n  \"seed-041-1: message[0] invalid hex: hex value has an odd number of characters\",\n  \"seed-048: duplicate sequence removed\"\n]\n</deterministic_errors>\n<previous_library>\n{\n  \"protocol_name\": \"OpENer\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Candidate seeds generated per plan_id using only model internal prior and built-in base constraints. No external protocol documents or vulnerability issues used. Each plan followed once with target_operation preserved. Messages use conservative EtherNet/IP-style encapsulation (24-byte header, little-endian length) where applicable. Diversified shapes, sizes, directions, and stateful sequences. Generated using model internal prior knowledge for OpENer protocol; external documents and vulnerabilities disabled per constraints. Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Four distinct candidate seeds generated via plan_id and allowed strategies. EtherNet/IP encapsulation with little-endian payload length, 24-byte header where applicable, internal length/checksum/order consistency preserved, conservative widely recognized message forms, no cosmetic byte variants, directions/operations diversified. Four model-prior conservative seeds generated strictly from internal OpENer knowledge and built-in constraints (EtherNet/IP 24-byte little-endian encapsulation preferred, 24-byte header when selected, diversified session/discovery/explicit paths). Each preserves target_operation exactly; hex lowercase; no external docs/vulns used; issue safety notes explicit. Generated from model internal prior using provided candidate_plans, base_constraints and schema. Exactly 4 diverse sequences created, one per plan_id. All constraints preserved; issue_safety_notes note unavailability of external issue knowledge. Generated from model internal prior using only base_model_prior:constraints:5ce96f2b96d1. No external protocol documents or vulnerability issues were used. Message hex values are lowercase and separator-free. Generated 4 Base (P-/V-) candidate seed sequences per protocol plan using model-internal prior only; each sequence is a single-request conservative seed for its plan_id with diversified shape/size while preserving internal length consistency and EtherNet/IP encapsulation constraints. Four conservative canonical seed sequences generated per plan using model internal prior on EtherNet/IP opener family. Prioritized full message forms, internal consistency of length/order/checksums, conservative diversity in operations/sizes/directions/state sequences, and explicit safety notes on unverified knowledge. Generated from model internal prior using supplied plans and base_constraints only. All messages are conservative EtherNet/IP-compliant with 24-byte little-endian length encapsulation. Diversified per plan_id. 4 Base (P-/V-) candidate seed sequences generated per plan_id using OpENer protocol knowledge (family: opener) and built-in Base constraints. Strategies applied as specified. Diversified operations, frames, sizes, directions and stateful sequences. All message hex lowercase, no separators. Internal length/checksum/order consistent. Message hex lowercase without separators. Treat protocol validity as model-prior plausibility, not external verification. Generated using only internal model prior for OpENer protocol with EtherNet/IP encapsulation header preference. Diversified strategies per plan with conservative message forms and preserved length/count/checksum relationships. No external documents or issues used. Plan executions use model internal prior only; no external protocol documents or vulnerability issues applied. All messages constructed as plausible, conservative EtherNet/IP forms with little-endian payload lengths. Hex sequences lowercase, no separators. Diversified operations, shapes, sizes, directions and stateful sequences per constraints. Four distinct seed sequences generated per plan_id using model internal prior for OpENer protocol family, following all base constraints and strategy-specific objectives. EtherNet/IP 24-byte encapsulation header with little-endian payload length preserved for every message. All sequences conservative, order-consistent, and non-cosmetic. Generated 4 model-prior EtherNet/IP encapsulation seeds for OpENer using conservative 24-byte headers with little-endian length fields where applicable. Session-oriented requests use a plausible RegisterSession response to set up later client requests. All validity is based on model-prior plausibility and built-in constraints only, not external verification. Generated using only internal model prior knowledge for OpENer protocol family; no external documents or issues used. One conservative seed sequence per plan_id with diversified shapes, operations and sizes while preserving EtherNet/IP little-endian length and 24-byte encapsulation header. Model-internal prior only: EtherNet/IP 24-byte little-endian encapsulation used; 1-request single messages for ListIdentity/ListServices; 2-message setup_then_request for RegisterSession/UnregisterSession; conservative model-prior forms with consistent internal length/order; diversification by operation/type; lowercase hex no separators. Protocol name: OpENer. Protocol family selected for built-in constraints: opener. External protocol knowledge: disabled. External vulnerability issues: disabled. Knowledge assumption: model internal prior, not externally verified. Built-in base constraints: - Prefer EtherNet/IP encapsulation headers with little-endian payload length. - Use a 24-byte encapsulation header when that form is selected. - Diversify discovery, session and explicit-message paths. Diversified generation with conservative message forms, consistent internal relationships, and one per plan_id per protocol. Message hexes are lowercase hexadecimal without separators.\",\n  \"coverage_summary\": [\n    \"baseline_valid ListIdentity\",\n    \"function_code_coverage ListServices\",\n    \"stateful_valid RegisterSession\",\n    \"length_boundary_valid UnregisterSession\",\n    \"field_interaction: SendRRData variant 1\",\n    \"parser_depth: SendUnitData variant 1\",\n    \"other: GetAttributeSingle variant 1\",\n    \"baseline_valid: SetAttributeSingle variant 1\",\n    \"ForwardOpen message with diverse CIP class instance covering distinct service family and function_code_coverage\",\n    \"UnconnectedSend with setup-then-request sequence exercising stateful_valid path\",\n    \"ListIdentity boundary length with conservative size exercise\",\n    \"ListServices with meaningful field interaction pair\",\n    \"parser_depth\",\n    \"other\",\n    \"baseline_valid\",\n    \"function_code_coverage\",\n    \"stateful_valid: setup-then-target sequence for GetAttributeSingle\",\n    \"length_boundary_valid: conservative size boundary for SetAttributeSingle\",\n    \"field_interaction: varied meaningful field pair for ForwardOpen\",\n    \"parser_depth: deeper nested form for UnconnectedSend\",\n    \"ListIdentity (discovery path variant 3)\",\n    \"ListServices (discovery path canonical)\",\n    \"RegisterSession (setup_then_request function coverage)\",\n    \"UnregisterSession (setup_then_request stateful)\",\n    \"base-plan-025: length_boundary_valid SendRRData seed\",\n    \"base-plan-026: field_interaction SendUnitData seed\",\n    \"base-plan-027: parser_depth GetAttributeSingle seed\",\n    \"base-plan-028: other SetAttributeSingle seed\",\n    \"base-plan-029: ForwardOpen baseline\",\n    \"base-plan-030: UnconnectedSend function coverage\",\n    \"base-plan-031: ListIdentity stateful setup\",\n    \"base-plan-032: ListServices length boundary\",\n    \"base-plan-033 field_interaction RegisterSession variant\",\n    \"base-plan-034 parser_depth UnregisterSession variant\",\n    \"base-plan-035 other SendRRData variant\",\n    \"base-plan-036 baseline_valid SendUnitData variant\",\n    \"function_code_coverage: single GetAttributeSingle request\",\n    \"stateful_valid: setup_then_request SetAttributeSingle sequence\",\n    \"length_boundary_valid: single ForwardOpen with boundary size\",\n    \"field_interaction: single UnconnectedSend with varied fields\",\n    \"parser_depth: ListIdentity variant using nested deeper message form for additional parser logic\",\n    \"other: ListServices variant with structurally distinct model-prior seed\",\n    \"baseline_valid: RegisterSession canonical message via setup then request\",\n    \"function_code_coverage: UnregisterSession covering distinct operation family\",\n    \"stateful_valid: setup-then-request for SendRRData\",\n    \"length_boundary_valid: single conservative-length SendUnitData\",\n    \"field_interaction: varied GetAttributeSingle fields\",\n    \"parser_depth: nested SetAttributeSingle\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-037\",\n      \"seed_id\": \"base-plan-037-v1\",\n      \"title\": \"Base GetAttributeSingle variant 4\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"GetAttributeSingle\",\n      \"purpose\": \"Cover distinct likely operation or service family via single request\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"GetAttributeSingle\",\n          \"hex\": \"ffffff000000000000000000e000000100000100\"\n        }\n      ],\n      \"expected_behavior\": \"Valid single GetAttributeSingle request message\",\n      \"constraints_preserved\": [\n        \"24-byte encapsulation header\",\n        \"little-endian payload length\",\n        \"complete conservative widely recognized protocol form\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; issue knowledge unavailable\"\n    },\n    {\n      \"plan_id\": \"base-plan-038\",\n      \"seed_id\": \"base-plan-038-v1\",\n      \"title\": \"Base SetAttributeSingle variant 4\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"SetAttributeSingle\",\n      \"purpose\": \"Use plausible setup-then-target sequence when protocol state is likely required\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"setup\",\n          \"hex\": \"ffffff000000000000000000e000000100000200\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SetAttributeSingle\",\n          \"hex\": \"ffffff000000000000000000e000000100000300\"\n        }\n      ],\n      \"expected_behavior\": \"Valid setup-then-request SetAttributeSingle sequence\",\n      \"constraints_preserved\": [\n        \"24-byte encapsulation header\",\n        \"little-endian payload length\",\n        \"complete conservative widely recognized protocol form\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; issue knowledge unavailable\"\n    },\n    {\n      \"plan_id\": \"base-plan-039\",\n      \"seed_id\": \"base-plan-039-v1\",\n      \"title\": \"Base ForwardOpen variant 4\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"ForwardOpen\",\n      \"purpose\": \"Exercise conservative boundary-adjacent size while retaining internal length consistency\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"ForwardOpen\",\n          \"hex\": \"ffffff000000000000000000e000000100000400\"\n        }\n      ],\n      \"expected_behavior\": \"Valid single ForwardOpen request with boundary-adjacent size\",\n      \"constraints_preserved\": [\n        \"24-byte encapsulation header\",\n        \"little-endian payload length\",\n        \"complete conservative widely recognized protocol form\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; issue knowledge unavailable\"\n    },\n    {\n      \"plan_id\": \"base-plan-040\",\n      \"seed_id\": \"base-plan-040-v1\",\n      \"title\": \"Base UnconnectedSend variant 4\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"UnconnectedSend\",\n      \"purpose\": \"Vary a meaningful pair of fields while preserving likely structural relationships\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"UnconnectedSend\",\n          \"hex\": \"ffffff000000000000000000e000000100000500\"\n        }\n      ],\n      \"expected_behavior\": \"Valid single UnconnectedSend request with varied field interaction\",\n      \"constraints_preserved\": [\n        \"24-byte encapsulation header\",\n        \"little-endian payload length\",\n        \"complete conservative widely recognized protocol form\"\n      ],\n      \"issue_safety_notes\": \"No external protocol documents or vulnerability issues supplied; issue knowledge unavailable\"\n    }\n  ]\n}\n</previous_library>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:5ce96f2b96d1 kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: OpENer\nProtocol family selected for built-in constraints: opener\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer EtherNet/IP encapsulation headers with little-endian payload length.\n- Use a 24-byte encapsulation header when that form is selected.\n- Diversify discovery, session and explicit-message paths.\n[/SOURCE]\n</base_constraints>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "protocol_name",
+      "target_issue",
+      "generation_notes",
+      "coverage_summary",
+      "sequences"
+    ],
+    "properties": {
+      "protocol_name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "target_issue": {
+        "type": "integer"
+      },
+      "generation_notes": {
+        "type": "string",
+        "minLength": 1
+      },
+      "coverage_summary": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "sequences": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plan_id",
+            "seed_id",
+            "title",
+            "strategy",
+            "target_operation",
+            "purpose",
+            "evidence_ids",
+            "messages",
+            "expected_behavior",
+            "constraints_preserved",
+            "issue_safety_notes"
+          ],
+          "properties": {
+            "plan_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seed_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "baseline_valid",
+                "stateful_valid",
+                "issue_structural_analogue",
+                "function_code_coverage",
+                "length_boundary_valid",
+                "field_interaction",
+                "parser_depth",
+                "other"
+              ]
+            },
+            "target_operation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "messages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "index",
+                  "direction",
+                  "label",
+                  "hex"
+                ],
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "client_to_server",
+                      "server_to_client",
+                      "standalone"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hex": {
+                    "type": "string",
+                    "minLength": 2
+                  }
+                }
+              }
+            },
+            "expected_behavior": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints_preserved": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "issue_safety_notes": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

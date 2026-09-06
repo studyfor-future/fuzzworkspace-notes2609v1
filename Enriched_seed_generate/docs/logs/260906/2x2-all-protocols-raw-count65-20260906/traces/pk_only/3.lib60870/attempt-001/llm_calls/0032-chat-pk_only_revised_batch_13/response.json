@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELAnhAtkl6kiYc3WHuUnMowpDCfzI",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"IEC60870\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Rebuilt this PK-only batch as exactly four source-grounded IEC 60870-5-104 APDU seeds to avoid the prior 101/104 hybrid errors. Supplied sources explicitly cover the 0x68 IEC 60870-5-104 start byte, U-format frame types, TypeIDs including C_SC_NA_1 and C_DC_NA_1, Cause of Transmission values including test and confirmation semantics, and interrogation qualifier 20 for station interrogation. Where the sources were incomplete on exact APDU field packing, conservative model-prior completion was used for standard 104 APCI/I-format and U-format layouts without contradicting supplied evidence. Length octets were recalculated to match each frame exactly. The four seeds are intentionally distinct across U-format control, stateful U+I exchange, control command TypeID 45, and monitoring/report TypeID 5 with spontaneous COT 3 to improve parser and state coverage while preserving valid frame relationships.\",\n  \"coverage_summary\": [\n    \"Pure IEC 60870-5-104 U-format coverage with exact 0x68 start and 4-byte control field for TESTFR activation\",\n    \"Stateful IEC 60870-5-104 sequence combining STARTDT activation/confirmation with a valid General Interrogation I-format ASDU using TypeID 100 and QOI 20\",\n    \"Control-direction I-format command coverage using TypeID 45 C_SC_NA_1 with activation cause\",\n    \"Monitoring-direction I-format report coverage using TypeID 5 M_ST_NA_1 with spontaneous cause\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-049\",\n      \"seed_id\": \"plan-049-testfr-act-104-001\",\n      \"title\": \"IEC 60870-5-104 TESTFR activation U-format\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Test operation\",\n      \"purpose\": \"Provide a clean U-format parser entry for 104 test handling without malformed ASDU mixing.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"function_code:function:function-text:14a1385d5f57\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"TESTFR act\",\n          \"hex\": \"680443000000\"\n        }\n      ],\n      \"expected_behavior\": \"A 104 peer should recognize a valid TESTFR activation U-format APDU and either accept it as a keepalive/test control frame or answer with the corresponding TESTFR confirmation.\",\n      \"constraints_preserved\": [\n        \"Uses IEC 60870-5-104 APDU start byte 0x68 from supplied source\",\n        \"Uses standard 104 U-format shape with 4 control bytes and no ASDU\",\n        \"Length octet 0x04 matches the 4-byte control field exactly\",\n        \"No FT1.2 checksum, repeated-length, or end-delimiter fields were mixed into this 104 frame\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; no historical exploit payload retained. This is a safe structural control-frame analogue chosen to replace malformed prior test examples.\"\n    },\n    {\n      \"plan_id\": \"plan-050\",\n      \"seed_id\": \"plan-050-startdt-gi-104-001\",\n      \"title\": \"STARTDT handshake followed by General Interrogation\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Station Interrogation\",\n      \"purpose\": \"Exercise connection state handling first, then drive I-format ASDU parsing for C_IC_NA_1 with station interrogation qualifier 20.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:dba2914dfe00\",\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"function_code:function:function-text:187ce180236e\",\n        \"function_code:function:function-text:3cbe16bf065a\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT act\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"STARTDT con\",\n          \"hex\": \"68040b000000\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"General Interrogation activation QOI=20\",\n          \"hex\": \"680e00000000640106000100000014\"\n        }\n      ],\n      \"expected_behavior\": \"After STARTDT activation and confirmation, the peer should accept the I-format APDU as a General Interrogation activation using TypeID 100, VSQ 1, activation cause 6, common address 1, IOA 0, and interrogation qualifier 20.\",\n      \"constraints_preserved\": [\n        \"All frames use IEC 60870-5-104 0x68 APDU framing only\",\n        \"U-format STARTDT act/con control bytes are kept distinct from I-format control bytes\",\n        \"General Interrogation uses QOI 20 exactly as cited by supplied interrogation qualifier evidence\",\n        \"I-format APDU length 0x0e equals 4 control bytes plus 10 ASDU bytes\",\n        \"ASDU field order preserved as TypeID, VSQ, COT, common address, IOA, object payload\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed. Uses standard stateful handshake and canonical interrogation structure rather than any issue-derived malformed sequence.\"\n    },\n    {\n      \"plan_id\": \"plan-052\",\n      \"seed_id\": \"plan-052-single-command-104-001\",\n      \"title\": \"Single Command activation C_SC_NA_1\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Positive confirmation\",\n      \"purpose\": \"Add an unambiguous control-direction I-format seed using documented TypeID 45 for single command and a normal activation cause that can elicit confirmation handling.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:d8995aeae15b\",\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"C_SC_NA_1 activation ON\",\n          \"hex\": \"680e000000002d0106000100010001\"\n        }\n      ],\n      \"expected_behavior\": \"A compliant peer should parse this as a single-command activation ASDU with TypeID 45, one information object at IOA 1, and a command byte requesting an ON state; a normal positive activation confirmation may follow in response depending on endpoint policy.\",\n      \"constraints_preserved\": [\n        \"TypeID 45 is taken directly from supplied source for C_SC_NA_1\",\n        \"I-format APCI used consistently with 104 framing\",\n        \"Length octet 0x0e matches 4 control bytes plus 10 ASDU bytes\",\n        \"One-object VSQ used and IOA retained as 3-byte field\",\n        \"Cause field kept as a standard activation request to avoid contradiction with supplied positive/negative confirmation catalog text\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; intentionally uses a conservative canonical command layout and avoids any exact prior malformed payload.\"\n    },\n    {\n      \"plan_id\": \"plan-051\",\n      \"seed_id\": \"plan-051-spontaneous-mstna1-104-001\",\n      \"title\": \"Spontaneous step-position report M_ST_NA_1\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Spontaneous\",\n      \"purpose\": \"Cover monitoring/report parsing with a distinct spontaneous indication path using documented TypeID 5 step-position information.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"function_code:function:function-text:83986922f28d\",\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"server_to_client\",\n          \"label\": \"M_ST_NA_1 spontaneous report\",\n          \"hex\": \"680f0000000005010300010200001100\"\n        }\n      ],\n      \"expected_behavior\": \"A 104 receiver should parse this as one spontaneous M_ST_NA_1 information object from common address 1, IOA 2, carrying a step-position value byte and quality byte.\",\n      \"constraints_preserved\": [\n        \"TypeID 5 M_ST_NA_1 is taken from supplied source\",\n        \"Cause of transmission set to spontaneous (3), correcting the prior semantic mismatch\",\n        \"Direction set server_to_client to reflect monitoring/report style traffic\",\n        \"APDU length 0x0f equals 4 control bytes plus 11 ASDU bytes\",\n        \"ASDU keeps single-object ordering with TypeID, VSQ, COT, CA, IOA, then object payload\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; semantic correction only. Uses a safe canonical spontaneous report structure and avoids prior invalid hybrids.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788715113,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2051,
+    "prompt_tokens": 10105,
+    "total_tokens": 12156,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 361,
+      "engine_ttlt_ms": 20382,
+      "pre_inference_ms": 113,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 509,
+      "service_ttlt_ms": 20525,
+      "user_visible_ttft_ms": 396
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260826104332-81920462-default-r2-dp0-default"
+  }
+}

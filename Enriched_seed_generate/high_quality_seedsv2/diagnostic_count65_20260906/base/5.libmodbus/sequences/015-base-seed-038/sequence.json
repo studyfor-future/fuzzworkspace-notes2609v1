@@ -1,0 +1,62 @@
+{
+  "seed_id": "base-seed-038",
+  "title": "Base Read Discrete Inputs variant 4",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Exercise a standalone request with complete fields and diverse quantity for Read Discrete Inputs.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Discrete Inputs request, unit 12, address 0x0000, quantity 0x0010",
+      "hex": "0002000000060c0200000010",
+      "byte_length": 12,
+      "sha256": "c0922b972aab90636fd660996fb78e8b5184d046dde2af212aca97f50f7b7480"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Discrete Inputs response (input status bytes)",
+      "hex": "0002000000060c0201010100",
+      "byte_length": 12,
+      "sha256": "683d4940cc09cc6beadd9004a6018a66050217f2a0e4bde7f66cceae3593ea1a"
+    }
+  ],
+  "expected_behavior": "The server should process the request as a Read Discrete Inputs operation and return the corresponding input status or a normal Modbus exception response.",
+  "constraints_preserved": [
+    "Each message has a 7-byte MBAP header.",
+    "Protocol identifier is 0000.",
+    "MBAP length field accounts for unit byte plus PDU.",
+    "Function codes 02 use the standard five-byte read-request shape.",
+    "Requested quantities are positive and conservative."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The sequence models ordinary stateful traffic without asserting that Modbus/TCP requires session setup.",
+  "sequence_sha256": "dd8a31ff5ed8961f892c5af6e1d0357e0f4012bdaba8b87a4e29246d16a162a8",
+  "total_bytes": 24,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "716ec2d13b639b60fe6c67fdb1440748129e35c066237c655be2b77bc24d6c6c",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "seed_id": "seed-001-3",
+  "title": "Canonical source-backed ReadProperty seed with verified BVLC+NPDU+APDU layering",
+  "strategy": "baseline_valid",
+  "target_operation": "ReadProperty",
+  "purpose": "Generate one strongly documented, parser-entry-point seed exercising the confirmed service choice for a single property read on a file object.",
+  "evidence_ids": [
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:457cd2894efe",
+    "function_code:function:operation-catalog:30d3483f070c",
+    "function_code:function:operation-catalog:77a3af392c60",
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC header",
+      "hex": "810a0004",
+      "byte_length": 4,
+      "sha256": "036bd6e41b20db01ed75f084ff8f058ab8458623d91292f6656c177e5c865a5a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "NPDU header",
+      "hex": "01000e0000000000",
+      "byte_length": 8,
+      "sha256": "856d73f4129bfaf900c35148343c0d971197d5b908cf22fa1992817c483217fe"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "APDU confirmed request PDU",
+      "hex": "00",
+      "byte_length": 1,
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "service choice",
+      "hex": "0c",
+      "byte_length": 1,
+      "sha256": "ef6cbd2161eaea7943ce8693b9824d23d1793ffb1c0fca05b600d3899b44c977"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "device instance",
+      "hex": "0000000a",
+      "byte_length": 4,
+      "sha256": "e084a105a7b7d599b8346d3cba5ac51b756d7e29c7ef77fd9eff31fdeae31389"
+    },
+    {
+      "index": 5,
+      "direction": "client_to_server",
+      "label": "object type property index",
+      "hex": "19000001",
+      "byte_length": 4,
+      "sha256": "f514660c404fb9c75e52f42f4e73b0b87b96de7eb847af5d151dd0e8258354b0"
+    }
+  ],
+  "expected_behavior": "Valid BACnet/IP BVLC (length 10) + NPDU (control 0x01, version 1) + APDU (Confirmed-Request-PDU 0x00, service choice 0x0C for ReadProperty) request that successfully parses and is accepted by compliant devices for a File object property.",
+  "constraints_preserved": [
+    "BVLC total length consistently four bytes",
+    "NPDU version/control 0x01",
+    "APDU Confirmed-Request-PDU 0x00",
+    "conservative model-prior device instance 0x0000000a",
+    "object type 0x19 (File), property 0x0001 (ReadProperty) recorded only as documented assumption",
+    "full framing order checksum rules preserved"
+  ],
+  "issue_safety_notes": "No issues present; safe structural analogue with no historical payload collisions.",
+  "sequence_sha256": "a0d0fe22a52ae2e9e8522428631f4d505ef0726af2f762b94c28cf1e539752c5",
+  "total_bytes": 22,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0b899d4f31913ca3a6eafae1fed5ff354f9a16ff893eb3a4b79eee9c53182e81",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 4,
+        "payload_offset": 4,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 1,
+        "frame_length": 1
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 13,
+        "payload_offset": 13,
+        "payload_length": 1,
+        "frame_length": 1
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 5,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 4,
+        "frame_length": 4
+      }
+    ]
+  }
+}

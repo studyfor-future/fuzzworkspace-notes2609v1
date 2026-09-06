@@ -1,0 +1,141 @@
+{
+  "coverage_summary": [
+    "issue_structural_analogue",
+    "field_interaction",
+    "length_boundary_valid",
+    "parser_depth"
+  ],
+  "generation_notes": "VK-only candidate sequences derived exclusively from provided issue distilled summaries and model-internal prior, preserving every built-in BACnet/IP BVLC/NPDU/APDU layering and family constraint while using only the listed evidence_ids. Four distinct plans executed with maximal operation/frame/size/state diversity; all hex lowercase no separators; visible lengths internally consistent.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC length 4 bytes consistent",
+        "APDU confirmed service confirmed",
+        "RAMFS backend respects fileStartRecord == -1 append path",
+        "record_count() advance limited to allocated buffer"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+        "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6"
+      ],
+      "expected_behavior": "server processes request as append record and returns valid ACK without OOB read or crash",
+      "issue_safety_notes": "issue:1399:1399-summary:b7c84f7e0fc5",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "AtomicWriteFile request"
+        }
+      ],
+      "plan_id": "vk-plan-049",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+      "seed_id": "vk-plan-049",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "AtomicWriteFile",
+      "title": "VK-only AtomicWriteFile: In version 1.6.0-rc1 / current master branch, a RemoveListElement r..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC length 4 bytes consistent",
+        "APDU confirmed service confirmed",
+        "Device_Write_Property_Local interaction avoided",
+        "no self-referential Channel object"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:1342:1342-summary:cdc7c256554d",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+        "issue:1398:1398-summary:200993baa464"
+      ],
+      "expected_behavior": "server processes request and returns valid ACK without DoS or crash",
+      "issue_safety_notes": "issue:cve-2026-47711",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a002001040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "DeviceCommunicationControl request"
+        }
+      ],
+      "plan_id": "vk-plan-050",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+      "seed_id": "vk-plan-050",
+      "strategy": "field_interaction",
+      "target_operation": "DeviceCommunicationControl",
+      "title": "VK-only DeviceCommunicationControl: v1.6.0-rc1 of the current master demo server, built from `apps/serv..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC length 4 bytes consistent",
+        "APDU unconfirmed service confirmed",
+        "fileStartPosition signed value not present",
+        "no AtomicReadFile/AtomicWriteFile path exercised"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d",
+        "issue:cve-2026-21878:cve-2026-21878-summa:ead18a358e0d",
+        "issue:cve-2026-40279:cve-2026-40279-summa:bc43c11a5697",
+        "issue:cve-2026-49990:cve-2026-49990-summa:82314cdd1630",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+      ],
+      "expected_behavior": "server responds with valid I-Am without out-of-bounds read or underflow",
+      "issue_safety_notes": "issue:cve-2026-49990",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "06000100200000000100",
+          "index": 0,
+          "label": "Who-Is request"
+        }
+      ],
+      "plan_id": "vk-plan-051",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+      "seed_id": "vk-plan-051",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Who-Is",
+      "title": "VK-only Who-Is: No affected version is stated. The issue is in handling signed `fil..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC length 4 bytes consistent",
+        "APDU unconfirmed service confirmed",
+        "Device_Write_Property_Local path not exercised",
+        "no WritePropertyLocal interaction"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+        "issue:1398:1398-summary:200993baa464",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1317:1317-summary:4e832876df19",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+      ],
+      "expected_behavior": "server responds with valid I-Am without stack-use-after-return or dangling pointer",
+      "issue_safety_notes": "issue:cve-2026-52790",
+      "messages": [
+        {
+          "direction": "server_to_client",
+          "hex": "810a0008010020010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "I-Am response"
+        }
+      ],
+      "plan_id": "vk-plan-052",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+      "seed_id": "vk-plan-052",
+      "strategy": "parser_depth",
+      "target_operation": "I-Am",
+      "title": "VK-only I-Am: In bacnet-stack 1.6.0-rc1 on the current master branch, `Device_Wri..."
+    }
+  ],
+  "target_issue": 1399
+}

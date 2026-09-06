@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELALdeFHmbLYlqtwFBznUlHwrXPKO",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"iec60870\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised VK-only batch with exactly 4 distinct issue-guided sequences derived only from supplied issue evidence, task constraints, and fallible model-internal IEC 60870 family prior. Exact historical crash payloads were not copied. Built-in family constraints were enforced conservatively by using recognizable 0x68 APCI/U-frame and short I-frame structures with internally consistent visible lengths, distinct operations, and increased frame/state diversity. Duplicate seed identifiers from deterministic errors were avoided.\",\n  \"coverage_summary\": [\n    \"Clock Synchronization with explicit STARTDT prerequisite and shortened time-field analogue\",\n    \"Read Command as a distinct short I-frame path with minimal object structure\",\n    \"STARTDT activation as a pure U-frame link-control archetype\",\n    \"STOPDT activation as a multi-step stateful control sequence including confirmation and follow-on test frame\",\n    \"Pure U-frame coverage added beyond prior duplicated I-frame-heavy cases\",\n    \"State-machine transition examples included for Clock Synchronization prerequisite\",\n    \"Read Command path expanded beyond single isolated duplicate-style payloads\",\n    \"Issue-supported short-ASDU and parser-boundary analogues retained without exact crash-byte reuse\",\n    \"Length octets kept consistent across all frames\",\n    \"Operation diversity spans link control, command/read, and time-handling paths\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-017\",\n      \"seed_id\": \"vk5-seed-017-a\",\n      \"title\": \"Clock Synchronization after conservative link activation\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Clock Synchronization\",\n      \"purpose\": \"Exercise a plausible prerequisite state transition before a compact clock-sync style I-frame whose trailing time payload is intentionally shorter than a fully populated timestamp analogue, preserving the issue relation to time-field handling without copying known crash bytes.\",\n      \"evidence_ids\": [\n        \"issue:53:53-summary:9148432dbf39\",\n        \"issue:54:54-summary:bed996ddfd18\",\n        \"issue:55:55-summary:bc272cfe2177\",\n        \"issue:175:175-summary:1d1910f22105\",\n        \"issue:201:201-summary:798beefc9cab\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"startdt_act_prereq\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"startdt_con_ack\",\n          \"hex\": \"68040b000000\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"clock_sync_short_time_analogue\",\n          \"hex\": \"680d000000006701060100020000112233\"\n        }\n      ],\n      \"expected_behavior\": \"The target should either reject the compact clock synchronization style ASDU cleanly or process it without invalid memory access while traversing COT and time-decoding related paths.\",\n      \"constraints_preserved\": [\n        \"0x68 framing used throughout\",\n        \"visible length octets internally consistent\",\n        \"stateful prerequisite included before target operation\",\n        \"target_operation preserved as Clock Synchronization\",\n        \"message hex lowercase without separators\",\n        \"exact historical crash stream not reused\"\n      ],\n      \"issue_safety_notes\": \"This is a safe structural analogue of reported clock/time and ASDU-access issues. It avoids reproducing the published PoC bytes and keeps the payload compact and mutation-friendly.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-018\",\n      \"seed_id\": \"vk5-seed-018-a\",\n      \"title\": \"Minimal Read Command with short object path\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"Read Command\",\n      \"purpose\": \"Create a distinct mutation-friendly read-command style I-frame using conservative short-object encoding so a fuzzer can vary COT, CA, and IOA fields around a valid-looking baseline while staying separate from previously duplicated VSQ-mismatch analogues.\",\n      \"evidence_ids\": [\n        \"issue:55:55-summary:bc272cfe2177\",\n        \"issue:54:54-summary:bed996ddfd18\",\n        \"issue:200:200-summary:348db1f37fe8\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"read_command_minimal\",\n          \"hex\": \"680a020000006601050100010000\"\n        }\n      ],\n      \"expected_behavior\": \"The implementation should parse the short read-command style ASDU, reject unsupported semantics if necessary, and avoid null dereference or out-of-bounds access in downstream object handling.\",\n      \"constraints_preserved\": [\n        \"widely recognized IEC 60870-5-104 style APCI/I-frame form\",\n        \"visible length octet matches frame size\",\n        \"single request shape maintained\",\n        \"target_operation preserved as Read Command\",\n        \"distinct payload from prior library entries\",\n        \"lowercase hexadecimal only\"\n      ],\n      \"issue_safety_notes\": \"Uses a conservative read-command analogue rather than any exact report payload. It is intended for mutation around object address and cause fields, not direct crash reproduction.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-019\",\n      \"seed_id\": \"vk5-seed-019-a\",\n      \"title\": \"Pure STARTDT activation control frame\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"STARTDT activation\",\n      \"purpose\": \"Add a clean pure U-frame control archetype for STARTDT activation to increase link-control coverage and provide a stable base for later mutations in sequence/state handling around reported server-side processing weaknesses.\",\n      \"evidence_ids\": [\n        \"issue:175:175-summary:1d1910f22105\",\n        \"issue:201:201-summary:798beefc9cab\",\n        \"issue:55:55-summary:bc272cfe2177\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"startdt_act_only\",\n          \"hex\": \"680407000000\"\n        }\n      ],\n      \"expected_behavior\": \"The peer should accept or benignly ignore the STARTDT activation control frame and remain stable, providing clean coverage of the link-control path.\",\n      \"constraints_preserved\": [\n        \"pure U-frame link-control structure\",\n        \"0x68 length consistent with 4-byte APCI control field\",\n        \"target_operation preserved as STARTDT activation\",\n        \"single request shape\",\n        \"no copied historical multi-frame crash stream\"\n      ],\n      \"issue_safety_notes\": \"This sequence intentionally targets control-plane state handling only. It is a conservative analogue chosen to diversify coverage while avoiding direct reproduction of any disclosed exploit bytes.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-020\",\n      \"seed_id\": \"vk5-seed-020-a\",\n      \"title\": \"STOPDT activation with acknowledgement and follow-on TESTFR\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"STOPDT activation\",\n      \"purpose\": \"Exercise a multi-step stateful control interaction around STOPDT activation, confirmation, and a subsequent test frame to probe state-machine robustness and field interactions in a way that is operationally diverse from the other plans.\",\n      \"evidence_ids\": [\n        \"issue:178:178-summary:01c5b607cf00\",\n        \"issue:197:197-summary:287854ab1555\",\n        \"issue:200:200-summary:348db1f37fe8\",\n        \"issue:201:201-summary:798beefc9cab\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"startdt_act_setup\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"startdt_con_setup_ack\",\n          \"hex\": \"68040b000000\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"stopdt_act\",\n          \"hex\": \"680413000000\"\n        },\n        {\n          \"index\": 3,\n          \"direction\": \"server_to_client\",\n          \"label\": \"stopdt_con_ack\",\n          \"hex\": \"680423000000\"\n        },\n        {\n          \"index\": 4,\n          \"direction\": \"client_to_server\",\n          \"label\": \"testfr_act_after_stop\",\n          \"hex\": \"680443000000\"\n        }\n      ],\n      \"expected_behavior\": \"The implementation should handle the control-frame transitions deterministically, either refusing the follow-on test frame after STOPDT or responding safely, without deadlock, null dereference, or parser misuse.\",\n      \"constraints_preserved\": [\n        \"multi-step stateful sequence retained\",\n        \"pure U-frame control coverage emphasized\",\n        \"each length octet consistent\",\n        \"target_operation preserved as STOPDT activation\",\n        \"distinct sequence from previous duplicated payloads\",\n        \"lowercase hex without separators\"\n      ],\n      \"issue_safety_notes\": \"This sequence stays in the control-plane and uses recognizable frame patterns only. It avoids exact published crash inputs while preserving the issue-related focus on state interaction and robustness.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788713373,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2033,
+    "prompt_tokens": 9697,
+    "total_tokens": 11730,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 9,
+      "engine_ttft_ms": 215,
+      "engine_ttlt_ms": 17544,
+      "pre_inference_ms": 92,
+      "service_tbt_ms": 9,
+      "service_ttft_ms": 399,
+      "service_ttlt_ms": 17707,
+      "user_visible_ttft_ms": 306
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818160425-6e6c83b0-default-r1-dp0-default"
+  }
+}

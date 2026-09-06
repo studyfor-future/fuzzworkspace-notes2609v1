@@ -1,0 +1,160 @@
+{
+  "coverage_summary": [
+    "vk-plan-058 parser_depth via malformed BER long-form length (issue 590)",
+    "vk-plan-059 stateful_valid with itemId suffix mutation (issue 599)",
+    "vk-plan-060 issue_structural_analogue out-of-bounds read in getNumberOfElements (issue 197)",
+    "vk-plan-057 length_boundary_valid with TPDU-size shift boundary (issue 589)",
+    "VK-only COTP Connection Request length_boundary_valid",
+    "VK-only MMS Initiate parser_depth",
+    "VK-only GetNameList stateful_valid",
+    "VK-only Read issue_structural_analogue",
+    "TPKT header version 0x03 preserved",
+    "TPKT total-length consistent with message size",
+    "visible length counts internally consistent",
+    "single_request shape",
+    "stateful association prerequisite preserved",
+    "issue-supported trigger relations preserved",
+    "IEC 61850 MMS archetype with RFC1006 framing"
+  ],
+  "generation_notes": "Revised VK-only batch into exactly 4 distinct issue-guided model-prior protocol sequences. Fixed all findings (duplicates, invalid hex, collisions, unknown evidence), enforced family constraints (TPKT 0x03, consistent total-length, internal length counts), retained safe issue analogues, removed exact payload collisions, increased frame/state/operation diversity. No external protocol documents used. Generated exactly 4 VK-only P-/V+ sequences using model-internal prior + supplied constraints only; each single-request, lowercase hex no separators, internally consistent visible lengths, distinct operations/structures/sizes/state transitions, evidence-linked triggers without copying crash bytes.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03 preserved",
+        "TPKT total-length consistent with message size",
+        "visible length counts internally consistent",
+        "single_request shape"
+      ],
+      "evidence_ids": [
+        "issue:589:589-summary:a9c8952234c9",
+        "issue:193:193-summary:1451e58436f0",
+        "issue:198:198-summary:062388f44431",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23"
+      ],
+      "expected_behavior": "server_example_basic_io triggers UBSan runtime error: shift exponent 162 is too large for 32-bit type 'int' at src/mms/iso_cotp/cotp.c:481",
+      "issue_safety_notes": "Evidence_id 589 used for TPDU-size shift trigger; UBSan diagnostic expected; no definite DoS",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001e02f00000000100e00000c1020000c20101c001a2",
+          "index": 0,
+          "label": "VK-only COTP Connection Request with malformed TPDU-size (0xc0 01 a2)"
+        }
+      ],
+      "plan_id": "vk-plan-057",
+      "purpose": "Use model-prior COTP CR setup to exercise issue 589 TPDU-size shift boundary while retaining built-in basic length consistency and family constraints.",
+      "seed_id": "1",
+      "strategy": "length_boundary_valid",
+      "target_operation": "COTP Connection Request",
+      "title": "VK-only COTP Connection Request: length_boundary_valid with malformed TPDU-size shift"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03 preserved",
+        "TPKT total-length consistent with message size",
+        "visible length counts internally consistent",
+        "single_request shape"
+      ],
+      "evidence_ids": [
+        "issue:194:194-summary:4277018cff9d",
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:198:198-summary:062388f44431",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:590:590-summary:8f1dbbd54154"
+      ],
+      "expected_behavior": "server_example_basic_io triggers UBSan ber_fetch_length overflow at line 43 in ber_tlv_length.c",
+      "issue_safety_notes": "Evidence_id 590 used for long-form length trigger; UBSan diagnostic expected; no definite DoS",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001e02f080010001006181d73081d4020103a081cea081cb020123a4",
+          "index": 0,
+          "label": "VK-only MMS Initiate with malformed long-form BER length"
+        }
+      ],
+      "plan_id": "vk-plan-058",
+      "purpose": "Reach issue 194/196/590 parser path through deeper BER structure with long-form length malformed.",
+      "seed_id": "2",
+      "strategy": "parser_depth",
+      "target_operation": "MMS Initiate",
+      "title": "VK-only MMS Initiate: parser_depth via malformed BER long-form length"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03 preserved",
+        "TPKT total-length consistent with message size",
+        "visible length counts internally consistent",
+        "stateful association prerequisite preserved"
+      ],
+      "evidence_ids": [
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:198:198-summary:062388f44431",
+        "issue:599:599-summary:806eef562ec3"
+      ],
+      "expected_behavior": "client crash with AddressSanitizer heap-buffer-overflow read through MmsMapping_varAccessSpecToObjectReference after proxy-style rewrite",
+      "issue_safety_notes": "Evidence_id 599 used for itemId suffix mutation trigger; ASan heap-buffer-overflow expected; no definite DoS",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300000e02f00000000100e00000",
+          "index": 0,
+          "label": "VK-only MMS association setup (TPKT + COTP + ACSE)"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "030000120300000c0f020f0000000100c102",
+          "index": 1,
+          "label": "VK-only GetNamedVariableListAttributesRequest with malformed itemId $"
+        }
+      ],
+      "plan_id": "vk-plan-059",
+      "purpose": "Use stateful_valid strategy with model-prior association setup then GetNamedVariableListAttributesResponse analogue to exercise issue 599 parser path on itemId without $FC$ suffix.",
+      "seed_id": "3",
+      "strategy": "stateful_valid",
+      "target_operation": "GetNameList",
+      "title": "VK-only GetNameList: stateful_valid with itemId suffix mutation analogue"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03 preserved",
+        "TPKT total-length consistent with message size",
+        "visible length counts internally consistent",
+        "single_request shape"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:509:509-summary:228be3676e7d",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "server_example_basic_io triggers out-of-bounds read in getNumberOfElements (bufPos/elementLength unchecked) during MmsValue_decodeMmsData",
+      "issue_safety_notes": "Evidence_id 197 used for getNumberOfElements out-of-bounds trigger; OOB read expected; no definite DoS",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001b0302020f0000000100c102a10808998600867fffffff00",
+          "index": 0,
+          "label": "VK-only MMS Read request with malformed angle-bracket length TLV"
+        }
+      ],
+      "plan_id": "vk-plan-060",
+      "purpose": "Create distinct read operation analogue using malformed MMS data TLV from issue 197 to exercise out-of-bounds read in getNumberOfElements via MmsValue_decodeMmsData.",
+      "seed_id": "4",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read",
+      "title": "VK-only Read: issue_structural_analogue out-of-bounds read in getNumberOfElements"
+    }
+  ],
+  "target_issue": 197
+}

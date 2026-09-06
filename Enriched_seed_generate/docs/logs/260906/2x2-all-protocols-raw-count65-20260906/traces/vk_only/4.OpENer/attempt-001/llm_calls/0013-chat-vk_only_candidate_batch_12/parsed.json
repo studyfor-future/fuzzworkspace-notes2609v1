@@ -1,0 +1,189 @@
+{
+  "coverage_summary": [
+    "vk-plan-045: length_boundary_valid SendRRData OOB read via malformed ForwardOpen in connection-path parser (issue 570/564)",
+    "vk-plan-046: parser_depth SendUnitData deeper CIP parser traversal (issue 571)",
+    "vk-plan-047: stateful_valid GetAttributeSingle TCP explicit path setup (issue 572)",
+    "vk-plan-048: other SetAttributeSingle CPF unconnected explicit OOB (issue 573)"
+  ],
+  "generation_notes": "VK-only candidate batch 12 for OpENer VK-only plans (4 sequences). Generated per plans [vk-plan-045 to vk-plan-048] using model internal prior, family opener constraints, and provided issue sources (e.g. 569,572,573,576,582). All sequences VK-only (P-/V+), distinct operations/structures/sizes, multi_step_stateful, low-payload messages, lowercase hex, consistent lengths. Target_operation preserved per plan. No external protocol docs used.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "prefer EtherNet/IP encapsulation little-endian payload length",
+        "use 24-byte encapsulation header",
+        "diversify discovery/session/explicit paths",
+        "preserve target_operation SendRRData"
+      ],
+      "evidence_ids": [
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2",
+        "issue:564:564-summary:6b535e1b37b6"
+      ],
+      "expected_behavior": "Handle malformed ForwardOpen in SendRRData triggers network-reachable OOB read in ParseConnectionPath (Kevas/Remotely reachable). ASan stack-buffer-overflow.",
+      "issue_safety_notes": "VK-only vulnerability-analogue: malformed ForwardOpen OOB in connection-path parser; network-reachable; no external documents; safe for analysis only; issue:570/564/573",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6565000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "6565000000100000000000",
+          "index": 1,
+          "label": "RegisterSessionReply"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6f000000300000000000000000",
+          "index": 2,
+          "label": "SendRRData malformed ForwardOpen"
+        }
+      ],
+      "plan_id": "vk-plan-045",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-plan-045-seed",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SendRRData",
+      "title": "VK-only SendRRData: A malformed `ForwardOpen` request can trigger a network-reachable o..."
+    },
+    {
+      "constraints_preserved": [
+        "prefer EtherNet/IP encapsulation little-endian payload length",
+        "use 24-byte encapsulation header",
+        "diversify discovery/session/explicit paths",
+        "preserve target_operation SendUnitData"
+      ],
+      "evidence_ids": [
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:568:568-summary:6fa072929d36"
+      ],
+      "expected_behavior": "Deeper traversal in ParseConnectionPath via SendUnitData triggers mishandling of connection-path accounting (Kevas). Out-of-bounds read.",
+      "issue_safety_notes": "VK-only vulnerability-analogue: deeper CIP parser depth in SendUnitData; issue:571/574; safe for analysis only; no external documents",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6565000000100000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "6565000000100000000000",
+          "index": 1,
+          "label": "RegisterSessionReply"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6a000000300000000000000000",
+          "index": 2,
+          "label": "SendUnitData deeper CIP parser"
+        }
+      ],
+      "plan_id": "vk-plan-046",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-plan-046-seed",
+      "strategy": "parser_depth",
+      "target_operation": "SendUnitData",
+      "title": "VK-only SendUnitData: In OpENer v2.3 / master branch up to commit `76b95cf`, `ParseConnec..."
+    },
+    {
+      "constraints_preserved": [
+        "prefer EtherNet/IP encapsulation little-endian payload length",
+        "use 24-byte encapsulation header",
+        "diversify discovery/session/explicit paths",
+        "preserve target_operation GetAttributeSingle"
+      ],
+      "evidence_ids": [
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:564:564-summary:6b535e1b37b6"
+      ],
+      "expected_behavior": "Setup via RegisterSession/SendRRData state reaches SetAttributeList path on non-settable kCipShortString attribute (issue 572). Out-of-bounds read.",
+      "issue_safety_notes": "VK-only vulnerability-analogue: TCP explicit path state prerequisite for SetAttributeList; issue:572/573/574; safe for analysis only; no external documents",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6565000000100000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "6565000000100000000000",
+          "index": 1,
+          "label": "RegisterSessionReply"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6b000000300000000000000000",
+          "index": 2,
+          "label": "GetAttributeSingle with TCP path"
+        }
+      ],
+      "plan_id": "vk-plan-047",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vk-plan-047-seed",
+      "strategy": "stateful_valid",
+      "target_operation": "GetAttributeSingle",
+      "title": "VK-only GetAttributeSingle: In OpENer v2.3 / master up to commit 76b95cf, the real TCP explicit..."
+    },
+    {
+      "constraints_preserved": [
+        "prefer EtherNet/IP encapsulation little-endian payload length",
+        "use 24-byte encapsulation header",
+        "diversify discovery/session/explicit paths",
+        "preserve target_operation SetAttributeSingle"
+      ],
+      "evidence_ids": [
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:576:576-summary:bc3710455616",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:557:557-summary:f58da6326195"
+      ],
+      "expected_behavior": "Unconnected explicit SendRRData reaches CreateCommonPacketFormatStructure out-of-bounds read in GetIntFromMessage (issue 573/576). Remote crash.",
+      "issue_safety_notes": "VK-only vulnerability-analogue: CPF parser OOB in SetAttributeSingle unconnected path; issue:573/576/582; safe for analysis only; no external documents",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6565000000100000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "6565000000100000000000",
+          "index": 1,
+          "label": "RegisterSessionReply"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6c000000300000000000000000",
+          "index": 2,
+          "label": "SetAttributeSingle unconnected explicit"
+        }
+      ],
+      "plan_id": "vk-plan-048",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vk-plan-048-seed",
+      "strategy": "other",
+      "target_operation": "SetAttributeSingle",
+      "title": "VK-only SetAttributeSingle: On OpENer v2.3 / master up to commit 76b95cf, the unconnected expli..."
+    }
+  ],
+  "target_issue": 570
+}

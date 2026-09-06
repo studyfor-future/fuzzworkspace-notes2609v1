@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELBiQzBZcuejr5FRxCImmke4i599c",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"MODBUSTCP\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised to exactly 4 distinct MODBUSTCP seed sequences from the supplied plans. All messages use a 7-byte MBAP header, protocol identifier 0x0000, and MBAP Length values consistent with unit identifier plus PDU size. Diversity was improved across non-addressed control-style functions, addressed reads, and addressed writes while preserving source-backed field relationships. Issue evidence was used only for safe structural analogues; no malformed truncation, inconsistent MBAP length, or exact historical crash payloads were retained. Conservative model-prior completion is used only where supplied sources list a function code but do not fully verify Modbus/TCP interoperability for legacy or serial-line-oriented operations, and those assumptions are recorded in constraints.\",\n  \"coverage_summary\": [\n    \"MBAP framing coverage with 7-byte header and protocol identifier 0x0000 in every seed\",\n    \"Non-addressed function path coverage via Read Exception Status (0x07)\",\n    \"Diagnostics control-function path coverage via Diagnostics subfunction request (0x08 with 2-byte subfunction and 2-byte data)\",\n    \"Addressed single-write coverage via Write Single Register (0x06)\",\n    \"Addressed single-write boolean path coverage via Write Single Coil (0x05) with legal output value 0xff00\",\n    \"State diversity includes one multi-message sequence and three single-request sequences\",\n    \"Field-shape diversity covers function-only PDU, diagnostics subfunction PDU, register write PDU, and coil write PDU\",\n    \"Unit identifiers and transaction identifiers are diversified across seeds\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-021\",\n      \"seed_id\": \"modbustcp-full-021-rev\",\n      \"title\": \"Issue-guided analogue for Read Exception Status with addressed follow-up\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Read Exception Status\",\n      \"purpose\": \"Exercise a request shape that omits the usual address-and-count fields, then follow it with a normal addressed register read to probe safe parser state transitions related to issue evidence about assumptions on request body layout.\",\n      \"evidence_ids\": [\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:612:612-summary:7b008d4bca1d\",\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"function_code:function:function-text:c093c4ea4f67\",\n        \"function_code:function:function-text:869721545c59\",\n        \"protocol_format:modbustcp:format-overview:9821a13f1ada\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"read_exception_status_request\",\n          \"hex\": \"3101000000022107\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"followup_read_input_registers_request\",\n          \"hex\": \"310200000006210400000007\"\n        }\n      ],\n      \"expected_behavior\": \"The endpoint should either handle or cleanly reject the 0x07 request without desynchronizing the connection, then parse the subsequent valid 0x04 request for starting address 0x0000 and quantity 0x0007 as a normal addressed read.\",\n      \"constraints_preserved\": [\n        \"Each ADU uses a 7-byte MBAP header.\",\n        \"Protocol identifier is 0000 in both messages.\",\n        \"MBAP Length is 0002 for the 0x07 request and 0006 for the 0x04 request, matching unit identifier plus PDU bytes.\",\n        \"The follow-up 0x04 request preserves documented Starting Address and Quantity of Registers fields.\",\n        \"The quantity 0x0007 is aligned with supplied issue evidence describing reads of 7 input registers from address 0.\",\n        \"All messages are complete and non-truncated.\"\n      ],\n      \"issue_safety_notes\": \"This is a safe structural analogue only. It preserves full MBAP framing and avoids the malformed short-frame collision patterns associated with historical parser over-read concerns.\"\n    },\n    {\n      \"plan_id\": \"plan-022\",\n      \"seed_id\": \"modbustcp-full-022-rev\",\n      \"title\": \"Issue-guided analogue for diagnostics bus-message-count path\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Return Bus Message Count\",\n      \"purpose\": \"Exercise a diagnostics request with explicit subfunction and data fields so the parser traverses a control-function path distinct from addressed read and write requests while keeping length and field sizes internally consistent.\",\n      \"evidence_ids\": [\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:810:810-summary:da5167fd5137\",\n        \"function_code:function:function-text:feea6cf87ab2\",\n        \"function_code:function:function-text:c093c4ea4f67\",\n        \"protocol_format:modbustcp:format-overview:9821a13f1ada\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"diagnostics_return_bus_message_count_request\",\n          \"hex\": \"3201000000062208000b0000\"\n        }\n      ],\n      \"expected_behavior\": \"A Modbus/TCP implementation should delimit the ADU using the stated MBAP length, parse function 0x08 with a 2-byte subfunction and 2-byte data field, and then either process the diagnostics request or return a clean exception response.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP Length is 0006, matching unit identifier plus the 5-byte diagnostics PDU.\",\n        \"Diagnostics request layout is preserved as function code plus 2-byte subfunction plus 2-byte data.\",\n        \"The frame is complete and contains no trailing bytes beyond the declared ADU length.\",\n        \"Where exact Modbus/TCP support for this diagnostics subfunction is not fully specified by supplied sources, the seed remains a conservative full-frame analogue intended to test controlled handling.\"\n      ],\n      \"issue_safety_notes\": \"The seed is length-consistent and fully framed. It does not use underlength MBAP values, extra trailing bytes, or any exact prior issue payload.\"\n    },\n    {\n      \"plan_id\": \"plan-023\",\n      \"seed_id\": \"modbustcp-full-023-rev\",\n      \"title\": \"Function coverage for Write Single Register\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Write Single Register\",\n      \"purpose\": \"Cover the addressed single-register write path with a valid 0x06 request using a concrete register address and 16-bit value to expand parser entry-point diversity beyond control functions.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:388a9f8cf2ff\",\n        \"function_code:function:operation-catalog:403195f9db74\",\n        \"function_code:function:function-text:c093c4ea4f67\",\n        \"function_code:function:function-text:48ef3b4dd565\",\n        \"function_code:function:function-text:869721545c59\",\n        \"protocol_format:modbustcp:format-overview:9821a13f1ada\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_single_register_request\",\n          \"hex\": \"3301000000062306002a1234\"\n        }\n      ],\n      \"expected_behavior\": \"The endpoint should parse function 0x06, interpret address 0x002a and value 0x1234 as a single holding-register write, and either echo the request fields on success or return a standard exception if unsupported.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP Length is 0006, matching unit identifier plus 5-byte PDU.\",\n        \"Function 0x06 is used as documented for Write Single Register.\",\n        \"The request preserves the 2-byte register address followed by the 2-byte register value layout.\",\n        \"Chosen address and value are benign coverage values, not copied from any historical issue payload.\"\n      ],\n      \"issue_safety_notes\": \"This is a baseline valid write seed with no malformed counts, no truncation, and no issue-trigger replication.\"\n    },\n    {\n      \"plan_id\": \"plan-024\",\n      \"seed_id\": \"modbustcp-full-024-rev\",\n      \"title\": \"Function coverage for Write Single Coil\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Write Single Coil\",\n      \"purpose\": \"Cover the addressed coil-write path with a valid legal ON value to exercise a boolean-output parser branch distinct from register-oriented operations.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:388a9f8cf2ff\",\n        \"function_code:function:function-text:c093c4ea4f67\",\n        \"function_code:function:operation-catalog:403195f9db74\",\n        \"function_code:function:function-text:8c5aec6d88bd\",\n        \"function_code:function:function-text:48ef3b4dd565\",\n        \"function_code:function:function-text:869721545c59\",\n        \"protocol_format:modbustcp:format-overview:9821a13f1ada\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_single_coil_request\",\n          \"hex\": \"340100000006240500130000\"\n        }\n      ],\n      \"expected_behavior\": \"The endpoint should parse function 0x05, target coil address 0x0013, and process the documented legal OFF value 0x0000, typically echoing the request on success or returning a standard exception if the address is not supported.\",\n      \"constraints_preserved\": [\n        \"MBAP header is 7 bytes.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP Length is 0006, matching unit identifier plus 5-byte PDU.\",\n        \"Function 0x05 is used as documented for Write Single Coil.\",\n        \"The output value uses a documented legal coil encoding: 0x0000 for OFF.\",\n        \"Unit identifier, transaction identifier, and payload values are diversified from the other seeds.\"\n      ],\n      \"issue_safety_notes\": \"This is a fully valid coil-write request using a documented legal value and avoids malformed or historical collision payloads.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788718630,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2414,
+    "prompt_tokens": 9935,
+    "total_tokens": 12349,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 253,
+      "engine_ttlt_ms": 20468,
+      "pre_inference_ms": 99,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 484,
+      "service_ttlt_ms": 20693,
+      "user_visible_ttft_ms": 386
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 39681,
+  "routing": {
+    "serving_pipereplica": "d20260817141218-be98d3e9-default-r0-dp0-default"
+  }
+}

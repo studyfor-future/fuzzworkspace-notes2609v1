@@ -1,0 +1,40 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "Generated from model-prior plausibility and the supplied Base constraints only; external protocol documents and vulnerability issue knowledge were unavailable. Uses a conservative IEC 60870-5-104 APCI U-frame for STOPDT activation with internally consistent length and control fields.",
+  "coverage_summary": [
+    "Covers IEC 60870-5-104 STOPDT activation through a single client-to-server U-format APCI frame.",
+    "Preserves the 0x68 start octet and four-octet APCI control payload length relationship.",
+    "Uses a distinct link-control operation rather than interrogation, command, or measurement data."
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-065",
+      "seed_id": "base-seed-065-01",
+      "title": "Base STOPDT activation variant 8",
+      "strategy": "function_code_coverage",
+      "target_operation": "STOPDT activation",
+      "purpose": "Exercise the likely IEC 60870-5-104 STOPDT activation link-control function using a complete minimal U-format frame.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "IEC 60870-5-104 STOPDT activation U-frame",
+          "hex": "680413000000"
+        }
+      ],
+      "expected_behavior": "A conforming peer may accept the STOPDT activation request and transition the association toward stopped data transfer, or return a protocol-appropriate response or rejection according to its current session state.",
+      "constraints_preserved": [
+        "IEC 60870-5-104 APCI framing with 0x68 start octet",
+        "APCI length octet is 0x04 for the four control-field octets",
+        "U-format control field encodes STOPDT activation as 0x13 followed by three zero control bytes",
+        "Single-request sequence matches the one-message budget",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "No vulnerability issue reports or external protocol documents were supplied. This seed is based only on fallible model-prior knowledge and the trusted Base constraints; protocol validity is not externally verified."
+    }
+  ]
+}

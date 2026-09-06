@@ -1,0 +1,146 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": 279,
+  "generation_notes": "VK-only candidates use conservative Modbus/TCP ADUs with internally consistent MBAP lengths. Model-prior protocol details are fallible and not externally verified. Historical issue evidence is used only to preserve operation, repetition, field-interaction, boundary, and parser-path relationships without copying exact crash bytes.",
+  "coverage_summary": [
+    "Repeated Read Coils requests with varied transaction identifiers, unit identifiers, addresses, and quantities",
+    "Read Discrete Inputs request using the issue-associated high address and quantity-one interaction",
+    "Read Holding Registers quantity boundary at the conventional upper request size",
+    "Read Input Registers request matching the issue-associated address-zero and quantity-seven shape"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-001",
+      "seed_id": "modbustcp-read-coils-repeat-001",
+      "title": "Repeated Read Coils with stable framing and varied state fields",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Coils",
+      "purpose": "Exercise the issue-supported relation that repeated operations may behave differently while using three valid Read Coils requests with distinct transaction, unit, address, and quantity fields.",
+      "evidence_ids": [
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "initial Read Coils request",
+          "hex": "000100000006010100000008"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "repeated Read Coils request at offset address",
+          "hex": "000200000006010100100008"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "repeated Read Coils request with alternate unit and quantity",
+          "hex": "000300000006020100000010"
+        }
+      ],
+      "expected_behavior": "Each request should be parsed as an independent valid Read Coils transaction; a stateful harness can compare first, second, and third request handling.",
+      "constraints_preserved": [
+        "Every message uses a 7-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "Each MBAP length is 0006, matching the five-byte request PDU plus unit identifier",
+        "Function code 01 and address/quantity fields are structurally consistent",
+        "Messages are ordered as a repeated client request sequence"
+      ],
+      "issue_safety_notes": "This preserves the reported repeated-call trigger relation without using the historical write-register payload or asserting that a crash will occur. No malformed length or out-of-bounds field is intentionally introduced."
+    },
+    {
+      "plan_id": "vk-plan-002",
+      "seed_id": "modbustcp-read-discrete-inputs-high-address-001",
+      "title": "Read Discrete Inputs with high address and quantity-one interaction",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "purpose": "Exercise a conservative discrete-input request combining a high register-like address with quantity one, reflecting the issue-associated address and quantity interaction while changing the operation and bytes.",
+      "evidence_ids": [
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:837:837-summary:c4fb6d28cc16"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "high-address Read Discrete Inputs request",
+          "hex": "0010000000060202fccb0001"
+        }
+      ],
+      "expected_behavior": "The server should parse one valid Read Discrete Inputs request for unit 02 at address 64715 with quantity one and either return a normal response or a protocol-level device exception.",
+      "constraints_preserved": [
+        "Every message uses a 7-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches the request PDU",
+        "Function code 02 has a two-byte address and two-byte quantity",
+        "Quantity is positive and within the conservative read-request range"
+      ],
+      "issue_safety_notes": "The high address and quantity-one relationship is retained as a structural analogue only. The request does not copy the historical function code, transaction bytes, or response payload, and no memory-safety outcome is claimed."
+    },
+    {
+      "plan_id": "vk-plan-003",
+      "seed_id": "modbustcp-read-holding-registers-max-quantity-001",
+      "title": "Read Holding Registers at a request-length boundary",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Reach the Read Holding Registers parser and response-sizing path with a large but conventionally valid quantity, maintaining exact MBAP and PDU framing.",
+      "evidence_ids": [
+        "issue:498:498-summary:43dc6fe7600e",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "maximum conventional Read Holding Registers request",
+          "hex": "00200000000601030000007d"
+        }
+      ],
+      "expected_behavior": "The server should parse the request as a Read Holding Registers operation for 125 registers and produce a normal response or a bounded protocol exception based on mapping availability.",
+      "constraints_preserved": [
+        "Every message uses a 7-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches the five-byte request PDU",
+        "Function code 03 uses a two-byte address and two-byte quantity",
+        "Quantity 125 is positive and selected as a conventional valid read boundary"
+      ],
+      "issue_safety_notes": "This explores a valid length boundary associated with server parsing issues without reproducing the documented input or adding trailing bytes. It is intended for differential and robustness testing, not as a claim of exploitability."
+    },
+    {
+      "plan_id": "vk-plan-004",
+      "seed_id": "modbustcp-read-input-registers-seven-001",
+      "title": "Read Input Registers through the deeper receive and reply path",
+      "strategy": "parser_depth",
+      "target_operation": "Read Input Registers",
+      "purpose": "Traverse the normal Modbus/TCP receive, function dispatch, register-read, and response construction paths using the issue-associated address-zero and quantity-seven shape.",
+      "evidence_ids": [
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Input Registers address-zero quantity-seven request",
+          "hex": "003000000006030400000007"
+        }
+      ],
+      "expected_behavior": "The server should parse one valid Read Input Registers request for unit 03, address zero, and quantity seven, then return register data or a protocol-level exception.",
+      "constraints_preserved": [
+        "Every message uses a 7-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches the request PDU",
+        "Function code 04 uses the standard address and quantity fields",
+        "Quantity seven is positive and the request contains no undeclared trailing data"
+      ],
+      "issue_safety_notes": "The issue-associated operation shape is retained while using fresh transaction and unit identifiers and a valid request frame. The historical crash behavior is not assumed, externally verified, or reproduced byte-for-byte."
+    }
+  ]
+}

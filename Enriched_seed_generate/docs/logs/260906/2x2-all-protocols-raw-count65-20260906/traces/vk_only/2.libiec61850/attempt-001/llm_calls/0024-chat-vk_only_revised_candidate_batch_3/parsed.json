@@ -1,0 +1,146 @@
+{
+  "coverage_summary": [
+    "vk-plan-009 length_boundary_valid COTP Connection Request TPDU size boundary (issue 589)",
+    "vk-plan-010 parser_depth MMS Initiate BER long-form length (issue 590)",
+    "vk-plan-011 stateful_valid GetNameList client response itemId rewrite (issue 599)",
+    "vk-plan-012 parser_depth Read parseAarqPdu OOB (issue 512)"
+  ],
+  "generation_notes": "Revised VK-only batch into exactly 4 distinct issue-guided, model-prior protocol sequences. Fixed all deterministic errors (duplicates, invalid hex, collisions, unknown evidence). Enforced built-in family constraints (TPKT 0x03, consistent total length). Retained safe issue analogues only. Removed exact payload collisions. Increased frame/state/operation diversity. No external protocol documents used.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length field consistent",
+        "COTP CR variable part with TPDU-size option",
+        "no external protocol documents",
+        "model internal prior enforced"
+      ],
+      "evidence_ids": [
+        "issue:589:589-summary:a9c8952234c9",
+        "issue:495:495-summary:292e0a30dc47",
+        "issue:368:368-summary:997e8d1338a8",
+        "issue:496:496-summary:0b725b37c953",
+        "issue:492:492-summary:b5a20a150fa2",
+        "issue:542:542-summary:a6cc05667747",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "Runtime error: shift exponent too large for 32-bit type 'int' in cotp.c:481",
+      "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Remote connection trigger preserved. UBSan runtime error expected.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001511e000000100c1020000c2020001c001a2",
+          "index": 0,
+          "label": "COTP CR TPDU size option malformed"
+        }
+      ],
+      "plan_id": "vk-plan-009",
+      "purpose": "Explore issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "issue-589-589-summary-a9c8952234c9",
+      "strategy": "length_boundary_valid",
+      "target_operation": "COTP Connection Request",
+      "title": "VK-only COTP Connection Request: libIEC61850 v1.6.1 TPDU size option parsing UB"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length field consistent",
+        "MMS Initiate followed by BER-encoded payload",
+        "no external protocol documents",
+        "model internal prior enforced"
+      ],
+      "evidence_ids": [
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:496:496-summary:0b725b37c953",
+        "issue:492:492-summary:b5a20a150fa2",
+        "issue:368:368-summary:997e8d1338a8",
+        "issue:495:495-summary:292e0a30dc47",
+        "issue:543:543-summary:be7fbfff0ea5"
+      ],
+      "expected_behavior": "Signed left-shift overflow before error path in ber_tlv_length.c:43",
+      "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Session setup preserved. UBSan runtime error expected.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001f02f08001000061081d3020a018020103a40f020123a40a020120a402020120",
+          "index": 0,
+          "label": "MMS Initiate with malformed BER long-form length"
+        }
+      ],
+      "plan_id": "vk-plan-010",
+      "purpose": "Reach issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "issue-590-590-summary:8f1dbbd54154",
+      "strategy": "parser_depth",
+      "target_operation": "MMS Initiate",
+      "title": "VK-only MMS Initiate: libIEC61850 v1.6.1 BER long-form length UB"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length field consistent",
+        "MMS GetNameList response with malformed itemId TLV",
+        "no external protocol documents",
+        "model internal prior enforced"
+      ],
+      "evidence_ids": [
+        "issue:599:599-summary:806eef562ec3",
+        "issue:509:509-summary:228be3676e7d",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23"
+      ],
+      "expected_behavior": "Heap-buffer-overflow read after passing itemId to MmsMapping_varAccessSpecToObjectReference",
+      "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Post-association state preserved. ASan heap overflow expected.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001f02f08001000061081d3020a018020103a40f020123a40a020120",
+          "index": 0,
+          "label": "GetNameList response with rewritten itemId"
+        }
+      ],
+      "plan_id": "vk-plan-011",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "issue-599-599-summary:806eef562ec3",
+      "strategy": "stateful_valid",
+      "target_operation": "GetNameList",
+      "title": "VK-only GetNameList: libIEC61850 client response itemId rewrite"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length field consistent",
+        "ACSE AARQ PDU with tags 0xa7 00",
+        "no external protocol documents",
+        "model internal prior enforced"
+      ],
+      "evidence_ids": [
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:509:509-summary:228be3676e7d",
+        "issue:196:196-summary:55a2cfa7c1b1"
+      ],
+      "expected_behavior": "Out-of-bounds read after BerDecoder_decodeLength advances bufPos past end",
+      "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Association setup preserved. OOB read expected.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "60023002303030300230303030003000003002303030003002303030a700",
+          "index": 0,
+          "label": "ACSE AARQ with malformed tag parsing"
+        }
+      ],
+      "plan_id": "vk-plan-012",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "issue-512-512-summary:b25e9a524acd",
+      "strategy": "parser_depth",
+      "target_operation": "Read",
+      "title": "VK-only Read: libIEC61850 parseAarqPdu out-of-bounds read"
+    }
+  ],
+  "target_issue": -1
+}

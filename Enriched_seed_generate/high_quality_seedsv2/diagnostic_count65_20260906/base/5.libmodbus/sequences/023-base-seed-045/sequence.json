@@ -1,0 +1,62 @@
+{
+  "seed_id": "base-seed-045",
+  "title": "Base Diagnostics variant 4",
+  "strategy": "stateful_valid",
+  "target_operation": "Diagnostics",
+  "purpose": "Exercise diagnostics through a setup-then-target sequence using recognized diagnostic subfunctions and consistent MBAP transaction progression.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Diagnostics Return Query Data setup",
+      "hex": "0001000000060b0800001234",
+      "byte_length": 12,
+      "sha256": "c6fd3fdcdf25881c42a8a9c76f503f28ce53b45fb3ccf8043b1a4b9353a6ab11"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Diagnostics Restart Communications option request",
+      "hex": "0002000000060b0800010000",
+      "byte_length": 12,
+      "sha256": "694f2a5055531e1ad36611b351bbcb6a24ac8f8e759ee5c0d2e026f27abcb053"
+    }
+  ],
+  "expected_behavior": "The server should parse both Diagnostics requests in order and return a normal response or a protocol-defined exception according to device support and diagnostic policy.",
+  "constraints_preserved": [
+    "7-byte MBAP header structure",
+    "Protocol identifier is 0000",
+    "MBAP length 0006 equals unit identifier plus 5-byte PDU",
+    "Diagnostic function code 08 is used with two-byte subfunctions and two-byte data",
+    "Transaction identifiers advance from 0001 to 0002"
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report was supplied or used; expected behavior is based only on model-prior plausibility and built-in Base constraints.",
+  "sequence_sha256": "39c0d25be3f833dacff1dae02057367b29c42d032bf97996d8af4c42295109db",
+  "total_bytes": 24,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ac15dde4c635282e64f76b25ff33acb0d819e1b34cdbf32629d3e435356e43cb",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

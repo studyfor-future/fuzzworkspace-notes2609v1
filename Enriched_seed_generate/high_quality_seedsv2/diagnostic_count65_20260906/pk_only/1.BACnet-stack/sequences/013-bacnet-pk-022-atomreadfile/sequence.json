@@ -1,0 +1,53 @@
+{
+  "seed_id": "bacnet-pk-022-atomreadfile",
+  "title": "AtomicReadFile request seed",
+  "strategy": "stateful_valid",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Exercise confirmed service dispatch with atomic file read for stateful parser coverage.",
+  "evidence_ids": [
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:operation-catalog:30d3483f070c",
+    "function_code:function:function-text:d3664eeda33b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC NPDU AtomicReadFile request",
+      "hex": "810a0011010000050006010000007b0000",
+      "byte_length": 17,
+      "sha256": "e6182031d8ef416ab37846d4ea39444cadbd67d48412ecfa0ec8275a72b9a5a3"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP receiver should parse the confirmed request, dispatch AtomicReadFile service, and return file data or error response.",
+  "constraints_preserved": [
+    "BVLC type 0x81 and function 0x0a with four-byte header",
+    "BVLC total length 0x0017 matching complete frame",
+    "NPDU version 0x01 with zero control and no routing fields",
+    "APDU first octet 0x00 for Confirmed-Request-PDU",
+    "Invoke ID 0x01 and max segments 0x05",
+    "Service choice 0x06 for AtomicReadFile from function text",
+    "Object type 0x0000, instance 123, property 0, file index 0"
+  ],
+  "issue_safety_notes": "Positive structural seed only; no vulnerability claims.",
+  "sequence_sha256": "c178220dab8f8cf72defea2a2085a34261a4b39910bc5053f286dc08a5b2c5cb",
+  "total_bytes": 17,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e6182031d8ef416ab37846d4ea39444cadbd67d48412ecfa0ec8275a72b9a5a3",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

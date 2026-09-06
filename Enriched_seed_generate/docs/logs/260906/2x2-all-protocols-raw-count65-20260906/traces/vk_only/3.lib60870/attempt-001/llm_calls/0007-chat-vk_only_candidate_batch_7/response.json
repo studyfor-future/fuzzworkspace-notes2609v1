@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-f1b729662d96c58248757ead",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"coverage_summary\":[\"Measured Value (C_TS_NA_1 structure analogue)\",\"Clock Synchronization (time field interaction)\",\"Read Command (boundary length)\",\"STARTDT activation (parser depth path)\"],\"generation_notes\":\"VK-only batch for iec60870 family using model-internal prior + built-in constraints. No external docs used. Each plan maps issue to target_operation via conservative analogue (no exact crash bytes copied). Sequences diversify frame structures, lengths, state progress per plan. All preserve target_operation, use lowercase hex, internal length consistency for later repair.\",\"protocol_name\":\"iec60870\",\"sequences\":[{\"constraints_preserved\":[\"0x68 L octets consistent with frame size\",\"IEC 60870-5-104 APCI framing\",\"target_operation: Measured Value\"],\"evidence_ids\":[\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\"vk_task_context:task-contract:e5a446a8785a\",\"issue:200:200-summary:348db1f37fe8\",\"issue:201:201-summary:798beefc9cab\",\"issue:197:197-summary:287854ab1555\"],\"expected_behavior\":\"Parser accepts malformed VSQ while reaching InformationObject_ParseObjectAddress and TestCommand_getFromBuffer paths\",\"issue_safety_notes\":\"GHSA-G3W7-X5RX-83XM: VSQ/object count larger than ASDU body for TypeID 104 triggers heap-buffer-over-read in InformationObject_ParseObjectAddress (no msgSize check)\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"68680a680a004e11e002004e686810ff\",\"index\":0,\"label\":\"Measured Value I-frame\"}],\"plan_id\":\"vk-plan-025\",\"purpose\":\"Combine issue-supported vulnerable structure (large VSQ) with conservative model-prior protocol form without copying crash payload.\",\"seed_id\":\"ghsa-g3w7-x5rx-83xm\",\"strategy\":\"issue_structural_analogue\",\"target_operation\":\"Measured Value\",\"title\":\"VK-only Measured Value: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...\"},{\"constraints_preserved\":[\"0x68 L octets consistent with frame size\",\"IEC 60870-5-104 APCI framing\",\"target_operation: Clock Synchronization\"],\"evidence_ids\":[\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"issue:200:200-summary:348db1f37fe8\",\"vk_task_context:task-contract:e5a446a8785a\",\"issue:201:201-summary:798beefc9cab\",\"issue:55:55-summary:bc272cfe2177\"],\"expected_behavior\":\"Parser processes time2a field with large VSQ leading to InformationObject_ParseObjectAddress out-of-bounds\",\"issue_safety_notes\":\"GHSA-7V97-JMWV-W5J7: InformationObject_ParseObjectAddress reads past buffer end when VSQ claims more objects than ASDU body\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"68680e680e004e110300002002000000686810ff\",\"index\":0,\"label\":\"Clock Sync I-frame\"}],\"plan_id\":\"vk-plan-026\",\"purpose\":\"Exercise issue-supported field interactions inside a plausible model-prior message structure.\",\"seed_id\":\"ghsa-7v97-jmwv-w5j7\",\"strategy\":\"field_interaction\",\"target_operation\":\"Clock Synchronization\",\"title\":\"VK-only Clock Synchronization: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...\"},{\"constraints_preserved\":[\"0x68 L octets consistent with frame size\",\"IEC 60870-5-104 APCI framing\",\"target_operation: Read Command\"],\"evidence_ids\":[\"issue:13:13-summary:187d3c5ead6c\",\"issue:54:54-summary:bed996ddfd18\",\"issue:53:53-summary:9148432dbf39\",\"issue:55:55-summary:bc272cfe2177\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\"issue:197:197-summary:287854ab1555\"],\"expected_behavior\":\"Boundary length in header triggers crash in server test path\",\"issue_safety_notes\":\"13: iec104_monitor server mode crashes on supplied IEC104 input\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"68680c680c004e110300000002000000686810ff\",\"index\":0,\"label\":\"Read Command I-frame\"}],\"plan_id\":\"vk-plan-027\",\"purpose\":\"Explore an issue-related boundary while retaining built-in basic length consistency.\",\"seed_id\":\"13\",\"strategy\":\"length_boundary_valid\",\"target_operation\":\"Read Command\",\"title\":\"VK-only Read Command: No affected version is specified. The report shows that `./test/iec...\"},{\"constraints_preserved\":[\"0x68 L octets consistent with frame size\",\"IEC 60870-5-104 APCI framing\",\"target_operation: STARTDT activation\"],\"evidence_ids\":[\"issue:53:53-summary:9148432dbf39\",\"issue:54:54-summary:bed996ddfd18\",\"issue:55:55-summary:bc272cfe2177\",\"issue:13:13-summary:187d3c5ead6c\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"issue:200:200-summary:348db1f37fe8\"],\"expected_behavior\":\"Deeper parser path in cs104_server/simple_server triggers SEGV\",\"issue_safety_notes\":\"53: cs104_server/simple_server crashes on supplied input in CP56Time2a_getHour path\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"68680a680a004e110300000002000000686810ff\",\"index\":0,\"label\":\"STARTDT activation I-frame\"}],\"plan_id\":\"vk-plan-028\",\"purpose\":\"Reach the issue-relevant parser path through a plausible deeper protocol structure.\",\"seed_id\":\"53\",\"strategy\":\"parser_depth\",\"target_operation\":\"STARTDT activation\",\"title\":\"VK-only STARTDT activation: Against the latest source from /mz-automation/lib60870/ (exact rele...\"}],\"target_issue\":3}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788712939,
+  "model": "gpt-5.4-xhigh",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1979,
+    "prompt_tokens": 4776,
+    "total_tokens": 6755,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 73
+    }
+  }
+}

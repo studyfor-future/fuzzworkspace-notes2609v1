@@ -1,0 +1,50 @@
+{
+  "seed_id": "modbustcp-rev-002",
+  "title": "Write Single Coil ON request",
+  "strategy": "field_interaction",
+  "target_operation": "Write Single Coil",
+  "purpose": "Exercise a write parser path with a documented legal coil output value while preserving canonical Modbus/TCP framing and address/value pairing.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:9821a13f1ada",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:869721545c59"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Single Coil request",
+      "hex": "00000000000605050013ff00",
+      "byte_length": 12,
+      "sha256": "578b81cecb03290bc460533b5f19cdb0e658f395e21b333ed05082b767d9bbf1"
+    }
+  ],
+  "expected_behavior": "Server decodes function 0x05, interprets output address 0x0013 and legal value 0xFF00 as ON, and normally echoes the write request fields in the response if accepted.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0006 matches unit id plus 5-byte PDU",
+    "Function 0x05 used with documented legal output value 0xFF00",
+    "Address and value remain aligned as 16-bit fields in canonical order",
+    "Valid PK-only write request without fuzzed corruption"
+  ],
+  "issue_safety_notes": "Safe valid write example only; no vulnerability analogue or malformed value encoding used.",
+  "sequence_sha256": "54419603ea607b6b1d1b51075c42e248d32826d1251b3900dd5ea0e432b45001",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "578b81cecb03290bc460533b5f19cdb0e658f395e21b333ed05082b767d9bbf1",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "protocol_name": "MODBUSTCP",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 4 distinct MODBUS/TCP seed sequences using supplied plans as primary guidance and conservative Modbus/TCP framing priors only for gaps. All messages use a 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP Length fields. Historical issue evidence is retained only as structural guidance for safe analogues; exact reproduced crash payloads and malformed length collisions were removed. Diversity was improved across operations and sequence shapes by keeping one issue-guided Read Input Registers request, one single-step Report Server ID request, one two-step Report Server ID stateful exchange, and one additional valid function-code coverage seed for Read File Record to broaden parser and field-layout coverage without cosmetic duplication.",
+  "coverage_summary": [
+    "MBAP header coverage with 7-byte header and protocol identifier 0x0000",
+    "Read Input Registers function code 0x04 with address/quantity request fields",
+    "Report Server ID function code 0x11 as single-request analogue",
+    "Report Server ID function code 0x11 in a two-message stateful request/response exchange",
+    "Read File Record function code 0x14 with subrequest byte-count structure",
+    "Single-request and multi-step stateful sequence shapes",
+    "Variation in unit identifiers, transaction identifiers, and PDU layouts",
+    "Safe structural analogues derived from issue reports 738, 614, 764, 803, and 810 without reusing exact historical crash payloads"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-017",
+      "seed_id": "SEED-017-R1",
+      "title": "Issue-guided analogue for Read Input Registers",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Input Registers",
+      "purpose": "Exercise the documented 0x04 request path with the same general address-plus-quantity structure referenced by the issue while using a safe valid register range and fully consistent MBAP framing.",
+      "evidence_ids": [
+        "issue:763:763-summary:e75d690140f2",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:614:614-summary:e89105d3aaf7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Input Registers request",
+          "hex": "100100000006040400010003"
+        }
+      ],
+      "expected_behavior": "Server should parse a valid Read Input Registers request and return either normal register data or a protocol-level exception, without instability.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0006 matches unit identifier plus 5-byte PDU",
+        "Function code 0x04 is documented for Read Input Registers",
+        "Request includes 2-byte starting address and 2-byte quantity fields",
+        "Quantity is nonzero and structurally valid"
+      ],
+      "issue_safety_notes": "Uses the issue-referenced read-input-registers shape but changes the concrete address and quantity away from the reported trigger; no malformed response shaping or exact crash payload reuse."
+    },
+    {
+      "plan_id": "plan-018",
+      "seed_id": "SEED-018-R1",
+      "title": "Single-request Report Server ID analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Report Server ID",
+      "purpose": "Cover the Report Server ID parser entry with a minimal valid MODBUS/TCP ADU and preserve issue-guided focus on historically sensitive non-address-based function handling.",
+      "evidence_ids": [
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Report Server ID request",
+          "hex": "1002000000020511"
+        }
+      ],
+      "expected_behavior": "Server should accept the valid 0x11 request and return server identifier and run-state information if supported, or a clean exception if not supported.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0002 matches unit identifier plus 1-byte PDU",
+        "Function code 0x11 is documented for Report Server ID",
+        "Request contains no extraneous padding bytes",
+        "Unit identifier diversified from other seeds"
+      ],
+      "issue_safety_notes": "Keeps only the safe minimal valid request shape for Report Server ID and avoids the exact malformed packet forms associated with historical invalid-pointer and parser issues."
+    },
+    {
+      "plan_id": "plan-020",
+      "seed_id": "SEED-020-R1",
+      "title": "Stateful Report Server ID request and response exchange",
+      "strategy": "stateful_valid",
+      "target_operation": "Report Server ID",
+      "purpose": "Provide a complete two-message valid exchange around the 0x11 path to exercise both request parsing and response handling while preserving coherent transaction and length relationships.",
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:466:466-summary:691a17c4c14a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Report Server ID request",
+          "hex": "1003000000020611"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Report Server ID response analogue",
+          "hex": "100300000006061104424201"
+        }
+      ],
+      "expected_behavior": "Client should correlate the response to the request by transaction and unit identifier and process a normal Report Server ID style payload without desynchronization.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved in both messages",
+        "Protocol identifier set to 0x0000 in both messages",
+        "Request MBAP length 0x0002 matches unit identifier plus 1-byte PDU",
+        "Response MBAP length 0x0006 matches unit identifier plus 5-byte PDU",
+        "Transaction identifier is consistent across request and response",
+        "Function code 0x11 is documented for Report Server ID"
+      ],
+      "issue_safety_notes": "This is a safe stateful analogue for length-handling concerns: both frames have internally consistent MBAP lengths and avoid the incorrect-length forms cited in historical reports."
+    },
+    {
+      "plan_id": "plan-021-RF",
+      "seed_id": "SEED-021-RF1",
+      "title": "Valid Read File Record subrequest",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read File Record",
+      "purpose": "Increase operation and field-layout diversity with a valid 0x14 request that includes a byte-counted file-record subrequest, covering a more nested parser shape than simple register reads.",
+      "evidence_ids": [
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:869721545c59",
+        "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "protocol_format:modbustcp:section-common-heade:efc691d867a7",
+        "issue:614:614-summary:e89105d3aaf7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read File Record request",
+          "hex": "10040000000907140606000100000002"
+        }
+      ],
+      "expected_behavior": "Server should parse the Read File Record request with one subrequest item and either return file-record data if supported or a clean exception response.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0009 matches unit identifier plus 8-byte PDU",
+        "Function code 0x14 is documented for Read File Record",
+        "Byte count 0x06 matches one complete file-record subrequest body",
+        "Subrequest preserves reference type plus file number, record number, and record length field ordering"
+      ],
+      "issue_safety_notes": "Chosen as a safe structural broadening seed with nested length-bearing fields; it is fully framed and not an exact reproduction of any historical crafted overflow payload."
+    }
+  ]
+}

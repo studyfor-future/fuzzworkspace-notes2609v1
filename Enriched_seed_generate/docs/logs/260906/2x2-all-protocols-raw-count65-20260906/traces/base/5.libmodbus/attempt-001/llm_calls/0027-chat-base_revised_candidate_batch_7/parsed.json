@@ -1,0 +1,148 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Generated exactly 4 distinct conservative Modbus/TCP seed sequences from model-prior knowledge and the supplied built-in constraints only. Each message has a 7-byte MBAP header, protocol identifier 0000, and an internally consistent length field. The set uses complete read requests, coherent response pairs, varied transaction and unit identifiers, a packed-bit response, a register response, and a cautious exception-shaped response. Protocol validity is plausible from model prior and is not externally verified; no external issue knowledge or vulnerability claims are used.",
+  "coverage_summary": [
+    "Read Coils function 01 with a near-maximum quantity of 125 and a complete request frame.",
+    "Read Discrete Inputs function 02 with a packed-bit response for a non-byte-aligned quantity.",
+    "Read Holding Registers function 03 with a complete request and multi-register response pair.",
+    "Read Input Registers function 04 with a complete request and cautious protocol exception response.",
+    "Varied transaction identifiers, unit identifiers, addresses, quantities, response lengths, and message directions.",
+    "All MBAP length fields account for the unit identifier and complete PDU contents."
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-025",
+      "seed_id": "base-seed-025-v4",
+      "title": "Base Read Coils near-maximum quantity",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Coils",
+      "purpose": "Exercise a recognized Read Coils request at a conservative near-maximum quantity while preserving the fixed request shape and MBAP length relationship.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Coils request, unit 1, start 0, quantity 125",
+          "hex": "00010000000601010000007d"
+        }
+      ],
+      "expected_behavior": "A conforming server should parse the frame as a Read Coils request for unit 1 and return packed coil-status data for 125 coils, or return a protocol-level exception if the addressed range is unsupported.",
+      "constraints_preserved": [
+        "The frame contains a 7-byte MBAP header.",
+        "The protocol identifier is 0000.",
+        "The MBAP length is 0006, matching the unit identifier and 5-byte request PDU.",
+        "Function code 01 is followed by a two-byte starting address and a two-byte quantity.",
+        "The quantity is encoded as 007d and the hex representation is lowercase without separators."
+      ],
+      "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This is a conservative boundary-oriented parser seed and does not imply security impact."
+    },
+    {
+      "plan_id": "base-plan-026",
+      "seed_id": "base-seed-026-v4",
+      "title": "Base Read Discrete Inputs with packed response",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "purpose": "Exercise interaction between unit selection, starting address, non-byte-aligned quantity, and packed response sizing using a complete request and response pair.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Discrete Inputs request, unit 10, start 16, quantity 13",
+          "hex": "0002000000060a020010000d"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Read Discrete Inputs response, unit 10, two packed data bytes",
+          "hex": "0002000000050a0202ff1f"
+        }
+      ],
+      "expected_behavior": "The server should parse the request as Read Discrete Inputs for unit 10 and may return two packed data bytes for 13 inputs. The response transaction and unit identifiers match the request.",
+      "constraints_preserved": [
+        "Both frames use protocol identifier 0000 and 7-byte MBAP headers.",
+        "The request MBAP length is 0006 for the unit identifier plus the 5-byte request PDU.",
+        "The response MBAP length is 0005 for the unit identifier plus the function, byte count, and two data bytes.",
+        "Function code 02 is preserved in the normal response.",
+        "The requested quantity 000d requires two packed bytes, and the response byte count is 02.",
+        "The response transaction identifier 0002 and unit identifier 0a match the request."
+      ],
+      "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The response is a conservative normal-form model-prior example intended for parser and field-interaction coverage."
+    },
+    {
+      "plan_id": "base-plan-027",
+      "seed_id": "base-seed-027-v4",
+      "title": "Base Read Holding Registers request and response",
+      "strategy": "parser_depth",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Cover sequential parsing of a complete request and its matching multi-register response without adding an unrelated setup request.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Holding Registers request, unit 17, start 32, quantity 4",
+          "hex": "010000000006110300200004"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Read Holding Registers response, unit 17, four register values",
+          "hex": "01000000000b1103080001000200030004"
+        }
+      ],
+      "expected_behavior": "The server should parse the request as Read Holding Registers for unit 17 and return eight data bytes representing four registers, or return a protocol-level exception if the range is unavailable. The response matches the request transaction and unit identifiers.",
+      "constraints_preserved": [
+        "Both frames contain 7-byte MBAP headers with protocol identifier 0000.",
+        "The request MBAP length is 0006 and matches the unit identifier plus the 5-byte request PDU.",
+        "The response MBAP length is 000b and matches the unit identifier plus a function byte, byte-count byte, and eight data bytes.",
+        "Function code 03, starting address 0020, and quantity 0004 are ordered and complete.",
+        "The response byte count is 08, matching four two-byte registers.",
+        "The response transaction identifier 0100 and unit identifier 11 match the request."
+      ],
+      "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This sequence is intended to exercise complete request and response parsing and does not encode a known issue or vulnerability claim."
+    },
+    {
+      "plan_id": "base-plan-028",
+      "seed_id": "base-seed-028-v4",
+      "title": "Base Read Input Registers with exception-shaped response",
+      "strategy": "other",
+      "target_operation": "Read Input Registers",
+      "purpose": "Provide a complete Read Input Registers request followed by a structurally distinct protocol exception response, covering normal request parsing and cautious error-frame handling.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Input Registers request, unit 4, start 48, quantity 6",
+          "hex": "020000000006040400300006"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Read Input Registers exception response, illegal-data-address form",
+          "hex": "020000000003048002"
+        }
+      ],
+      "expected_behavior": "The server should parse the request as Read Input Registers for unit 4. The response is an exception-shaped frame carrying the matching transaction and unit identifiers; a conforming implementation may emit such a protocol-level exception when the requested range is unsupported or invalid.",
+      "constraints_preserved": [
+        "Both frames use 7-byte MBAP headers and protocol identifier 0000.",
+        "The request MBAP length is 0006 for the unit identifier plus the 5-byte request PDU.",
+        "The exception response MBAP length is 0003 for the unit identifier plus the two-byte exception PDU.",
+        "The exception function byte is 84, corresponding structurally to function 04 with its high bit set, and the exception code is 02.",
+        "The response transaction identifier 0200 and unit identifier 04 match the request.",
+        "The request contains complete starting-address 0030 and quantity 0006 fields."
+      ],
+      "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The exception-shaped response is included for cautious protocol-error coverage and does not assert a defect, exploitability, or security consequence."
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "coverage_summary": [
+    "STARTDT activation (client_to_server)",
+    "General Interrogation (client_to_server)",
+    "Single Command (client_to_server)",
+    "Measured Value (server_to_client)",
+    "stateful sequence with parser paths",
+    "plan-053: single_request C_SC_NA_1 Group 3",
+    "plan-054: single_request C_SC_NA_1 Group 2",
+    "plan-055: single_request C_SC_NA_1 Group 1",
+    "plan-056: single_request C_SC_NA_1 Station Interrogation"
+  ],
+  "generation_notes": "Deterministic synthesis from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Plans synthesized deterministically from protocol templates, operation catalogs, and issue motifs using function_code_coverage strategy. Each full IEC 60870-5-101 frame (APCI + ASDU) follows primary sources: 68 framing, COT/CA/IOA order preserved, type ID/COT/qualifiers consistent with documented function codes. Conservatively inferred 1-byte CA for short-control-direction frames; stateful sequences built from prior STARTDT/INTERROGDAT/INTERROGDAT patterns for parser depth. No exact payload copies from issues. Four mutation-friendly IEC60870 seeds cover CP56Time2a bitstring control, untagged bitstring control, IEC 60870-5-101 variable-length framing, and single-character acknowledgement.",
+  "protocol_name": "IEC60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "APCI start byte 0x68 used with length 0x04 for U-format frame and exactly 4 following control octets.",
+        "Frame is complete and self-contained; no truncated body or extra tail bytes are present.",
+        "U-format function selection is inferred from common IEC 60870-5-104 encoding because the supplied sources enumerate APCI/U-format categories but do not provide exact octet templates.",
+        "No historical crash payload bytes are reused."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:187ce180236e",
+        "function_code:function:function-text:3cbe16bf065a",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "function_code:function:function-text:14a1385d5f57",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "expected_behavior": "Peer should recognize a valid U-format TESTFR activation request and either answer with TESTFR confirmation or ignore per implementation policy; parser should consume the frame without entering ASDU parsing.",
+      "issue_safety_notes": "This seed intentionally stays in the control-only path, avoiding malformed lengths and avoiding the issue pattern of an object count exceeding available ASDU bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680443000000",
+          "index": 0,
+          "label": "u-format-testfr-act"
+        }
+      ],
+      "plan_id": "plan-053",
+      "purpose": "Exercise a minimal but valid IEC 60870-5-104 control-frame parser path centered on a frame that terminates cleanly after APCI, giving a compact seed for delimiters and control-only handling.",
+      "seed_id": "iec60870-full-053",
+      "strategy": "function_code_coverage",
+      "target_operation": "End delimiter",
+      "title": "End-delimiter coverage via balanced TESTFR U-format control frame"
+    },
+    {
+      "constraints_preserved": [
+        "APCI length 0x0e matches 4 control bytes plus 10-byte ASDU body.",
+        "TypeID 45 (C_SC_NA_1) is taken from supplied function text.",
+        "VSQ is 0x01, matching one information object and one command element.",
+        "Common address is encoded in two octets and information object address in three octets using conservative IEC 60870-5-104 prior assumptions.",
+        "Cause value 0x1f is used as a structurally valid but unusual/private-style cause; exact semantic label is inferred rather than verified from supplied sources."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:operation-catalog:224e76862422",
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:83986922f28d",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "expected_behavior": "Parser should accept the APCI and ASDU structure, then route or reject the command based on unsupported or implementation-specific cause-of-transmission handling without overrunning buffers.",
+      "issue_safety_notes": "The object count is kept at one and the ASDU body fully contains one object, specifically avoiding the issue motif where VSQ/count exceeds the available payload.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e000000002d011f00010001000081",
+          "index": 0,
+          "label": "i-format-single-command-private-cot"
+        }
+      ],
+      "plan_id": "plan-054",
+      "purpose": "Drive an ASDU parser through a complete I-format application message that uses a rarely handled cause-of-transmission value outside common operational causes while keeping the rest of the frame structurally consistent.",
+      "seed_id": "iec60870-full-054",
+      "strategy": "function_code_coverage",
+      "target_operation": "Unused",
+      "title": "Unused-cause style I-frame with private cause value on single command"
+    },
+    {
+      "constraints_preserved": [
+        "TypeID 104 is selected directly from the supplied GHSA issue description.",
+        "APCI length 0x0e is consistent with a single-object TypeID 104 ASDU of 10 bytes after the control field.",
+        "VSQ/object count is 1 and the message includes one full 3-octet information object address plus one command octet, maintaining internal size consistency.",
+        "Control field uses a simple I-frame sequence pattern with N(S)=1 and N(R)=0 encoded conservatively from IEC 60870-5-104 prior knowledge.",
+        "Cause value 0x2c is used as an unusual/unknown-style code by conservative assumption; the supplied sources indicate unknown-cause handling as a target concept but do not define this exact byte mapping."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:operation-catalog:224e76862422",
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:function-text:83986922f28d",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+      ],
+      "expected_behavior": "Implementation should parse a complete Test Command ASDU for TypeID 104, then reject, log, or classify it as unknown/unsupported because of the nonstandard cause value, without reading past the end of the message.",
+      "issue_safety_notes": "This is a structural analogue to the documented bug path because it uses TypeID 104, but it deliberately avoids the vulnerable shape: no inflated VSQ, no body truncation, and no copied PoC bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e0200000068012c00010001000000",
+          "index": 0,
+          "label": "i-format-type104-unknown-cot"
+        }
+      ],
+      "plan_id": "plan-055",
+      "purpose": "Target the same general parser family implicated by the supplied issue using a valid TypeID 104 I-frame, but keep object count and body length consistent while setting an unusual cause to cover unsupported-cause branches safely.",
+      "seed_id": "iec60870-full-055",
+      "strategy": "function_code_coverage",
+      "target_operation": "Unknown Cause of Transmission",
+      "title": "Unknown-cause handling on valid TypeID 104 test command"
+    },
+    {
+      "constraints_preserved": [
+        "Complete IEC 60870-5-104 I-frame with 0x68 start and consistent 0x0e length.",
+        "ASDU uses TypeID 104 with VSQ 1 and one object payload, matching the issue-relevant command family while remaining well-formed.",
+        "Cause value 0x40 is chosen as a conservative test-operation analogue based on common IEC 60870 conventions; this exact octet mapping is an inferred assumption, not explicitly verified by the supplied snippets.",
+        "Message differs materially from the GHSA PoC in control bytes, cause, object bytes, and overall layout while preserving valid structure."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:83986922f28d",
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:operation-catalog:224e76862422",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "expected_behavior": "Parser should accept the frame as a complete I-format APDU carrying a single TypeID 104 test command and either process it as a test operation or reject it cleanly according to role/configuration.",
+      "issue_safety_notes": "Safe baseline near the issue surface: TypeID 104 is exercised, but lengths are internally consistent and the single-object declaration exactly matches the available bytes to avoid out-of-bounds reads.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e0400000068014000010001000080",
+          "index": 0,
+          "label": "i-format-type104-test-cot"
+        }
+      ],
+      "plan_id": "plan-056",
+      "purpose": "Provide a well-formed baseline TypeID 104 test-command I-frame that reaches the intended application parser through the most plausible operational cause value, serving as a stable seed for later length and count mutations.",
+      "seed_id": "iec60870-full-056",
+      "strategy": "function_code_coverage",
+      "target_operation": "Test operation",
+      "title": "Test operation with standard test cause on TypeID 104"
+    }
+  ],
+  "target_issue": -1
+}

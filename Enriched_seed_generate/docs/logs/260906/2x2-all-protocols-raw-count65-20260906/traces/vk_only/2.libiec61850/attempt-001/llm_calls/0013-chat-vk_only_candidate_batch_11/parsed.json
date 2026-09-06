@@ -1,0 +1,48 @@
+{
+  "coverage_summary": [
+    "stateful_valid",
+    "VK-only COTP CR with MMS payload",
+    "heap overflow analogue via model-prior issue path",
+    "single request, length/boundary aware",
+    "TPKT family constraint preserved"
+  ],
+  "generation_notes": "VK-only stateful_valid plan vk-plan-041 for issue 194 (heap overflow in MmsValue_decodeMmsData exercised by crafted payload) using COTP Connection Request sequence that exercises the vulnerable MMS payload path after association; fully internal prior + family constraints enforced, no external docs, TPKT header version 0x03 consistent, single-request shape, distinct from other plans.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03",
+        "TPKT total-length field consistent",
+        "family iec61850 constraints",
+        "model-prior connection prerequisite",
+        "single-request shape",
+        "issue-supported trigger relations preserved"
+      ],
+      "evidence_ids": [
+        "issue:194",
+        "issue:513",
+        "issue:512",
+        "issue:516",
+        "issue:197",
+        "issue:509"
+      ],
+      "expected_behavior": "COTP connection established then server crashes on MMS payload decode with heap overflow in MmsValue_decodeMmsData",
+      "issue_safety_notes": "Uses issue 194 PoC trigger relation (MMS payload after COTP CR) without copying exact crash bytes; max distinct operations framed",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "030000160111e00000000100c1020000c2020001c00100",
+          "index": 0,
+          "label": "COTP CR"
+        }
+      ],
+      "plan_id": "vk-plan-041",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite of MmsValue_decodeMmsData heap overflow in mms_access_result.c",
+      "seed_id": "194",
+      "strategy": "stateful_valid",
+      "target_operation": "COTP Connection Request",
+      "title": "VK-only COTP Connection Request: In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/..."
+    }
+  ],
+  "target_issue": 194
+}

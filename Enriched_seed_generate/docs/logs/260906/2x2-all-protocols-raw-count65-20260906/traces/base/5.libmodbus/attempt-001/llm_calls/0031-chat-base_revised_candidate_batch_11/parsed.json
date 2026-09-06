@@ -1,0 +1,150 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly 4 distinct Modbus/TCP seed sequences from model internal prior and the supplied base constraints only. Review findings were addressed by removing unrelated setup traffic, correcting function codes to match the named operations, and using complete ADUs with 7-byte MBAP headers, protocol identifier 0000, and internally consistent length, quantity, and byte-count relationships. Diversity is improved with single-write, multi-write, paired request/response, and exception-shaped response coverage while keeping forms conservative and mutation-friendly. No external protocol documents, issue reports, or vulnerability claims were used.",
+  "coverage_summary": [
+    "Write Single Coil with canonical request and matching normal echo response",
+    "Write Single Register as a complete FC06 request without unrelated setup traffic",
+    "Write Multiple Coils with valid packed coil data, consistent quantity and byte count, plus matching response",
+    "Write Multiple Registers with valid FC10 request and coherent normal response",
+    "Request/response ordering with transaction identifier matching in multiple sequences",
+    "Exception-shaped response coverage for a write operation using the same transaction context",
+    "Diversified unit identifiers, transaction identifiers, addresses, quantities, and payload sizes",
+    "All ADUs preserve a 7-byte MBAP header, protocol identifier 0000, and internally consistent MBAP lengths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-041",
+      "seed_id": "base-plan-041-seed-1",
+      "title": "Base Write Single Coil variant 4",
+      "strategy": "parser_depth",
+      "target_operation": "Write Single Coil",
+      "purpose": "Exercise single-coil write handling with a complete canonical request and a matched normal response so parsers traverse both request and confirmation paths.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Write Single Coil Request",
+          "hex": "12010000000611050013ff00"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Write Single Coil Response",
+          "hex": "12010000000611050013ff00"
+        }
+      ],
+      "expected_behavior": "A conforming peer would typically echo the single-coil write request fields in a normal response with the same transaction and unit identifiers.",
+      "constraints_preserved": [
+        "7-byte MBAP header used in both messages",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+        "Function code 05 matches the named Write Single Coil operation",
+        "Transaction identifier is consistent across request and response"
+      ],
+      "issue_safety_notes": "Model-prior conservative seed only. No external protocol validation or issue knowledge was used, and expected behavior is stated cautiously without vulnerability implications."
+    },
+    {
+      "plan_id": "base-plan-042",
+      "seed_id": "base-plan-042-seed-1",
+      "title": "Base Write Single Register variant 4",
+      "strategy": "other",
+      "target_operation": "Write Single Register",
+      "purpose": "Provide a structurally clean FC06 seed with no artificial setup traffic, suitable for direct mutation of address and register value fields.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "Write Single Register Request",
+          "hex": "2207000000062a0600641234"
+        }
+      ],
+      "expected_behavior": "A conforming peer would typically accept or reject the single-register write based on local state and may respond by echoing the request fields in a normal confirmation.",
+      "constraints_preserved": [
+        "7-byte MBAP header present",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+        "Function code 06 matches the named Write Single Register operation",
+        "No unrelated setup message is included"
+      ],
+      "issue_safety_notes": "Model-prior conservative seed only. No external protocol documents or vulnerability issue data were used."
+    },
+    {
+      "plan_id": "base-plan-043",
+      "seed_id": "base-plan-043-seed-1",
+      "title": "Base Write Multiple Coils variant 4",
+      "strategy": "baseline_valid",
+      "target_operation": "Write Multiple Coils",
+      "purpose": "Use a conservative complete FC0F exchange with a small multi-coil payload, preserving correct quantity, byte count, and response shape for baseline mutation utility.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Write Multiple Coils Request",
+          "hex": "330300000008050f0010000a024d01"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Write Multiple Coils Response",
+          "hex": "330300000006050f0010000a"
+        }
+      ],
+      "expected_behavior": "A conforming peer would typically acknowledge the starting address and quantity written when the request is acceptable.",
+      "constraints_preserved": [
+        "7-byte MBAP header used in both messages",
+        "Protocol identifier is 0000",
+        "Request MBAP length 0008 matches unit identifier plus 7-byte fixed PDU and 2 data bytes",
+        "Response MBAP length 0006 matches unit identifier plus 5-byte response PDU",
+        "Function code 0f matches the named Write Multiple Coils operation",
+        "Quantity 000a and byte count 02 are internally consistent"
+      ],
+      "issue_safety_notes": "Model-prior conservative seed only. This sequence is intended for parser and mutator coverage, not to imply any issue relevance."
+    },
+    {
+      "plan_id": "base-plan-044",
+      "seed_id": "base-plan-044-seed-1",
+      "title": "Base Write Multiple Registers variant 4",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Multiple Registers",
+      "purpose": "Cover a distinct write family with a complete FC10 request carrying multiple register values and an exception-shaped response alternative for response parser diversity.",
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Write Multiple Registers Request",
+          "hex": "44090000000d09100020000306111122223333"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Write Multiple Registers Exception Response",
+          "hex": "440900000003099002"
+        }
+      ],
+      "expected_behavior": "A conforming peer would typically either acknowledge the starting address and quantity on success or return an exception-shaped response using the same transaction context if the request is not accepted.",
+      "constraints_preserved": [
+        "7-byte MBAP header used in both messages",
+        "Protocol identifier is 0000",
+        "Request MBAP length 000d matches unit identifier plus 12-byte PDU",
+        "Function code 10 matches the named Write Multiple Registers operation in the request",
+        "Quantity 0003 and byte count 06 agree with three 16-bit register values",
+        "Exception response MBAP length 0003 matches unit identifier plus 2-byte exception PDU",
+        "Transaction identifier is consistent across request and response"
+      ],
+      "issue_safety_notes": "Model-prior conservative seed only. Exception-shaped coverage is included for parser diversity and should not be interpreted as a vulnerability claim or externally verified behavior."
+    }
+  ]
+}

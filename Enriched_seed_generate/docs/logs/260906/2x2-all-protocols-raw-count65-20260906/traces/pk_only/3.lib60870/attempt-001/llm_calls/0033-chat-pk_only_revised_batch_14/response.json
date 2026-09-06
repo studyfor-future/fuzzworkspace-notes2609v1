@@ -1,0 +1,41 @@
+{
+  "id": "resp_0208db637f75c3f6016a9da081d3f087d099bd33062ba4303e",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"IEC60870\",\"target_issue\":-1,\"generation_notes\":\"PK-only corpus revised to four distinct IEC 60870-5-104 APCI-oriented seeds. Supplied IEC 60870-5-101/104 function references are primary for TypeID and cause semantics; conservative model-prior completion supplies APCI control encoding and ordinary ASDU address layouts where the supplied excerpts are incomplete. No historical vulnerability payloads or exact issue collisions are used.\",\"coverage_summary\":[\"Stateful STARTDT activation followed by a valid I-format General Interrogation activation using C_IC_NA_1 TypeID 100 and qualifier 20.\",\"Single Command coverage using C_SC_NA_1 TypeID 45 with an activation cause and command qualifier.\",\"Monitoring coverage using M_ST_NA_1 TypeID 5 with a spontaneous cause, step value, and quality descriptor.\",\"Clock Synchronization coverage using C_CS_NA_1 TypeID 103 with a CP56Time2a value.\",\"Distinct U-format and I-format APCI shapes with consistent 0x68 length octets.\"] ,\"sequences\":[{\"plan_id\":\"plan-revised-001\",\"seed_id\":\"pk-revised-001\",\"title\":\"STARTDT activation followed by General Interrogation\",\"strategy\":\"stateful_valid\",\"target_operation\":\"General Interrogation\",\"purpose\":\"Exercise link activation state and then enter the I-format interrogation path with a station interrogation qualifier.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:operation-catalog:c32f2366ef50\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"STARTDT activation U-format\",\"hex\":\"680407000000\"},{\"index\":1,\"direction\":\"client_to_server\",\"label\":\"C_IC_NA_1 General Interrogation activation\",\"hex\":\"680e00000000000064010600010000000014\"}],\"expected_behavior\":\"The peer may confirm STARTDT activation, after which it parses the I-format C_IC_NA_1 activation request with cause of transmission 6 and qualifier of interrogation 20.\",\"constraints_preserved\":[\"IEC 60870-5-104 APCI start byte 0x68 is used for both frames.\",\"The STARTDT U-format control field is 07 00 00 00.\",\"The I-format frame length 0x0e equals four APCI control bytes plus the 10-byte ASDU.\",\"TypeID 100 is C_IC_NA_1; the ASDU uses VSQ 1, cause 6, common address 1, IOA 0, and QOI 20.\",\"All multibyte address and cause fields use ordinary low-byte-first IEC 60870 ordering.\"],\"issue_safety_notes\":\"PK-only valid-structure seed; no vulnerability claim, malformed length, or historical payload collision is intentionally included.\"},{\"plan_id\":\"plan-revised-002\",\"seed_id\":\"pk-revised-002\",\"title\":\"Single Command activation\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"C_SC_NA_1 Single Command\",\"purpose\":\"Cover the canonical control-direction single-command parser path with an explicit information object address and command qualifier.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:operation-catalog:c32f2366ef50\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"C_SC_NA_1 single command activation\",\"hex\":\"680e0000000000002d010600010001000001\"}],\"expected_behavior\":\"The peer parses TypeID 45 as a single command with activation cause 6 at common address 1 and information object address 1; the final qualifier requests the ON state without select semantics.\",\"constraints_preserved\":[\"The I-format APCI length 0x0e equals four control bytes plus the 10-byte ASDU.\",\"TypeID 45 is C_SC_NA_1 according to the supplied function reference.\",\"VSQ is 1 for one information object.\",\"The ASDU contains cause 6, common address 1, IOA 1, and a one-byte single-command qualifier.\",\"The control sequence fields are zero-valued and structurally consistent for an initial client transmission.\"],\"issue_safety_notes\":\"PK-only valid command analogue with conservative ordinary addresses and qualifier values; it does not reproduce any historical issue payload.\"},{\"plan_id\":\"plan-revised-003\",\"seed_id\":\"pk-revised-003\",\"title\":\"Spontaneous step-position measurement\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"M_ST_NA_1 Step-position information\",\"purpose\":\"Cover a server-to-client monitoring ASDU with a non-command TypeID, spontaneous cause, step value, and quality descriptor.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:d8995aeae15b\"],\"messages\":[{\"index\":0,\"direction\":\"server_to_client\",\"label\":\"M_ST_NA_1 spontaneous measurement\",\"hex\":\"680f000000000000050103000100010000000000\"}],\"expected_behavior\":\"The receiver parses TypeID 5 as M_ST_NA_1 step-position information with spontaneous cause 3, one information object at common address 1 and IOA 1, step value 0, and a clear quality descriptor.\",\"constraints_preserved\":[\"The I-format APCI length 0x0f equals four control bytes plus the 11-byte ASDU.\",\"TypeID 5 is M_ST_NA_1 in the supplied monitoring-direction catalog.\",\"VSQ is 1 and the ASDU uses cause 3 for spontaneous transmission.\",\"The information object carries a one-byte step-position value followed by a one-byte quality descriptor.\",\"No CP24Time2a or CP56Time2a field is added because this TypeID has no time tag.\"],\"issue_safety_notes\":\"PK-only monitoring seed; direction and spontaneous semantics are represented without malformed framing or issue-specific payload reuse.\"},{\"plan_id\":\"plan-revised-004\",\"seed_id\":\"pk-revised-004\",\"title\":\"Clock Synchronization activation\",\"strategy\":\"field_interaction\",\"target_operation\":\"C_CS_NA_1 Clock synchronization command\",\"purpose\":\"Exercise a timed control ASDU combining command semantics, addresses, activation cause, and CP56Time2a field parsing.\",\"evidence_ids\":[\"function_code:function:operation-catalog:c32f2366ef50\",\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:d8995aeae15b\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"C_CS_NA_1 clock synchronization activation\",\"hex\":\"681400000000000067010600010000000000000000010118\"}],\"expected_behavior\":\"The peer parses TypeID 103 as a clock synchronization command with activation cause 6 and a seven-byte CP56Time2a value representing 2024-01-01 00:00:00.000.\",\"constraints_preserved\":[\"The I-format APCI length 0x14 equals four control bytes plus the 16-byte ASDU.\",\"TypeID 103 is C_CS_NA_1 according to the supplied operation catalog.\",\"VSQ is 1, cause is 6, common address is 1, and IOA is 0.\",\"The final seven bytes are reserved for CP56Time2a and encode zero milliseconds, minute, and hour, day 1, month 1, and year 24.\",\"The frame uses a distinct timed control layout rather than a monitoring or single-command payload.\"],\"issue_safety_notes\":\"PK-only valid structural analogue; timestamp and addresses are ordinary values, with no exact historical payload collision or vulnerability assertion.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788715258,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 3105,
+    "prompt_tokens": 13546,
+    "total_tokens": 16651,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 1507,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

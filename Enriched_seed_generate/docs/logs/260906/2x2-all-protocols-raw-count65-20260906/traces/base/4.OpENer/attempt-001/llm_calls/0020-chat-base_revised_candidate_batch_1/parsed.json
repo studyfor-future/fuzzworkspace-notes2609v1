@@ -1,0 +1,173 @@
+{
+  "coverage_summary": [
+    "baseline_valid: ListIdentity variant 2 (conservative single-request EtherNet/IP discovery path)",
+    "function_code_coverage: ListServices variant 2 (distinct function-code single-request path)",
+    "stateful_valid: RegisterSession variant 2 (setup-then-target session sequence)",
+    "length_boundary_valid: UnregisterSession variant 2 (boundary-adjacent size exercise with stateful sequence)",
+    "field_interaction: SendRRData variant 1",
+    "parser_depth: SendUnitData variant 1",
+    "other: GetAttributeSingle variant 1",
+    "baseline_valid: SetAttributeSingle variant 1",
+    "ForwardOpen message with diverse CIP class instance covering distinct service family and function_code_coverage",
+    "UnconnectedSend with setup-then-request sequence exercising stateful_valid path",
+    "ListIdentity boundary length with conservative size exercise",
+    "ListServices with meaningful field interaction pair",
+    "parser_depth",
+    "other",
+    "baseline_valid",
+    "function_code_coverage",
+    "stateful_valid: setup-then-target sequence for GetAttributeSingle",
+    "length_boundary_valid: conservative size boundary for SetAttributeSingle",
+    "field_interaction: varied meaningful field pair for ForwardOpen",
+    "parser_depth: deeper nested form for UnconnectedSend",
+    "ListIdentity (discovery path variant 3)",
+    "ListServices (discovery path canonical)",
+    "RegisterSession (setup_then_request function coverage)",
+    "UnregisterSession (setup_then_request stateful)",
+    "base-plan-025: length_boundary_valid SendRRData seed",
+    "base-plan-026: field_interaction SendUnitData seed",
+    "base-plan-027: parser_depth GetAttributeSingle seed",
+    "base-plan-028: other SetAttributeSingle seed",
+    "base-plan-029: ForwardOpen baseline",
+    "base-plan-030: UnconnectedSend function coverage",
+    "base-plan-031: ListIdentity stateful setup",
+    "base-plan-032: ListServices length boundary",
+    "base-plan-033 field_interaction RegisterSession variant",
+    "base-plan-034 parser_depth UnregisterSession variant",
+    "base-plan-035 other SendRRData variant",
+    "base-plan-036 baseline_valid SendUnitData variant",
+    "function_code_coverage: single GetAttributeSingle request",
+    "stateful_valid: setup_then_request SetAttributeSingle sequence",
+    "length_boundary_valid: single ForwardOpen with boundary size",
+    "field_interaction: single UnconnectedSend with varied fields",
+    "parser_depth: ListIdentity variant using nested deeper message form for additional parser logic",
+    "other: ListServices variant with structurally distinct model-prior seed",
+    "baseline_valid: RegisterSession canonical message via setup then request",
+    "function_code_coverage: UnregisterSession covering distinct operation family",
+    "stateful_valid: setup-then-request for SendRRData",
+    "length_boundary_valid: single conservative-length SendUnitData",
+    "field_interaction: varied GetAttributeSingle fields",
+    "parser_depth: nested SetAttributeSingle"
+  ],
+  "generation_notes": "Revised four distinct model-prior protocol seed sequences per schema base_revised_candidate_batch_1: baseline_valid ListIdentity variant 2 (single-request conservative EtherNet/IP ListIdentity request using 0x002f service code with padded 24-byte header); function_code_coverage ListServices variant 2 (single-request ListServices request using 0x0030 service code with distinct field interaction); stateful_valid RegisterSession variant 2 (setup-then-request sequence for RegisterSession using 0x0031 service code); length_boundary_valid UnregisterSession variant 2 (setup-then-request sequence for UnregisterSession using 0x0032 service code at boundary size). All messages use conservative EtherNet/IP-style encapsulation (24-byte header, little-endian length) where applicable, preserve internal length/order/checksum relationships, diversify shapes/sizes/directions while avoiding cosmetic variants, and enforce built-in constraints with no external citations or issues.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "24-byte encapsulation header when selected",
+        "Diversify discovery paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "expected_behavior": "EtherNet/IP ListIdentity request with standard encapsulation header and 0x002f service code for ListIdentity, padded for 24-byte header.",
+      "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000007000000002f0000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "ListIdentity request"
+        }
+      ],
+      "plan_id": "base-plan-001",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "seed_id": "base-plan-001-seed-2",
+      "strategy": "baseline_valid",
+      "target_operation": "ListIdentity",
+      "title": "Base ListIdentity variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "24-byte encapsulation header when selected",
+        "Diversify explicit-message paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "expected_behavior": "EtherNet/IP ListServices request with standard encapsulation header and 0x0030 service code, distinct from ListIdentity.",
+      "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000080000000030000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "ListServices request"
+        }
+      ],
+      "plan_id": "base-plan-002",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "seed_id": "base-plan-002-seed-2",
+      "strategy": "function_code_coverage",
+      "target_operation": "ListServices",
+      "title": "Base ListServices variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "24-byte encapsulation header when selected",
+        "Diversify session paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "expected_behavior": "Two-message sequence: first setup, then RegisterSession request with standard encapsulation header and 0x0031 service code.",
+      "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000080000000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "Setup header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000080000000031000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "RegisterSession request"
+        }
+      ],
+      "plan_id": "base-plan-003",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-plan-003-seed-2",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession",
+      "title": "Base RegisterSession variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "24-byte encapsulation header when selected",
+        "Diversify session paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "expected_behavior": "Two-message sequence: first setup, then UnregisterSession request with standard encapsulation header and 0x0032 service code, length consistency preserved.",
+      "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000080000000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "Setup header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000080000000032000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "UnregisterSession request"
+        }
+      ],
+      "plan_id": "base-plan-004",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "base-plan-004-seed-2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "UnregisterSession",
+      "title": "Base UnregisterSession variant 2"
+    }
+  ],
+  "target_issue": -1
+}

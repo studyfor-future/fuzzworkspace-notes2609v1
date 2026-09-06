@@ -1,0 +1,172 @@
+{
+  "coverage_summary": [
+    "VK-only STARTDT activation (issue_structural_analogue) with VSQ/object count analogue",
+    "VK-only STOPDT activation (field_interaction) with address parsing interaction",
+    "VK-only TESTFR activation (length_boundary_valid) with boundary boundary",
+    "VK-only General Interrogation (parser_depth) with deeper protocol structure",
+    "sequence-form short ASDU acceptance",
+    "stateful valid command frame",
+    "double command analogue",
+    "measured value analogue",
+    "length_boundary_valid: boundary on VSQ/N with insufficient ASDU body (issue 200/196/7v97)",
+    "GHSA-G3W7-X5RX-83XM: issue_structural_analogue general interrogation",
+    "GHSA-7V97-JMWV-W5J7: field_interaction single command",
+    "13: length_boundary_valid double command",
+    "53: parser_depth measured value",
+    "stateful_valid: null self deref in COT access via crafted I-frame",
+    "issue_structural_analogue: missing IOA in sequence ASDU parser",
+    "parser_depth: deep InformationObject_ParseObjectAddress OOB",
+    "field_interaction: VSQ element count mismatch with payload",
+    "clockSyncHandler: time encoding OOB in clock sync path",
+    "max distinct operations and frame sizes",
+    "length_boundary_valid for TESTFR activation",
+    "parser_depth for General Interrogation",
+    "stateful_valid for Single Command",
+    "other for Double Command",
+    "Measured Value (C_TS_NA_1 structure analogue)",
+    "Clock Synchronization (time field interaction)",
+    "Read Command (boundary length)",
+    "STARTDT activation (parser depth path)",
+    "stateful_valid: STOPDT activation with state prerequisite sequence",
+    "other: TESTFR activation with conservative framing",
+    "issue_structural_analogue: General Interrogation with combined vulnerable structure",
+    "field_interaction: Single Command with multi-step field interaction",
+    "length_boundary_valid: double command frame structures and length boundaries",
+    "parser_depth: measured value with deeper parser paths and stateful setup",
+    "stateful_valid: clock synchronization with prerequisite state sequences",
+    "other: read command with conservative framing and distinct operations",
+    "STARTDT activation: single_request U-frame with L=4 using STARTDT_ACT (0x07) to hit parser depth in activation path",
+    "STOPDT activation: single_request U-frame with L=4 using STOPDT_ACT (0x13) to exercise field interaction in control path",
+    "TESTFR activation: single_request U-frame with L=4 using TESTFR_ACT (0x07) to explore length-boundary validation",
+    "General Interrogation: single_request I-frame with L=8 and minimal TypeID=100 to reach sequence-form parsing depth"
+  ],
+  "generation_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used. 4 VK-only (P-/V+) candidate sequences generated per plan with exactly 4 plans using specified strategies, preserving all hard rules, evidence_ids, lowercase hex without separators, internally consistent lengths, and maximizing distinct operations/frame structures/sizes/state sequences for each plan. 4 VK-only plans generated per schema using only model-prior knowledge and supplied constraints; no external protocol docs; all hex lowercase, lengths consistent internally, sequences maximized for diversity.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 L octets consistent with frame size",
+        "IEC 60870-5-104 APCI framing",
+        "target_operation: Measured Value"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parser accepts malformed VSQ while reaching InformationObject_ParseObjectAddress and TestCommand_getFromBuffer paths",
+      "issue_safety_notes": "GHSA-G3W7-X5RX-83XM: VSQ/object count larger than ASDU body for TypeID 104 triggers heap-buffer-over-read in InformationObject_ParseObjectAddress (no msgSize check)",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680a0a680a004e11e002004e686810ff",
+          "index": 0,
+          "label": "Measured Value I-frame"
+        }
+      ],
+      "plan_id": "vk-plan-025",
+      "purpose": "Combine issue-supported vulnerable structure (large VSQ) with conservative model-prior protocol form without copying crash payload.",
+      "seed_id": "ghsa-g3w7-x5rx-83xm",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Measured Value",
+      "title": "VK-only Measured Value: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 L octets consistent with frame size",
+        "IEC 60870-5-104 APCI framing",
+        "target_operation: Clock Synchronization"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "expected_behavior": "Parser processes time2a field with large VSQ leading to InformationObject_ParseObjectAddress out-of-bounds",
+      "issue_safety_notes": "GHSA-7V97-JMWV-W5J7: InformationObject_ParseObjectAddress reads past buffer end when VSQ claims more objects than ASDU body",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e0e680e004e110300002002000000686810ff",
+          "index": 0,
+          "label": "Clock Sync I-frame"
+        }
+      ],
+      "plan_id": "vk-plan-026",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "ghsa-7v97-jmwv-w5j7",
+      "strategy": "field_interaction",
+      "target_operation": "Clock Synchronization",
+      "title": "VK-only Clock Synchronization: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 L octets consistent with frame size",
+        "IEC 60870-5-104 APCI framing",
+        "target_operation: Read Command"
+      ],
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Boundary length in header triggers crash in server test path",
+      "issue_safety_notes": "13: iec104_monitor server mode crashes on supplied IEC104 input",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e0e680c004e110300000002000000686810ff",
+          "index": 0,
+          "label": "Read Command I-frame"
+        }
+      ],
+      "plan_id": "vk-plan-027",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "13",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Command",
+      "title": "VK-only Read Command: No affected version is specified. The report shows that `./test/iec..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 L octets consistent with frame size",
+        "IEC 60870-5-104 APCI framing",
+        "target_operation: STARTDT activation"
+      ],
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "Deeper parser path in cs104_server/simple_server triggers SEGV",
+      "issue_safety_notes": "53: cs104_server/simple_server crashes on supplied input in CP56Time2a_getHour path",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680e0e680a004e110300000002000000686810ff",
+          "index": 0,
+          "label": "STARTDT activation I-frame"
+        }
+      ],
+      "plan_id": "vk-plan-028",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "53",
+      "strategy": "parser_depth",
+      "target_operation": "STARTDT activation",
+      "title": "VK-only STARTDT activation: Against the latest source from /mz-automation/lib60870/ (exact rele..."
+    }
+  ],
+  "target_issue": 0
+}

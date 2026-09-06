@@ -1,0 +1,148 @@
+{
+  "coverage_summary": [
+    "vk-plan-001: issue_structural_analogue COTP Connection Request (TPDU size shift analogue via length boundary)",
+    "vk-plan-002: field_interaction MMS Initiate (heap overflow path exercise)",
+    "vk-plan-003: length_boundary_valid GetNameList (BER uint32 analogue)",
+    "vk-plan-004: parser_depth Read (deep BER parser reach via model-prior structure)",
+    "Single-request uniformity enforced (no multi-step deviations)",
+    "Maximal operation/frame/state diversity while fixing coverage gaps",
+    "All deterministic errors resolved; evidence grounded exclusively in provided sources"
+  ],
+  "generation_notes": "Revised exactly 4 VK-only batch sequences from original plans 001-004 using revised candidate_batch_1 schema. Fixed deterministic errors (removed duplicates, invalid hex, unknown evidence, historical collisions). Enforced single-request shape uniformly, maximized frame/state diversity via varied lengths/structures/TPKT offsets, retained safe issue analogues without payload collisions. All sequences use model-prior internal prior (TPKT 0x03 + consistent total length + RFC1006 MMS archetype), built-in family constraints, lowercase hex no separators, evidence-linked triggers. Diversified operations (COTP CR, MMS Initiate, GetNameList, Read) while preserving association/discovery/read paths.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length consistent with full message",
+        "MMS over RFC1006 model-prior archetype",
+        "IEC61850 family constraints",
+        "Single-request shape",
+        "Message budget 1",
+        "No external protocol documents used"
+      ],
+      "evidence_ids": [
+        "issue:589:589-summary:a9c8952234c9",
+        "issue:193:193-summary:1451e58436f0",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "expected_behavior": "Server triggers UBSan shift exponent UB on TPDU size parsing",
+      "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001111e00000000100c1020000c2020001c001a2",
+          "index": 0,
+          "label": "COTP CR with malformed TPDU size"
+        }
+      ],
+      "plan_id": "vk-plan-001",
+      "purpose": "Combine issue-supported vulnerable structure with conservative model-prior form for TPDU parsing UB analogue without crash payload copy",
+      "seed_id": "vk-plan-001",
+      "strategy": "length_boundary_valid",
+      "target_operation": "COTP Connection Request",
+      "title": "VK-only COTP Connection Request: TPDU size shift boundary analogue (issue 589 evidence)"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length consistent with full message",
+        "MMS over RFC1006 model-prior archetype",
+        "IEC61850 family constraints",
+        "Single-request shape",
+        "Message budget 1",
+        "No external protocol documents used"
+      ],
+      "evidence_ids": [
+        "issue:194:194-summary:4277018cff9d",
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:198:198-summary:062388f44431"
+      ],
+      "expected_behavior": "Heap overflow triggered in MmsValue_decodeMmsData path",
+      "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001411e00000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "MMS Initiate with vulnerable field"
+        }
+      ],
+      "plan_id": "vk-plan-002",
+      "purpose": "Exercise issue-supported field interactions in plausible model-prior MMS structure",
+      "seed_id": "vk-plan-002",
+      "strategy": "field_interaction",
+      "target_operation": "MMS Initiate",
+      "title": "VK-only MMS Initiate: Heap overflow field interaction (issue 194 evidence)"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length consistent with full message",
+        "MMS over RFC1006 model-prior archetype",
+        "IEC61850 family constraints",
+        "Single-request shape",
+        "Message budget 1",
+        "No external protocol documents used"
+      ],
+      "evidence_ids": [
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "expected_behavior": "Parser boundary exercised in BerDecoder_decodeUint32 path",
+      "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001611e00000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "GetNameList with deep BER length"
+        }
+      ],
+      "plan_id": "vk-plan-003",
+      "purpose": "Explore issue-related boundary while retaining built-in basic length consistency",
+      "seed_id": "vk-plan-003",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetNameList",
+      "title": "VK-only GetNameList: BER length boundary (issue 196 evidence)"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT total length consistent with full message",
+        "MMS over RFC1006 model-prior archetype",
+        "IEC61850 family constraints",
+        "Single-request shape",
+        "Message budget 1",
+        "No external protocol documents used"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:509:509-summary:228be3676e7d",
+        "issue:513:513-summary:4a07060941e2"
+      ],
+      "expected_behavior": "Out-of-bounds read analogue triggered in getNumberOfElements path",
+      "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300001511e00000000100c1020000c2020001a0010001",
+          "index": 0,
+          "label": "Read with deep BER parser"
+        }
+      ],
+      "plan_id": "vk-plan-004",
+      "purpose": "Reach issue-relevant parser path through plausible deeper protocol structure",
+      "seed_id": "vk-plan-004",
+      "strategy": "parser_depth",
+      "target_operation": "Read",
+      "title": "VK-only Read: Parser depth reach (issue 197 evidence)"
+    }
+  ],
+  "target_issue": 599
+}

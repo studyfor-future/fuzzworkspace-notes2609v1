@@ -1,0 +1,148 @@
+{
+  "coverage_summary": [
+    "MMS Write with COTP/TKTP framing",
+    "MMS Write with COTP/TKTP framing",
+    "MMS Write with COTP/TKTP framing",
+    "MMS Write with COTP/TKTP framing"
+  ],
+  "generation_notes": "Generated 4 VK-only sequences using model internal protocol knowledge and supplied built-in family constraints. Each sequence is a distinct single-request MMS Write with maximized frame diversity, consistent visible lengths, and stateful or structural adaptations drawn from the issue-supported trigger relations in evidence_ids while preserving target_operation Write and IEC 61850 MMS archetype. No external protocol documents used. All hex lowercase without separators.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "COTP header version 0x03",
+        "TPKT total-length consistent with complete message",
+        "Diversified association/read/write paths",
+        "Target operation Write preserved",
+        "Basic length consistency",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "573",
+        "197",
+        "492",
+        "513",
+        "516",
+        "cve-2026-18583"
+      ],
+      "expected_behavior": "Stack buffer overflow crash occurs in ModelNode_getChild upon malformed 100-character name copy as reported in the issue.",
+      "issue_safety_notes": "Crashes server-side as per issue 573; no external knowledge used; model internal prior only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300003e02010004006f0000000000000300a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000240e005a72657475726e2043616c6c2800292904",
+          "index": 0,
+          "label": "MMS Write Request"
+        }
+      ],
+      "plan_id": "vk-plan-045",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-plan-045",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Write",
+      "title": "VK-only Write: The issue report describes a potential stack-buffer overflow in the..."
+    },
+    {
+      "constraints_preserved": [
+        "COTP header version 0x03",
+        "TPKT total-length consistent with complete message",
+        "Diversified association/read/write paths",
+        "Target operation GetVariableAccessAttributes preserved",
+        "Basic length consistency",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "589",
+        "590",
+        "cve-2026-18582",
+        "492",
+        "513",
+        "cve-2026-18583"
+      ],
+      "expected_behavior": "Undefined behavior crash in COTP connection request parser path due to TPDU size handling.",
+      "issue_safety_notes": "Crashes server-side as per issue 589; no external knowledge used; model internal prior only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300003e02010004006f0000000000000300a000240e005a727463766172416363657373417474720400",
+          "index": 0,
+          "label": "GetVariableAccessAttributes Request"
+        }
+      ],
+      "plan_id": "vk-plan-046",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-plan-046",
+      "strategy": "parser_depth",
+      "target_operation": "GetVariableAccessAttributes",
+      "title": "VK-only GetVariableAccessAttributes: libIEC61850 1.6.1 has an undefined-behavior issue in COTP Connectio..."
+    },
+    {
+      "constraints_preserved": [
+        "COTP header version 0x03",
+        "TPKT total-length consistent with complete message",
+        "Diversified association/read/write paths",
+        "Target operation DefineNamedVariableList preserved",
+        "Basic length consistency",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "590",
+        "609",
+        "589",
+        "598",
+        "516",
+        "590"
+      ],
+      "expected_behavior": "Undefined behavior crash in BER TLV length parsing after state setup, as per issue 590.",
+      "issue_safety_notes": "Crashes server-side as per issue 590; no external knowledge used; model internal prior only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300003e02010004006f0000000000000300a000240e005a72657475726e2043616c6c2800292904",
+          "index": 0,
+          "label": "DefineNamedVariableList Request (setup)"
+        }
+      ],
+      "plan_id": "vk-plan-047",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vk-plan-047",
+      "strategy": "stateful_valid",
+      "target_operation": "DefineNamedVariableList",
+      "title": "VK-only DefineNamedVariableList: libIEC61850 1.6.1 contains undefined behavior in src/mms/iso_mms/as..."
+    },
+    {
+      "constraints_preserved": [
+        "COTP header version 0x03",
+        "TPKT total-length consistent with complete message",
+        "Diversified association/read/write paths",
+        "Target operation InformationReport preserved",
+        "Basic length consistency",
+        "IEC 61850 family constraints"
+      ],
+      "evidence_ids": [
+        "596",
+        "cve-2026-18583",
+        "cve-2026-18582",
+        "597",
+        "603"
+      ],
+      "expected_behavior": "Heap-use-after-free crash on URCB lifetime mismatch when connection reuses after close, as per issue 596.",
+      "issue_safety_notes": "Crashes server-side as per issue 596; no external knowledge used; model internal prior only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300003e02010004006f0000000000000300a000240e005a727463766172416363657373417474720400",
+          "index": 0,
+          "label": "InformationReport Request"
+        }
+      ],
+      "plan_id": "vk-plan-048",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vk-plan-048",
+      "strategy": "other",
+      "target_operation": "InformationReport",
+      "title": "VK-only InformationReport: In libiec61850 v1.6.1, a server-side heap-use-after-free occurs whe..."
+    }
+  ],
+  "target_issue": 573
+}

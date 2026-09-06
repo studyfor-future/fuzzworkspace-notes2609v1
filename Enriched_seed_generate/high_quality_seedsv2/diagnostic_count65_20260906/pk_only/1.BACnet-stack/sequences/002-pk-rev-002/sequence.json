@@ -1,0 +1,51 @@
+{
+  "seed_id": "pk-rev-002",
+  "title": "Minimal confirmed ReadProperty request",
+  "strategy": "function_code_coverage",
+  "target_operation": "ReadProperty",
+  "purpose": "Exercise a common confirmed property-access path with a compact single-request frame.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:457cd2894efe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read-property-request",
+      "hex": "810a001101000004010c0c020000010919",
+      "byte_length": 17,
+      "sha256": "3ed53761c9b83310540ff3ff3768130b95fbac74d0911b0d474c5740f9f2f41f"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP endpoint should parse the frame as a confirmed ReadProperty request and either return a corresponding ACK/error or reject the request based on object/property support.",
+  "constraints_preserved": [
+    "BVLC header present and length 0x0011 matches 17-byte frame",
+    "NPDU header uses version 0x01 and control 0x00",
+    "APDU begins with Confirmed-Request-PDU type 0x00 and service choice 0x0c, matching supplied references for ReadProperty",
+    "Invoke id 0x01 is included for state tracking",
+    "Object and property encodings are conservative BACnet-style model-prior placeholders to keep a plausible parser path without claiming source-verified field grammar"
+  ],
+  "issue_safety_notes": "PK-only seed with no issue analogue. Uses a minimal confirmed-service scaffold rather than any malformed or exploit-specific payload.",
+  "sequence_sha256": "afb48fae53659725437d062cb83f0b8a114485594c2f961ca821f739a55b29df",
+  "total_bytes": 17,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3ed53761c9b83310540ff3ff3768130b95fbac74d0911b0d474c5740f9f2f41f",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

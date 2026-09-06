@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELAZ5HWhMzdlbqmZeuf9lIUHdSUQ7",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"IEC60870\",\n  \"target_issue\": 13,\n  \"generation_notes\": \"Revised to exactly 4 distinct seeds with source-backed IEC 60870-5-104 APCI framing and conservative IEC 60870 ASDU layouts where the supplied sources list type IDs, cause-of-transmission values, interrogation qualifiers, and U-format/APDU start semantics but not full byte templates. Previous invalid and duplicate entries were removed. Diversity was improved across U-format activation, interrogation, control, and monitoring paths while preserving 0x68 length consistency and avoiding the exact historical crash payload from issue 13.\",\n  \"coverage_summary\": [\n    \"IEC 60870-5-104 U-format STARTDT activation path\",\n    \"IEC 60870-5-104 U-format TESTFR activation path\",\n    \"IEC 60870 control-direction interrogation using station interrogation qualifier 20\",\n    \"IEC 60870 control-direction single command using TypeID 45\",\n    \"IEC 60870 monitoring-direction measured value using TypeID 13\",\n    \"Distinct client_to_server and server_to_client parser entry paths\",\n    \"Safe structural analogue coverage for issue 13 without reproducing the reported payload\",\n    \"0x68 APDU framing with length octets matched to 4-byte APCI or APCI+ASDU payload size\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-021\",\n      \"seed_id\": \"seq-021-001-r1\",\n      \"title\": \"STARTDT activation baseline\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"STARTDT activation\",\n      \"purpose\": \"Exercise the minimal IEC 60870-5-104 U-format activation parser path with a compact valid frame before application ASDUs are exchanged.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"issue:13:13-summary:187d3c5ead6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"u-format startdt act\",\n          \"hex\": \"680407000000\"\n        }\n      ],\n      \"expected_behavior\": \"Peer recognizes a valid STARTDT activation U-frame and transitions link state without crash.\",\n      \"constraints_preserved\": [\n        \"Uses IEC 60870-5-104 APDU start byte 0x68\",\n        \"Length octet 0x04 matches a 4-byte APCI U-format frame\",\n        \"Avoids copying the oversized malformed issue 13 payload\",\n        \"Relies on widely recognized 104 U-format control value for STARTDT activation as conservative model-prior completion\"\n      ],\n      \"issue_safety_notes\": \"Safe structural analogue only; minimal valid U-frame chosen to reach protocol state handling without reproducing the reported crashing input.\"\n    },\n    {\n      \"plan_id\": \"plan-022\",\n      \"seed_id\": \"seq-022-001-r1\",\n      \"title\": \"General interrogation after link activation\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"General Interrogation\",\n      \"purpose\": \"Cover a common stateful control path by pairing link activation with an I-format interrogation ASDU using the documented station interrogation qualifier.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"function_code:function:function-text:3cbe16bf065a\",\n        \"issue:13:13-summary:187d3c5ead6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"u-format startdt act\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"c_ic_na_1 station interrogation\",\n          \"hex\": \"680e0000000064010600010000000014\"\n        }\n      ],\n      \"expected_behavior\": \"Peer accepts STARTDT activation and then parses the interrogation ASDU as a valid station interrogation request without abnormal termination.\",\n      \"constraints_preserved\": [\n        \"Both messages use IEC 60870-5-104 APDU framing with 0x68\",\n        \"Second message length 0x0e matches 4 APCI bytes plus 10 ASDU bytes\",\n        \"Uses TypeID 100 for interrogation with qualifier 20 from supplied sources\",\n        \"ASDU ordering follows conservative common 104 practice: TypeID, VSQ, COT, common address, IOA, qualifier\"\n      ],\n      \"issue_safety_notes\": \"Issue-oriented but non-colliding analogue; uses short valid I-format ASDU instead of the historical malformed long frame.\"\n    },\n    {\n      \"plan_id\": \"plan-023\",\n      \"seed_id\": \"seq-023-001-r1\",\n      \"title\": \"Single command control path\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Single Command\",\n      \"purpose\": \"Exercise a distinct control-direction I-format parser path using documented TypeID 45 with a compact single information object.\",\n      \"evidence_ids\": [\n        \"protocol_format:iec60870:format-overview:6fc14a471f76\",\n        \"function_code:function:function-text:d8995aeae15b\",\n        \"issue:13:13-summary:187d3c5ead6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"c_sc_na_1 single command\",\n          \"hex\": \"680e000000002d010600010001000001\"\n        }\n      ],\n      \"expected_behavior\": \"Peer parses a valid single-command ASDU and either accepts or application-rejects it cleanly based on local configuration, without parser failure.\",\n      \"constraints_preserved\": [\n        \"Uses documented TypeID 45 C_SC_NA_1\",\n        \"Length octet 0x0e is consistent with APCI plus 10-byte ASDU\",\n        \"Single information object with 3-byte IOA and 1-byte command qualifier/value field\",\n        \"Framing remains within conservative valid 104 I-format structure\"\n      ],\n      \"issue_safety_notes\": \"Chosen as a safe alternative parser path near I-format handling implicated by the issue, but not matching the crash sample structure.\"\n    },\n    {\n      \"plan_id\": \"plan-024\",\n      \"seed_id\": \"seq-024-001-r1\",\n      \"title\": \"Measured value with TESTFR handshake\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"Measured Value\",\n      \"purpose\": \"Increase direction and parser diversity by combining a U-format test frame with a compact monitoring-direction measured-value ASDU returned from server to client.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:d8995aeae15b\",\n        \"function_code:function:operation-catalog:b0db75237939\",\n        \"issue:13:13-summary:187d3c5ead6c\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"u-format testfr act\",\n          \"hex\": \"680443000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"m_me_nc_1 measured short float\",\n          \"hex\": \"6801110002000d010300010001000000803f00\"\n        }\n      ],\n      \"expected_behavior\": \"Peer processes TESTFR activation at link level and then parses a monitoring ASDU carrying one short floating-point measured value without crash.\",\n      \"constraints_preserved\": [\n        \"First frame uses IEC 60870-5-104 U-format with 4-byte APCI and correct 0x68 length 0x04\",\n        \"Second frame uses documented TypeID 13 M_ME_NC_1\",\n        \"Second frame length 0x11 matches 4 APCI bytes plus 13 ASDU bytes\",\n        \"Monitoring ASDU uses one object, 3-byte IOA, 4-byte float value, and 1-byte quality descriptor in conservative common ordering\"\n      ],\n      \"issue_safety_notes\": \"Safe structural analogue adds parser depth and reverse direction coverage while remaining far from the exact crashing issue payload.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788714207,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1809,
+    "prompt_tokens": 9390,
+    "total_tokens": 11199,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 252,
+      "engine_ttlt_ms": 15407,
+      "pre_inference_ms": 114,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 552,
+      "service_ttlt_ms": 15702,
+      "user_visible_ttft_ms": 438
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 32897,
+  "routing": {
+    "serving_pipereplica": "d20260817141218-be98d3e9-default-r0-dp0-default"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "function_code_coverage: base-plan-009 Read Command for interrogation path",
+    "stateful_valid: base-plan-010 STARTDT activation setup-then-request sequence",
+    "length_boundary_valid: base-plan-011 STOPDT activation boundary-adjacent size",
+    "field_interaction: base-plan-012 TESTFR activation with varied fields"
+  ],
+  "generation_notes": "Generated exactly 4 Base (P-/V-) candidate seed sequences for plan_ids base-plan-009 to base-plan-012 using internal protocol priors and base constraints; sequences are conservative, complete, and diversified per plan objectives with no external documents or issues used.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client sends readout request for all information; server responds with data frames containing measurement values",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6806000e000000680400000e000000",
+          "index": 0,
+          "label": "C_IC_NA_1 request"
+        }
+      ],
+      "plan_id": "base-plan-009",
+      "purpose": "Cover a distinct likely operation or service family using IEC 60870-5-104 readout sequence",
+      "seed_id": "seed-009",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read Command",
+      "title": "Base Read Command variant 1"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client activates start data transfer state; server acknowledges to confirm protocol synchronization",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68060014000000066804000014000000",
+          "index": 0,
+          "label": "C_STARTDT1 request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "68060015000000066804000015000000",
+          "index": 1,
+          "label": "S_STARTDT1 acknowledgment"
+        }
+      ],
+      "plan_id": "base-plan-010",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required",
+      "seed_id": "seed-010",
+      "strategy": "stateful_valid",
+      "target_operation": "STARTDT activation",
+      "title": "Base STARTDT activation variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client requests stop of data transmission; server may acknowledge or confirm state change",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6806001e0000000006680400001e000000",
+          "index": 0,
+          "label": "C_STOPDT1 request"
+        }
+      ],
+      "plan_id": "base-plan-011",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency",
+      "seed_id": "seed-011",
+      "strategy": "length_boundary_valid",
+      "target_operation": "STOPDT activation",
+      "title": "Base STOPDT activation variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client sends test frame for end-to-end confirmation; server responds with acknowledgment",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68060026000000066804000026000000",
+          "index": 0,
+          "label": "C_TESTFR1 request"
+        }
+      ],
+      "plan_id": "base-plan-012",
+      "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships",
+      "seed_id": "seed-012",
+      "strategy": "field_interaction",
+      "target_operation": "TESTFR activation",
+      "title": "Base TESTFR activation variant 2"
+    }
+  ],
+  "target_issue": -1
+}

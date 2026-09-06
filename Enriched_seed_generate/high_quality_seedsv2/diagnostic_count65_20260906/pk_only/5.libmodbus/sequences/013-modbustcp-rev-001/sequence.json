@@ -1,0 +1,50 @@
+{
+  "seed_id": "modbustcp-rev-001",
+  "title": "Canonical Read Coils request",
+  "strategy": "baseline_valid",
+  "target_operation": "Read Coils",
+  "purpose": "Cover a fully documented read operation with explicit starting-address and quantity fields using a minimal valid Modbus/TCP ADU.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:9821a13f1ada",
+    "protocol_format:modbustcp:section-common-heade:efc691d867a7",
+    "function_code:function:function-text:c093c4ea4f67"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Coils request",
+      "hex": "000000000006010100000001",
+      "byte_length": 12,
+      "sha256": "0cb7226b4d8f13a961df85be4666b39e2b76817a390f68f5b5a4795ab9019722"
+    }
+  ],
+  "expected_behavior": "Server accepts the MBAP header, decodes function 0x01, interprets starting address 0x0000 and quantity 0x0001, and returns a normal Read Coils response or a protocol-level exception response if the addressed object is unsupported.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0006 matches unit id plus 5-byte PDU",
+    "Function 0x01 request includes Starting Address and Quantity of Coils as documented",
+    "All bytes kept in canonical Modbus/TCP field order",
+    "PK-only valid request with no malformed lengths or truncation"
+  ],
+  "issue_safety_notes": "No issue evidence is enabled. Seed is a safe, valid structural baseline and avoids malformed or historically colliding payload patterns.",
+  "sequence_sha256": "2dbca4d0528e8ef14b2f89e3b78d74467d0f4e4331dd4c9022a48b4401d7ff22",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0cb7226b4d8f13a961df85be4666b39e2b76817a390f68f5b5a4795ab9019722",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

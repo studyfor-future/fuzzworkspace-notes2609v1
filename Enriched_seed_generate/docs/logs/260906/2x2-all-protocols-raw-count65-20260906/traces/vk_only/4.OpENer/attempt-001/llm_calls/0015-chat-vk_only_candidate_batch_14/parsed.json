@@ -1,0 +1,165 @@
+{
+  "coverage_summary": [
+    "stateful_valid for RegisterSession (issue 582/564)",
+    "other for UnregisterSession (issue 593)",
+    "issue_structural_analogue for SendRRData (CVE-2020-13530)",
+    "field_interaction for SendUnitData (CVE-2020-13556)"
+  ],
+  "generation_notes": "VK-only P-/V+ candidates generated per plan constraints using internal prior, family opener rules, and selected strategies. Exactly 4 sequences produced; no external docs; hex lowercase no separators; lengths consistent internally.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "EIP little-endian payload length",
+        "24-byte encapsulation header",
+        "multi-step stateful shape",
+        "message_budget 2"
+      ],
+      "evidence_ids": [
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:557:557-summary:f58da6326195",
+        "issue:572:572-summary:4cac5b77f97f"
+      ],
+      "expected_behavior": "Stateful setup reaches malformed explicit request path for out-of-bounds read trigger in CIP parsing.",
+      "issue_safety_notes": "Targets issue:582 EPath size forgery in SendRRData; uses RegisterSession setup per plan.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "00000000006500000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "00000000006500000000000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "Resp"
+        }
+      ],
+      "plan_id": "vk-plan-053",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "seed_053",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession",
+      "title": "VK-only RegisterSession: OpENer 2.3.0 (commit 76b95cf) has an out-of-bounds read in CIP mess..."
+    },
+    {
+      "constraints_preserved": [
+        "EIP little-endian payload length",
+        "24-byte encapsulation header",
+        "single_request shape",
+        "message_budget 1"
+      ],
+      "evidence_ids": [
+        "issue:593:593-summary:2b6de868ce19",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:557:557-summary:f58da6326195",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:568:568-summary:6fa072929d36",
+        "issue:577:577-summary:f41c11d4b1b8"
+      ],
+      "expected_behavior": "Single-request triggers EPATH path_size decoding anomaly.",
+      "issue_safety_notes": "Targets issue:593 EPATH path_size read; conservative framing.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000007400000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "UnregisterSession"
+        }
+      ],
+      "plan_id": "vk-plan-054",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "seed_054",
+      "strategy": "other",
+      "target_operation": "UnregisterSession",
+      "title": "VK-only UnregisterSession: OpENer decodes a CIP EPATH (electronic path) by reading a path_size..."
+    },
+    {
+      "constraints_preserved": [
+        "EIP little-endian payload length",
+        "24-byte encapsulation header",
+        "multi-step stateful shape",
+        "message_budget 2"
+      ],
+      "evidence_ids": [
+        "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+        "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+        "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2",
+        "issue:cve-2022-43605:cve-2022-43605-summa:0e083bcc56b5",
+        "issue:571:571-summary:fe57e1bf0770"
+      ],
+      "expected_behavior": "Multi-step triggers CPF malformed structure leading to DoS crash.",
+      "issue_safety_notes": "Analogue to CVE-2020-13530 via SendRRData path.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000006f00000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "SendRRData"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "00000000006f00000000000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "Resp"
+        }
+      ],
+      "plan_id": "vk-plan-055",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "seed_055",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "SendRRData",
+      "title": "VK-only SendRRData: EIP Stack Group OpENer 2.3 and development commit 8c73bf3 contain a..."
+    },
+    {
+      "constraints_preserved": [
+        "EIP little-endian payload length",
+        "24-byte encapsulation header",
+        "multi-step stateful shape",
+        "message_budget 3"
+      ],
+      "evidence_ids": [
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+        "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+        "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:cve-2022-43605:cve-2022-43605-summa:0e083bcc56b5"
+      ],
+      "expected_behavior": "Out-of-bounds write triggered via CPF item_count field interaction.",
+      "issue_safety_notes": "Targets issue:CVE-2020-13556 via SendUnitData field interactions.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000006e00000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "SendUnitData"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "00000000006e00000000000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "Resp"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00000000006e00000000000000000000000000000000000000000000000000000000",
+          "index": 2,
+          "label": "Field interaction"
+        }
+      ],
+      "plan_id": "vk-plan-056",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "seed_056",
+      "strategy": "field_interaction",
+      "target_operation": "SendUnitData",
+      "title": "VK-only SendUnitData: OpENer 2.3 and development commit 8c73bf3 have an out-of-bounds wri..."
+    }
+  ],
+  "target_issue": 564
+}

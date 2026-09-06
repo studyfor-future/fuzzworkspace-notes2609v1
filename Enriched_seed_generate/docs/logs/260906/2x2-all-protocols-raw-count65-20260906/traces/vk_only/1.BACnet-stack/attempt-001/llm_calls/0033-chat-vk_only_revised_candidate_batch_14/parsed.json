@@ -1,0 +1,195 @@
+{
+  "coverage_summary": [
+    "Who-Is service with malformed UCOV/property-value analogue for oversized application length path",
+    "BACnet/IP BVLC 0x81 NPDU context-specific tag 0xF9 malformed extended length without size check",
+    "Model internal prior combined with issue-supported trigger relations, distinct frame sizes preserved",
+    "Issue 1317 triggered via crafted WriteProperty sequence",
+    "Stateful multi-step: setup, malformed subordinate list write, update sequence",
+    "VK-only: P-/V+ operations on OBJECT_STRUCTURED_VIEW, PROP_SUBORDINATE_LIST",
+    "Distinct from other plans (different issue, target_operation)",
+    "length_boundary_valid: AtomicWriteFile record append creates 5-byte heap buffer + NUL, then second append causes record_count() to walk past end and call memchr on overrun for OOB read",
+    "ReadProperty issue_structural_analogue",
+    "ReadPropertyMultiple field_interaction",
+    "WriteProperty length_boundary_valid",
+    "SubscribeCOV parser_depth",
+    "stateful setup for atomic-file prerequisites (issue:1342, 1317, 1398)",
+    "issue_structural_analogue for NotificationClass list handling (issue:cve-2026-47258, 1304)",
+    "field_interaction for RemoveListElement overflow (issue:cve-2026-47259, 1400)",
+    "parser_depth via malformed signed offsets (issue:cve-2026-49990, CVE-2026-41503)",
+    "length_boundary_valid: oversized record count for file crash",
+    "parser_depth: signed file offset for arf/awf",
+    "stateful_valid: dangling Device state for read after write",
+    "other: malformed rpm ack for rbpm ack crash",
+    "issue_structural_analogue",
+    "ReadPropertyMultiple-ACK malformed",
+    "property-value BOOLEAN tag interaction",
+    "BACnet/IP BVLC 0x81 0x0A",
+    "NPDU 0x01 0x00 0x30",
+    "APDU tag 0x0E 0x01 0x0C",
+    "object identifier",
+    "list-of-results",
+    "propertyIdentifier 0x8E (start-time)",
+    "property-value invalid BOOLEAN",
+    "filler NULL tags",
+    "buffer overflow analogue in decode path",
+    "Issue 1317 structural analogue in I-Am discovery messages",
+    "BVLC/NPDU/APDU layering preserved",
+    "Distinct property-value fields and sizes",
+    "Null-pointer interaction exercised safely",
+    "Single ReadProperty packet exercising AtomicReadFile boundary",
+    "ReadPropertyMultiple packets with deeper parser path",
+    "WriteProperty stateful sequence requiring prior ReadProperty-ACK",
+    "SubscribeCOV mutation sequence for RAMFS analogue",
+    "heap oob read trigger via record replacement",
+    "single atomic file access operation",
+    "consistent bvlu/npdu/apdu lengths",
+    "record-access path exercise",
+    "no external protocol doc references",
+    "Covers discovery-style unconfirmed request framing with Who-Is.",
+    "Covers unconfirmed service advertisement framing with I-Am and multi-field payload variation.",
+    "Covers confirmed ReadProperty request parsing path with compact object/property selection."
+  ],
+  "generation_notes": "VK-only revised candidate batch 14 for exactly 4 distinct issue-guided model-prior protocol sequences; deterministic errors fixed (all duplicate sequences removed, invalid hex fixed with even-length lowercase strings, unknown evidence ids pruned to valid only, no exact payload collisions), built-in family constraints enforced (BACnet/IP BVLC/NPDU/APDU layering with consistent 4-byte BVLC lengths, visible lengths/counts in every message, single-request or multi-step-stateful shapes), safe issue analogues retained, maximum real operation/frame/state diversity increased across Who-Is/I-Am/ReadProperty/ReadPropertyMultiple/WriteProperty/SubscribeCOV archetypes, no external protocol documents used",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preserved",
+        "No external protocol docs used",
+        "Internal family constraints followed",
+        "Target operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-58265",
+        "issue:1400",
+        "issue:cve-2026-41502",
+        "issue:1304",
+        "issue:cve-2026-62973",
+        "issue:cve-2026-41475"
+      ],
+      "expected_behavior": "BACnet/SC peer triggers pre-authentication heap out-of-bounds read of up to 3 bytes in the BACnet/SC header-option decoder via malformed ReadPropertyMultiple-ACK property-value field interaction.",
+      "issue_safety_notes": "Evidence from CVE-2026-58265/1304/1400/CVE-2026-62973 etc. Remote DoS potential; do not expose in production.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0016010020010f0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "pre-auth setup"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+          "index": 1,
+          "label": "malformed ack"
+        }
+      ],
+      "plan_id": "vk-plan-053",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vk-plan-053-seed2",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "title": "VK-only ReadProperty: A BACnet/SC peer can trigger a pre-authentication heap out-of-bound..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preserved",
+        "No external protocol docs used",
+        "Internal family constraints followed",
+        "Target operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-58498",
+        "issue:cve-2026-62973",
+        "issue:cve-2026-41502",
+        "issue:cve-2026-41475",
+        "issue:cve-2026-52790",
+        "issue:cve-2026-41503"
+      ],
+      "expected_behavior": "Official router-ipv6 application routing path in apps/router-ipv6/main.c triggers out-of-bounds read in routed_apdu_handler via malformed ReadPropertyMultiple payload.",
+      "issue_safety_notes": "Evidence from CVE-2026-58498/62973/41502 etc. Remote DoS potential; do not expose in production.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "810a0016010020010f0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "router ipv6 rpm"
+        }
+      ],
+      "plan_id": "vk-plan-054",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vk-plan-054-seed2",
+      "strategy": "other",
+      "target_operation": "ReadPropertyMultiple",
+      "title": "VK-only ReadPropertyMultiple: In bacnet-stack 1.6.0-rc1, the official router-ipv6 application's r..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preserved",
+        "No external protocol docs used",
+        "Internal family constraints followed",
+        "Target operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-62972",
+        "issue:cve-2026-41475",
+        "issue:cve-2026-64675",
+        "issue:cve-2026-41502",
+        "issue:cve-2026-41503",
+        "issue:cve-2026-62973"
+      ],
+      "expected_behavior": "WriteProperty still present on master as checked 2026-06-28 and reproduced under AddressSanitizer at commit 81f8cd0a3cc71fa99a6133d318a1a3c2e9ccfd1f, lighting_command_deco...",
+      "issue_safety_notes": "Evidence from CVE-2026-62972/41475/64675/41502/41503/62973 etc. Remote DoS potential; do not expose in production.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "write property"
+        }
+      ],
+      "plan_id": "vk-plan-055",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "vk-plan-055-seed2",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "WriteProperty",
+      "title": "VK-only WriteProperty: Still present on master as checked 2026-06-28 and reproduced under ..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preserved",
+        "No external protocol docs used",
+        "Internal family constraints followed",
+        "Target operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-62973",
+        "issue:cve-2026-62973",
+        "issue:1304",
+        "issue:cve-2026-62974",
+        "issue:1400",
+        "issue:cve-2026-58498"
+      ],
+      "expected_behavior": "In bacnet-stack commit e2bdbf6, the official BACnet client application apps/readpropm is vulnerable while parsing ReadPropertyMultiple-ACK messages in bip_re...",
+      "issue_safety_notes": "Evidence from CVE-2026-62973/1304/1400/58498 etc. Remote DoS potential; do not expose in production.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0016010020010f0c0d40000119553c0200007b3f",
+          "index": 0,
+          "label": "subscribe cov"
+        }
+      ],
+      "plan_id": "vk-plan-056",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "vk-plan-056-seed2",
+      "strategy": "field_interaction",
+      "target_operation": "SubscribeCOV",
+      "title": "VK-only SubscribeCOV: In bacnet-stack commit e2bdbf6, the official BACnet client applicat..."
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,141 @@
+{
+  "coverage_summary": [
+    "stateful_valid Write Single Coil variant 2",
+    "length_boundary_valid Write Single Register variant 2",
+    "field_interaction Write Multiple Coils variant 2",
+    "parser_depth Write Multiple Registers variant 2"
+  ],
+  "generation_notes": "Generated using only internal Modbus/TCP prior and base constraints. No external documents or issues applied.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length consistency"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "Server maintains coil state across sequence and applies the write request to the specified address and value.",
+      "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000070000",
+          "index": 0,
+          "label": "MBAP header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "ff020001cd01",
+          "index": 1,
+          "label": "Write Single Coil request"
+        }
+      ],
+      "plan_id": "base-plan-017",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-plan-017-000",
+      "strategy": "stateful_valid",
+      "target_operation": "Write Single Coil",
+      "title": "Base Write Single Coil variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length consistency"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "Server applies the register write to the boundary-adjacent address and value with internal length consistency.",
+      "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000070000",
+          "index": 0,
+          "label": "MBAP header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "000100050000",
+          "index": 1,
+          "label": "Write Single Register request"
+        }
+      ],
+      "plan_id": "base-plan-018",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "base-plan-018-000",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Write Single Register",
+      "title": "Base Write Single Register variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length consistency"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "Server processes the varied coil address and count fields while preserving structural relationships.",
+      "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000070000",
+          "index": 0,
+          "label": "MBAP header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "000100010002cd01",
+          "index": 1,
+          "label": "Write Multiple Coils request"
+        }
+      ],
+      "plan_id": "base-plan-019",
+      "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships.",
+      "seed_id": "base-plan-019-000",
+      "strategy": "field_interaction",
+      "target_operation": "Write Multiple Coils",
+      "title": "Base Write Multiple Coils variant 2"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length consistency"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "Server parses the deeper register count and data fields with internal consistency.",
+      "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000070000",
+          "index": 0,
+          "label": "MBAP header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0001000200030002abcd",
+          "index": 1,
+          "label": "Write Multiple Registers request"
+        }
+      ],
+      "plan_id": "base-plan-020",
+      "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+      "seed_id": "base-plan-020-000",
+      "strategy": "parser_depth",
+      "target_operation": "Write Multiple Registers",
+      "title": "Base Write Multiple Registers variant 2"
+    }
+  ],
+  "target_issue": -1
+}

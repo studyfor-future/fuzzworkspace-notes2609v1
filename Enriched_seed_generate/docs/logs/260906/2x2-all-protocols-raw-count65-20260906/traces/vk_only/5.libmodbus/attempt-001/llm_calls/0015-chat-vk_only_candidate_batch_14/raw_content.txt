@@ -1,0 +1,166 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": 279,
+  "generation_notes": "Generated four VK-only Modbus/TCP candidate sequences from the supplied plans. Each sequence preserves its assigned target_operation and uses conservative MBAP framing with internally consistent length and count fields. The set emphasizes distinct operations, state shapes, unit identifiers, addresses, and payload sizes while keeping issue-supported relations such as repeated write activity, minimal valid requests, and field interaction patterns. No exact historical crash payloads were copied.",
+  "coverage_summary": [
+    "Covers Write Single Coil, Write Single Register, Write Multiple Coils, and Write Multiple Registers.",
+    "Includes both single-request and multi-step stateful sequences.",
+    "Exercises repeated write behavior inspired by timeout/inconsistency evidence from issue 279.",
+    "Uses conservative 7-byte MBAP headers with protocol identifier 0000 and consistent length fields.",
+    "Varies unit identifiers, transaction identifiers, addresses, quantities, and payload byte counts.",
+    "Keeps requests mutation-friendly while avoiding exact reproduction of cited crash byte streams."
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-053",
+      "seed_id": "vk14-modbustcp-053",
+      "title": "VK-only Write Single Coil: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1]...",
+      "strategy": "stateful_valid",
+      "target_operation": "Write Single Coil",
+      "purpose": "Establish a simple stateful write pattern with two valid Write Single Coil requests so a harness can mutate around a minimal write workflow while retaining the plan's operation and a plausible state prerequisite.",
+      "evidence_ids": [
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:683:683-summary:fbe9b8a5a160"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_single_coil_set_on_unit11_addr0001",
+          "hex": "1001000000060b050001ff00"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "write_single_coil_set_off_unit11_addr0001",
+          "hex": "1002000000060b0500010000"
+        }
+      ],
+      "expected_behavior": "A server should parse both frames as valid Write Single Coil requests and either accept or reject them cleanly without buffer misuse; the sequence is suitable for mutation around short write-only state transitions.",
+      "constraints_preserved": [
+        "7-byte MBAP header used in each message",
+        "protocol identifier set to 0000",
+        "MBAP length field consistent with unit id plus PDU length",
+        "target_operation preserved as Write Single Coil",
+        "stateful two-step sequence within message budget"
+      ],
+      "issue_safety_notes": "This sequence keeps address-bearing write requests valid and does not use the minimal 8-byte function-only form described in the out-of-bounds read evidence, reducing direct replication while still exploring nearby parser state."
+    },
+    {
+      "plan_id": "vk-plan-054",
+      "seed_id": "vk14-modbustcp-054",
+      "title": "VK-only Write Single Register: The Modbus TCP receive path does not use the MBAP Length field to d...",
+      "strategy": "other",
+      "target_operation": "Write Single Register",
+      "purpose": "Provide a compact single-request seed for Write Single Register with conservative framing and ordinary field values, leaving room for later mutations around receive-path length handling without starting from malformed counts.",
+      "evidence_ids": [
+        "issue:867:867-summary:58115ace3a65",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:810:810-summary:da5167fd5137",
+        "issue:279:279-summary:f8623682ccd7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "write_single_register_unit01_addr0062_value1234",
+          "hex": "220100000006010600621234"
+        }
+      ],
+      "expected_behavior": "A server should treat the frame as a normal Write Single Register request and respond or fail gracefully; fuzzing can later perturb transaction, unit, address, and length-adjacent fields from this baseline.",
+      "constraints_preserved": [
+        "single-request sequence shape preserved",
+        "7-byte MBAP header used",
+        "protocol identifier set to 0000",
+        "MBAP length field is internally consistent",
+        "target_operation preserved as Write Single Register"
+      ],
+      "issue_safety_notes": "The seed intentionally avoids inconsistent MBAP sizing or truncated tails even though the plan references receive-path length concerns; this keeps the starting point recognizable and not a direct crash clone."
+    },
+    {
+      "plan_id": "vk-plan-055",
+      "seed_id": "vk14-modbustcp-055",
+      "title": "VK-only Write Multiple Coils: In the reported loopback test, repeated use of `modbus_write_regist...",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Write Multiple Coils",
+      "purpose": "Model the issue-supported repeated-write relation from the loopback timeout report using a distinct but analogous multiple-write operation, with three valid requests that vary quantity and data while remaining structurally conservative.",
+      "evidence_ids": [
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_multiple_coils_first_batch_unit02_addr0013_qty000a",
+          "hex": "300100000009020f0013000a025501"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "write_multiple_coils_second_batch_same_addr_qty000a_inverted_bits",
+          "hex": "300200000009020f0013000a02aa02"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "write_multiple_coils_third_batch_adjacent_addr_qty0009",
+          "hex": "300300000009020f001d0009029300"
+        }
+      ],
+      "expected_behavior": "A server should parse three consecutive Write Multiple Coils requests without desynchronization or timeout-related state loss; this sequence is intended to expose repeated-write handling problems while staying within valid framing.",
+      "constraints_preserved": [
+        "multi-step stateful sequence preserved",
+        "7-byte MBAP header used in all messages",
+        "protocol identifier set to 0000",
+        "MBAP lengths and byte counts are internally consistent",
+        "target_operation preserved as Write Multiple Coils",
+        "repeated write relation retained from issue-supported structure"
+      ],
+      "issue_safety_notes": "This is an analogue of the repeated-call trigger relation from issue 279, but it uses a different write function, different addresses, and different payloads than the documented historical reports; it also avoids the exact crafted bytes from crash-oriented server issues."
+    },
+    {
+      "plan_id": "vk-plan-056",
+      "seed_id": "vk14-modbustcp-056",
+      "title": "VK-only Write Multiple Registers: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is...",
+      "strategy": "field_interaction",
+      "target_operation": "Write Multiple Registers",
+      "purpose": "Exercise interacting address, quantity, and byte-count fields near a high register address in a single plausible Write Multiple Registers request, reflecting issue-guided interest in register-edge behavior while staying operation-correct.",
+      "evidence_ids": [
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:743:743-summary:1fc7e97d059a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "write_multiple_registers_unit7c_addrfceb_qty0002_values11223344",
+          "hex": "44010000000b7c10fceb00020411223344"
+        }
+      ],
+      "expected_behavior": "A server should either handle the high-address multiple-register write normally or reject it with a protocol-level exception, but should not mis-handle the coupled address, quantity, and byte-count fields.",
+      "constraints_preserved": [
+        "single-request sequence shape preserved",
+        "7-byte MBAP header used",
+        "protocol identifier set to 0000",
+        "high address with internally consistent quantity and byte count",
+        "target_operation preserved as Write Multiple Registers"
+      ],
+      "issue_safety_notes": "The request is intentionally distinct from the read-register issue details and does not copy any cited crash sequence; it uses a nearby high-address interaction pattern as a conservative analogue for mutation-oriented coverage."
+    }
+  ]
+}

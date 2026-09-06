@@ -1,0 +1,165 @@
+{
+  "coverage_summary": [
+    "stateful_valid: Write sequence with TPKT header",
+    "other: GetVariableAccessAttributes sequence",
+    "issue_structural_analogue: DefineNamedVariableList sequence",
+    "field_interaction: InformationReport sequence"
+  ],
+  "generation_notes": "4 VK-only P-/V+ candidate sequences generated per schema; each uses model-internal prior with TPKT/MMS archetypes, distinct target ops, varied strategies, maximal operation diversity, and evidence-linked triggers without external docs or exact crash bytes.",
+  "protocol_name": "iec61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT length matches message",
+        "MMS archetype preserved",
+        "IEC61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:193:193-summary:1451e58436f0",
+        "issue:198:198-summary:062388f44431",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:609:609-summary:a7f14e01134e"
+      ],
+      "expected_behavior": "Server processes malformed Write request leading to oversized allocation in MmsValue_newOctetString via MmsValue_decodeMmsData",
+      "issue_safety_notes": "Preserves issue:193 negative maxSize trigger in model-prior Write path; no external protocol documents used.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 0,
+          "label": "TPKT + COTP + MMS Initiate"
+        },
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 1,
+          "label": "Write Request with negative octet string size"
+        }
+      ],
+      "plan_id": "vk-plan-029",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "seed-029-1",
+      "strategy": "stateful_valid",
+      "target_operation": "Write",
+      "title": "VK-only Write: The report does not specify a version. In libiec61850, `MmsValue_ne..."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT length matches message",
+        "MMS archetype preserved",
+        "IEC61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:194:194-summary:4277018cff9d",
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:198:198-summary:062388f44431",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "expected_behavior": "Server processes request triggering heap overflow in MmsValue_decodeMmsData via issue analogue",
+      "issue_safety_notes": "Preserves issue:194 heap overflow path in model-prior GetVariableAccessAttributes; no external protocol documents used.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 0,
+          "label": "TPKT + COTP + MMS Initiate"
+        },
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 1,
+          "label": "GetVariableAccessAttributes Request"
+        }
+      ],
+      "plan_id": "vk-plan-030",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "seed-030-1",
+      "strategy": "other",
+      "target_operation": "GetVariableAccessAttributes",
+      "title": "VK-only GetVariableAccessAttributes: The report states that `MmsValue_decodeMmsData` has a heap overflow..."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT length matches message",
+        "MMS archetype preserved",
+        "IEC61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:196:196-summary:55a2cfa7c1b1",
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:198:198-summary:062388f44431"
+      ],
+      "expected_behavior": "Server processes request triggering issue-supported structure analogue",
+      "issue_safety_notes": "Preserves issue:196 BerDecoder_decodeUint32 analogue in model-prior DefineNamedVariableList; no external protocol documents used.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 0,
+          "label": "TPKT + COTP + MMS Initiate"
+        },
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 1,
+          "label": "DefineNamedVariableList Request"
+        }
+      ],
+      "plan_id": "vk-plan-031",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "seed-031-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "DefineNamedVariableList",
+      "title": "VK-only DefineNamedVariableList: In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not chec..."
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03",
+        "TPKT length matches message",
+        "MMS archetype preserved",
+        "IEC61850 family constraints"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:e3308b450f23",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:509:509-summary:228be3676e7d",
+        "issue:513:513-summary:4a07060941e2",
+        "issue:512:512-summary:b25e9a524acd",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "Server processes request exercising field interactions",
+      "issue_safety_notes": "Preserves issue:197 OOB read interaction in model-prior InformationReport; no external protocol documents used.",
+      "messages": [
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 0,
+          "label": "TPKT + COTP + MMS Initiate"
+        },
+        {
+          "direction": "standalone",
+          "hex": "0300001a03e8000000030000",
+          "index": 1,
+          "label": "InformationReport Request"
+        }
+      ],
+      "plan_id": "vk-plan-032",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "seed-032-1",
+      "strategy": "field_interaction",
+      "target_operation": "InformationReport",
+      "title": "VK-only InformationReport: No affected version is specified in the report. The issue describes..."
+    }
+  ],
+  "target_issue": 197
+}

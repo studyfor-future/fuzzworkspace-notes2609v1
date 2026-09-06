@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELAtIFGiagwfdkFe47rQK9y658iat",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"ETHERNETIP\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised PK-only batch synthesized strictly from supplied EtherNet/IP encapsulation and CPF sources, with conservative model-prior completion only where the sources list commands/statuses but do not provide full per-command body templates. Exactly four distinct seeds were retained to improve diversity across discovery, session lifecycle, and explicit-message paths while preserving source-backed framing: 24-byte encapsulation headers, little-endian command and length fields, and documented CPF item pairings for SendRRData. Historical duplicate/cosmetic variants were removed, and prior invalid or status-claim-heavy seeds were replaced by structurally valid analogues that target the named operations without asserting exact returned CIP general-status outcomes.\",\n  \"coverage_summary\": [\n    \"Discovery path via ListIdentity with zero-length encapsulation payload.\",\n    \"Session establishment path via RegisterSession using a minimal 4-byte command-specific payload analogue with documented encapsulation framing.\",\n    \"Session teardown path via UnregisterSession in a stateful two-message sequence reusing the registered session handle.\",\n    \"Explicit unconnected messaging path via SendRRData with documented Null Address Item plus Unconnected Data Item CPF combination.\",\n    \"Parser diversity across single-request, two-step stateful, zero-length payload, and nested CPF payload structures.\",\n    \"Target-operation diversity aligned to supplied plans while avoiding duplicate single-request cosmetic variants.\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-049\",\n      \"seed_id\": \"pk-049-r1\",\n      \"title\": \"Write-Once status analogue through explicit unconnected request\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Write-Once Value Or Medium Already Written\",\n      \"purpose\": \"Provide a structurally valid explicit-message seed that reaches SendRRData, CPF, and nested CIP parsing while thematically covering the documented general-status name only as a safe analogue.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:a6b9b629463c\",\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"sendrrdata with null-address and unconnected-data items carrying minimal cip request analogue\",\n          \"hex\": \"6f00120000000000000000000000000000000000000000000000000002000000000000b2000600010220012401\"\n        }\n      ],\n      \"expected_behavior\": \"The receiver should parse a valid EtherNet/IP SendRRData frame with the documented common CPF item pairing and then process or reject the embedded CIP request according to implementation-specific object/service support.\",\n      \"constraints_preserved\": [\n        \"24-byte EtherNet/IP encapsulation header used\",\n        \"Encapsulation command and payload length encoded little-endian\",\n        \"SendRRData uses documented common CPF combination of Null Address Item and Unconnected Data Item\",\n        \"Payload length field matches the 18-byte command-specific body\",\n        \"General-status name is treated as thematic coverage only, not as a claimed response trigger\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; no vulnerability claim and no exact historical exploit payload. The embedded CIP bytes are a conservative structural analogue because the supplied sources do not provide full wire templates for the named status condition.\"\n    },\n    {\n      \"plan_id\": \"plan-050\",\n      \"seed_id\": \"pk-050-r1\",\n      \"title\": \"Vendor-Specific Error analogue through discovery command\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Vendor-Specific Error\",\n      \"purpose\": \"Add a pure discovery-path seed that exercises ListIdentity parsing and diversifies away from explicit-message-only coverage while still mapping to the supplied plan's named operation as a non-assertive analogue.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:a6b9b629463c\",\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"listidentity discovery request\",\n          \"hex\": \"630000000000000000000000000000000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"The receiver should parse a valid ListIdentity encapsulation request with zero-length payload and may return identity information or ignore it depending on role and deployment.\",\n      \"constraints_preserved\": [\n        \"24-byte EtherNet/IP encapsulation header used\",\n        \"Command 0x0063 ListIdentity taken directly from supplied command catalog\",\n        \"Zero payload encoded with little-endian length 0x0000\",\n        \"No undocumented CPF or CIP body added to a discovery command\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; the status name from the plan is represented only as coverage labeling. No response status is predicted or forced.\"\n    },\n    {\n      \"plan_id\": \"plan-051\",\n      \"seed_id\": \"pk-051-r1\",\n      \"title\": \"Unsupported encapsulation protocol revision coverage via session registration\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Unsupported encapsulation protocol revision\",\n      \"purpose\": \"Exercise RegisterSession parsing with a minimal command-specific body so the corpus covers a canonical session-establishment path distinct from discovery and CPF-bearing explicit messaging.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:f14ecde0d175\",\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"registersession minimal request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        }\n      ],\n      \"expected_behavior\": \"The receiver should parse a valid RegisterSession encapsulation header and command-specific payload analogue, then either establish a session or return an implementation-defined encapsulation status if the revision or options are unsupported.\",\n      \"constraints_preserved\": [\n        \"24-byte EtherNet/IP encapsulation header used\",\n        \"Command 0x0065 RegisterSession from supplied command catalog\",\n        \"Little-endian payload length set to 4 for the command-specific body\",\n        \"Seed remains conservative because the supplied sources enumerate encapsulation fields and status names but not a full RegisterSession body template\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; uses a safe, minimal registration analogue and avoids asserting reproduction of any exact unsupported-revision condition.\"\n    },\n    {\n      \"plan_id\": \"plan-052\",\n      \"seed_id\": \"pk-052-r1\",\n      \"title\": \"Unknown Modbus Error analogue with stateful unregister path\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Unknown Modbus Error\",\n      \"purpose\": \"Introduce explicit session-state interaction by pairing RegisterSession with UnregisterSession, improving lifecycle coverage and handle propagation diversity beyond single-frame requests.\",\n      \"evidence_ids\": [\n        \"function_code:function:operation-catalog:a6b9b629463c\",\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"registersession setup request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"unregistersession using established handle analogue\",\n          \"hex\": \"660000007856341200000000000000000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"The receiver should parse a RegisterSession request followed by a valid UnregisterSession frame carrying a nonzero session handle; if the handle is recognized, the session may be torn down, otherwise an encapsulation-status error may be returned by the implementation.\",\n      \"constraints_preserved\": [\n        \"24-byte EtherNet/IP encapsulation header used for both messages\",\n        \"Commands 0x0065 RegisterSession and 0x0066 UnregisterSession taken from supplied command catalog\",\n        \"Little-endian fields preserved throughout\",\n        \"State relationship preserved by reusing a nonzero session handle in the second message\",\n        \"UnregisterSession carries zero-length payload as a conservative analogue\",\n        \"Lowercase hexadecimal without separators\"\n      ],\n      \"issue_safety_notes\": \"PK-only seed; no vulnerability claim. The chosen session handle is a benign placeholder for stateful corpus growth and not a replay of any historical issue payload.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788715460,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2036,
+    "prompt_tokens": 7715,
+    "total_tokens": 9751,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 9,
+      "engine_ttft_ms": 168,
+      "engine_ttlt_ms": 18877,
+      "pre_inference_ms": 81,
+      "service_tbt_ms": 9,
+      "service_ttft_ms": 348,
+      "service_ttlt_ms": 19038,
+      "user_visible_ttft_ms": 267
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818160425-726f99e2-default-r1-dp0-default"
+  }
+}

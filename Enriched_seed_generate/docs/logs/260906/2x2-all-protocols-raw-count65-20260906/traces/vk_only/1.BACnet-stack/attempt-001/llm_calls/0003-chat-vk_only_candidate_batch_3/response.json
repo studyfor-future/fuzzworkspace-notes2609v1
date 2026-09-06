@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-ef12381008ba46203185313e",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"coverage_summary\":[\"length_boundary_valid: AtomicWriteFile record append creates 5-byte heap buffer + NUL, then second append causes record_count() to walk past end and call memchr on overrun for OOB read\"],\"generation_notes\":\"Generated per vk-only plans (length_boundary_valid for issue 1399) with maximized distinct frame structures/sizes/state sequences using AtomicWriteFile record-access, BVLC+NPDU+APDU layering, and internal prior constraints. Sequences use single-request shape, preserved BVLC length consistency, and RAMFS FILE append/replace paths for OOB-read trigger analogue. Hex lowercase, no separators.\",\"protocol_name\":\"bacnet-stack\",\"sequences\":[{\"constraints_preserved\":[\"BVLC four-byte length consistent\",\"NPDU/APDU standard layering\",\"single-request shape\",\"model internal prior preserved\",\"visible lengths internally consistent\"],\"evidence_ids\":[\"issue:cve-2019-12480:cve-2019-12480-summa:a62c738611ad\",\"issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732\",\"issue:1304:1304-summary:e1e381ed7daa\",\"issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9\",\"issue:cve-2026-41503:cve-2026-41503-summa:324815060097\",\"issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb\"],\"expected_behavior\":\"First AtomicWriteFile(OBJECT_FILE,1,FILE_RECORD_ACCESS,fileStartRecord=-1,returnedRecordCount=1,fileData='AAAA') succeeds creating 5-byte heap buffer (data + NUL); second identical append triggers record_count() to walk buffer past end and OOB memchr read.\",\"issue_safety_notes\":\"Issue 1399 evidence_id used; OOB read reachable via normal AtomicWriteFile path; does not copy exact crash bytes; safety via length boundary analogue only.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f\",\"index\":0,\"label\":\"AtomicWriteFile append record -1\"},{\"direction\":\"server_to_client\",\"hex\":\"810a0009010020010f\",\"index\":1,\"label\":\"ACK\"}],\"plan_id\":\"vk-plan-009\",\"purpose\":\"Explore an issue-related boundary while retaining built-in basic length consistency.\",\"seed_id\":\"vk-1399-seq-01\",\"strategy\":\"length_boundary_valid\",\"target_operation\":\"AtomicWriteFile\",\"title\":\"VK-only AtomicWriteFile: `bacserv` contains an invalid read in `bacdcode.c` when parsing ala...\"},{\"constraints_preserved\":[\"BVLC four-byte length consistent\",\"NPDU/APDU standard layering\",\"single-request shape\",\"model internal prior preserved\",\"visible lengths internally consistent\"],\"evidence_ids\":[\"issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96\",\"issue:cve-2025-66624:cve-2025-66624-summa:df0878be970c\",\"issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609\",\"issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9\",\"issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a\",\"issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6\"],\"expected_behavior\":\"Single DeviceCommunicationControl request reaches npdu_is_expected_reply() parser depth path; triggers OOB read analogue via deeper NPDU structure.\",\"issue_safety_notes\":\"Issue 1399 evidence_id used; OOB read reachable via normal AtomicWriteFile path; does not copy exact crash bytes; safety via length boundary analogue only.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f\",\"index\":0,\"label\":\"DeviceCommunicationControl\"},{\"direction\":\"server_to_client\",\"hex\":\"810a0009010020010f\",\"index\":1,\"label\":\"ACK\"}],\"plan_id\":\"vk-plan-010\",\"purpose\":\"Reach the issue-relevant parser path through a plausible deeper protocol structure.\",\"seed_id\":\"vk-1399-seq-02\",\"strategy\":\"parser_depth\",\"target_operation\":\"DeviceCommunicationControl\",\"title\":\"VK-only DeviceCommunicationControl: In `src/bacnet/npdu.c` at `npdu_is_expected_reply()` (reached via `...\"},{\"constraints_preserved\":[\"BVLC four-byte length consistent\",\"NPDU/APDU standard layering\",\"single-request shape\",\"model internal prior preserved\",\"visible lengths internally consistent\"],\"evidence_ids\":[\"issue:cve-2026-21870:cve-2026-21870-summa:2c3ecd3da68a\",\"issue:1304:1304-summary:e1e381ed7daa\",\"issue:cve-2026-41503:cve-2026-41503-summa:324815060097\",\"issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609\",\"issue:1400:1400-summary:b9facce5d476\",\"issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6\"],\"expected_behavior\":\"Who-Is request establishes state prerequisite for ubasic tokenizer depth; triggers OOB read analogue via state sequence.\",\"issue_safety_notes\":\"Issue 1399 evidence_id used; OOB read reachable via normal AtomicWriteFile path; does not copy exact crash bytes; safety via length boundary analogue only.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f\",\"index\":0,\"label\":\"Who-Is\"},{\"direction\":\"server_to_client\",\"hex\":\"810a0009010020010f\",\"index\":1,\"label\":\"ACK\"}],\"plan_id\":\"vk-plan-011\",\"purpose\":\"Use a model-prior setup sequence for the issue-related state prerequisite.\",\"seed_id\":\"vk-1399-seq-03\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Who-Is\",\"title\":\"VK-only Who-Is: An off-by-one stack-based buffer overflow in the ubasic interpreter...\"},{\"constraints_preserved\":[\"BVLC four-byte length consistent\",\"NPDU/APDU standard layering\",\"single-request shape\",\"model internal prior preserved\",\"visible lengths internally consistent\"],\"evidence_ids\":[\"issue:cve-2026-21878:cve-2026-21878-summa:ead18a358e0d\",\"issue:cve-2026-21878:cve-2026-21878-summa:92be40a003f1\",\"issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d\",\"issue:1399:1399-summary:b7c84f7e0fc5\",\"issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609\",\"issue:cve-2026-40279:cve-2026-40279-summa:bc43c11a5697\"],\"expected_behavior\":\"I-Am request creates distinct frame structure analogue; triggers OOB read via RAMFS FILE state.\",\"issue_safety_notes\":\"Issue 1399 evidence_id used; OOB read reachable via normal AtomicWriteFile path; does not copy exact crash bytes; safety via length boundary analogue only.\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f\",\"index\":0,\"label\":\"I-Am\"},{\"direction\":\"server_to_client\",\"hex\":\"810a0009010020010f\",\"index\":1,\"label\":\"ACK\"}],\"plan_id\":\"vk-plan-012\",\"purpose\":\"Create a distinct mutation-friendly issue analogue using conservative model-prior framing.\",\"seed_id\":\"vk-1399-seq-04\",\"strategy\":\"other\",\"target_operation\":\"I-Am\",\"title\":\"VK-only I-Am: The document does not specify affected versions. It identifies `app...\"}],\"target_issue\":1399}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788707808,
+  "model": "gpt-5.4-xhigh",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1747,
+    "prompt_tokens": 4766,
+    "total_tokens": 6513,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 73
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "seed_id": "pk-rev-003",
+  "title": "Compact AtomicReadFile request",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Cover file-service parsing with a small valid-looking confirmed request that is suitable for boundary-oriented mutation.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:457cd2894efe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "atomic-read-file-request",
+      "hex": "810a00140100000402060c060000010f21003101",
+      "byte_length": 20,
+      "sha256": "1b66fd7a01efd9235867179570cbedb2ab83885c00f2634c4f312610c0293b70"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP endpoint should parse the frame as a confirmed AtomicReadFile request and proceed to file-object validation, range validation, or normal service handling.",
+  "constraints_preserved": [
+    "BVLC header present and length 0x0014 matches 20-byte frame",
+    "NPDU header uses minimal local form",
+    "APDU uses Confirmed-Request-PDU with service choice 0x06 from supplied confirmed-service reference",
+    "Invoke id 0x02 distinguishes this transaction from other confirmed requests",
+    "File object identifier and read-parameters are conservative model-prior BACnet-style placeholders chosen to remain compact and mutation-friendly"
+  ],
+  "issue_safety_notes": "PK-only seed; no issue evidence available. This is a safe structural analogue for file-service parsing only, with no known exploit collision payload.",
+  "sequence_sha256": "1ec28085063762f6a3174dabc17b83716dd84dc04b925c952bd34e70f9637e87",
+  "total_bytes": 20,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1b66fd7a01efd9235867179570cbedb2ab83885c00f2634c4f312610c0293b70",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

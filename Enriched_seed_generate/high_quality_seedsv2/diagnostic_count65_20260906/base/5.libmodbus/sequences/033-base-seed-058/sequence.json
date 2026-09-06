@@ -1,0 +1,48 @@
+{
+  "seed_id": "base-seed-058",
+  "title": "Base Read File Record variant 5",
+  "strategy": "function_code_coverage",
+  "target_operation": "Read File Record",
+  "purpose": "Cover the file-record service with one compact subrequest for file 1, record 0, and a two-register record length.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read File Record request with one subrequest",
+      "hex": "00020000000a02140706000100000002",
+      "byte_length": 16,
+      "sha256": "0f454b17a68ff8a8da1dfc712e03ec7ccca72a4c38bb2c306efe40c8f2bfe5a2"
+    }
+  ],
+  "expected_behavior": "A conforming server may parse the single file-record subrequest and return the requested record data, or return a standard exception if the addressed file or record is unsupported.",
+  "constraints_preserved": [
+    "7-byte MBAP header is used.",
+    "Protocol identifier is 0000.",
+    "MBAP length 000a equals the unit identifier plus the 9-byte function-14 PDU.",
+    "The function-14 byte count 07 matches the one 7-byte subrequest.",
+    "Reference type 06, file number 0001, record number 0000, and record length 0002 are consistently encoded.",
+    "Unit identifier 02 diversifies the seed."
+  ],
+  "issue_safety_notes": "No external vulnerability or issue knowledge is available. The message is a conservative function-coverage candidate based on model-prior protocol plausibility.",
+  "sequence_sha256": "9d64b38ee44fbfdb7db2e1bfefdc168e0774ac7dca9b903dd5df1f315fdf7581",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0f454b17a68ff8a8da1dfc712e03ec7ccca72a4c38bb2c306efe40c8f2bfe5a2",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

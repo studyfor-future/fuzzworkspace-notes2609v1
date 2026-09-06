@@ -1,0 +1,148 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": 13,
+  "generation_notes": "Generated 4 IEC 60870 candidate seeds using IEC 60870-5-104 APDU framing with complete 0x68 length consistency. Source material directly confirms APDU start byte 0x68, cause-of-transmission values, interrogation qualifier 20, and type identifiers including single command and step-position information. Because supplied documents are partial for exact 104 control-field semantics and full ASDU field widths, conservative widely used 104 assumptions were applied: 4-byte APCI control field, little-endian send/receive sequence encoding in I-format, VSQ/COT/common-address/object-address ordering as commonly implemented in lib60870. Seeds intentionally avoid the historical crash payload while still exercising I-format parser paths implicated by issue evidence.",
+  "coverage_summary": [
+    "Uses IEC 60870-5-104 style APDUs with valid 0x68 start and matched length octets",
+    "Covers command/request path with C_IC_NA_1 general interrogation and qualifier 20 station interrogation",
+    "Covers monitoring path with spontaneous step-position information M_ST_NA_1",
+    "Covers confirmation-style ASDU using activation confirmation cause",
+    "Covers periodic/cyclic monitoring path with measured value normalized M_ME_NA_1",
+    "Diversifies directions, type IDs, causes of transmission, object counts, and payload sizes",
+    "Maintains complete framing without copying the crash evidence payload"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-057",
+      "seed_id": "iec60870-full-057",
+      "title": "Station interrogation request with standard qualifier 20",
+      "strategy": "function_code_coverage",
+      "target_operation": "Station Interrogation",
+      "purpose": "Exercise a valid I-format ASDU carrying a general interrogation request using the documented station interrogation qualifier to reach interrogation parsing and downstream dispatch.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:operation-catalog:dba2914dfe00",
+        "function_code:function:function-text:187ce180236e",
+        "function_code:function:function-text:83986922f28d",
+        "function_code:function:function-text:9662ce251be3",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "i_format_general_interrogation_qoi20",
+          "hex": "680e00000000640106000100000014"
+        }
+      ],
+      "expected_behavior": "Peer should accept the APDU as a well-formed I-format general interrogation activation for common address 1 and information object address 0 with QOI 20, then proceed into interrogation handling or respond per implementation state.",
+      "constraints_preserved": [
+        "APDU uses IEC 60870-5-104 start byte 0x68 from supplied function reference.",
+        "Length octet 0x0e matches 4-byte APCI control field plus 10-byte ASDU payload.",
+        "Cause of transmission encoded as activation (6) using common 104 little-endian COT layout; this exact byte layout is an inferred but standard assumption.",
+        "Common address encoded on 2 bytes and information object address on 3 bytes as conservatively inferred common IEC 104/lib60870 layout.",
+        "Interrogation qualifier 20 is source-backed as Station Interrogation."
+      ],
+      "issue_safety_notes": "Avoids oversized or malformed length fields and does not reuse the historical crash structure; seed remains mutation-friendly through QOI, cause, object address, and common address fields."
+    },
+    {
+      "plan_id": "plan-058",
+      "seed_id": "iec60870-full-058",
+      "title": "Spontaneous step-position indication from monitored point",
+      "strategy": "function_code_coverage",
+      "target_operation": "Spontaneous",
+      "purpose": "Cover a monitoring-direction parser path by sending a valid spontaneous ASDU carrying one step-position information object with a compact information element.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:operation-catalog:224e76862422",
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:function-text:83986922f28d",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "i_format_spontaneous_m_st_na_1_single_object",
+          "hex": "680e0200000005010300010100002a00"
+        }
+      ],
+      "expected_behavior": "Peer should parse a spontaneous monitoring ASDU of type M_ST_NA_1 for common address 1, object address 1, with a single information element and route it through spontaneous indication handling.",
+      "constraints_preserved": [
+        "Type ID 5 for M_ST_NA_1 is directly supported by supplied protocol overview/function reference.",
+        "Length octet 0x0e matches 4-byte APCI plus 10-byte ASDU.",
+        "Cause of transmission value 3 for spontaneous is a conservative IEC 60870 prior because supplied snippets do not include that line explicitly.",
+        "VSQ 0x01 encodes one information object without sequence flag, inferred from standard ASDU structure.",
+        "Object payload uses 2-byte step-position/value-quality style element as a conservative common-format assumption."
+      ],
+      "issue_safety_notes": "Uses small bounded payload and valid lengths to probe monitoring parsers structurally related to issue-reported I-format handling without reproducing any known crashing bytes."
+    },
+    {
+      "plan_id": "plan-059",
+      "seed_id": "iec60870-full-059",
+      "title": "Positive confirmation analogue for single command",
+      "strategy": "function_code_coverage",
+      "target_operation": "Positive confirmation",
+      "purpose": "Drive confirmation handling by carrying a single command ASDU with activation confirmation style cause, exercising control-direction decoding distinct from interrogation.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b0db75237939",
+        "function_code:function:operation-catalog:224e76862422",
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:function-text:83986922f28d",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "i_format_activation_confirmation_c_sc_na_1",
+          "hex": "680e040002002d010700010200008100"
+        }
+      ],
+      "expected_behavior": "Peer should parse a valid single-command ASDU using a positive activation-confirmation style cause and pass it into command confirmation logic for common address 1 and object address 2.",
+      "constraints_preserved": [
+        "Type ID 45 for C_SC_NA_1 is directly supported by supplied function reference.",
+        "Length octet 0x0e matches total APDU payload size after the 0x68 header.",
+        "Cause value 7 as activation confirmation is a conservative standard IEC 60870 assumption; supplied source explicitly mentions confirmation concepts but not the full COT table line here.",
+        "Common address and object address widths follow common lib60870/104 practice and are inferred, not directly verified in supplied fragments.",
+        "Single command information element encoded as one SCO byte with a trailing zero-quality style byte avoided; payload kept compact and bounded."
+      ],
+      "issue_safety_notes": "This is a structural analogue only; it preserves valid framing and short control payloads and intentionally differs from historical crashing traffic in size, type, cause, and data pattern."
+    },
+    {
+      "plan_id": "plan-060",
+      "seed_id": "iec60870-full-060",
+      "title": "Periodic measured values with two normalized objects",
+      "strategy": "function_code_coverage",
+      "target_operation": "Periodic or Cyclic",
+      "purpose": "Expand parser coverage to periodic monitoring traffic with multiple information objects, exercising count-sensitive loops and object iteration while staying fully framed and small.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "function_code:function:function-text:83986922f28d",
+        "function_code:function:operation-catalog:224e76862422",
+        "function_code:function:operation-catalog:b0db75237939",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "i_format_periodic_m_me_na_1_two_objects",
+          "hex": "6813040002000902140001000a0000010b00020000"
+        }
+      ],
+      "expected_behavior": "Peer should accept a periodic/cyclic measured-value ASDU of type M_ME_NA_1 with two objects under one common address and iterate through both information objects during decode.",
+      "constraints_preserved": [
+        "Type ID 9 for M_ME_NA_1 is directly supported by supplied function reference.",
+        "Length octet 0x13 matches 4-byte APCI plus 15-byte ASDU.",
+        "Cause of transmission 1 is used here as periodic/cyclic based on conservative IEC 60870 prior because supplied snippets do not explicitly show that mapping.",
+        "VSQ 0x02 indicates two separate objects without sequence flag, inferred from standard ASDU encoding.",
+        "Each object uses 3-byte information object address plus 2-byte normalized value and 1-byte quality descriptor, a common format assumption."
+      ],
+      "issue_safety_notes": "Designed to stress object-count iteration with valid small counts and consistent lengths, avoiding malformed repetition or the long zero-padded crash pattern described in issue evidence."
+    }
+  ]
+}

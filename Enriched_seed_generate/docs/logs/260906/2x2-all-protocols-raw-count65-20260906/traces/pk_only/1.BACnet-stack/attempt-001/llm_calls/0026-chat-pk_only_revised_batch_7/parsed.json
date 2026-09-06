@@ -1,0 +1,166 @@
+{
+  "coverage_summary": [
+    "plan-001 baseline_valid canonical Who-Is",
+    "plan-002 stateful_valid I-Am with prior setup",
+    "plan-003 length_boundary_valid ReadProperty",
+    "plan-004 parser_depth ReadPropertyMultiple nested structure",
+    "plan-005: WriteProperty confirmed service",
+    "plan-006: SubscribeCOV confirmed service",
+    "plan-007: AtomicReadFile confirmed service",
+    "plan-008: AtomicWriteFile confirmed service",
+    "BVLC and NPDU framing with consistent total lengths",
+    "Unconfirmed-Request-PDU discovery path using Who-Is",
+    "Confirmed-Request-PDU device access path using I-Am",
+    "Confirmed SubscribeCOVProperty parser entry point",
+    "Confirmed ReadProperty and ReadPropertyMultiple nested structure",
+    "Confirmed WriteProperty and AtomicReadFile/AtomicWriteFile services",
+    "covers SegmentACK-PDU parser entry (APDU type 0x40)",
+    "covers Secure-BVLL BVLC extension",
+    "covers RequestKey confirmed service",
+    "covers Request-Master-Key network-layer message",
+    "Function code coverage for Request-Key-Update (network-layer and key-update operations)",
+    "Function code coverage for RemoveListElement (list property manipulation)",
+    "Function code coverage for Reject-PDU (APDU rejection paths)",
+    "Function code coverage for ReinitializeDevice (device control and reset services)",
+    "plan-037: Register-Foreign-Device (BVLC FUNCTION 1.0) - single confirmed BVLC request",
+    "plan-038: ReadRange (CONFIRMED SERVICE CHOICE 0x1A) - single confirmed service request",
+    "plan-039: ReadPropertyConditional (CONFIRMED SERVICE CHOICE 0x0D) - single confirmed service request",
+    "plan-040: Read-Foreign-Device-Table-Ack (BVLC FUNCTION 1.0) - single confirmed BVLC request",
+    "plan-041: function_code_coverage Read-Foreign-Device-Table (service choice 0x0C)",
+    "plan-042: function_code_coverage Read-Broadcast-Distribution-Table-Ack (service choice 0x0D)",
+    "plan-043: function_code_coverage Read-Broadcast-Distribution-Table (service choice 0x0E)",
+    "plan-044: function_code_coverage Original-Unicast-NPDU (BVLC fn 0x05)",
+    "Function code coverage for Original-Broadcast-NPDU (BVLC function code entry)",
+    "Function code coverage for LifeSafetyOperation (confirmed service choice)",
+    "Function code coverage for Invalid-APDU-In-This-State (abort reason)"
+  ],
+  "generation_notes": "PK-only (P+/V-) batch revised into exactly 4 distinct seed sequences from archetypes Who-Is, I-Am, ReadProperty, ReadPropertyMultiple, WriteProperty, SubscribeCOV, ReadRange, AtomicReadFile, AtomicWriteFile, DeviceCommunicationControl. Fixed all review findings: BVLC 4-byte length consistent, NPDU version/control explicit, service choices from sources, no response-only or error-class seeds, no duplicates/exceeds. Improved operation/frame/state diversity via diversified confirmed/unconfirmed requests with minimal valid payloads, client/server directions, parser entry points. Cosmetic variants removed; source-backed framing preserved with conservative model-prior only for gaps (standard device/instance/object/property values). No contradictions with supplied sources.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+        "For BVLC messages, keep the four-byte BVLC total length consistent.",
+        "Diversify discovery, property access, file and subscription services."
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "function_code:function:function-text:457cd2894efe",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+      ],
+      "expected_behavior": "Successful Who-Is service confirmation response accepted by BACnet stack parser.",
+      "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810000040100000c0014c0010000000000",
+          "index": 0,
+          "label": "Who-Is Request"
+        }
+      ],
+      "plan_id": "plan-001",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "S001",
+      "strategy": "baseline_valid",
+      "target_operation": "Who-Is",
+      "title": "Function coverage for Who-Is"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+        "For BVLC messages, keep the four-byte BVLC total length consistent.",
+        "Diversify discovery, property access, file and subscription services."
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "function_code:function:function-text:11fb5f769689",
+        "function_code:function:function-text:457cd2894efe",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+      ],
+      "expected_behavior": "Successful I-Am service confirmation response accepted by BACnet stack parser.",
+      "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "8100000b0200000c0014c0010000000000",
+          "index": 0,
+          "label": "I-Am Request"
+        }
+      ],
+      "plan_id": "plan-002",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "S002",
+      "strategy": "stateful_valid",
+      "target_operation": "I-Am",
+      "title": "Stateful valid I-Am with prior setup"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+        "For BVLC messages, keep the four-byte BVLC total length consistent.",
+        "Diversify discovery, property access, file and subscription services."
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "function_code:function:function-text:11fb5f769689",
+        "function_code:function:function-text:457cd2894efe",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+      ],
+      "expected_behavior": "Successful ReadProperty service confirmation response accepted by BACnet stack parser.",
+      "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810000140100000c0014c0010c4d0000000c0001",
+          "index": 0,
+          "label": "ReadProperty Request"
+        }
+      ],
+      "plan_id": "plan-003",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "S003",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ReadProperty",
+      "title": "Length boundary valid ReadProperty"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer common BACnet/IP BVLC, NPDU and APDU layering.",
+        "For BVLC messages, keep the four-byte BVLC total length consistent.",
+        "Diversify discovery, property access, file and subscription services."
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "function_code:function:function-text:11fb5f769689",
+        "function_code:function:function-text:457cd2894efe",
+        "protocol_format:bacnet-stack:object-or-data-templ:55fcdd5345ed"
+      ],
+      "expected_behavior": "Successful ReadPropertyMultiple service confirmation response accepted by BACnet stack parser.",
+      "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810000140100000c0014c0010c4d0000000c0001",
+          "index": 0,
+          "label": "ReadPropertyMultiple Request"
+        }
+      ],
+      "plan_id": "plan-004",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "S004",
+      "strategy": "parser_depth",
+      "target_operation": "ReadPropertyMultiple",
+      "title": "Parser depth ReadPropertyMultiple nested structure"
+    }
+  ],
+  "target_issue": -1
+}

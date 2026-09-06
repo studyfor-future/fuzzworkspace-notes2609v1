@@ -1,0 +1,181 @@
+{
+  "protocol_name": "OpENer",
+  "target_issue": 582,
+  "generation_notes": "Four VK-only candidates were produced from the supplied plans using conservative EtherNet/IP encapsulation forms, little-endian length fields, and distinct discovery/session operations. Sequences preserve the requested target_operation names while borrowing issue-supported trigger relations only as structural analogues. Visible sizes and item lengths are internally consistent, but several requests intentionally exercise high path-size, deeper CPF/CIP nesting, or session-state transitions for mutation-friendly coverage.",
+  "coverage_summary": [
+    "Discovery path coverage with ListIdentity and ListServices using 24-byte encapsulation headers",
+    "Session lifecycle coverage with RegisterSession and UnregisterSession variants",
+    "Stateful TCP explicit-message prerequisite coverage via RegisterSession before deeper parser targets",
+    "Issue-analogue coverage for forged or oversized CIP path sizing inspired by EPATH and Message Router length issues",
+    "CPF item structure diversity including zero-payload discovery requests, register payloads, and unconnected data containers",
+    "Length-boundary exploration without copying historical crash payload bytes or exact counts"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-021",
+      "seed_id": "opener-vk6-021",
+      "title": "VK-only ListIdentity boundary-shaped discovery sequence",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ListIdentity",
+      "purpose": "Exercise the discovery command with a valid empty request followed by a second valid request carrying nonzero sender-context bytes, preserving a simple stateful two-message shape while exploring header-field boundaries adjacent to issue-relevant explicit-message corruption themes.",
+      "evidence_ids": [
+        "issue:576:576-summary:bc3710455616",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:567:567-summary:1255c28909d7",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:569:569-summary:84e873f1b910",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "listidentity-empty-baseline",
+          "hex": "630000000000000000000000000000000000000000000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "listidentity-alt-context",
+          "hex": "630000000000000000000000112233445566778800000000"
+        }
+      ],
+      "expected_behavior": "A target implementing discovery should parse both requests as ListIdentity-style encapsulation messages and either respond consistently or ignore unsupported context variations without desynchronization.",
+      "constraints_preserved": [
+        "Target operation preserved as ListIdentity",
+        "24-byte encapsulation header used",
+        "Little-endian payload length retained at zero",
+        "No external protocol document relied upon",
+        "Distinct two-message stateful shape preserved from the plan"
+      ],
+      "issue_safety_notes": "This candidate stays on the discovery surface and does not embed the historical explicit-message payload structure from the cited issues; it is an issue-informed boundary seed rather than a crash copy."
+    },
+    {
+      "plan_id": "vk-plan-022",
+      "seed_id": "opener-vk6-022",
+      "title": "VK-only ListServices with deeper discovery and session prelude",
+      "strategy": "parser_depth",
+      "target_operation": "ListServices",
+      "purpose": "Create a four-step mixed sequence that starts with discovery, establishes a session, then submits one compact SendRRData request containing a syntactically plausible but path-heavy CIP payload, finishing with a second ListServices probe to test parser recovery after deeper handling.",
+      "evidence_ids": [
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:563:563-summary:b783074fb0e0",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "listservices-baseline",
+          "hex": "040000000000000000000000000000000000000000000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "registersession-v1",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "sendrrdata-path-heavy-analogue",
+          "hex": "6f00200078563412000000000000000000000000000000000000000000000000020000000000b200100e06200124012800280028002800"
+        },
+        {
+          "index": 3,
+          "direction": "client_to_server",
+          "label": "listservices-post-explicit",
+          "hex": "040000000000000000000000aabbccddeeff001100000000"
+        }
+      ],
+      "expected_behavior": "Expected outcomes range from normal ListServices replies and session registration to rejection of the compact explicit-message analogue; the final ListServices request helps reveal whether the target remains responsive after parsing the deeper CPF/CIP structure.",
+      "constraints_preserved": [
+        "Target operation preserved as ListServices",
+        "Plan message budget of four respected",
+        "Discovery, session, and explicit-message paths diversified",
+        "24-byte encapsulation headers used throughout",
+        "All visible length fields kept internally consistent"
+      ],
+      "issue_safety_notes": "The explicit-message frame is a conservative structural analogue using a moderate path size and compact body, not the exact long-path reproducer from any cited report."
+    },
+    {
+      "plan_id": "vk-plan-023",
+      "seed_id": "opener-vk6-023",
+      "title": "VK-only RegisterSession prerequisite sequence",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession",
+      "purpose": "Provide a compact, mutation-friendly state prerequisite by registering a session and then issuing a SendRRData with a very short unconnected CIP body whose path-size byte claims more words than are present, mirroring the issue-supported state relation without reusing the documented reproducer shape.",
+      "evidence_ids": [
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:557:557-summary:f58da6326195",
+        "issue:572:572-summary:4cac5b77f97f",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "registersession-prereq",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata-short-cip-forged-pathsize",
+          "hex": "6f00180078563412000000000000000000000000000000000000000000000000020000000000b200080e1020012401"
+        }
+      ],
+      "expected_behavior": "A robust target should either reject the malformed CIP request within SendRRData or return an error while keeping the session path stable; issue-affected builds may exhibit out-of-bounds read symptoms when path decoding trusts the path-size byte too far.",
+      "constraints_preserved": [
+        "Target operation preserved as RegisterSession",
+        "Two-step stateful sequence retained",
+        "RegisterSession precedes explicit-message analogue",
+        "Encapsulation and CPF lengths are internally consistent",
+        "Conservative session handle placeholder reused for mutation"
+      ],
+      "issue_safety_notes": "This seed intentionally avoids the exact historical oversized path-word count and packet padding pattern; it keeps only the issue-supported prerequisite relation of RegisterSession followed by a short CIP body with a misleading path-size."
+    },
+    {
+      "plan_id": "vk-plan-024",
+      "seed_id": "opener-vk6-024",
+      "title": "VK-only UnregisterSession standalone session-end probe",
+      "strategy": "other",
+      "target_operation": "UnregisterSession",
+      "purpose": "Create a distinct standalone session-end request using a nonzero session handle and empty body so mutators can pivot between valid and invalid teardown states around issue-adjacent parser logic.",
+      "evidence_ids": [
+        "issue:593:593-summary:2b6de868ce19",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:557:557-summary:f58da6326195",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:568:568-summary:6fa072929d36",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "unregistersession-empty",
+          "hex": "660000007856341200000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "An implementation should treat this as a session teardown request tied to the supplied handle and either accept, reject, or silently ignore it without invoking deeper CIP parsing.",
+      "constraints_preserved": [
+        "Target operation preserved as UnregisterSession",
+        "Single-request shape preserved",
+        "24-byte encapsulation header used",
+        "Zero payload length retained",
+        "Distinct operation from other plans"
+      ],
+      "issue_safety_notes": "Although evidence references EPATH-size problems, this candidate does not embed EPATH data; it is a deliberately distinct session-control seed for corpus breadth and safe mutation staging."
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-055",
+  "title": "Base Write Multiple Coils variant 5",
+  "strategy": "parser_depth",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Use a deeper or nested message form likely to reach additional parser logic for Write Multiple Coils.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write 10 packed coils from address 32",
+      "hex": "000400000009010f0020000a02aa02",
+      "byte_length": 15,
+      "sha256": "c198d17bbe3c51317d6a01e79da76d03d0977a90d310a930fded16ddabc25b88"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "write multiple coils response",
+      "hex": "000400000006010f0020000a",
+      "byte_length": 12,
+      "sha256": "cdb7b852e6eb6c92884c5fd62153bde571e7bc1a8453ad1180552a2b31d2ec3a"
+    }
+  ],
+  "expected_behavior": "A conforming server should decode two packed data bytes for ten requested coils, apply the write, and ordinarily return a response containing the starting address and requested quantity.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present",
+    "Protocol identifier is 0000",
+    "MBAP length 0009 equals the unit identifier plus the 8-byte PDU",
+    "Function code 0f includes address, quantity, byte count, and data in order",
+    "Quantity 000a requires exactly two data bytes, matching byte count 02",
+    "Hexadecimal is lowercase and contains no separators"
+  ],
+  "issue_safety_notes": "Vulnerability issue knowledge is unavailable. The variable-length packed-coil form is intended for parser coverage using a conservative, structurally consistent request, not for reproducing a known issue.",
+  "sequence_sha256": "80f55ae56a1e38667039838087eb450182b1985dc2c313b8b85d18c7e3d858ce",
+  "total_bytes": 27,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b41d36e2974c6f9f7415dcbc215ff978515904e1f41c5d56f05ebbc2087ea23c",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

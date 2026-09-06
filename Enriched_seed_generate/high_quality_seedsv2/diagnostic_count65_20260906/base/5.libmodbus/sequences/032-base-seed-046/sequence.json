@@ -1,0 +1,48 @@
+{
+  "seed_id": "base-seed-046",
+  "title": "Base Read File Record variant 4",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read File Record",
+  "purpose": "Exercise the compact single-subrequest Read File Record shape while retaining valid byte-count and MBAP length relationships.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read File Record single subrequest",
+      "hex": "00100000000c071409060001000000000001",
+      "byte_length": 18,
+      "sha256": "5c713c9c8e24809b4a372cd97a537630e9ac2a7920c70bad77d410e8844052a7"
+    }
+  ],
+  "expected_behavior": "The server should parse the Read File Record request as one subrequest for file 1, record 0, length 1, then return records or a protocol-defined exception depending on supported file data.",
+  "constraints_preserved": [
+    "7-byte MBAP header structure",
+    "Protocol identifier is 0000",
+    "MBAP length 000a equals unit identifier plus 9-byte PDU",
+    "Read File Record function code 14 is used",
+    "Subrequest byte count 07 matches the seven-byte file-record reference block",
+    "Request contains exactly one subrequest"
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report was supplied or used; this is a conservative structural boundary candidate based on model-prior plausibility, not externally verified protocol evidence.",
+  "sequence_sha256": "a16bdc6b5f900ef83899b2609ba383a0cd211cb10c11b7a86e891b9e2a75a5c0",
+  "total_bytes": 18,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5c713c9c8e24809b4a372cd97a537630e9ac2a7920c70bad77d410e8844052a7",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

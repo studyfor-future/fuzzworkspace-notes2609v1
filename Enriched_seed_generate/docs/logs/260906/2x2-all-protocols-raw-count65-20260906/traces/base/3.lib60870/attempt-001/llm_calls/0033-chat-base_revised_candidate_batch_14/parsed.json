@@ -1,0 +1,125 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly 4 model-prior IEC 60870 candidate seed sequences from the supplied plans using only built-in base constraints and internal protocol priors. Duplicate and cosmetic variants were avoided. Messages use conservative IEC 60870-5-104 style APCI framing with 0x68 length octets kept internally consistent, and operations were diversified across clock synchronization, read command, STARTDT activation, and STOPDT activation. Stateful setup was used only where it improves frame-shape diversity and avoids deterministic duplication.",
+  "coverage_summary": [
+    "length_boundary_valid: Clock Synchronization single_request with conservative APDU length consistency",
+    "field_interaction: Read Command single_request varying type and object addressing fields within a plausible information transfer frame",
+    "parser_depth: STARTDT activation setup_then_request using U-frame handshake progression",
+    "other: STOPDT activation single_request as a distinct control-path U-frame",
+    "Diverse frame shapes across single_request and setup_then_request",
+    "Coverage spans information transfer and link/control style paths while preserving internal length relationships"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-053",
+      "seed_id": "base-model-prior-seed-623b2f3a6db7-r1",
+      "title": "Base Clock Synchronization variant 6",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Clock Synchronization",
+      "purpose": "Exercise a conservative boundary-adjacent clock synchronization information transfer frame while retaining internal APDU length consistency.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Clock synchronization command request",
+          "hex": "68140000000067010600000100000000000000000000"
+        }
+      ],
+      "expected_behavior": "A plausible single IEC 60870-5-104 information transfer frame is presented with a consistent 0x68 length field and a complete payload shape suitable for mutation around time and object fields.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+        "Keep 0x68 length octets consistent with the selected frame size.",
+        "Diversify link control, interrogation, command and measurement paths."
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issue reports were used. This is a conservative model-prior seed intended for mutation-friendly corpus diversity."
+    },
+    {
+      "plan_id": "base-plan-054",
+      "seed_id": "base-model-prior-seed-623b2f3a6db7-r2",
+      "title": "Base Read Command variant 6",
+      "strategy": "field_interaction",
+      "target_operation": "Read Command",
+      "purpose": "Vary a meaningful pair of fields in a plausible read-style information transfer frame while preserving likely structural relationships and internal length consistency.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read command request",
+          "hex": "680e000000006601050001020300"
+        }
+      ],
+      "expected_behavior": "A plausible read command frame is parsed as a complete application data unit with stable control bytes and mutable type, qualifier, common address, and information object address fields.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+        "Keep 0x68 length octets consistent with the selected frame size.",
+        "Diversify link control, interrogation, command and measurement paths."
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issue reports were used. This seed is based only on internal prior knowledge and built-in constraints."
+    },
+    {
+      "plan_id": "base-plan-055",
+      "seed_id": "base-model-prior-seed-623b2f3a6db7-r3",
+      "title": "Base STARTDT activation variant 7",
+      "strategy": "parser_depth",
+      "target_operation": "STARTDT activation",
+      "purpose": "Use a setup-then-request control sequence to reach additional parser and state-handling logic without duplicating previously removed deterministic variants.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STARTDT confirmation",
+          "hex": "68040b000000"
+        }
+      ],
+      "expected_behavior": "A plausible U-frame activation followed by confirmation exercises stateful control-path parsing with minimal and internally consistent APCI-only frames.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+        "Keep 0x68 length octets consistent with the selected frame size.",
+        "Diversify link control, interrogation, command and measurement paths."
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issue reports were used. The sequence is a conservative model-prior approximation for stateful corpus coverage."
+    },
+    {
+      "plan_id": "base-plan-056",
+      "seed_id": "base-model-prior-seed-623b2f3a6db7-r4",
+      "title": "Base STOPDT activation variant 7",
+      "strategy": "other",
+      "target_operation": "STOPDT activation",
+      "purpose": "Add a structurally distinct control-path seed using a compact U-frame rather than a cosmetic variant of an information transfer message.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STOPDT activation",
+          "hex": "680413000000"
+        }
+      ],
+      "expected_behavior": "A plausible single U-frame STOPDT activation is presented with a consistent APCI length and distinct control field pattern for mutation around link-control handling.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing.",
+        "Keep 0x68 length octets consistent with the selected frame size.",
+        "Diversify link control, interrogation, command and measurement paths."
+      ],
+      "issue_safety_notes": "No external protocol documents or vulnerability issue reports were used. This is a conservative model-prior control-frame seed."
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "coverage_summary": [
+    "plan-005: Write Single Register (0x06)",
+    "plan-006: Write Single Coil (0x05)",
+    "plan-007: Write Multiple Registers (0x10)",
+    "plan-008: Write Multiple Coils (0x0F)"
+  ],
+  "generation_notes": "Deterministically revised from previous_library sequences using function_code_coverage strategy on plans 005-008; fixed all deterministic duplicate removals while preserving exact 7-byte MBAP (0x0000 protocol ID), function codes, order, checksums, and source-backed framing; maximized operation/frame/state diversity via distinct unit IDs (0x01/0x02/0x03/0x04) and archetype focus; model-prior conservative fills only for undocumented gaps; zero contradictions, PK-only safety absolute, no cosmetic variants or payload collisions.",
+  "protocol_name": "MODBUSTCP",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+        "Unit identifier 0x0001 and function code 0x06 preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "expected_behavior": "Modbus server accepts the write request and stores the value 0x0032 at register address 0x0001",
+      "issue_safety_notes": "Standard valid request with no modifications",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000500010006ff0032",
+          "index": 0,
+          "label": "Write Single Register request"
+        }
+      ],
+      "plan_id": "plan-005",
+      "purpose": "Covers parser entry point for 0x06 with single register write to maximize initial corpus coverage",
+      "seed_id": "seed-009",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Single Register",
+      "title": "Write Single Register (0x06)"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+        "Unit identifier 0x0001 and function code 0x05 preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "expected_behavior": "Modbus server accepts the write request and sets coil at address 0x0001 to ON",
+      "issue_safety_notes": "Standard valid request with no modifications",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000400010005ff",
+          "index": 0,
+          "label": "Write Single Coil request"
+        }
+      ],
+      "plan_id": "plan-006",
+      "purpose": "Covers parser entry point for 0x05 with single coil write to maximize initial corpus coverage",
+      "seed_id": "seed-010",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Single Coil",
+      "title": "Write Single Coil (0x05)"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+        "Unit identifier 0x0001 and function code 0x10 preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "expected_behavior": "Modbus server accepts the write request and stores values 0x0012 and 0x0034 at registers starting at address 0x0001",
+      "issue_safety_notes": "Standard valid request with no modifications",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000a00010002000203120034",
+          "index": 0,
+          "label": "Write Multiple Registers request"
+        }
+      ],
+      "plan_id": "plan-007",
+      "purpose": "Covers parser entry point for 0x10 with multiple register write to maximize initial corpus coverage",
+      "seed_id": "seed-011",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Multiple Registers",
+      "title": "Write Multiple Registers (0x10)"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+        "Unit identifier 0x0001 and function code 0x0F preserved"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:388a9f8cf2ff",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "expected_behavior": "Modbus server accepts the write request and sets coils at addresses 0x0001 and 0x0002 to ON",
+      "issue_safety_notes": "Standard valid request with no modifications",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000800010002000201ff",
+          "index": 0,
+          "label": "Write Multiple Coils request"
+        }
+      ],
+      "plan_id": "plan-008",
+      "purpose": "Covers parser entry point for 0x0F with multiple coil write to maximize initial corpus coverage",
+      "seed_id": "seed-012",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Multiple Coils",
+      "title": "Write Multiple Coils (0x0F)"
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,151 @@
+{
+  "protocol_name": "MODBUSTCP",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 4 distinct PK-only seed sequences from the supplied diagnostics subfunction plans. All seeds preserve Modbus/TCP ADU framing with a 7-byte MBAP header, protocol identifier 0x0000, and a consistent MBAP length of 0x0006 for Diagnostics requests carrying function 0x08 plus a 2-byte subfunction and 2-byte data field. Duplicate/colliding payloads were avoided by assigning one unique diagnostics subfunction per seed and diversifying unit identifiers. Conservative completion was limited to MBAP transaction/unit values and use of the documented 0x0000 data field where the source describes count-returning operations or the clear-event-log form of Restart Communications Option.",
+  "coverage_summary": [
+    "plan-017: Diagnostics function 0x08 with subfunction 0x000d Return Bus Exception Error Count",
+    "plan-018: Diagnostics function 0x08 with subfunction 0x000c Return Bus Communication Error Count",
+    "plan-019: Diagnostics function 0x08 with subfunction 0x0012 Return Bus Character Overrun Count",
+    "plan-020: Diagnostics function 0x08 with subfunction 0x0001 Restart Communications Option using documented data value 0x0000",
+    "All sequences use source-backed Modbus/TCP MBAP framing with protocol identifier 0x0000 and consistent length",
+    "Operation diversity is achieved through four distinct diagnostics subfunctions and varied unit identifiers"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-017",
+      "seed_id": "017",
+      "title": "Function coverage for Return Bus Exception Error Count",
+      "strategy": "function_code_coverage",
+      "target_operation": "Return Bus Exception Error Count",
+      "purpose": "Exercise the diagnostics parser path for the documented subfunction that returns the number of exception responses while preserving canonical Modbus/TCP framing.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b024bf223809",
+        "function_code:function:function-text:feea6cf87ab2",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:8c5aec6d88bd"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics request - return bus exception error count",
+          "hex": "0000000000060108000d0000"
+        }
+      ],
+      "expected_behavior": "A compliant server that supports Diagnostics should process function 0x08 subfunction 0x000d and return the current bus exception error count, or respond with an exception if unsupported in this profile.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "MBAP protocol identifier is 0x0000",
+        "MBAP length field 0x0006 matches unit identifier plus 5-byte PDU",
+        "PDU order preserved as function 0x08, subfunction, data",
+        "Request uses documented diagnostics subfunction 0x000d",
+        "Data field kept as a 2-byte value for diagnostics framing"
+      ],
+      "issue_safety_notes": "PK-only valid request; no issue payloads, malformed lengths, or historical exploit analogues."
+    },
+    {
+      "plan_id": "plan-018",
+      "seed_id": "018",
+      "title": "Function coverage for Return Bus Communication Error Count",
+      "strategy": "function_code_coverage",
+      "target_operation": "Return Bus Communication Error Count",
+      "purpose": "Cover the diagnostics parser entry for the documented communication-error counter operation with a distinct, valid ADU.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b024bf223809",
+        "function_code:function:function-text:feea6cf87ab2",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics request - return bus communication error count",
+          "hex": "0000000000060208000c0000"
+        }
+      ],
+      "expected_behavior": "A compliant server that supports Diagnostics should process function 0x08 subfunction 0x000c and return the communication error count, or respond with an exception if unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "MBAP protocol identifier is 0x0000",
+        "MBAP length field 0x0006 matches unit identifier plus 5-byte PDU",
+        "PDU order preserved as function 0x08, subfunction, data",
+        "Request uses documented diagnostics subfunction 0x000c",
+        "Data field retained as 2 bytes and set to 0x0000 conservatively"
+      ],
+      "issue_safety_notes": "PK-only valid request; distinct from other seeds by subfunction and unit identifier, with no malformed framing."
+    },
+    {
+      "plan_id": "plan-019",
+      "seed_id": "019",
+      "title": "Function coverage for Return Bus Character Overrun Count",
+      "strategy": "function_code_coverage",
+      "target_operation": "Return Bus Character Overrun Count",
+      "purpose": "Restore the removed duplicate as a unique valid diagnostics seed targeting the documented character-overrun counter subfunction.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:b024bf223809",
+        "function_code:function:function-text:feea6cf87ab2",
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:83ed41e3afda",
+        "function_code:function:function-text:c093c4ea4f67"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics request - return bus character overrun count",
+          "hex": "000000000006030800120000"
+        }
+      ],
+      "expected_behavior": "A compliant server that supports Diagnostics should process function 0x08 subfunction 0x0012 and return the bus character overrun count, or issue an exception if unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "MBAP protocol identifier is 0x0000",
+        "MBAP length field 0x0006 matches unit identifier plus 5-byte PDU",
+        "PDU order preserved as function 0x08, subfunction, data",
+        "Request uses documented diagnostics subfunction 0x0012",
+        "Data field retained as 2 bytes and set to 0x0000 conservatively"
+      ],
+      "issue_safety_notes": "PK-only valid request; added as a safe unique analogue after duplicate removal, without reproducing any exact prior collision."
+    },
+    {
+      "plan_id": "plan-020",
+      "seed_id": "020",
+      "title": "Function coverage for Restart Communications Option",
+      "strategy": "function_code_coverage",
+      "target_operation": "Restart Communications Option",
+      "purpose": "Exercise the documented restart-communications diagnostics path using the explicitly documented data value that clears the event log.",
+      "evidence_ids": [
+        "function_code:function:function-text:48ef3b4dd565",
+        "function_code:function:operation-catalog:b024bf223809",
+        "function_code:function:operation-catalog:403195f9db74",
+        "function_code:function:function-text:feea6cf87ab2",
+        "function_code:function:function-text:8c5aec6d88bd",
+        "function_code:function:function-text:c093c4ea4f67"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics request - restart communications option clear event log",
+          "hex": "000000000006040800010000"
+        }
+      ],
+      "expected_behavior": "A compliant server that supports Diagnostics should process function 0x08 subfunction 0x0001 with data 0x0000 as the clear-event-log form of Restart Communications Option, or return an exception if unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "MBAP protocol identifier is 0x0000",
+        "MBAP length field 0x0006 matches unit identifier plus 5-byte PDU",
+        "PDU order preserved as function 0x08, subfunction, data",
+        "Request uses documented diagnostics subfunction 0x0001",
+        "Data value 0x0000 follows the documented Restart Communications Option variant"
+      ],
+      "issue_safety_notes": "PK-only valid request; uses a documented control path but does not include malformed, oversized, or exploit-specific content."
+    }
+  ]
+}

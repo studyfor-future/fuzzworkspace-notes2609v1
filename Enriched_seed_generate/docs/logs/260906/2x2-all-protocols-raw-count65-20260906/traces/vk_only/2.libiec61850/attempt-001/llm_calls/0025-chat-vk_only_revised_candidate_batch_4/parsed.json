@@ -1,0 +1,129 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": 599,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct message-sequence seeds for the iec61850 family. Used only supplied issue evidence plus fallible model prior, not external protocol documents. Preserved built-in family constraints by preferring TPKT version 0x03 and keeping each per-message TPKT total length internally consistent. Removed prior malformed multi-message splitting that broke framing realism, avoided exact historical payload collisions, kept all hex even-length lowercase, and increased operation/state diversity across association, discovery, write/define-list, and server-to-client response handling analogues. Safe issue analogues are retained without reproducing published crash bytes exactly.",
+  "coverage_summary": [
+    "association-only ACSE/AARE analogue with 0xbe user-information boundary",
+    "discovery path via GetVariableAccessAttributes request",
+    "server-side dynamic dataset creation via DefineNamedVariableList",
+    "client-side dataset directory style response analogue for GetNamedVariableListAttributesResponse",
+    "single-frame TPKT+COTP encapsulation for all seeds",
+    "issue-guided coverage spanning issues 513, 516, 542, 599 and access-control NVL creation analogue",
+    "strategy diversity: issue_structural_analogue, field_interaction, length_boundary_valid, parser_depth"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-013-rev",
+      "seed_id": "vk-plan-013-rev-01",
+      "title": "Association response analogue with bounded 0xbe user-information tail",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS Initiate",
+      "purpose": "Exercise the association parser path using an AARE-like ACSE structure that conservatively mirrors the reported 0xbe user-information boundary condition without copying the historical trigger bytes.",
+      "evidence_ids": [
+        "issue:513:513-summary:4a07060941e2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "tpkt_cotp_acse_aare_like",
+          "hex": "0300001302f080610c800101a103020100be020001"
+        }
+      ],
+      "expected_behavior": "Parser should either reject or safely consume the association response analogue without reading past the provided user-information region.",
+      "constraints_preserved": [
+        "tpkt header begins with 03",
+        "tpkt total-length field is consistent with the complete message",
+        "single complete framed message suitable for stdin byte-sequence concatenation",
+        "association path covered with conservative acse-like structure",
+        "no exact historical crash payload copied"
+      ],
+      "issue_safety_notes": "Uses a shortened structural analogue for the 0xbe parsing condition from issue 513, but avoids the published exact ending sequence and keeps the framing recognizable."
+    },
+    {
+      "plan_id": "vk-plan-014-rev",
+      "seed_id": "vk-plan-014-rev-01",
+      "title": "Discovery request with bit-string leaning attribute query fields",
+      "strategy": "field_interaction",
+      "target_operation": "GetVariableAccessAttributes",
+      "purpose": "Probe attribute-query handling with a compact confirmed-request style payload whose nested fields are chosen to be mutation-friendly for later bit-string and length interactions.",
+      "evidence_ids": [
+        "issue:516:516-summary:13bbaeee92c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "tpkt_cotp_mms_getvaa_req_like",
+          "hex": "0300001702f080a010020101a10b1a036c64311a04646f2431"
+        }
+      ],
+      "expected_behavior": "Endpoint should parse or reject the request cleanly; subsequent mutational growth of the value-specifier area may help reach encoding and field-interaction logic related to issue-guided bit-string handling.",
+      "constraints_preserved": [
+        "tpkt header begins with 03",
+        "tpkt total-length field is consistent with the complete message",
+        "discovery path diversity via getvariableaccessattributes-style request",
+        "single-message sequence",
+        "hex is lowercase and even-length"
+      ],
+      "issue_safety_notes": "This is a safe protocol-level analogue only; it does not embed the standalone fuzz-harness payload reported for issue 516."
+    },
+    {
+      "plan_id": "vk-plan-015-rev",
+      "seed_id": "vk-plan-015-rev-01",
+      "title": "DefineNamedVariableList boundary with association-specific style name",
+      "strategy": "length_boundary_valid",
+      "target_operation": "DefineNamedVariableList",
+      "purpose": "Exercise server-side named-variable-list creation using a short list name and minimal variable-list content to explore null-or-empty list handling and access-control adjacent paths.",
+      "evidence_ids": [
+        "issue:542:542-summary:a6cc05667747",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "tpkt_cotp_mms_define_nvl_req_like",
+          "hex": "0300001d02f080a016020103a4111a04626f6f6da1091a036c64311a026c6e"
+        }
+      ],
+      "expected_behavior": "Server should validate the named-variable-list request and either accept or reject it without dereferencing absent list structures or corrupting stack-backed dataset name buffers.",
+      "constraints_preserved": [
+        "tpkt header begins with 03",
+        "tpkt total-length field is consistent with the complete message",
+        "write/list-management diversity via definenamedvariablelist-style request",
+        "message remains mutation-friendly with short names and nested list fields",
+        "not an exact replay of published poc.bin"
+      ],
+      "issue_safety_notes": "Combines safe analogues of empty-or-short list handling and dynamic dataset creation concerns while intentionally avoiding the exact historical request bytes."
+    },
+    {
+      "plan_id": "vk-plan-016-rev",
+      "seed_id": "vk-plan-016-rev-01",
+      "title": "Server-to-client dataset attribute response analogue with reduced first item identifier",
+      "strategy": "parser_depth",
+      "target_operation": "GetNameList",
+      "purpose": "Cover the client-side response parsing state implicated by reduced domain-specific item identifiers, using a concise response-like frame that is easy to mutate around the first itemId field.",
+      "evidence_ids": [
+        "issue:599:599-summary:806eef562ec3"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "tpkt_cotp_mms_dataset_attr_res_like",
+          "hex": "0300001902f080a112020101a20d1a036c64311a01241a03616263"
+        }
+      ],
+      "expected_behavior": "Client should reject or safely process the response analogue; mutations that shrink the first identifier further should not lead to fixed-offset reads beyond the short string.",
+      "constraints_preserved": [
+        "tpkt header begins with 03",
+        "tpkt total-length field is consistent with the complete message",
+        "server-to-client response direction used for real state diversity",
+        "response-like discovery/dataset path covered",
+        "no exact MITM-rewritten historical payload copied"
+      ],
+      "issue_safety_notes": "Targets the issue 599 pattern through a reduced-itemId structural analogue only; it is intentionally not the published patched response and uses a different compact layout."
+    }
+  ]
+}

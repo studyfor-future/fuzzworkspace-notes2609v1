@@ -1,0 +1,175 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "VK-only revised batch for iec60870 using only supplied issue evidence, task constraints, and fallible model-internal protocol prior. Exactly 4 distinct sequences are retained, one per requested plan, with duplicate/colliding seeds removed, odd-length hex fixed, lowercase hex only, and visible 0x68 length octets kept internally consistent. The set increases operation, frame, and state diversity across Read Command, STARTDT activation, STOPDT activation, and TESTFR activation while preserving safe issue analogues and avoiding exact historical PoC payloads.",
+  "coverage_summary": [
+    "Read Command covered with a stateful U-frame prerequisite followed by a compact I-frame request",
+    "STARTDT activation covered as a pure U-frame link-control archetype with explicit response diversity",
+    "STOPDT activation covered as a separate pure U-frame control path distinct from STARTDT and TESTFR",
+    "TESTFR activation covered with a stateful control-plus-I-frame analogue to touch server processing after link test setup",
+    "Issue 196 analogue emphasized via server-side state and subsequent compact I-frame processing rather than copied crash bytes",
+    "Issue 197 analogue emphasized via connection event and link-control transition handling",
+    "Issue 200 analogue emphasized via short sequence-form ASDU structure with advertised plurality and minimal body",
+    "Issue 201 analogue emphasized via provoking plausible outbound/server-side handling after control activation",
+    "Mix of single-request and multi-step stateful sequences",
+    "Mix of pure U-frames and U-frame plus I-frame sequences",
+    "Distinct APCI lengths and ASDU bodies for mutation-friendly evolution",
+    "No exact payload collision with supplied historical crash hex"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-045",
+      "seed_id": "vk12-seed-045-r1",
+      "title": "VK-only Read Command with link start prerequisite and compact read ASDU analogue",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Command",
+      "purpose": "Exercise a server-side Read Command path with a valid link-start prerequisite and a short, conservative I-frame whose ASDU remains internally sized but close to minimal parsing boundaries relevant to queue and short-body handling analogues.",
+      "evidence_ids": [
+        "issue:196:196-summary:7e4abb310eea",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation request",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Read Command compact I-frame",
+          "hex": "680e00000000660105000100010000"
+        }
+      ],
+      "expected_behavior": "Implementation should accept or cleanly reject the link-start plus Read Command sequence without queue traversal confusion, out-of-bounds access, or malformed short-body acceptance beyond intended parser checks.",
+      "constraints_preserved": [
+        "0x68 IEC 60870-5-104 style framing used",
+        "Visible length octets consistent with frame sizes",
+        "Target operation preserved as Read Command",
+        "Stateful multi-step sequence increases diversity beyond single U-frame",
+        "No exact historical crash payload reused",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "Uses a conservative compact read-style ASDU after activation as a safe structural analogue only; it avoids the reported long crash stream and does not copy any supplied PoC bytes."
+    },
+    {
+      "plan_id": "vk-plan-046",
+      "seed_id": "vk12-seed-046-r1",
+      "title": "VK-only STARTDT activation pure U-frame control transition",
+      "strategy": "parser_depth",
+      "target_operation": "STARTDT activation",
+      "purpose": "Reach connection and event-handling logic through a recognizable STARTDT activation exchange while keeping the sequence short, mutation-friendly, and distinct from I-frame parser analogues.",
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:178:178-summary:01c5b607cf00"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation request",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "STARTDT confirmation analogue",
+          "hex": "68040b000000"
+        }
+      ],
+      "expected_behavior": "Implementation should transition the connection into started data-transfer state or reject safely; no deadlock or stuck mutex condition should arise during connection event processing.",
+      "constraints_preserved": [
+        "Pure U-frame link-control archetype retained",
+        "0x68 length octets consistent with 4-byte control body",
+        "Target operation preserved as STARTDT activation",
+        "Multi-step stateful exchange retained",
+        "Distinct from STOPDT and TESTFR sequences",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "This is a safe control-path analogue for deadlock-oriented evidence, not a copied reproducer. It intentionally avoids malformed ASDU bodies and focuses on state transition handling."
+    },
+    {
+      "plan_id": "vk-plan-047",
+      "seed_id": "vk12-seed-047-r1",
+      "title": "VK-only STOPDT activation single control request",
+      "strategy": "stateful_valid",
+      "target_operation": "STOPDT activation",
+      "purpose": "Provide a clean STOPDT control-path seed distinct from the STARTDT and TESTFR cases, useful for mutating link-state transitions around application/parser prerequisites.",
+      "evidence_ids": [
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STOPDT activation request",
+          "hex": "680413000000"
+        }
+      ],
+      "expected_behavior": "Implementation should stop data transfer or reject safely; no parser confusion, stale state use, or unexpected acceptance side effects should occur.",
+      "constraints_preserved": [
+        "Pure U-frame control message",
+        "0x68 length octet consistent with 4-byte body",
+        "Target operation preserved as STOPDT activation",
+        "Single-request shape retained for diversity",
+        "No duplicate seed id or payload collision from prior library",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "Uses only a conservative STOPDT control frame. The issue linkage is by safe structural/state analogue rather than by reproducing any out-of-bounds parser condition."
+    },
+    {
+      "plan_id": "vk-plan-048",
+      "seed_id": "vk12-seed-048-r1",
+      "title": "VK-only TESTFR activation followed by short sequence-form information ASDU analogue",
+      "strategy": "other",
+      "target_operation": "TESTFR activation",
+      "purpose": "Create a distinct stateful TESTFR-based seed that first exercises link-test handling and then sends a short sequence-form I-frame analogue with advertised multiplicity and minimal body to probe parser and server reaction diversity.",
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:175:175-summary:1d1910f22105"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "TESTFR activation request",
+          "hex": "680443000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Short sequence-form I-frame analogue",
+          "hex": "680a02000000018203000100"
+        }
+      ],
+      "expected_behavior": "Implementation should handle TESTFR and the following compact I-frame without out-of-bounds object-address reads or unsafe server-side follow-on behavior; safe rejection is acceptable.",
+      "constraints_preserved": [
+        "TESTFR target operation preserved with explicit U-frame activation",
+        "Second message uses recognizable IEC 60870-5-104 style I-frame framing",
+        "Visible length octets consistent in both frames",
+        "Short sequence-form ASDU analogue kept mutation-friendly and non-identical to issue PoCs",
+        "Stateful two-step sequence increases diversity",
+        "Lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "The second frame is a safe analogue inspired by short sequence and VSQ/body mismatch reports, but it is not an exact historical PoC and is kept conservative to preserve family framing constraints."
+    }
+  ]
+}

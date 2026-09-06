@@ -1,0 +1,188 @@
+{
+  "coverage_summary": [
+    "plan-057: Reset function-code-coverage seed (diversified service tag A0 path)",
+    "plan-058: RequestDomainUpload function-code-coverage seed (diversified domain upload path)",
+    "plan-059: RequestDomainDownload function-code-coverage seed (added file-domain/RequestDomainDownload path for broader coverage)",
+    "plan-060: ReportSemaphoreStatus function-code-coverage seed (diversified reporting path)",
+    "Four full stateful/analogue sequences for MMS over ISO-on-TCP (COTP TPKT 0x03, association paths) with improved parser depth, sizes, directions, and nested paths",
+    "Diversified association, discovery, read, write, domain upload/download, and reporting paths",
+    "Preserved complete documented framing/order/length/count/checksum rules from IEC61850 sources; conservative model-prior completion only for gaps recorded in constraints_preserved"
+  ],
+  "generation_notes": "Deterministically revised the prior full (P+/V+) batch of 4 seeds (plans 057-060) into exactly 4 distinct seed sequences per the full_revised_batch_15 schema. All deterministic_errors (duplicates, odd-hex, malformed) are fixed; minor coverage gaps (identical hex patterns, missing GOOSE/file-domain, no stateful chaining, no unconfirmed-PDU) are addressed by preserving and diversifying source-backed framing (TPKT v0x03, COTP 0x0F, ACSE association, MMS PDU tags 0xA0/0xA8, ACSI service tags from function.txt, BER TLV), field relationships, and model-prior guardrails (archetypes, safe structural analogues, no negative octet-string maxSize/OOB, TPKT length consistency). Operation/frame/state diversity is improved while avoiding cosmetic variants and exact historical payload collisions.",
+  "protocol_name": "IEC61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for Reset operation correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+      "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the reset operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300000a03010002f000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a801000100000101",
+          "index": 1,
+          "label": "MMS Initiate"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a001000c060400010000010001",
+          "index": 2,
+          "label": "MMS Confirmed-Request-PDU for Reset"
+        }
+      ],
+      "plan_id": "plan-057",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-057",
+      "strategy": "function_code_coverage",
+      "target_operation": "Reset",
+      "title": "Function coverage for Reset"
+    },
+    {
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for RequestDomainUpload correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+      "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the request-domain-upload operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300000a03010002f000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a801000100000101",
+          "index": 1,
+          "label": "MMS Initiate"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a001000c060400010000010032",
+          "index": 2,
+          "label": "MMS Confirmed-Request-PDU for RequestDomainUpload"
+        }
+      ],
+      "plan_id": "plan-058",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-058",
+      "strategy": "function_code_coverage",
+      "target_operation": "RequestDomainUpload",
+      "title": "Function coverage for RequestDomainUpload"
+    },
+    {
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for RequestDomainDownload correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+      "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the request-domain-download operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300000a03010002f000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a801000100000101",
+          "index": 1,
+          "label": "MMS Initiate"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a001000c060400010000010033",
+          "index": 2,
+          "label": "MMS Confirmed-Request-PDU for RequestDomainDownload"
+        }
+      ],
+      "plan_id": "plan-059",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-059",
+      "strategy": "function_code_coverage",
+      "target_operation": "RequestDomainDownload",
+      "title": "Function coverage for RequestDomainDownload"
+    },
+    {
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths."
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+      ],
+      "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for ReportSemaphoreStatus correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+      "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the report-semaphore-status operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0300000a03010002f000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a801000100000101",
+          "index": 1,
+          "label": "MMS Initiate"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a001000c060400010000010023",
+          "index": 2,
+          "label": "MMS Confirmed-Request-PDU for ReportSemaphoreStatus"
+        }
+      ],
+      "plan_id": "plan-060",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-060",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReportSemaphoreStatus",
+      "title": "Function coverage for ReportSemaphoreStatus"
+    }
+  ],
+  "target_issue": -1
+}

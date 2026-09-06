@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-plan-003",
+  "title": "Write Multiple Registers exchange",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Exercise a variable-length FC10 write request followed by its structurally matching normal acknowledgment.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "WriteMultipleRegistersRequest",
+      "hex": "00030000000b0110010000020412345678",
+      "byte_length": 17,
+      "sha256": "5d4dfa0d61dd6296bcbce9e9c3678d11b189aed2e83de1cf232df9dde0390bc8"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "WriteMultipleRegistersResponse",
+      "hex": "000300000006011001000002",
+      "byte_length": 12,
+      "sha256": "51528ce2705c585ecb0ac54b81d184ec5de0a306d224cd959404b4d7f17e70a8"
+    }
+  ],
+  "expected_behavior": "The server may acknowledge writing two registers at address 0100 by echoing the starting address and quantity with the same transaction identifier.",
+  "constraints_preserved": [
+    "7-byte MBAP header on both messages",
+    "protocol identifier 0x0000 on both messages",
+    "request MBAP length 000b matches unit plus FC10 PDU",
+    "response MBAP length 0006 matches unit plus five-byte acknowledgment PDU",
+    "quantity and byte count agree",
+    "transaction identifier is preserved across the exchange"
+  ],
+  "issue_safety_notes": "The exchange is included for parser and response-shape coverage only; behavior is model-prior plausibility, not externally verified, and no vulnerability relevance is implied.",
+  "sequence_sha256": "d343fe1e65a1ef82d34909540667141fc2a779211a1828c7d5714b4e5a4172d5",
+  "total_bytes": 29,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9d2b70edee363c1388104f2812cc32f8b88c7b0a0a5d69862cf09f199de34e84",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 17,
+        "payload_offset": 17,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

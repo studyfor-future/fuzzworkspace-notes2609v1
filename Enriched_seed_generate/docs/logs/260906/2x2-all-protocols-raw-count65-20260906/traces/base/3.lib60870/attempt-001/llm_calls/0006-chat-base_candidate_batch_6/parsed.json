@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "TESTFR activation variant 3 (single_request, other strategy, structurally distinct)",
+    "General Interrogation variant 3 (single_request, baseline_valid, conservative canonical)",
+    "Single Command variant 3 (single_request, function_code_coverage, distinct service family)",
+    "Double Command variant 3 (setup_then_request, stateful_valid, plausible sequence)"
+  ],
+  "generation_notes": "Four model-prior conservative seed sequences generated per plan_id using only internal IEC 60870-5-104 APCI priors; no external docs or issues consulted; prioritized FT1.2 framing where applicable, 0x68 octet consistency, diverse operation shapes; issue_safety_notes explicitly note unavailable issue knowledge.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client initiates TESTFR activation sequence for outstation synchronization.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040500000100000000",
+          "index": 0,
+          "label": "TESTFR activation request"
+        }
+      ],
+      "plan_id": "base-plan-021",
+      "purpose": "Add a structurally distinct model-prior seed rather than a cosmetic byte variant.",
+      "seed_id": "base-plan-021-seed",
+      "strategy": "other",
+      "target_operation": "TESTFR activation",
+      "title": "Base TESTFR activation variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client requests all relevant information from outstation.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040200000100000000",
+          "index": 0,
+          "label": "General Interrogation request"
+        }
+      ],
+      "plan_id": "base-plan-022",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "seed_id": "base-plan-022-seed",
+      "strategy": "baseline_valid",
+      "target_operation": "General Interrogation",
+      "title": "Base General Interrogation variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client sends Single Command to outstation for one action.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040200000100000000",
+          "index": 0,
+          "label": "Single Command request"
+        }
+      ],
+      "plan_id": "base-plan-023",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "seed_id": "base-plan-023-seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "Single Command",
+      "title": "Base Single Command variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Client first sets up then activates Double Command on outstation.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040100000100000000",
+          "index": 0,
+          "label": "Double Command setup"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68040500000100000000",
+          "index": 1,
+          "label": "Double Command target"
+        }
+      ],
+      "plan_id": "base-plan-024",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-plan-024-seed",
+      "strategy": "stateful_valid",
+      "target_operation": "Double Command",
+      "title": "Base Double Command variant 3"
+    }
+  ],
+  "target_issue": -1
+}

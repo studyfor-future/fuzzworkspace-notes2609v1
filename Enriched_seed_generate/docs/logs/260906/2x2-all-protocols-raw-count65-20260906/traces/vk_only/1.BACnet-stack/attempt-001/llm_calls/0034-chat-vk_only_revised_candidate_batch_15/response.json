@@ -1,0 +1,61 @@
+{
+  "id": "chatcmpl-EL9fqv9696NPsTXHp1oNvHuAwIooB",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"bacnet-stack\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"VK-only revised batch with exactly 4 distinct issue-guided BACnet/IP message sequences using conservative internal prior only. Revised to avoid deterministic duplicate ids, remove invalid/unknown evidence usage, avoid exact historical payload collisions, keep lowercase even-length hex, and increase operation/frame/state diversity across ReadRange, AtomicReadFile, AtomicWriteFile, and DeviceCommunicationControl. BVLC four-byte lengths are internally consistent in every message and only supplied issue evidence ids are cited.\",\n  \"coverage_summary\": [\n    \"ReadRange single-request boundary-style probe with conservative confirmed-service framing\",\n    \"AtomicReadFile stream-access analogue exercising signed or oversized offset handling in one request\",\n    \"AtomicWriteFile stateful sequence with discovery/setup and two record-access writes to model append then replace style backend transitions\",\n    \"DeviceCommunicationControl standalone confirmed request to diversify service family and APDU structure\",\n    \"BACnet/IP BVLC plus NPDU plus APDU layering preserved throughout\",\n    \"Distinct single-request and multi-step stateful shapes included\",\n    \"Issue analogues emphasize length, signed offset, record-count, and state-transition interactions without copying exact crash bytes\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-057-rev-a\",\n      \"seed_id\": \"vk-seed-057r1\",\n      \"title\": \"ReadRange compact boundary analogue with non-empty range selector\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"ReadRange\",\n      \"purpose\": \"Probe a compact ReadRange decode path with a visible range-selector tail and boundary-like count values while keeping framing coherent and mutation-friendly.\",\n      \"evidence_ids\": [\n        \"issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb\",\n        \"issue:cve-2026-62974:cve-2026-62974-summa:0505ea62a0e3\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"readrange-boundary-request\",\n          \"hex\": \"810b001b0120ffff00ff0f01c4020001111905c40280000129009f0001\"\n        }\n      ],\n      \"expected_behavior\": \"Target should either reject the request cleanly or exercise ReadRange boundary parsing without desynchronizing the frame decoder.\",\n      \"constraints_preserved\": [\n        \"common BACnet/IP BVLC NPDU APDU layering\",\n        \"four-byte BVLC total length consistent\",\n        \"single request shape preserved\",\n        \"lowercase even-length hexadecimal\",\n        \"target operation retained as ReadRange\"\n      ],\n      \"issue_safety_notes\": \"Uses a safe structural analogue for boundary-sensitive range parsing and does not reproduce any exact historical crash datagram.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-058-rev-a\",\n      \"seed_id\": \"vk-seed-058r1\",\n      \"title\": \"AtomicReadFile stream-access signed-offset analogue\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"AtomicReadFile\",\n      \"purpose\": \"Exercise deeper file-service parsing with a stream-style request carrying a visibly unusual signed offset and modest requested length to support mutations around negative and oversized positions.\",\n      \"evidence_ids\": [\n        \"issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"atomicreadfile-stream-offset-probe\",\n          \"hex\": \"810b00190120ffff00ff0602c4028000013f7ffffff00010\"\n        }\n      ],\n      \"expected_behavior\": \"A robust target should validate the stream offset and requested byte count, returning an error or no data rather than performing unsafe pointer or size arithmetic.\",\n      \"constraints_preserved\": [\n        \"common BACnet/IP BVLC NPDU APDU layering\",\n        \"four-byte BVLC total length consistent\",\n        \"single request shape preserved\",\n        \"lowercase even-length hexadecimal\",\n        \"target operation retained as AtomicReadFile\"\n      ],\n      \"issue_safety_notes\": \"Focuses on the signed fileStartPosition analogue from issue evidence while avoiding verbatim backend-only reproduction details.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-059-rev-a\",\n      \"seed_id\": \"vk-seed-059r1\",\n      \"title\": \"AtomicWriteFile stateful record-access append then short replace analogue\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"AtomicWriteFile\",\n      \"purpose\": \"Model a plausible state prerequisite with discovery followed by two distinct AtomicWriteFile record-access operations so mutators can explore append-style and shorter-replacement transitions linked to RAMFS record handling bugs.\",\n      \"evidence_ids\": [\n        \"issue:1399:1399-summary:b7c84f7e0fc5\",\n        \"issue:1400:1400-summary:b9facce5d476\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"who-is-setup\",\n          \"hex\": \"810b000c0120ffff00100800\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"atomicwritefile-record-append-analogue\",\n          \"hex\": \"810b001b0120ffff00ff0703c4028000011f7fffffff0101414141\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"atomicwritefile-short-replace-analogue\",\n          \"hex\": \"810b00190120ffff00ff0704c4028000011f00000000010142\"\n        }\n      ],\n      \"expected_behavior\": \"If a writable FILE object is present, the target may process the sequence and expose stateful backend transitions; otherwise it should fail gracefully without decoder desync. The pair is intended to reach append then shorter-replacement style paths conservatively.\",\n      \"constraints_preserved\": [\n        \"common BACnet/IP BVLC NPDU APDU layering\",\n        \"four-byte BVLC total length consistent\",\n        \"multi-step stateful sequence increases state diversity\",\n        \"lowercase even-length hexadecimal\",\n        \"target operation retained as AtomicWriteFile\"\n      ],\n      \"issue_safety_notes\": \"This is a safe analogue of the documented append and replacement record paths and does not copy the published packet sequence or exact bytes.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-060-rev-a\",\n      \"seed_id\": \"vk-seed-060r1\",\n      \"title\": \"DeviceCommunicationControl confirmed request with compact parameter interaction\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"DeviceCommunicationControl\",\n      \"purpose\": \"Add non-file confirmed-service diversity with a compact control request whose small parameter set is easy to mutate around timeout and state-control fields while preserving family framing.\",\n      \"evidence_ids\": [\n        \"issue:1304:1304-summary:e1e381ed7daa\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"dcc-compact-control-request\",\n          \"hex\": \"810b00120120ffff00ff11050a01001900\"\n        }\n      ],\n      \"expected_behavior\": \"Target should parse the control service request and either reject unsupported or unauthorized values cleanly or apply a benign state change without affecting message framing.\",\n      \"constraints_preserved\": [\n        \"common BACnet/IP BVLC NPDU APDU layering\",\n        \"four-byte BVLC total length consistent\",\n        \"service diversity expanded beyond property and file operations\",\n        \"lowercase even-length hexadecimal\",\n        \"target operation retained as DeviceCommunicationControl\"\n      ],\n      \"issue_safety_notes\": \"Used as a conservative issue-guided diversity sequence only; it preserves protocol-family structure and avoids exact payload reuse from unrelated reports.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {}
+    }
+  ],
+  "created": 1788710782,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1744,
+    "prompt_tokens": 10649,
+    "total_tokens": 12393,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 236,
+      "engine_ttlt_ms": 18186,
+      "pre_inference_ms": 123,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 661,
+      "service_ttlt_ms": 18593,
+      "user_visible_ttft_ms": 538
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260817141218-4679731b-default-r2-dp0-default"
+  }
+}

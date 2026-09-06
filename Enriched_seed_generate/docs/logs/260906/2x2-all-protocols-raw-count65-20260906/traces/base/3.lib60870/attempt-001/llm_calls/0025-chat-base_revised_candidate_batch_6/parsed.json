@@ -1,0 +1,127 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly 4 distinct model-prior IEC 60870 seed sequences from the supplied plans while preserving built-in constraints only. External protocol documents and vulnerability issue knowledge were not used. Sequences prefer conservative IEC 60870-5-104 APCI framing with 0x68 length consistency, avoid deterministic duplicates, and improve diversity across U-frame control, interrogation, single-command, and double-command operations. Message bodies are internally length-consistent and shaped to be mutation-friendly without relying on externally verified protocol evidence.",
+  "coverage_summary": [
+    "other: TESTFR activation as conservative U-frame single request",
+    "baseline_valid: General Interrogation as I-frame request with ASDU payload",
+    "function_code_coverage: Single Command as distinct command-family I-frame request",
+    "stateful_valid: STARTDT activation setup followed by Double Command request",
+    "Diversity across single_request and setup_then_request sequence shapes",
+    "Diversity across U-frame and I-frame APCI forms",
+    "Command path coverage includes both single and double command families",
+    "Interrogation path coverage includes a canonical general interrogation style payload"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-021",
+      "seed_id": "base-plan-021-seed-rev1",
+      "title": "Base TESTFR activation variant 3",
+      "strategy": "other",
+      "target_operation": "TESTFR activation",
+      "purpose": "Provide a distinct conservative U-frame seed for link supervision rather than a cosmetic byte variant.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "TESTFR activation request",
+          "hex": "680443000000"
+        }
+      ],
+      "expected_behavior": "Peer receives a conservative test frame activation request and may answer with the corresponding supervisory response.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "issue_safety_notes": "Generated from model prior only; no external issue knowledge or verified protocol references were used."
+    },
+    {
+      "plan_id": "base-plan-022",
+      "seed_id": "base-plan-022-seed-rev1",
+      "title": "Base General Interrogation variant 3",
+      "strategy": "baseline_valid",
+      "target_operation": "General Interrogation",
+      "purpose": "Provide a conservative canonical interrogation request with APCI and ASDU structure for mutation-friendly baseline coverage.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "General Interrogation request",
+          "hex": "680e0000000064010600010000000014"
+        }
+      ],
+      "expected_behavior": "Peer interprets the frame as a general interrogation style request and may begin returning information objects if session state permits.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "issue_safety_notes": "Generated from model prior only; no external issue knowledge or verified protocol references were used."
+    },
+    {
+      "plan_id": "base-plan-023",
+      "seed_id": "base-plan-023-seed-rev1",
+      "title": "Base Single Command variant 3",
+      "strategy": "function_code_coverage",
+      "target_operation": "Single Command",
+      "purpose": "Restore the removed duplicate with a distinct command-family I-frame seed covering a likely single command service path.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Single Command request",
+          "hex": "680e000000002d01060001010000000181"
+        }
+      ],
+      "expected_behavior": "Peer interprets the frame as a single command style request directed at a minimal information object and may acknowledge or reject depending on state.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "issue_safety_notes": "Generated from model prior only; no external issue knowledge or verified protocol references were used."
+    },
+    {
+      "plan_id": "base-plan-024",
+      "seed_id": "base-plan-024-seed-rev1",
+      "title": "Base Double Command variant 3",
+      "strategy": "stateful_valid",
+      "target_operation": "Double Command",
+      "purpose": "Use a plausible setup-then-target sequence combining link start and a distinct double command payload for stateful coverage.",
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "STARTDT activation setup",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Double Command request",
+          "hex": "680e000000002e01060001010000000282"
+        }
+      ],
+      "expected_behavior": "Peer first receives a conservative data transfer start activation and then a double command style request using a compact command ASDU.",
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "issue_safety_notes": "Generated from model prior only; no external issue knowledge or verified protocol references were used."
+    }
+  ]
+}

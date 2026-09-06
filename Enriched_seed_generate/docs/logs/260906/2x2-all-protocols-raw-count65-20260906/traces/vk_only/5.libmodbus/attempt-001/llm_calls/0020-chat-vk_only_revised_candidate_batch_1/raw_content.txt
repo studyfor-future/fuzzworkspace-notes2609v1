@@ -1,0 +1,149 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct Modbus/TCP message-sequence seeds. All ADUs use conservative 7-byte MBAP headers, protocol identifier 0000, and internally consistent visible length fields. Historical issue material is used only as fallible guidance for repetition, high-address field interaction, minimal-function parser depth, and MBAP-length-versus-stream handling analogues. Exact historical issue payload collisions were removed, operation diversity increased beyond only read-register forms, and one repeated stateful sequence was added to improve multi-transaction coverage without copying prior crash bytes.",
+  "coverage_summary": [
+    "Repeated stateful Read Coils sequence to exercise multi-transaction consistency and repeated-operation handling",
+    "High-address Read Discrete Inputs request with quantity-one interaction as a conservative field analogue",
+    "Minimal Diagnostics request using function code 08 with subfunction fields to expand function-class coverage",
+    "Write Multiple Registers request with internally consistent byte count and declared MBAP length to probe length-handling versus stream processing",
+    "All messages preserve Modbus/TCP MBAP framing with protocol identifier 0000 and recognizable function-specific layouts",
+    "Operation diversity spans bit-read, discrete-input read, diagnostics, and multi-register write classes",
+    "State diversity includes both repeated multi-message sequencing and single-request seeds",
+    "No exact historical crash or collision payload bytes are reused"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-001",
+      "seed_id": "modbustcp-read-coils-repeat-002",
+      "title": "Repeated Read Coils with transaction, unit, and address drift",
+      "strategy": "stateful_valid",
+      "target_operation": "Read Coils",
+      "purpose": "Exercise repeated request handling across three valid Read Coils transactions so a harness can compare first-versus-later processing behavior under stable framing but changing transaction identifiers, unit identifiers, addresses, and quantities.",
+      "evidence_ids": [
+        "issue:279:279-summary:f8623682ccd7",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "initial read coils request",
+          "hex": "110100000006010100020006"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "second read coils request at nearby address",
+          "hex": "110200000006010100030006"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "third read coils request with alternate unit and larger quantity",
+          "hex": "11030000000602010020000C"
+        }
+      ],
+      "expected_behavior": "Each message should parse as an independent valid Read Coils request. A stateful target may service them normally or return bounded protocol exceptions depending on mapping, while the harness observes any inconsistent behavior across repeated transactions.",
+      "constraints_preserved": [
+        "Every message uses a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "Each MBAP length is 0006 for unit identifier plus 5-byte PDU",
+        "Function code 01 requests use two-byte address and two-byte quantity fields",
+        "Messages form a repeated client-to-server sequence with valid framing"
+      ],
+      "issue_safety_notes": "This is a safe repeated-operation analogue only. It does not copy any reported write-related payload, does not introduce malformed lengths, and does not claim a crash condition."
+    },
+    {
+      "plan_id": "vk-plan-002",
+      "seed_id": "modbustcp-read-discrete-inputs-high-address-002",
+      "title": "Read Discrete Inputs at a high address with quantity one",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "purpose": "Preserve the issue-guided high-address plus quantity-one relationship in a different but recognizable read operation to explore address interpretation and narrow-quantity handling without reproducing historical bytes.",
+      "evidence_ids": [
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "high-address discrete input read",
+          "hex": "2201000000060302FCCA0001"
+        }
+      ],
+      "expected_behavior": "The target should parse a valid Read Discrete Inputs request for one item at a high address and then either produce normal data or a protocol-level exception according to available mapping.",
+      "constraints_preserved": [
+        "Message uses a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+        "Function code 02 request layout is address plus quantity",
+        "Quantity is positive and conservative"
+      ],
+      "issue_safety_notes": "This keeps only the high-address interaction as a structural analogue. It avoids the historical function/transaction combination and makes no claim about externally verified device semantics."
+    },
+    {
+      "plan_id": "vk-plan-003",
+      "seed_id": "modbustcp-diagnostics-echo-001",
+      "title": "Minimal Diagnostics request with compact subfunction body",
+      "strategy": "function_code_coverage",
+      "target_operation": "Diagnostics",
+      "purpose": "Increase real function coverage with a compact Diagnostics-style request that reaches a different parser path than the read operations while remaining fully framed and mutation-friendly.",
+      "evidence_ids": [
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics request with subfunction and data",
+          "hex": "330100000006010800000001"
+        }
+      ],
+      "expected_behavior": "The target should parse one valid Diagnostics request and either return a function-specific response or a bounded exception if unsupported.",
+      "constraints_preserved": [
+        "Message uses a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+        "Function code 08 is accompanied by two-byte subfunction and two-byte data fields",
+        "No undeclared trailing bytes are present"
+      ],
+      "issue_safety_notes": "This seed broadens parser coverage using a conservative minimal body. It is not derived from an exact issue PoC and does not attempt to reproduce any out-of-bounds condition."
+    },
+    {
+      "plan_id": "vk-plan-004",
+      "seed_id": "modbustcp-write-multiple-registers-stream-analogue-001",
+      "title": "Write Multiple Registers with compact payload and length-sensitive shape",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Write Multiple Registers",
+      "purpose": "Explore a conservative FC16 request whose declared MBAP length and internal byte count are self-consistent, targeting stream and length-processing logic with a recognizable multi-register write rather than reproducing a documented collision payload.",
+      "evidence_ids": [
+        "issue:867:867-summary:58115ace3a65",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:498:498-summary:43dc6fe7600e"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write multiple registers quantity two",
+          "hex": "44010000000B0110000400020411223344"
+        }
+      ],
+      "expected_behavior": "The target should parse a valid Write Multiple Registers request for two registers and either acknowledge the write range or return a protocol-level exception if the address is unavailable.",
+      "constraints_preserved": [
+        "Message uses a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 000B matches unit identifier plus 10-byte FC16 PDU",
+        "Function code 10 includes address, quantity, byte count, and payload fields",
+        "Quantity two matches byte count 04 and provided register data length"
+      ],
+      "issue_safety_notes": "This is a safe length-handling analogue only. It intentionally avoids the exact documented FC16 bytes associated with historical stream-length behavior and introduces no trailing surplus bytes."
+    }
+  ]
+}

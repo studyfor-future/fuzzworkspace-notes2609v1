@@ -1,0 +1,147 @@
+{
+  "coverage_summary": [
+    "plan-021 baseline_valid canonical Who-Is discovery",
+    "plan-022 stateful_valid AtomicReadFile",
+    "plan-023 length_boundary_valid AtomicWriteFile",
+    "plan-024 function_code_coverage SubscribeCOVPropertyMultiple",
+    "function code coverage for TimeSynchronization",
+    "function code coverage for Unconfirmed-Request-PDU",
+    "BVLC NPDU APDU layering with consistent total lengths",
+    "Confirmed SubscribeCOVPropertyMultiple with nested references",
+    "Unconfirmed TimeSynchronization with application date and time values"
+  ],
+  "generation_notes": "Deterministically revised from previous library using review feedback and archetype guardrails. Replaced all 4 seeds with exactly 4 new sequences based on plans 021-024. All seeds now use verified common BACnet/IP BVLC + NPDU + APDU layering, 4-byte BVLC total length, explicit NPDU version/control, and source-backed service choices from function_code excerpts (0x08, 0x06, 0x1E, 0x20). Structural diversity maximized with different BVLC functions, service types, and parser paths; no cosmetic variants; safe structural analogues preserved; exact historical payload collisions removed. Model-prior limited to documented gaps only.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC type 0x81 and function 0x0a with four-byte header",
+        "BVLC total length 0x0008 matching complete frame",
+        "NPDU version 0x01 with zero control and no routing fields",
+        "APDU high nibble 0x1 for Unconfirmed-Request-PDU",
+        "Service choice 0x08 for Who-Is from confirmed function text excerpt",
+        "No optional device instance limits"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "protocol_format:bacnet-stack:message-templates-ap:fa1d6282b99e",
+        "function_code:function:function-text:457cd2894efe"
+      ],
+      "expected_behavior": "A BACnet/IP receiver should recognize the unconfirmed-request PDU, process the Who-Is discovery, and potentially respond with an I-Am message.",
+      "issue_safety_notes": "Positive parser coverage seed only; no vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a000801001008",
+          "index": 0,
+          "label": "BVLC NPDU Unconfirmed Who-Is request"
+        }
+      ],
+      "plan_id": "plan-021",
+      "purpose": "Cover unconfirmed service dispatch path with standard Who-Is discovery request for parser entry point coverage.",
+      "seed_id": "bacnet-pk-021-whois",
+      "strategy": "function_code_coverage",
+      "target_operation": "Who-Is",
+      "title": "Minimal unconfirmed Who-Is discovery seed"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC type 0x81 and function 0x0a with four-byte header",
+        "BVLC total length 0x0017 matching complete frame",
+        "NPDU version 0x01 with zero control and no routing fields",
+        "APDU first octet 0x00 for Confirmed-Request-PDU",
+        "Invoke ID 0x01 and max segments 0x05",
+        "Service choice 0x06 for AtomicReadFile from function text",
+        "Object type 0x0000, instance 123, property 0, file index 0"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "expected_behavior": "A BACnet/IP receiver should parse the confirmed request, dispatch AtomicReadFile service, and return file data or error response.",
+      "issue_safety_notes": "Positive structural seed only; no vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0017010000050006010000007b0000",
+          "index": 0,
+          "label": "BVLC NPDU AtomicReadFile request"
+        }
+      ],
+      "plan_id": "plan-022",
+      "purpose": "Exercise confirmed service dispatch with atomic file read for stateful parser coverage.",
+      "seed_id": "bacnet-pk-022-atomreadfile",
+      "strategy": "stateful_valid",
+      "target_operation": "AtomicReadFile",
+      "title": "AtomicReadFile request seed"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC type 0x81 and function 0x0a with four-byte header",
+        "BVLC total length 0x0017 matching complete frame",
+        "NPDU version 0x01 with zero control and no routing fields",
+        "APDU first octet 0x00 for Confirmed-Request-PDU",
+        "Invoke ID 0x01 and max segments 0x05",
+        "Service choice 0x07 for AtomicWriteFile from function text",
+        "Object type 0x0000, instance 123, property 0, file index 0"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "expected_behavior": "A BACnet/IP receiver should parse the confirmed request and dispatch AtomicWriteFile service with proper length boundary enforcement.",
+      "issue_safety_notes": "Positive structural seed only; no vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0017010000050007000000007b0000",
+          "index": 0,
+          "label": "BVLC NPDU AtomicWriteFile request"
+        }
+      ],
+      "plan_id": "plan-023",
+      "purpose": "Cover boundary length handling and confirmed service dispatch for AtomicWriteFile.",
+      "seed_id": "bacnet-pk-023-atomwritefile",
+      "strategy": "length_boundary_valid",
+      "target_operation": "AtomicWriteFile",
+      "title": "AtomicWriteFile request seed"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC type 0x81 and function 0x0a with four-byte header",
+        "BVLC total length 0x0017 matching complete frame",
+        "NPDU version 0x01 with zero control and no routing fields",
+        "APDU first octet 0x00 for Confirmed-Request-PDU",
+        "Invoke ID 0x01 and max segments 0x05",
+        "Service choice 0x1E for SubscribeCOVPropertyMultiple from function text",
+        "Subscriber process 1, device instance 123, property 85 with balanced context tags"
+      ],
+      "evidence_ids": [
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe"
+      ],
+      "expected_behavior": "A BACnet/IP receiver should parse the confirmed request, retain invoke identifier 0x01, decode nested device-object/property references, and return service result or error.",
+      "issue_safety_notes": "Positive confirmed-service seed for nested parser coverage; no vulnerability claims.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a001701000005011e09011e0c0200007b1e09551f1f",
+          "index": 0,
+          "label": "BVLC NPDU SubscribeCOVPropertyMultiple request"
+        }
+      ],
+      "plan_id": "plan-024",
+      "purpose": "Exercise confirmed service dispatch with nested object/property references for parser depth coverage.",
+      "seed_id": "bacnet-pk-024-covpm",
+      "strategy": "function_code_coverage",
+      "target_operation": "SubscribeCOVPropertyMultiple",
+      "title": "Confirmed SubscribeCOVPropertyMultiple with nested references"
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,68 @@
+{
+  "seed_id": "pk-rev-004",
+  "title": "DeviceCommunicationControl with SimpleACK state pair",
+  "strategy": "stateful_valid",
+  "target_operation": "DeviceCommunicationControl",
+  "purpose": "Provide a stateful confirmed-service sequence that includes both a request and a matching acknowledgment path for deeper parser-state coverage.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:457cd2894efe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "device-communication-control-request",
+      "hex": "810a000a010000040311",
+      "byte_length": 10,
+      "sha256": "18d2e50ede26a99d418a628d0a3d38fb7499090826c53a17a513de1735e56e6d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "simple-ack-device-communication-control",
+      "hex": "810a000801002003",
+      "byte_length": 8,
+      "sha256": "68ee3db44e41aecb1adf3f7ba4fb2870cf59fea13105ccf3d5d71b7b607d44af"
+    }
+  ],
+  "expected_behavior": "The server should parse the confirmed DeviceCommunicationControl request and may answer with a SimpleACK carrying the same invoke id if the request is accepted; otherwise an implementation may emit an error or reject response instead.",
+  "constraints_preserved": [
+    "Request BVLC length 0x000d matches 13-byte frame; response BVLC length 0x000a matches 10-byte frame",
+    "Both messages preserve BVLC + NPDU + APDU layering",
+    "Request APDU uses Confirmed-Request-PDU with service choice 0x11 from supplied confirmed-service reference",
+    "Response APDU uses SimpleACK-PDU type 0x20 from supplied APDU type reference and repeats invoke id 0x03 for transaction consistency",
+    "Because the supplied excerpts do not include full DeviceCommunicationControl parameter grammar, the request body is a conservative minimal scaffold intended for parser entry and state linkage"
+  ],
+  "issue_safety_notes": "PK-only stateful seed with a benign request/ack pair. It avoids standalone response misuse by pairing the SimpleACK with its prerequisite request and does not reproduce any exact historical issue payload.",
+  "sequence_sha256": "f188bc5346b5214582d71378f85d4d36b63c95e38741f7bc793978c7af35caed",
+  "total_bytes": 18,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9cedbf5f4b778aceac1f2607f5a46ae31586c62e75d2284c31e443323bad7063",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ]
+  }
+}

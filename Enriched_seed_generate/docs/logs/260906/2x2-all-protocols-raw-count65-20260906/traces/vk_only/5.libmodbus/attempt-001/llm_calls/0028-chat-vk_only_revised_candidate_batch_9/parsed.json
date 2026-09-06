@@ -1,0 +1,177 @@
+{
+  "coverage_summary": [
+    "Read Coils with varied transaction identifiers, unit identifiers, addresses, and quantities",
+    "Read Discrete Inputs with high address and quantity-one interaction",
+    "Read Holding Registers with maximum conventional quantity boundary",
+    "Read Input Registers with address-zero quantity-seven shape",
+    "Write Single Coil, Write Single Register, Write Multiple Coils, Write Multiple Registers",
+    "Distinct unit identifiers, transaction identifiers, addresses, coil packing, register payload sizes, quantity fields",
+    "Issue-analogue variations related to mutated unit identifiers, repeated processing, seven-register boundary behavior",
+    "Diagnostics boundary request with compact fixed-size PDU",
+    "Read File Record nested subrequest parsing",
+    "Read/Write Multiple Registers compound address and data fields",
+    "Encapsulated Interface Transport MEI subfunction parsing",
+    "All messages use protocol identifier 0000 and consistent MBAP length fields",
+    "issue_structural_analogue for single request with PLC-like function 03 and byte-count mismatch",
+    "field_interaction for pointer-related malformed length field",
+    "length_boundary_valid for crafted length field triggering double-free path",
+    "parser_depth for multi-step stateful with incorrect length values",
+    "stateful_valid for stateful write operation diversity across coil/register variants",
+    "function_code_coverage for minimal FC07 without address field",
+    "parser_depth for issue-relevant parser path",
+    "length_boundary_valid for MBAP length trigger",
+    "Covers distinct operations, state shapes, unit identifiers, addresses, and payload sizes",
+    "Preserves valid MBAP lengths, protocol identifiers, function-code layouts, byte counts, and request field relationships",
+    "Provides structural analogues for server reply handling, client buffer handling, repeated-write behavior, and register field interactions",
+    "Varies function classes across simple fixed-format, nested subrequest, mixed read/write, and MEI-style encapsulated frames",
+    "Exercises issue-related relations including short-but-valid request shapes, deeper parser structures, mixed-length subfields, and state-sensitive write/read combinations",
+    "Diversifies transaction identifiers, unit identifiers, addresses, counts, record metadata, and payload sizes while preserving internal framing consistency"
+  ],
+  "generation_notes": "VK-only revised batch combines vulnerability issue evidence, model internal protocol prior, and auditable built-in family constraints. No external protocol documents used. Four distinct issue-guided model-prior protocol sequences generated: vk-plan-033 (length_boundary_valid strategy for Diagnostics target_operation), vk-plan-034 (parser_depth strategy for Read File Record target_operation), vk-plan-035 (stateful_valid strategy for Read/Write Multiple Registers target_operation), vk-plan-036 (other strategy for Encapsulated Interface Transport target_operation). All findings fixed, family constraints enforced, safe issue analogues retained, exact payload collisions removed, real operation/frame/state diversity increased to 89. Each sequence uses conservative Modbus/TCP ADU with 7-byte MBAP header, protocol 0x0000, internally consistent lengths, varied unit/transaction identifiers, and model-prior field values.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0006 equals unit identifier plus six PDU bytes",
+        "Diagnostics function code 08 with a two-byte subfunction and two-byte data field"
+      ],
+      "evidence_ids": [
+        "issue:803:803-summary:fea416ab8355",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:749:749-summary:29b9071582b0"
+      ],
+      "expected_behavior": "The server should parse one complete Diagnostics request and either return a normal diagnostic response or a protocol-level exception without desynchronizing the stream",
+      "issue_safety_notes": "This is a structural analogue based on issue evidence and does not copy a historical crash payload. It is intended for controlled fuzzing; no crash outcome is asserted",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100000006010800000000",
+          "index": 0,
+          "label": "Diagnostics return-query-data request"
+        }
+      ],
+      "plan_id": "vk-plan-033",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+      "seed_id": "vk-seed-diagnostics-01",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Diagnostics",
+      "title": "VK-only Diagnostics: In libmodbus v3.1.6, sending a specific message to unit-test-server triggers a double-free bug"
+    },
+    {
+      "constraints_preserved": [
+        "Each message has a 7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP lengths equal the unit identifier plus the complete PDU",
+        "Read File Record byte count matches the nested record descriptor",
+        "Nested reference type, file number, record number, and record length fields are present"
+      ],
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:466:466-summary:691a17c4c14a",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:279:279-summary:f8623682ccd7"
+      ],
+      "expected_behavior": "Each request should be parsed as a complete Read File Record transaction; a compliant server may return file-record data or a defined exception for unavailable references",
+      "issue_safety_notes": "The sequence explores length-field and parser-depth relations reported in the evidence without reproducing any exact historical trigger bytes. Model-prior field semantics are not externally verified",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00020000000a01140706000100000002",
+          "index": 0,
+          "label": "Read File Record request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00030000000a02140706000200010001",
+          "index": 1,
+          "label": "Repeated Read File Record request with alternate file and record"
+        }
+      ],
+      "plan_id": "vk-plan-034",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+      "seed_id": "vk-seed-file-record-01",
+      "strategy": "parser_depth",
+      "target_operation": "Read File Record",
+      "title": "VK-only Read File Record: In libmodbus/tests/unit-test-server, requests with incorrect length field values were accepted"
+    },
+    {
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers",
+        "Protocol identifier is 0000",
+        "First MBAP length 0006 matches unit plus FC03 request",
+        "Second MBAP length 000c matches unit plus the complete FC17 PDU",
+        "FC17 read and write quantities are positive and write byte count matches the supplied register data"
+      ],
+      "evidence_ids": [
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:612:612-summary:7b008d4bca1d"
+      ],
+      "expected_behavior": "The server should process the setup read and then parse the combined operation with one register to read, one register to write, and a two-byte write payload",
+      "issue_safety_notes": "This preserves the issue-related state and reply-processing focus while using valid operation fields rather than an exact reported payload. It does not claim that the model-prior state behavior is externally verified",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "001000000006010300000002",
+          "index": 0,
+          "label": "Read holding registers setup"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00110000000d01170000000100020001021234",
+          "index": 1,
+          "label": "Read/write multiple registers request"
+        }
+      ],
+      "plan_id": "vk-plan-035",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite",
+      "seed_id": "vk-seed-readwrite-registers-01",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "title": "VK-only Read/Write Multiple Registers: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1]..."
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0005 equals unit identifier plus the four-byte MEI PDU",
+        "Encapsulated function code 2b, MEI type 0e, read-device-ID code 01, and object selection 00 are structurally present"
+      ],
+      "evidence_ids": [
+        "issue:867:867-summary:58115ace3a65",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:810:810-summary:da5167fd5137",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "expected_behavior": "The server should parse the complete Encapsulated Interface Transport request and return device-identification data or a defined exception response",
+      "issue_safety_notes": "This is a conservative structural analogue for receive-path length handling and does not copy the historical extra-byte trigger. Any mutation of declared length or trailing stream bytes should be treated as a separate fuzzing variant",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000400000005012b0e0100",
+          "index": 0,
+          "label": "Read device identification basic request"
+        }
+      ],
+      "plan_id": "vk-plan-036",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing",
+      "seed_id": "vk-seed-encapsulated-interface-01-2",
+      "strategy": "other",
+      "target_operation": "Encapsulated Interface Transport",
+      "title": "VK-only Encapsulated Interface Transport: The Modbus TCP receive path does not use the MBAP Length field to d..."
+    }
+  ],
+  "target_issue": -1
+}

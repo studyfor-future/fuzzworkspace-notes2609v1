@@ -1,0 +1,48 @@
+{
+  "seed_id": "base-seed-060",
+  "title": "Base Encapsulated Interface Transport variant 5",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Encapsulated Interface Transport",
+  "purpose": "Exercise a minimal, boundary-adjacent Modbus/TCP ADU for the device-identification form of Encapsulated Interface Transport.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Device Identification basic request",
+      "hex": "0004000000057f2b0e0100",
+      "byte_length": 11,
+      "sha256": "d4c6c03d98e2884b08ec0485c6509182fff39511a7cb2b7b28965539ab8d0dd9"
+    }
+  ],
+  "expected_behavior": "A conforming server may parse the function-43 MEI type-0e request and return basic device-identification objects, or return a standard exception if the MEI service is unsupported.",
+  "constraints_preserved": [
+    "7-byte MBAP header is used.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0005 equals the unit identifier plus the 4-byte PDU.",
+    "Function code 2b, MEI type 0e, read-device-identification code 01, and initial object identifier 00 are ordered consistently.",
+    "The compact request retains a valid-looking minimum payload shape.",
+    "Unit identifier 7f diversifies the seed."
+  ],
+  "issue_safety_notes": "No external vulnerability or issue knowledge is available. This is a boundary-adjacent length candidate based on model-prior plausibility and should be treated as unverified.",
+  "sequence_sha256": "2c1deb25925a39d377a33f550918860b2a46aad36ba764a38e1bcad4d60eb4c6",
+  "total_bytes": 11,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d4c6c03d98e2884b08ec0485c6509182fff39511a7cb2b7b28965539ab8d0dd9",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

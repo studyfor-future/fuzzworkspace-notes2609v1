@@ -1,0 +1,41 @@
+{
+  "id": "resp_056bce98109d219d016a9da6acfbc487d0bf9a1fc79b725f89",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"modbustcp\",\"target_issue\":-1,\"generation_notes\":\"Generated exactly 4 distinct Modbus/TCP seed sequences using only the supplied built-in constraints and fallible model-prior knowledge. All frames use protocol identifier 0x0000, complete 7-byte MBAP headers, internally consistent lengths, and conservative recognized request or response forms. No external protocol documents, citations, issue references, or vulnerability claims were used.\",\"coverage_summary\":[\"Complete Read Coils request with a small valid quantity.\",\"Complete Read Discrete Inputs request with varied unit, address, and quantity fields.\",\"Read/Write Multiple Registers request and matching normal response with variable-length payload data.\",\"Distinct transaction identifiers, unit identifiers, function codes, addresses, quantities, payload sizes, and message directions.\",\"All MBAP length fields account for the unit identifier and complete PDU.\",\"No artificial setup requests are used; the paired exchanges represent request/response ordering.\"],\"sequences\":[{\"plan_id\":\"base-plan-001\",\"seed_id\":\"base-plan-001\",\"title\":\"Complete Read Coils baseline\",\"strategy\":\"baseline_valid\",\"target_operation\":\"Read Coils\",\"purpose\":\"Provide a conservative canonical FC01 request with complete address and quantity fields.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"ReadCoilsRequest\",\"hex\":\"000100000006110100000008\"}],\"expected_behavior\":\"The server may return one coil-status byte for the requested eight coils, associated with transaction identifier 0001 and unit identifier 11.\",\"constraints_preserved\":[\"7-byte MBAP header\",\"protocol identifier 0x0000\",\"MBAP length 0006 matches unit identifier plus five-byte FC01 PDU\",\"complete starting address and quantity fields\",\"conservative valid quantity\"],\"issue_safety_notes\":\"This is a model-prior plausibility seed only; expected behavior is not externally verified and no vulnerability relevance is inferred.\"},{\"plan_id\":\"base-plan-002\",\"seed_id\":\"base-plan-002\",\"title\":\"Read Discrete Inputs varied range\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"Read Discrete Inputs\",\"purpose\":\"Cover FC02 with a distinct unit identifier, nonzero starting address, and quantity that produces a compact packed-bit response.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"ReadDiscreteInputsRequest\",\"hex\":\"000200000006120200100010\"}],\"expected_behavior\":\"The server may return packed discrete-input status for sixteen inputs, associated with transaction identifier 0002 and unit identifier 12.\",\"constraints_preserved\":[\"7-byte MBAP header\",\"protocol identifier 0x0000\",\"MBAP length 0006 matches unit identifier plus five-byte FC02 PDU\",\"complete starting address and quantity fields\",\"quantity is positive and compact\"],\"issue_safety_notes\":\"This is a conservative model-prior seed; validity and response details are not externally verified, and no issue claim is made.\"},{\"plan_id\":\"base-plan-003\",\"seed_id\":\"base-plan-003\",\"title\":\"Write Multiple Registers exchange\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Write Multiple Registers\",\"purpose\":\"Exercise a variable-length FC10 write request followed by its structurally matching normal acknowledgment.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"WriteMultipleRegistersRequest\",\"hex\":\"00030000000b0110010000020412345678\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"WriteMultipleRegistersResponse\",\"hex\":\"000300000006011001000002\"}],\"expected_behavior\":\"The server may acknowledge writing two registers at address 0100 by echoing the starting address and quantity with the same transaction identifier.\",\"constraints_preserved\":[\"7-byte MBAP header on both messages\",\"protocol identifier 0x0000 on both messages\",\"request MBAP length 000b matches unit plus FC10 PDU\",\"response MBAP length 0006 matches unit plus five-byte acknowledgment PDU\",\"quantity and byte count agree\",\"transaction identifier is preserved across the exchange\"],\"issue_safety_notes\":\"The exchange is included for parser and response-shape coverage only; behavior is model-prior plausibility, not externally verified, and no vulnerability relevance is implied.\"},{\"plan_id\":\"base-plan-004\",\"seed_id\":\"base-plan-004\",\"title\":\"Read/Write Multiple Registers payload exchange\",\"strategy\":\"field_interaction\",\"target_operation\":\"Read/Write Multiple Registers\",\"purpose\":\"Cover FC17 field interaction with separate read and write ranges, a variable-length write payload, and a matching read response.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"ReadWriteMultipleRegistersRequest\",\"hex\":\"02020000000f7f1700100002002000020411112222\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"ReadWriteMultipleRegistersResponse\",\"hex\":\"0202000000077f170411112222\"}],\"expected_behavior\":\"The server may process the two-register write range at 0020 and return four bytes for the two-register read range at 0010, retaining transaction identifier 0202 and unit identifier 7f.\",\"constraints_preserved\":[\"7-byte MBAP header on both messages\",\"protocol identifier 0x0000 on both messages\",\"request MBAP length 000f matches unit plus fourteen-byte FC17 PDU\",\"write byte count 04 matches two register values\",\"response MBAP length 0007 matches unit plus response byte count and data\",\"transaction identifier and unit identifier match across the exchange\"],\"issue_safety_notes\":\"This is a structurally diverse model-prior seed for field interaction; validity is not externally verified and it makes no vulnerability or issue claim.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788716782,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1918,
+    "prompt_tokens": 10397,
+    "total_tokens": 12315,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 687,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

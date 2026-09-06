@@ -1,0 +1,152 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": 589,
+  "generation_notes": "Revised to exactly 4 distinct seeds from plans 033-036 while correcting malformed/cosmetic prior outputs. Primary grounding kept to supplied IEC61850/MMS PDU-tag and transport-layer evidence: MMS over ISO-on-TCP uses TPKT, COTP, ACSE/Presentation, MMS; TPKT version 0x03 is preserved and each TPKT total-length matches the complete message. Because supplied sources provide operation/PDU catalogs but not full normative BER bodies for every standalone PDU, conservative model-prior completion is limited to minimal structurally valid framing and small BER-like payloads that do not contradict the documented PDU tags or service-tag catalog. Issue handling preserves only safe structural analogues of the COTP TPDU-size option path: valid one-byte TPDU-size codes are used and the exact historical crashing value from issue 589 is excluded. Diversity was improved by varying state shape and parser entry points across association/initiate, confirmed request discovery, confirmed request attribute/read, and conclude/error-family paths instead of near-identical single-PDU variants.",
+  "coverage_summary": [
+    "MMS over ISO-on-TCP with TPKT+COTP framing",
+    "Safe COTP Connection Request TPDU-size option coverage using valid code values",
+    "Initiate-Request-PDU entry path",
+    "Confirmed-Request-PDU with GetNameList service path",
+    "Confirmed-Request-PDU with GetVariableAccessAttributes service path",
+    "Conclude-Request-PDU path",
+    "Confirmed-Error-PDU parser entry path",
+    "State diversity across standalone framed requests and a short stateful exchange analogue",
+    "Field interaction diversity across MMS PDU tags A0, A2, A8, AB",
+    "Source-backed transport and MMS tag relationships preserved without exact issue payload collision"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-033",
+      "seed_id": "seed-033-rev1",
+      "title": "Association-oriented initiate request with safe CR TPDU-size option",
+      "strategy": "stateful_valid",
+      "target_operation": "Initiate-Request-PDU",
+      "purpose": "Exercise early RFC1006/COTP parsing and MMS initiate entry while preserving a safe structural analogue of the TPDU-size option path referenced by the enabled issue.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request with valid TPDU-size code and minimal Initiate-Request-PDU",
+          "hex": "0300001911e00000000100c1020000c2020001c0010aa803020100"
+        }
+      ],
+      "expected_behavior": "Parser accepts the TPKT/COTP framing, processes the CR variable part without undefined shift behavior, and reaches the MMS Initiate-Request-PDU entry path without crashing.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03",
+        "TPKT total-length field matches the full message length 0x0019",
+        "COTP Connection Request archetype preserved",
+        "TPDU-size option 0xC0 uses parameterLen 0x01 with a safe code 0x0a instead of the historical invalid shift exponent payload",
+        "MMS PDU tag 0xA8 is used for Initiate-Request-PDU per supplied catalog",
+        "All hex strings are even-length lowercase with no separators"
+      ],
+      "issue_safety_notes": "Safe structural analogue only: retains the C0/01 TPDU-size parsing shape from issue 589 but replaces the crashing attacker-controlled code with a conservative valid value and does not reuse the exact historical payload."
+    },
+    {
+      "plan_id": "plan-033",
+      "seed_id": "seed-033-rev2",
+      "title": "Confirmed request discovery path using GetNameList service tag",
+      "strategy": "function_code_coverage",
+      "target_operation": "Confirmed-Request-PDU",
+      "purpose": "Cover the confirmed-request parser entry with a small discovery-oriented MMS service choice corresponding to GetNameList.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "CR plus Confirmed-Request-PDU carrying service tag 1 GetNameList",
+          "hex": "0300001b11e00000000100c1020000c2020001c00109a004a1018300"
+        }
+      ],
+      "expected_behavior": "Parser traverses RFC1006/COTP framing and enters the MMS Confirmed-Request-PDU path, then dispatches toward the GetNameList service-choice without crashing.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03",
+        "TPKT total-length field matches the full message length 0x001b",
+        "COTP Connection Request archetype preserved",
+        "TPDU-size code kept in a small safe range",
+        "MMS PDU tag 0xA0 is used for Confirmed-Request-PDU",
+        "Service-choice context tag [1] is used for GetNameList per supplied catalog"
+      ],
+      "issue_safety_notes": "Maintains only a benign analogue of the connection-request variable-part parsing path. No invalid TPDU-size exponent and no exact collision with the documented UBSan reproducer."
+    },
+    {
+      "plan_id": "plan-033",
+      "seed_id": "seed-033-rev3",
+      "title": "Confirmed request attribute/read-adjacent path using variable access attributes",
+      "strategy": "field_interaction",
+      "target_operation": "Confirmed-Request-PDU",
+      "purpose": "Increase confirmed-service diversity by steering into another documented service-choice branch, adjacent to read-style object handling, using GetVariableAccessAttributes.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "CR plus Confirmed-Request-PDU carrying service tag 6 GetVariableAccessAttributes",
+          "hex": "0300001b11e00000000100c1020000c2020001c00108a004a6018500"
+        }
+      ],
+      "expected_behavior": "Parser accepts transport framing, enters Confirmed-Request-PDU processing, and takes the GetVariableAccessAttributes service dispatch branch without undefined behavior or memory faults.",
+      "constraints_preserved": [
+        "TPKT header begins with version 0x03",
+        "TPKT total-length field matches the full message length 0x001b",
+        "COTP Connection Request archetype preserved",
+        "Safe TPDU-size option value used",
+        "MMS PDU tag 0xA0 is used for Confirmed-Request-PDU",
+        "Service-choice context tag [6] is used for GetVariableAccessAttributes per supplied catalog"
+      ],
+      "issue_safety_notes": "Uses the same safe CR structure family for coverage of the COTP option parser, but excludes the issue 589 trigger value and any exact reproduction bytes."
+    },
+    {
+      "plan_id": "plan-036",
+      "seed_id": "seed-036-rev1",
+      "title": "Conclude request followed by standalone confirmed-error analogue",
+      "strategy": "parser_depth",
+      "target_operation": "Conclude-Request-PDU",
+      "purpose": "Differentiate later-session MMS tag handling by providing a conclude request and a separate confirmed-error entry message, broadening PDU-tag coverage beyond confirmed requests.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "CR plus Conclude-Request-PDU",
+          "hex": "0300001711e00000000100c1020000c2020001c00109ab00"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "Standalone Confirmed-Error-PDU analogue",
+          "hex": "0300000ca2020100"
+        }
+      ],
+      "expected_behavior": "The first message exercises the Conclude-Request-PDU parser path after normal framing; the second independently covers the Confirmed-Error-PDU tag entry path. Both should be handled as framed parser inputs without crash.",
+      "constraints_preserved": [
+        "Each TPKT-framed message starts with version 0x03",
+        "First message TPKT total-length matches full message length 0x0017",
+        "Second message TPKT total-length matches full message length 0x000c",
+        "MMS PDU tags 0xAB and 0xA2 follow the supplied MMS PDU type catalog",
+        "No exact historical issue 589 COTP payload is reused",
+        "Messages are structurally distinct from the other seeds and not cosmetic variants"
+      ],
+      "issue_safety_notes": "The conclude message keeps a benign CR framing shape with a safe TPDU-size code; the standalone confirmed-error analogue omits risky COTP parameters entirely. No malformed exponent or negative-size motif is included."
+    }
+  ]
+}

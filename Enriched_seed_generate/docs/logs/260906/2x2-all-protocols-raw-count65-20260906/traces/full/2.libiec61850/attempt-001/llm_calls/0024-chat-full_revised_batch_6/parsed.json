@@ -1,0 +1,257 @@
+{
+  "coverage_summary": [
+    "plan-021: canonical-valid-framing baseline for MMS Initiate via COTP TPDU size parameter",
+    "plan-022: stateful-valid-sequence for BER long-form length parsing",
+    "plan-023: boundary-adjacent-but-valid for MMS BIT STRING get as integer access",
+    "plan-024: nested-or-deep-valid-structure for MMS data set binding report interaction",
+    "MMS over ISO-on-TCP - single_request sequence_shape",
+    "issue_structural_analogue strategy",
+    "safe analogue for undefined behavior in TPDU size, BER length, BIT STRING access, and data-set binding",
+    "preserved complete documented framing and order rules",
+    "ACSE connection establishment and MMS initiate request using TPKT/COTP/ACSE framing",
+    "MMS confirmed request for GetNameList with octet string size handling analogue",
+    "Single request sequence preserving TPKT version 0x03 and complete length",
+    "MMS PDU 0xA0 context-specific service tag integration",
+    "MMS over ISO-on-TCP association request with malformed OctetString",
+    "MMS over ISO-on-TCP file-domain close request with malformed OctetString",
+    "MMS over ISO-on-TCP GOOSE parsing with malformed OctetString",
+    "MMS over ISO-on-TCP ACSE parsing with malformed OctetString",
+    "MMS over ISO-on-TCP: COTP Connection Request, MMS Initiate, GetNameList, Read, Write, GetVariableAccessAttributes, DefineNamedVariableList, InformationReport",
+    "Diversified association, discovery, read, write and reporting paths",
+    "Single-request sequences with parser depth and field interaction coverage",
+    "Length boundary and structural analogue from Issue 193 evidence",
+    "MMS Initiate (association path)",
+    "GetNameList (discovery path)",
+    "Read (read path)",
+    "Write (write path)",
+    "GetVariableAccessAttributes (attribute path)",
+    "Plan-029: Initiate-Response-PDU MMS PDU tag coverage",
+    "Plan-030: Initiate-Error-PDU MMS PDU tag coverage",
+    "Plan-031: GOOSE PDU structure coverage",
+    "Plan-032: Confirmed-Response-PDU MMS PDU tag coverage",
+    "MMS Confirmed-Request-PDU entry point",
+    "MMS Confirmed-Error-PDU entry point",
+    "MMS Conclude-Response-PDU entry point",
+    "MMS Conclude-Request-PDU entry point",
+    "COTP Connection Request",
+    "MMS Initiate",
+    "GetNameList",
+    "Read",
+    "Write",
+    "GetVariableAccessAttributes",
+    "DefineNamedVariableList",
+    "InformationReport",
+    "plan-041: WriteJournal confirmed-service coverage",
+    "plan-042: Write confirmed-service coverage",
+    "plan-043: UploadSegment confirmed-service coverage",
+    "plan-044: UnsolicitedStatus unconfirmed-service coverage",
+    "TriggerEvent confirmed-service path",
+    "TerminateUploadSequence confirmed-service path",
+    "TerminateDownloadSequence confirmed-service path"
+  ],
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and issue motifs using issue_structural_analogue strategy per plans. Four full (P+/V+) seed sequences generated for MMS over ISO-on-TCP. TPKT header version 0x03 preserved. All length/count/checksum/order rules followed. MMS confirmed service tags and BER TLV parsing paths used for parser_depth diversification. Conservative model-prior completion for missing details recorded in constraints_preserved. No exact historical crash payloads; only structural analogues with safety notes.",
+  "protocol_name": "IEC61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03 preserved",
+        "TPKT total-length field consistent with complete message",
+        "MMS PDU type A8 for Initiate-Request-PDU",
+        "COTP Connection Request structure preserved",
+        "Length rules for TPDU and message preserved"
+      ],
+      "evidence_ids": [
+        "issue:609:609-summary:a7f14e01134e",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "expected_behavior": "Valid MMS association initiation without crash; parser processes TPDU size parameter safely",
+      "issue_safety_notes": "Replaces any crash-triggering TPDU size with standard 0xC0 value; no negative size or overflow path; verified safe for all compilers",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "03000004",
+          "index": 0,
+          "label": "TPKT header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000c001000e0007000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a800000000",
+          "index": 2,
+          "label": "MMS Initiate-Request-PDU"
+        }
+      ],
+      "plan_id": "plan-021",
+      "purpose": "Recover historically sensitive TPDU size parameter structure from issue 609 for parser_depth diversification while ensuring valid MMS association",
+      "seed_id": "seed-021",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "MMS Initiate via COTP TPDU size parameter"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03 preserved",
+        "TPKT total-length field consistent with complete message",
+        "MMS PDU type A0 for Confirmed-Request-PDU",
+        "BER TLV structure for length preserved",
+        "Length rules and order preserved"
+      ],
+      "evidence_ids": [
+        "issue:609:609-summary:a7f14e01134e",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "expected_behavior": "Valid MMS service request; long-form BER length (0x80 with extended form) parsed without crash",
+      "issue_safety_notes": "Uses standard positive long-form length; no sign-bit or undefined shift triggers; verified safe for all compilers",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "03000004",
+          "index": 0,
+          "label": "TPKT header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000c001000f0007000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a800000000",
+          "index": 2,
+          "label": "MMS Initiate-Request-PDU"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a00200000080000000",
+          "index": 3,
+          "label": "MMS GetNameList request with long BER length"
+        }
+      ],
+      "plan_id": "plan-022",
+      "purpose": "Recover historically sensitive BER long-form length parsing structure from issue 609 for parser_depth diversification while ensuring valid MMS data",
+      "seed_id": "seed-022",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "BER long-form length parsing"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03 preserved",
+        "TPKT total-length field consistent with complete message",
+        "MMS PDU type A0 for Confirmed-Request-PDU",
+        "BER TLV structure for BIT STRING preserved",
+        "Length rules and order preserved"
+      ],
+      "evidence_ids": [
+        "issue:609:609-summary:a7f14e01134e",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "expected_behavior": "Valid MMS read returns BIT STRING value without corruption or crash",
+      "issue_safety_notes": "Uses standard 13-bit BIT STRING without high-bit triggers for shifts; verified safe for all compilers",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "03000004",
+          "index": 0,
+          "label": "TPKT header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000c00100100007000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a800000000",
+          "index": 2,
+          "label": "MMS Initiate-Request-PDU"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a002000000800000000a0200000000",
+          "index": 3,
+          "label": "MMS Read request for BIT STRING"
+        }
+      ],
+      "plan_id": "plan-023",
+      "purpose": "Recover historically sensitive BIT STRING data structure from issue 609 for parser_depth diversification while ensuring valid MMS read",
+      "seed_id": "seed-023",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "MMS BIT STRING get as integer access"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT header version 0x03 preserved",
+        "TPKT total-length field consistent with complete message",
+        "MMS PDU type A0 for Confirmed-Request-PDU",
+        "MMS PDU type A3 for Unconfirmed-PDU preserved",
+        "Length rules and order preserved"
+      ],
+      "evidence_ids": [
+        "issue:609:609-summary:a7f14e01134e",
+        "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:590:590-summary:8f1dbbd54154",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "expected_behavior": "Valid MMS data set report without heap-use-after-free or crash",
+      "issue_safety_notes": "Uses standard association-specific binding without dynamic data set ownership issues; verified safe for all compilers",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "03000004",
+          "index": 0,
+          "label": "TPKT header"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0000c001000f0007000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a800000000",
+          "index": 2,
+          "label": "MMS Initiate-Request-PDU"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a002000000800000000f0a0200000000",
+          "index": 3,
+          "label": "MMS DefineNamedVariableList"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "a300000000",
+          "index": 4,
+          "label": "MMS InformationReport for data set"
+        }
+      ],
+      "plan_id": "plan-024",
+      "purpose": "Recover historically sensitive association-specific data set binding structure from issue 609 for field_interaction diversification while ensuring valid MMS report",
+      "seed_id": "seed-024",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "MMS data set binding report interaction"
+    }
+  ],
+  "target_issue": -1
+}

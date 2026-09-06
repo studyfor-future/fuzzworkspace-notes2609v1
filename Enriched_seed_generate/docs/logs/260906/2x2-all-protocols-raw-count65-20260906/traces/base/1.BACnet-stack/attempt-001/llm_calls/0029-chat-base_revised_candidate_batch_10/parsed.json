@@ -1,0 +1,121 @@
+{
+  "coverage_summary": [
+    "base-plan-037: Who-Is single request (baseline_valid)",
+    "base-plan-038: I-Am single request (function_code_coverage)",
+    "base-plan-039: ReadProperty setup-then-request (stateful_valid)",
+    "base-plan-040: ReadPropertyMultiple single request (length_boundary_valid)",
+    "WriteProperty with canonical baseline form",
+    "SubscribeCOV with distinct subscription family coverage",
+    "ReadRange with nested position-based range parameters",
+    "AtomicReadFile with stream access and signed offset plus requested count",
+    "Diverse property, subscription, range, and file service forms using distinct request sizes",
+    "AtomicWriteFile confirmed-service single request with application-layer payload",
+    "DeviceCommunicationControl confirmed-service single request covering a different service family",
+    "Who-Is two-message stateful-style discovery exchange with request then plausible I-Am response",
+    "I-Am single-message unconfirmed advertisement with slightly larger payload to exercise conservative boundary-adjacent length",
+    "base-plan-033 field_interaction ReadProperty variation",
+    "base-plan-034 parser_depth ReadPropertyMultiple variation",
+    "base-plan-035 other WriteProperty variation",
+    "base-plan-036 baseline_valid SubscribeCOV variation",
+    "function_code_coverage for ReadRange variant",
+    "stateful_valid for AtomicReadFile variant",
+    "length_boundary_valid for AtomicWriteFile variant",
+    "field_interaction for DeviceCommunicationControl variant",
+    "parser_depth",
+    "other",
+    "baseline_valid",
+    "function_code_coverage",
+    "base-plan-045: stateful_valid, WriteProperty, setup_then_request",
+    "base-plan-046: length_boundary_valid, SubscribeCOV, single_request",
+    "base-plan-047: field_interaction, ReadRange, single_request"
+  ],
+  "generation_notes": "Generation uses only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Revised 4 Base (P-/V-) candidate seed sequences from previous_library using model internal prior only, fixing deterministic duplicates/odd-length hex and ensuring BVLC four-byte length consistency with NPDU/APDU layering preserved. Diversified operation families, frame shapes, and sizes per plans while retaining internal length/count/checksum/order relationships.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "APDU confirmed service",
+        "BACnet/IP layering respected"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Server returns confirmed ReadRange response PDU with confirmed service Ack.",
+      "issue_safety_notes": "Issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0000003200010000000b000000000000000000010000000a00000000000000000000",
+          "index": 0,
+          "label": "ReadRange request"
+        }
+      ],
+      "plan_id": "base-plan-037",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "seed_id": "base-plan-037-seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReadRange",
+      "title": "Base ReadRange variant 4"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "APDU confirmed service",
+        "BACnet/IP layering respected"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Server performs stateful AtomicReadFile operation and returns confirmed response PDU.",
+      "issue_safety_notes": "Issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000032000100000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "AtomicReadFile setup request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "00000032000100000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "AtomicReadFile target request"
+        }
+      ],
+      "plan_id": "base-plan-038",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "base-plan-038-seed",
+      "strategy": "stateful_valid",
+      "target_operation": "AtomicReadFile",
+      "title": "Base AtomicReadFile variant 4"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC total length consistent",
+        "APDU confirmed service",
+        "BACnet/IP layering respected"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "Server processes boundary-adjacent AtomicWriteFile request and returns confirmed response PDU.",
+      "issue_safety_notes": "Issue knowledge unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000032000100000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "label": "AtomicWriteFile request"
+        }
+      ],
+      "plan_id": "base-plan-039",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "base-plan-039-seed",
+      "strategy": "length_boundary_valid",
+      "target_operation": "AtomicWriteFile",
+      "title": "Base AtomicWriteFile variant 4"
+    }
+  ],
+  "target_issue": -1
+}

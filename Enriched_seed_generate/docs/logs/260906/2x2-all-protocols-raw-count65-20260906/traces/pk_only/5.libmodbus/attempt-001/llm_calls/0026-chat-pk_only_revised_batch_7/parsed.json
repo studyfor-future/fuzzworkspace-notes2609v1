@@ -1,0 +1,145 @@
+{
+  "protocol_name": "MODBUSTCP",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 4 distinct PK-only Modbus/TCP seed sequences. All seeds use a 7-byte MBAP header with transaction identifier 0x0000, protocol identifier 0x0000, and length values consistent with the included Unit Identifier plus PDU. Prior invalid/truncated requests were corrected to preserve documented field relationships for operations whose request structure is explicitly described in sources. Diversity was improved across read, write, diagnostics, and file-record archetypes, including one multi-message stateful sequence. Where the supplied sources list a function code but do not fully spell out request fields, conservative model-prior completion was used only to form structurally valid Modbus/TCP requests without contradicting supplied documentation.",
+  "coverage_summary": [
+    "baseline_valid Read Coils with explicit starting address and quantity fields",
+    "baseline_valid Write Single Coil using documented legal output value 0xFF00",
+    "stateful_valid two-step Read Holding Registers followed by Read/Write Multiple Registers",
+    "parser_depth Read File Record with valid Modbus/TCP framing and file-record style grouped request body"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-r01",
+      "seed_id": "modbustcp-rev-001",
+      "title": "Canonical Read Coils request",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Coils",
+      "purpose": "Cover a fully documented read operation with explicit starting-address and quantity fields using a minimal valid Modbus/TCP ADU.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "protocol_format:modbustcp:section-common-heade:efc691d867a7",
+        "function_code:function:function-text:c093c4ea4f67"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Coils request",
+          "hex": "000000000006010100000001"
+        }
+      ],
+      "expected_behavior": "Server accepts the MBAP header, decodes function 0x01, interprets starting address 0x0000 and quantity 0x0001, and returns a normal Read Coils response or a protocol-level exception response if the addressed object is unsupported.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0006 matches unit id plus 5-byte PDU",
+        "Function 0x01 request includes Starting Address and Quantity of Coils as documented",
+        "All bytes kept in canonical Modbus/TCP field order",
+        "PK-only valid request with no malformed lengths or truncation"
+      ],
+      "issue_safety_notes": "No issue evidence is enabled. Seed is a safe, valid structural baseline and avoids malformed or historically colliding payload patterns."
+    },
+    {
+      "plan_id": "plan-r02",
+      "seed_id": "modbustcp-rev-002",
+      "title": "Write Single Coil ON request",
+      "strategy": "field_interaction",
+      "target_operation": "Write Single Coil",
+      "purpose": "Exercise a write parser path with a documented legal coil output value while preserving canonical Modbus/TCP framing and address/value pairing.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:869721545c59"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Write Single Coil request",
+          "hex": "00000000000605050013ff00"
+        }
+      ],
+      "expected_behavior": "Server decodes function 0x05, interprets output address 0x0013 and legal value 0xFF00 as ON, and normally echoes the write request fields in the response if accepted.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0006 matches unit id plus 5-byte PDU",
+        "Function 0x05 used with documented legal output value 0xFF00",
+        "Address and value remain aligned as 16-bit fields in canonical order",
+        "Valid PK-only write request without fuzzed corruption"
+      ],
+      "issue_safety_notes": "Safe valid write example only; no vulnerability analogue or malformed value encoding used."
+    },
+    {
+      "plan_id": "plan-r03",
+      "seed_id": "modbustcp-rev-003",
+      "title": "Read then Read/Write Multiple Registers sequence",
+      "strategy": "stateful_valid",
+      "target_operation": "Read Holding Registers and Read/Write Multiple Registers",
+      "purpose": "Increase state and parser diversity with a two-step sequence that first performs a simple documented register read and then exercises the combined read/write register transaction.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "function_code:function:function-text:c093c4ea4f67",
+        "function_code:function:function-text:48ef3b4dd565"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read Holding Registers request",
+          "hex": "000000000006030300000002"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Read/Write Multiple Registers request",
+          "hex": "00000000000f0317000000010001000102002a"
+        }
+      ],
+      "expected_behavior": "Server first processes function 0x03 using the supplied starting address and quantity. It then processes function 0x17 as a combined transaction, reading one register from address 0x0000 and writing one register at address 0x0001 with byte count 0x02 and value 0x002A, returning the read portion if supported.",
+      "constraints_preserved": [
+        "Each message uses a 7-byte MBAP header",
+        "Protocol identifier set to 0x0000 in both messages",
+        "First MBAP length 0x0006 matches unit id plus 5-byte PDU for function 0x03",
+        "Second MBAP length 0x000f matches unit id plus 14-byte PDU for function 0x17",
+        "Function 0x03 request includes Starting Address and Quantity of Registers as documented",
+        "Function 0x17 selected from documented function catalog and completed conservatively with internally consistent read/write counts and byte count",
+        "Canonical field ordering preserved across both requests"
+      ],
+      "issue_safety_notes": "Safe stateful coverage only. Combined-register request is structurally valid and avoids malformed count or byte-count mismatches."
+    },
+    {
+      "plan_id": "plan-r04",
+      "seed_id": "modbustcp-rev-004",
+      "title": "Read File Record single-group request",
+      "strategy": "parser_depth",
+      "target_operation": "Read File Record",
+      "purpose": "Exercise a deeper parser entry using a valid file-record style request body with one sub-request group under correct Modbus/TCP framing.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:9821a13f1ada",
+        "function_code:function:function-text:869721545c59",
+        "function_code:function:function-text:48ef3b4dd565"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Read File Record request",
+          "hex": "000000000009141206000100000001"
+        }
+      ],
+      "expected_behavior": "Server decodes function 0x14 and parses one file-record group from the request body. If the addressed file, record, and length are supported, it returns a normal Read File Record response; otherwise it may return an exception response.",
+      "constraints_preserved": [
+        "7-byte MBAP header preserved",
+        "Protocol identifier set to 0x0000",
+        "MBAP length 0x0009 matches unit id plus 8-byte PDU",
+        "Function 0x14 selected from documented function catalog",
+        "File-record request body completed conservatively as one grouped sub-request with internal byte-count consistency",
+        "Canonical byte ordering maintained for reference type and 16-bit fields",
+        "Valid PK-only parser-depth seed without intentional corruption"
+      ],
+      "issue_safety_notes": "No vulnerability payloads used. File-record body is a safe structural analogue intended for parser coverage, not malformed stress."
+    }
+  ]
+}

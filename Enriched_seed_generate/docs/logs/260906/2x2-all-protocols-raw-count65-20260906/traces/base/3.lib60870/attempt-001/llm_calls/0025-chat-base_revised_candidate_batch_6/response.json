@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELA7bWskTuMKRmNgllvvkmO5dJKvU",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"iec60870\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised exactly 4 distinct model-prior IEC 60870 seed sequences from the supplied plans while preserving built-in constraints only. External protocol documents and vulnerability issue knowledge were not used. Sequences prefer conservative IEC 60870-5-104 APCI framing with 0x68 length consistency, avoid deterministic duplicates, and improve diversity across U-frame control, interrogation, single-command, and double-command operations. Message bodies are internally length-consistent and shaped to be mutation-friendly without relying on externally verified protocol evidence.\",\n  \"coverage_summary\": [\n    \"other: TESTFR activation as conservative U-frame single request\",\n    \"baseline_valid: General Interrogation as I-frame request with ASDU payload\",\n    \"function_code_coverage: Single Command as distinct command-family I-frame request\",\n    \"stateful_valid: STARTDT activation setup followed by Double Command request\",\n    \"Diversity across single_request and setup_then_request sequence shapes\",\n    \"Diversity across U-frame and I-frame APCI forms\",\n    \"Command path coverage includes both single and double command families\",\n    \"Interrogation path coverage includes a canonical general interrogation style payload\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-021\",\n      \"seed_id\": \"base-plan-021-seed-rev1\",\n      \"title\": \"Base TESTFR activation variant 3\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"TESTFR activation\",\n      \"purpose\": \"Provide a distinct conservative U-frame seed for link supervision rather than a cosmetic byte variant.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:623b2f3a6db7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"TESTFR activation request\",\n          \"hex\": \"680443000000\"\n        }\n      ],\n      \"expected_behavior\": \"Peer receives a conservative test frame activation request and may answer with the corresponding supervisory response.\",\n      \"constraints_preserved\": [\n        \"Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing\",\n        \"Keep 0x68 length octets consistent with the selected frame size\",\n        \"Diversify link control, interrogation, command and measurement paths\"\n      ],\n      \"issue_safety_notes\": \"Generated from model prior only; no external issue knowledge or verified protocol references were used.\"\n    },\n    {\n      \"plan_id\": \"base-plan-022\",\n      \"seed_id\": \"base-plan-022-seed-rev1\",\n      \"title\": \"Base General Interrogation variant 3\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"General Interrogation\",\n      \"purpose\": \"Provide a conservative canonical interrogation request with APCI and ASDU structure for mutation-friendly baseline coverage.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:623b2f3a6db7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"General Interrogation request\",\n          \"hex\": \"680e0000000064010600010000000014\"\n        }\n      ],\n      \"expected_behavior\": \"Peer interprets the frame as a general interrogation style request and may begin returning information objects if session state permits.\",\n      \"constraints_preserved\": [\n        \"Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing\",\n        \"Keep 0x68 length octets consistent with the selected frame size\",\n        \"Diversify link control, interrogation, command and measurement paths\"\n      ],\n      \"issue_safety_notes\": \"Generated from model prior only; no external issue knowledge or verified protocol references were used.\"\n    },\n    {\n      \"plan_id\": \"base-plan-023\",\n      \"seed_id\": \"base-plan-023-seed-rev1\",\n      \"title\": \"Base Single Command variant 3\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Single Command\",\n      \"purpose\": \"Restore the removed duplicate with a distinct command-family I-frame seed covering a likely single command service path.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:623b2f3a6db7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Single Command request\",\n          \"hex\": \"680e000000002d01060001010000000181\"\n        }\n      ],\n      \"expected_behavior\": \"Peer interprets the frame as a single command style request directed at a minimal information object and may acknowledge or reject depending on state.\",\n      \"constraints_preserved\": [\n        \"Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing\",\n        \"Keep 0x68 length octets consistent with the selected frame size\",\n        \"Diversify link control, interrogation, command and measurement paths\"\n      ],\n      \"issue_safety_notes\": \"Generated from model prior only; no external issue knowledge or verified protocol references were used.\"\n    },\n    {\n      \"plan_id\": \"base-plan-024\",\n      \"seed_id\": \"base-plan-024-seed-rev1\",\n      \"title\": \"Base Double Command variant 3\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Double Command\",\n      \"purpose\": \"Use a plausible setup-then-target sequence combining link start and a distinct double command payload for stateful coverage.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:623b2f3a6db7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"STARTDT activation setup\",\n          \"hex\": \"680407000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Double Command request\",\n          \"hex\": \"680e000000002e01060001010000000282\"\n        }\n      ],\n      \"expected_behavior\": \"Peer first receives a conservative data transfer start activation and then a double command style request using a compact command ASDU.\",\n      \"constraints_preserved\": [\n        \"Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing\",\n        \"Keep 0x68 length octets consistent with the selected frame size\",\n        \"Diversify link control, interrogation, command and measurement paths\"\n      ],\n      \"issue_safety_notes\": \"Generated from model prior only; no external issue knowledge or verified protocol references were used.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788712503,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1440,
+    "prompt_tokens": 5296,
+    "total_tokens": 6736,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 30,
+      "engine_ttft_ms": 446,
+      "engine_ttlt_ms": 43942,
+      "pre_inference_ms": 133,
+      "service_tbt_ms": 30,
+      "service_ttft_ms": 685,
+      "service_ttlt_ms": 44178,
+      "user_visible_ttft_ms": 552
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 22646,
+  "routing": {
+    "serving_pipereplica": "d20260820131853-fda88bb6-prefill-r3-dp0-prefill"
+  }
+}

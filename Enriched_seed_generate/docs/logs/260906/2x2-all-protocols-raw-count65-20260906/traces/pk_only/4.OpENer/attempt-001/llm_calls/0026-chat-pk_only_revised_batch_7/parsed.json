@@ -1,0 +1,157 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Exactly four distinct PK-only seeds using source-backed 24-byte EtherNet/IP encapsulation headers and little-endian command and length fields. Coverage spans session lifecycle, discovery with a documented List Identity response item, unconnected explicit messaging, and connected explicit messaging. Conservative model-prior assumptions are limited to RegisterSession response state propagation and the CIP GetAttributeSingle request encoding; no historical issue payloads or vulnerability claims are used.",
+  "coverage_summary": [
+    "Stateful RegisterSession followed by UnregisterSession using a propagated session handle",
+    "Bidirectional ListIdentity exchange with a documented List Identity Response Item CPF entry",
+    "SendRRData with the documented Null Address Item and Unconnected Data Item combination",
+    "SendUnitData with the documented Connected Address Item and Connected Data Item combination"
+  ],
+  "sequences": [
+    {
+      "plan_id": "revised-plan-001",
+      "seed_id": "revised-plan-001-seed-1",
+      "title": "Register and unregister an encapsulation session",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession and UnregisterSession",
+      "purpose": "Exercise session establishment, propagation of the returned session handle, and orderly session teardown across multiple encapsulation frames.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession request",
+          "hex": "6500040000000000000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "RegisterSession response with session handle",
+          "hex": "6500040001000000000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "UnregisterSession request using returned handle",
+          "hex": "660000000100000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "The server processes RegisterSession, returns a session handle, and accepts UnregisterSession addressed with that handle.",
+      "constraints_preserved": [
+        "Each encapsulation frame uses a 24-byte header",
+        "Command and payload length fields are little-endian",
+        "RegisterSession payload length is 4 bytes and UnregisterSession payload length is zero",
+        "The UnregisterSession session handle matches the preceding response handle",
+        "Hex strings contain complete byte pairs without separators"
+      ],
+      "issue_safety_notes": "No issue evidence is enabled. The response session handle and registration payload interpretation are conservative protocol-model assumptions, not historical vulnerability payloads."
+    },
+    {
+      "plan_id": "revised-plan-002",
+      "seed_id": "revised-plan-002-seed-1",
+      "title": "ListIdentity request and response-item parsing",
+      "strategy": "parser_depth",
+      "target_operation": "ListIdentity",
+      "purpose": "Cover discovery request handling and bidirectional Common Packet Format parsing with the documented List Identity Response Item type.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListIdentity discovery request",
+          "hex": "630000000000000000000000000000000000000000000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "ListIdentity response with List Identity Response Item",
+          "hex": "63000600000000000000000000000000000000000000000001000c000000"
+        }
+      ],
+      "expected_behavior": "The server recognizes the ListIdentity command; the response CPF contains one item with type 0x000c and a zero-length data field, allowing response-item framing and length handling to be exercised.",
+      "constraints_preserved": [
+        "Both frames use 24-byte encapsulation headers",
+        "The response payload length is 6 bytes, matching the CPF count and one four-byte item header",
+        "CPF item type 0x000c is the documented List Identity Response Item",
+        "All multi-byte encapsulation and CPF fields use little-endian encoding",
+        "Hex strings contain complete byte pairs without separators"
+      ],
+      "issue_safety_notes": "No issue evidence is enabled. The zero-length response item is a minimal structural parser seed and makes no claim about a complete device identity response."
+    },
+    {
+      "plan_id": "revised-plan-003",
+      "seed_id": "revised-plan-003-seed-1",
+      "title": "SendRRData unconnected explicit request",
+      "strategy": "field_interaction",
+      "target_operation": "SendRRData",
+      "purpose": "Exercise the unconnected data path by combining encapsulation fields, interface and timeout fields, CPF item ordering, and a nested explicit-message payload.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData with Null Address and Unconnected Data items",
+          "hex": "6f0018000000000000000000000000000000000000000000000000000000000000000000000000020000000000b20008000e03200124013001"
+        }
+      ],
+      "expected_behavior": "The server parses a SendRRData payload containing interface handle and timeout fields, a two-item CPF, the documented Null Address Item first, and an Unconnected Data Item carrying a nested explicit request.",
+      "constraints_preserved": [
+        "SendRRData command is 0x006f in a 24-byte encapsulation header",
+        "Encapsulation payload length is 24 bytes",
+        "CPF item count is two",
+        "CPF item order is Null Address Item followed by Unconnected Data Item",
+        "Unconnected Data Item length is 8 bytes and matches its nested payload",
+        "Nested path bytes use a word-count-prefixed EPATH structure as a conservative model-prior encoding"
+      ],
+      "issue_safety_notes": "No issue evidence is enabled. The nested CIP service and path are structural coverage material; inferred details are explicitly treated as fallible model-prior completion."
+    },
+    {
+      "plan_id": "revised-plan-004",
+      "seed_id": "revised-plan-004-seed-1",
+      "title": "SendUnitData connected explicit request",
+      "strategy": "field_interaction",
+      "target_operation": "SendUnitData with GetAttributeSingle",
+      "purpose": "Cover the connected CPF path and interaction between a connected address, sequence number, connected data item, and nested attribute path.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:f14ecde0d175",
+        "function_code:function:function-text:515064cfcdad",
+        "function_code:function:function-text:0d83a9cb1819",
+        "protocol_format:opener:format-overview:8e03e5bb8ecf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendUnitData with Connected Address and Connected Data items",
+          "hex": "7000220000000000000000000000000000000000000000000000000000000000000000000000000002000100040001000000b1000c0000000e03200124013001"
+        }
+      ],
+      "expected_behavior": "The server parses a SendUnitData payload with two CPF items, a four-byte connected address, a sequence number, and a nested explicit GetAttributeSingle-shaped request.",
+      "constraints_preserved": [
+        "SendUnitData command is 0x0070 in a 24-byte encapsulation header",
+        "Encapsulation payload length is 34 bytes and matches the complete payload",
+        "CPF item count is two",
+        "CPF item order is Connected Address Item followed by Connected Data Item",
+        "Connected Address Item type is 0x0100 and Connected Data Item type is 0x00b1",
+        "Connected Data Item length includes the two-byte sequence number and nested data"
+      ],
+      "issue_safety_notes": "No issue evidence is enabled. The GetAttributeSingle service byte and EPATH target are conservative model-prior completion for a gap in the supplied excerpt, not an exact historical payload or vulnerability claim."
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "coverage_summary": [
+    "VK-only STARTDT activation (parser_depth) with VSQ mismatch analogue",
+    "VK-only STOPDT activation (stateful_valid) with sequence-form IOA prerequisite",
+    "VK-only TESTFR activation (issue_structural_analogue) with FileSegment encoding path",
+    "VK-only General Interrogation (length_boundary_valid) with Read Command boundary",
+    "length_boundary_valid: boundary on VSQ/N with insufficient ASDU body (issues 196/200/7v97)",
+    "parser_depth: deep InformationObject_ParseObjectAddress OOB",
+    "stateful_valid: null self deref in COT access via crafted I-frame",
+    "issue_structural_analogue: missing IOA in sequence ASDU parser",
+    "field_interaction: VSQ element count mismatch with payload",
+    "max distinct operations and frame sizes",
+    "STARTDT activation: single_request U-frame with L=4 using STARTDT_ACT (0x07)",
+    "STOPDT activation: single_request U-frame with L=4 using STOPDT_ACT (0x13)",
+    "TESTFR activation: multi_step_stateful I-frame with FileSegment IO",
+    "General Interrogation: single_request I-frame with L=8 and TypeID 100",
+    "Read Command: single_request I-frame with VSQ=1 TypeID 100"
+  ],
+  "generation_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used. 4 VK-only (P-/V+) candidate sequences generated per plan with exactly 4 plans using specified strategies, preserving all hard rules, evidence_ids, lowercase hex without separators, internally consistent 0x68 L octets, and maximizing distinct operations/frame structures/sizes/state sequences for each plan.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent",
+        "prefer FT1.2/IEC 60870-5-104 APCI framing",
+        "ASDU family length validation",
+        "IEC 60870-5-104 I-frame"
+      ],
+      "evidence_ids": [
+        "issue:196:196-summary:7e4abb310eea",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "lib60870-C parser accepts ASDU with VSQ object count exceeding body length; InformationObject_ParseObjectAddress reads past heap buffer.",
+      "issue_safety_notes": "Issue 196 heap-buffer-overflow in CS104 server (HighPriorityASDUQueue_hasUnconfirmedIMessages); issue 200 sequence-form M_SP_NA_1 validation bypass; no external docs used.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6809010001000000000000",
+          "index": 0,
+          "label": "ReadCommand"
+        }
+      ],
+      "plan_id": "vk-plan-009",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-only-revised-009",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Command",
+      "title": "VK-only Read Command: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent",
+        "prefer FT1.2/IEC 60870-5-104 APCI framing",
+        "ASDU family length validation",
+        "IEC 60870-5-104 I-frame"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:178:178-summary:01c5b607cf00"
+      ],
+      "expected_behavior": "lib60870 2.4.0 CS104 slave deadlock in connectionEventHandler while holding internal state.",
+      "issue_safety_notes": "Issue 197 reproducible deadlock in CS104 slave; issue 201 heap overflow in FileSegment path; multi-step stateful sequence reaches parser depth.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68050700000000",
+          "index": 0,
+          "label": "STARTDT"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68050700000000",
+          "index": 1,
+          "label": "STARTDT"
+        }
+      ],
+      "plan_id": "vk-plan-010",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-only-revised-010",
+      "strategy": "parser_depth",
+      "target_operation": "STARTDT activation",
+      "title": "VK-only STARTDT activation: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave imple..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent",
+        "prefer FT1.2/IEC 60870-5-104 APCI framing",
+        "ASDU family length validation",
+        "IEC 60870-5-104 I-frame"
+      ],
+      "evidence_ids": [
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39"
+      ],
+      "expected_behavior": "lib60870-C accepts short sequence M_SP_NA_1 ASDU (VSQ elements > body) leading to InformationObject_ParseObjectAddress out-of-bounds read.",
+      "issue_safety_notes": "Issue 200 sequence-form M_SP_NA_1 validation bypass (no base IOA); issue 196 heap overflow in CS104 server; state prerequisite via model-prior STARTDT/STOPDT setup.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040700000000",
+          "index": 0,
+          "label": "STOPDT"
+        }
+      ],
+      "plan_id": "vk-plan-011",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vk-only-revised-011",
+      "strategy": "stateful_valid",
+      "target_operation": "STOPDT activation",
+      "title": "VK-only STOPDT activation: lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU wh..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent",
+        "prefer FT1.2/IEC 60870-5-104 APCI framing",
+        "ASDU family length validation",
+        "IEC 60870-5-104 I-frame"
+      ],
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:175:175-summary:1d1910f22105"
+      ],
+      "expected_behavior": "lib60870-C v2.4.0 heap-based buffer overflow in FileSegment information object encoding path used to construct outgoing CS101/CS104 ASDUs.",
+      "issue_safety_notes": "Issue 201 heap overflow in FileSegment encoding; issue 200 sequence-form bypass; multi-step stateful sequence maximizes frame/state diversity while preserving target operation.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040700000000",
+          "index": 0,
+          "label": "TESTFR"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "680e0010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "index": 1,
+          "label": "FileSegmentIO"
+        }
+      ],
+      "plan_id": "vk-plan-012",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vk-only-revised-012",
+      "strategy": "other",
+      "target_operation": "TESTFR activation",
+      "title": "VK-only TESTFR activation: lib60870-C v2.4.0 contains a heap-based buffer overflow in the File..."
+    }
+  ],
+  "target_issue": -1
+}

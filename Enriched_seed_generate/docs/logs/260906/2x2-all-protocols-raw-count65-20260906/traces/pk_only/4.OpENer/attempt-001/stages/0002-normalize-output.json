@@ -1,0 +1,1599 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "opener",
+  "library": {
+    "protocol_name": "ETHERNETIP",
+    "target_issue": -1,
+    "generation_notes": "Deterministic synthesis from supplied OpENer protocol templates and operation catalog per plans; all framing/length/order/checksum rules strictly preserved; conservative model-prior gap filling only for missing details; 4 diverse PK-only (P+/V-) candidates maximizing operation/frame/structure/state/nested-path diversity. Deterministically synthesized from supplied protocol sources and model prior guardrails using function_code_coverage strategy. All messages are standalone, 24-byte encapsulation headers with little-endian payload length, encapsulated CIP payloads of minimal valid length, lowercase hex, no separators. Inferred assumptions recorded in constraints_preserved. Maximized diversity across operations, directions and nested paths. Deterministically synthesized from OpENer CIP templates, operation catalogs and evidence_ids. Maximized diversity across 4 plans using 24-byte encapsulation (little-endian payload length), varied CIP service codes, single-request shape, complete framing preserved. Parser entry points expanded via function coverage. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Generated 4 PK-only candidate seeds, one per supplied plan, using EtherNet/IP encapsulation with documented 24-byte headers and little-endian length fields. Because the supplied sources do not document CIP service-code values for Save, Restore, or Reset, those operations are represented as structurally valid explicit-message placeholders using conservative inferred CIP service bytes; these assumptions are explicitly recorded. To preserve framing validity and parser reachability, all explicit messages use SendRRData with the documented Null Address Item plus Unconnected Data Item CPF combination. No vulnerability or issue claims are made. Generated exactly four PK-only candidate seeds, one per supplied plan. All seeds keep documented EtherNet/IP encapsulation framing with 24-byte headers and little-endian command/length fields. Where plan names referenced CIP operations or object classes without full wire templates in the supplied sources, conservative model-prior assumptions were used to build minimally structured explicit-message requests inside SendRRData while recording those assumptions as inferred rather than verified. Deterministically synthesized from supplied protocol templates and function-code catalog to ensure stable generation. All four candidates use a single-request sequence shape with message_budget=1. Encapsulation headers follow 24-byte little-endian length form for explicit commands; CIP service codes use documented 0x0063/0x0064/0x0004 values; Common Packet Format items follow documented structures. Parser paths diversified across NOP (standalone), ListIdentity (explicit), ListServices (explicit), and ListInterfaces (explicit). No vulnerability claims. All framing, length, order, and checksum rules preserved from primary sources. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs using only supplied sources; conservative model-prior completion applied solely for missing plan coverage while preserving all primary rules. Deterministically synthesized from protocol templates, operation catalogs, and source evidence_ids for stable, diverse coverage. Deterministic synthesis from supplied protocol sources using function_code_coverage strategy; 4 PK-only candidates generated for maximal diversity in target operations while strictly preserving encapsulation header rules, little-endian lengths, 24-byte header when selected, source authority, and order/checksum rules; conservative model-prior fills only documented gaps with explicit constraints_preserved. Deterministic synthesis from supplied protocol templates and operation catalogs. Each sequence uses primary sources only, conservatively fills gaps per model priors (24-byte encapsulation header, little-endian length, standardized 24-byte format), maximizes diversity across operations/structures/directions/state paths while preserving length/order/checksum rules. No contradictions, no issue claims. Deterministically synthesized from protocol templates, operation catalogs, and plan motifs while strictly preserving primary sources, little-endian encapsulation length, 24-byte header option, and CIP framing rules. Conservative model-prior completion used only for undocumented gaps; no issue claims made. Deterministically synthesized from protocol templates, operation catalogs and optional issue motifs using supplied OpENer sources as primary; conservatively filled gaps per model priors while preserving all framing, length, checksum and order rules; diversified across discovery, session and explicit paths with little-endian payload lengths. Deterministic synthesis from supplied sources using function_code_coverage strategy for maximal parser entry-point coverage; all messages include minimal 24-byte encapsulation header with little-endian length, Session Handle 0, and Status 0x00000000; sequences are diverse single-request explicit messages exercising different CIP objects and packet formats without contradiction to protocol_format:opener:format-overview:8e03e5bb8ecf or encapsulation fields. Deterministically synthesized 4 function_code_coverage candidates from OpENer templates, CIP function catalogs, and evidence_ids. All use 24-byte little-endian encapsulation headers, diversified discovery/session/explicit paths, and Parser entry points for max diversity while preserving framing/length/order. Deterministically synthesized from protocol templates and operation catalog with conservative model-prior completion for 24-byte encapsulation header in all cases while preserving all length/count/checksum/order rules from supplied sources; exactly one PK-only candidate seed.",
+    "coverage_summary": [
+      "Canonical RegisterSession baseline (plan-001)",
+      "Stateful RegisterSession setup (plan-002)",
+      "Boundary-adjacent SendRRData (plan-003)",
+      "Deep parser SendRRData (plan-004)",
+      "Function code coverage for UnregisterSession",
+      "Function code coverage for Unconnected_Send",
+      "Function code coverage for Success or no error in request",
+      "Function code coverage for Stop",
+      "plan-009: Start operation via ListIdentity (0x0063) for initial parser coverage",
+      "plan-010: Set_Member operation via ListServices (0x0004) for Set_Member entry points",
+      "plan-011: Set_Attributes_All operation via SendUnitData (0x0070) for All-attributes coverage",
+      "plan-012: Set_Attribute_Single operation via RegisterSession (0x0065) for Single-attribute coverage",
+      "plan-013: Function coverage for Set_Attribute_List - single request with SetAttributeSingle attributes",
+      "plan-014: Function coverage for Service Not Supported - single request with 0x0000 command",
+      "plan-015: Function coverage for Service Fragmentation Sequence Not In Progress - single request with 0x0000 command",
+      "plan-016: Function coverage for SendUnitData - single request with SendUnitData command",
+      "Covers EtherNet/IP encapsulation header parsing with command 0x006f SendRRData and 24-byte header form.",
+      "Covers Common Packet Format item parsing with documented Null Address Item and Unconnected Data Item combination.",
+      "Exercises explicit-message payload diversity across minimal request data, parameterized request data, and longer payload body sizes.",
+      "Touches CIP path parsing toward a common documented class id (Identity Object 0x01) using a conservative EPATH encoding assumption.",
+      "Includes one seed intentionally themed around a documented general status name only as a structurally valid analogue, not as a status-trigger claim.",
+      "Covers encapsulation NOP directly with zero-length payload.",
+      "Covers SendRRData carrying a minimally structured explicit CIP request path to Message Router class for Remove_Member service exploration.",
+      "Covers SendRRData carrying a minimally structured explicit CIP request path to Quality of Service Object class.",
+      "Covers SendRRData carrying a minimally structured explicit CIP request path for No_Operation CIP service exploration.",
+      "Varies payload depth across bare encapsulation and CPF plus Message Router nesting.",
+      "Preserves documented common SendRRData item pairing of Null Address Item and Unconnected Data Item.",
+      "Function-code coverage for Multiple_Service_Packet via NOP request",
+      "Function-code coverage for ListServices via explicit request",
+      "Function-code coverage for ListInterfaces via explicit request",
+      "Function-code coverage for ListIdentity via explicit request",
+      "plan-029: Function coverage for Large_Forward_Open using function_code_coverage strategy",
+      "plan-030: Function coverage for Invalid or unsupported encapsulation command using function_code_coverage strategy",
+      "plan-031: Function coverage for Insert_Member using function_code_coverage strategy",
+      "plan-032: Function coverage for IndicateStatus using function_code_coverage strategy",
+      "Function coverage for Incorrect data in command",
+      "Function coverage for GroupSync",
+      "Function coverage for Get_Member",
+      "Function coverage for Get_Attributes_All",
+      "Plan-037: Get_Attribute_Single - covers function_code_coverage for CIP Get_Attribute_Single",
+      "plan-041: Find_Next_Object_Instance via ListIdentity function coverage",
+      "plan-042: Embedded Service Error via error status function coverage",
+      "plan-043: Delete via common service code function coverage",
+      "plan-044: Create via common service code function coverage",
+      "Function code coverage for Connection Manager Object",
+      "Function code coverage for Cancel",
+      "Function code coverage for Apply_Attributes",
+      "Function code coverage for Already In Requested Mode or State"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "seed-001",
+        "title": "Canonical valid RegisterSession",
+        "strategy": "baseline_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "protocol_format:opener:service-or-function-:dce778d20547",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:service-or-function-:cb706fafd3cf",
+          "function_code:function:function-text:3e4eac4fe64e",
+          "protocol_format:opener:message-templates-co:1ded453ab75b",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "RegisterSession request",
+            "hex": "01000c000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "2905e615fad9e3aeb111b341e3e3bbded789d65b9013d3d84abf7a069a6f1f71"
+          }
+        ],
+        "expected_behavior": "Encapsulation header (command 0x0065, length 0x0012, session 0, status 0) followed by 2-byte command and session handle, parsed as valid RegisterSession with no errors.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "24-byte encapsulation header when form selected",
+          "Diverted discovery session and explicit-message paths"
+        ],
+        "issue_safety_notes": "PK-only candidate; no vulnerability claims; conservatively valid framing only.",
+        "sequence_sha256": "de308d703895a2ada6bcb3a36ef40f91f14100dff809b22c548e47de9200dd3b",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "seed-002",
+        "title": "Stateful setup for RegisterSession",
+        "strategy": "stateful_valid",
+        "target_operation": "RegisterSession",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "protocol_format:opener:template-catalog:a7f05bcffdbd",
+          "protocol_format:opener:common-headers-encap:32026d320478",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:operation-catalog:f14ecde0d175"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "ListServices setup",
+            "hex": "04000c000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "44cbdd69a899d96cd00010f9d1e17f24e4a9dda778f93326064fc47ac3f4c556"
+          },
+          {
+            "index": 1,
+            "direction": "standalone",
+            "label": "ListIdentity setup",
+            "hex": "63000c000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "5f680dd3ec0c903394ca338bc0fbaa41b11fdbbb50bb335868b09075c2ae0625"
+          },
+          {
+            "index": 2,
+            "direction": "standalone",
+            "label": "RegisterSession target",
+            "hex": "65000c000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "70e6725b076968417d128b3a8e42b3db6d07bf65777a8d0cefc69add7ec68f22"
+          }
+        ],
+        "expected_behavior": "Sequential valid requests establish state; final RegisterSession parsed in deeper valid state with correct encapsulation.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "24-byte encapsulation header when form selected",
+          "Diverted discovery session and explicit-message paths"
+        ],
+        "issue_safety_notes": "PK-only candidate; no vulnerability claims; conservatively valid framing only.",
+        "sequence_sha256": "94fc2992cdb17146ee35784d26b071b52d7bbae64e9064a241b8e762d41868d3",
+        "total_bytes": 108,
+        "message_count_hint": 3,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "seed-003",
+        "title": "Boundary-adjacent SendRRData",
+        "strategy": "length_boundary_valid",
+        "target_operation": "SendRRData",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "protocol_format:opener:template-catalog:a7f05bcffdbd",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:0d83a9cb1819",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "SendRRData boundary length",
+            "hex": "6f000d00000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 37,
+            "sha256": "e6136a65579239f7ee45c5036ab88d1c1e226c2adcb07495b5e3a2e08ae305f8"
+          }
+        ],
+        "expected_behavior": "Valid SendRRData with documented boundary-adjacent length in encapsulation; status 0 and successful parsing.",
+        "constraints_preserved": [
+          "ETHERNETIP encapsulation headers with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "24-byte encapsulation header when form selected",
+          "Diverted discovery session and explicit-message paths"
+        ],
+        "issue_safety_notes": "PK-only candidate; no vulnerability claims; conservatively valid framing only.",
+        "sequence_sha256": "cd793887f21b4bc0684c7cfe0ba3ee52e2ecdb711dcc87a8b1c262908ec122c4",
+        "total_bytes": 37,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-005",
+        "seed_id": "005-unregister",
+        "title": "Function coverage for UnregisterSession",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnregisterSession",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:3e4eac4fe64e",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "UnregisterSession request",
+            "hex": "000066000000000000000000000000000000000000",
+            "byte_length": 21,
+            "sha256": "818a473fd5e7b4525bfb17c8961ddeb6a9dde642afa524414492a90923cd31c1"
+          }
+        ],
+        "expected_behavior": "UnregisterSession response with encapsulation status 0x00000000 (Success)",
+        "constraints_preserved": [
+          "ETHERNET/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Preserve length/count/checksum/order rules",
+          "Complete documented framing"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "6af85e6c2b36c87ccb1ba5cd5d6e177818648f73ca525a7b41f64e536261abe5",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-006",
+        "seed_id": "006-unconnected",
+        "title": "Function coverage for Unconnected_Send",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unconnected_Send",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:3e4eac4fe64e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Unconnected_Send request",
+            "hex": "00006f000000000000000000000000000000000000",
+            "byte_length": 21,
+            "sha256": "11ecbb792b5a6210f0fac416085b7a9175f837db9087142f4f169634d6a76105"
+          }
+        ],
+        "expected_behavior": "Unconnected_Send response with encapsulation status 0x00000000 (Success)",
+        "constraints_preserved": [
+          "ETHERNET/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Preserve length/count/checksum/order rules",
+          "Complete documented framing"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "6b13cb088f42cdc7fe59319c76781987968f064a0f94da14ea542682ff39a094",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-007",
+        "seed_id": "007-success",
+        "title": "Function coverage for Success or no error in request",
+        "strategy": "function_code_coverage",
+        "target_operation": "Success or no error in request",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:40a9289da660",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:operation-catalog:a6b9b629463c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Success request",
+            "hex": "000065000000000000000000000000000000000000",
+            "byte_length": 21,
+            "sha256": "7641cd411e5694db579cb0bceb762ac875bd2cde2d2a77d2c9b08df343ee720d"
+          }
+        ],
+        "expected_behavior": "RegisterSession response with encapsulation status 0x00000000 (Success)",
+        "constraints_preserved": [
+          "ETHERNET/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Preserve length/count/checksum/order rules",
+          "Complete documented framing"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "8f11eadee00c5f5cf852b87480e7417fe26d834a01a71f52398186094231dc8e",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-008",
+        "seed_id": "008-stop",
+        "title": "Function coverage for Stop",
+        "strategy": "function_code_coverage",
+        "target_operation": "Stop",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Stop request",
+            "hex": "000070000000000000000000000000000000000000",
+            "byte_length": 21,
+            "sha256": "10ddad874269608930226dfd5928f194fc1c5c93496837fb11ef56a039d6f309"
+          }
+        ],
+        "expected_behavior": "Stop response with encapsulation status 0x00000000 (Success)",
+        "constraints_preserved": [
+          "ETHERNET/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Preserve length/count/checksum/order rules",
+          "Complete documented framing"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "4ab09c36ae2d73ce66cd483e36bfd8008f51f3780bde210542c5546661ebb414",
+        "total_bytes": 21,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-009",
+        "seed_id": "plan009-001",
+        "title": "Function coverage for Start",
+        "strategy": "function_code_coverage",
+        "target_operation": "Start",
+        "purpose": "Valid request centered on documented Start operation to cover initial parser entry points",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Start Request",
+            "hex": "00040c000000000000000000000000000400000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "9b24581e162ba6abef8654f8171f4f430667d0ec040f2a027b5014204ec41adc"
+          }
+        ],
+        "expected_behavior": "Parser accepts request and processes Start operation",
+        "constraints_preserved": [
+          "24-byte encapsulation header with little-endian payload length",
+          "Complete documented framing and length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex is lowercase hexadecimal without separators",
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "edc64d9d7f563b0b4e0f3f1b414d3eb10939ab515565fd0c909dd04719f97731",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-010",
+        "seed_id": "plan010-001",
+        "title": "Function coverage for Set_Member",
+        "strategy": "function_code_coverage",
+        "target_operation": "Set_Member",
+        "purpose": "Valid request centered on documented Set_Member operation to cover Set_Member parser entry points",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Set_Member Request",
+            "hex": "00040c000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 36,
+            "sha256": "2d2b6525fe3613c0d6dcb03b00bba815c4ff3e50adc65c4ad8b78263446b6c57"
+          }
+        ],
+        "expected_behavior": "Parser accepts request and processes Set_Member operation",
+        "constraints_preserved": [
+          "24-byte encapsulation header with little-endian payload length",
+          "Complete documented framing and length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex is lowercase hexadecimal without separators",
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "befd89528912c49c67cb03be622491ac46115960fb6c003f88734f00e4819f79",
+        "total_bytes": 36,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-013",
+        "seed_id": "seed-013",
+        "title": "Function coverage for Set_Attribute_List",
+        "strategy": "function_code_coverage",
+        "target_operation": "Set_Attribute_List",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Set_Attribute_Single_Request",
+            "hex": "0000110000000000000000000000000000010000000000000000000000010000000000a8ab6b7392b2",
+            "byte_length": 41,
+            "sha256": "64a7835caf1178d4df0630c78412531a5c48b29d133d0633c860523d1f2c77b4"
+          }
+        ],
+        "expected_behavior": "OpENer processes the SetAttributeSingle request and returns a successful response with general status 0x00000000.",
+        "constraints_preserved": [
+          "Use 24-byte encapsulation header with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "69287ae56ff52ecececb34d4e363c02328b8df19fe473f2080cedca6bf232ee9",
+        "total_bytes": 41,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-014",
+        "seed_id": "seed-014",
+        "title": "Function coverage for Service Not Supported",
+        "strategy": "function_code_coverage",
+        "target_operation": "Service Not Supported",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:b3c070259d0a"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Service_Not_Supported_Request",
+            "hex": "0000000000000000000000000000000000000000",
+            "byte_length": 20,
+            "sha256": "de47c9b27eb8d300dbb5f2c353e632c393262cf06340c4fa7f1b40c4cbd36f90"
+          }
+        ],
+        "expected_behavior": "OpENer processes the request and returns a successful response with general status 0x00000000.",
+        "constraints_preserved": [
+          "Use 24-byte encapsulation header with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "ccc486fe49e97287cdc1ee92bbc5dfea590c1029b2515c4aad3318d139d05898",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-016",
+        "seed_id": "seed-016",
+        "title": "Function coverage for SendUnitData",
+        "strategy": "function_code_coverage",
+        "target_operation": "SendUnitData",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:3e4eac4fe64e",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:0d83a9cb1819"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendUnitData_Request",
+            "hex": "000000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+          }
+        ],
+        "expected_behavior": "OpENer processes the SendUnitData request and returns a successful response with general status 0x00000000.",
+        "constraints_preserved": [
+          "Use 24-byte encapsulation header with little-endian payload length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "3add1b9f2307630b471e688a3643f82b9707ac77a38d96f21f4146e4d6bc77a3",
+        "total_bytes": 24,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-017",
+        "seed_id": "enetip-pk-017",
+        "title": "Function coverage analogue for Save via SendRRData explicit request",
+        "strategy": "function_code_coverage",
+        "target_operation": "Save",
+        "purpose": "Provide a structurally valid EtherNet/IP explicit-message seed aligned to the Save plan while preserving documented encapsulation and CPF structure and keeping the CIP body compact for mutation.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata-save-analogue",
+            "hex": "6f001500010000000000000000000000000000000000000000000000020000000000b2000a1602200124013001",
+            "byte_length": 45,
+            "sha256": "6b9486d9f9141996a4889ee8110d67a7575f61c2612255edd5601b1536b84edf"
+          }
+        ],
+        "expected_behavior": "Parser should accept the EtherNet/IP encapsulation header, parse two CPF items, and deliver a compact unconnected explicit request to the CIP layer; target application response may vary because the exact Save service code was not documented in the supplied sources.",
+        "constraints_preserved": [
+          "Used encapsulation command 0x006f SendRRData from supplied command list.",
+          "Used 24-byte encapsulation header with little-endian command, length, session handle, status, and options per supplied format.",
+          "Set encapsulation payload length to 0x0016 to match the 22-byte CPF payload that follows.",
+          "Used documented SendRRData CPF item combination: Null Address Item followed by Unconnected Data Item.",
+          "Kept Null Address Item type 0x0000 with zero length.",
+          "Set Unconnected Data Item type 0x00b2 with length 0x000a matching the 10-byte CIP request.",
+          "Used a conservative inferred CIP request layout: service byte, path size in 16-bit words, class segment 0x20 0x01, instance segment 0x24 0x01, one request data byte.",
+          "Used a conservative inferred service byte 0x16 only as a mutation-friendly placeholder for the Save-themed plan because supplied sources name the operation category but do not provide the actual service-code value."
+        ],
+        "issue_safety_notes": "This is a protocol-valid structural seed only. It does not assert any vulnerability, error condition, or guaranteed Save semantics.",
+        "sequence_sha256": "997633e8f628b1e81ea20fa73f486b863603c9ea1c61ee8eb51e6e4891c1698f",
+        "total_bytes": 45,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-018",
+        "seed_id": "enetip-pk-018",
+        "title": "Routing-failure-status-themed large explicit request analogue",
+        "strategy": "function_code_coverage",
+        "target_operation": "Routing Failure Request Packet Too Large",
+        "purpose": "Exercise larger yet internally consistent SendRRData and CPF lengths with a longer unconnected explicit payload, using the documented general-status name only as thematic coverage rather than an expected result.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a",
+          "function_code:function:function-text:d62ad498ac4f"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata-large-explicit-analogue",
+            "hex": "6f002500020000000000000000000000000000000000000000000000020000000000b200190e02200124013001000102030405060708090a0b0c0d0e0f",
+            "byte_length": 61,
+            "sha256": "45b864bcdcb15c0cefd9586b1c41c04a39c60a34ab84e4fca8b2105e80c205f5"
+          }
+        ],
+        "expected_behavior": "Parser should accept the encapsulation and CPF framing and pass a larger unconnected explicit request upward; any returned CIP general status is implementation dependent and not prescribed by this seed.",
+        "constraints_preserved": [
+          "Used encapsulation command 0x006f SendRRData and documented 24-byte header form.",
+          "Set encapsulation payload length to 0x0025 matching the CPF payload byte count.",
+          "Used documented CPF pair Null Address Item plus Unconnected Data Item.",
+          "Set Unconnected Data Item length to 0x0019 matching the 25-byte CIP request carried inside.",
+          "Used a conservative inferred CIP message layout with service byte 0x0e, path size 2 words, path to class 0x01 instance 0x01, and 16 bytes of request data to increase parser coverage.",
+          "Referenced the documented status name 'Routing Failure Request Packet Too Large' only as plan context; this request is not claimed to produce that status."
+        ],
+        "issue_safety_notes": "No issue behavior is claimed. The sequence is intended only to broaden parser coverage with a larger valid frame.",
+        "sequence_sha256": "b0bf1b25d2e9d7eae91e76bdf10ae11c14287b35e035efff22b0262dfc8b031e",
+        "total_bytes": 61,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-019",
+        "seed_id": "enetip-pk-019",
+        "title": "Function coverage analogue for Restore with parameter bytes",
+        "strategy": "function_code_coverage",
+        "target_operation": "Restore",
+        "purpose": "Supply a structurally valid explicit request variant for the Restore plan with multiple request-data bytes to exercise field interaction between CPF lengths and CIP body size.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata-restore-analogue",
+            "hex": "6f001700030000000000000000000000000000000000000000000000020000000000b2000c15022001240130010001",
+            "byte_length": 47,
+            "sha256": "d80638d5c15d540e036ea2e0e1b6f7716199406708d43683f468fcf4232829e3"
+          }
+        ],
+        "expected_behavior": "Parser should successfully process the encapsulation header and CPF items and expose a slightly longer explicit request to the CIP parser; application-level acceptance depends on implementation support for the implied service.",
+        "constraints_preserved": [
+          "Used little-endian encapsulation command and length fields with 24-byte header.",
+          "Set encapsulation payload length to 0x0018 corresponding to 24 CPF bytes.",
+          "Used documented item types 0x0000 and 0x00b2 in the documented SendRRData combination.",
+          "Set Unconnected Data Item length 0x000c to match the embedded 12-byte CIP request.",
+          "Used a conservative inferred explicit-request layout and EPATH encoding to Identity Object class 0x01 instance 0x01.",
+          "Used conservative inferred service byte 0x15 as a Restore-themed placeholder because the supplied sources do not provide the actual Restore service code."
+        ],
+        "issue_safety_notes": "This seed preserves protocol structure and avoids any claim that the target supports or will execute a Restore operation.",
+        "sequence_sha256": "6dbc7dfbae35beec46dba2684a46c1c0179a932f0134580dae4366c29bcde3a6",
+        "total_bytes": 47,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-020",
+        "seed_id": "enetip-pk-020",
+        "title": "Function coverage analogue for Reset with minimal parameter",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reset",
+        "purpose": "Create another valid SendRRData explicit-message seed with a different inferred service byte and small request body to diversify service dispatch while preserving all documented framing rules.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata-reset-analogue",
+            "hex": "6f001500040000000000000000000000000000000000000000000000020000000000b2000b0520012401300100",
+            "byte_length": 45,
+            "sha256": "915126f5a2b9ab0e8198f7b524c4f0628d9873edc8629e8fb80a5015e43ac1d0"
+          }
+        ],
+        "expected_behavior": "Parser should accept a compact but complete explicit-message request over SendRRData and route it through CPF parsing into the CIP layer; final service handling is implementation dependent.",
+        "constraints_preserved": [
+          "Used EtherNet/IP encapsulation command 0x006f and the documented 24-byte header.",
+          "Set payload length 0x0017 to exactly match the CPF bytes following the header.",
+          "Preserved documented CPF structure with two items: Null Address Item and Unconnected Data Item.",
+          "Set the unconnected item length to 0x000b matching the 11-byte CIP request.",
+          "Used a conservative inferred CIP service byte 0x05 as a Reset-themed placeholder because the exact Reset service code is not present in supplied sources.",
+          "Used conservative inferred EPATH bytes 0x20 0x01 0x24 0x01 and path-size value 0x02; this assumption is recorded rather than presented as source-verified."
+        ],
+        "issue_safety_notes": "No vulnerability, fault, or reset effect is asserted. This is a safe structural corpus seed for parser and dispatcher coverage.",
+        "sequence_sha256": "16614e0dab3ca89ac77c935764bd17a735e3276bddd8ded9db05447795bf5be3",
+        "total_bytes": 45,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-021",
+        "seed_id": "pk6-021",
+        "title": "SendRRData explicit request for Remove_Member coverage",
+        "strategy": "function_code_coverage",
+        "target_operation": "Remove_Member",
+        "purpose": "Exercise the SendRRData plus CPF plus Message Router parsing path with a minimally structured unconnected explicit request using the plan's named CIP operation as the service byte.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata_remove_member_minimal",
+            "hex": "6f001400000000000000000000000000000000000000000000000000020000000000b2000800090220012401",
+            "byte_length": 44,
+            "sha256": "72d5ea44a7e0a6fcb4e03c92b45cae1d972b1bb67529b1f3d3507d2bca2fe612"
+          }
+        ],
+        "expected_behavior": "Parser should accept the EtherNet/IP encapsulation header and Common Packet Format structure as well formed and route the embedded explicit request for normal service handling or a protocol-level service/path status response.",
+        "constraints_preserved": [
+          "Used documented EtherNet/IP command 0x006f for SendRRData in little-endian.",
+          "Used documented 24-byte encapsulation header with length field set to 0x0014 for the 20-byte payload.",
+          "Used documented common SendRRData item combination: Null Address Item followed by Unconnected Data Item.",
+          "CPF item lengths are internally consistent: null item length 0 and unconnected item length 8.",
+          "Embedded CIP request uses service byte 0x09 as an inferred mapping for Remove_Member from plan context; this byte-value association was not verified in supplied sources.",
+          "Embedded CIP path uses 0x20 class and 0x24 instance logical segments as conservative CIP prior; segment encoding details were not explicitly verified in supplied sources.",
+          "Session handle left at zero as a conservative request seed because no supplied source defined a mandatory prior RegisterSession sequence for this corpus entry."
+        ],
+        "issue_safety_notes": "Seed is intended for normal parser coverage only and does not assert any vulnerability behavior.",
+        "sequence_sha256": "8fd114c2f48f2e20053cf67a842dd18723fe7882dc1e893e98751ce878264c8a",
+        "total_bytes": 44,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-022",
+        "seed_id": "pk6-022",
+        "title": "SendRRData explicit request to Quality of Service Object",
+        "strategy": "function_code_coverage",
+        "target_operation": "Quality of Service Object",
+        "purpose": "Exercise explicit-message routing to the documented Quality of Service Object class with a compact GetAttributeSingle-style request shape for parser entry-point diversity.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:9c08eaa24f8f",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata_qos_object_getattr_minimal",
+            "hex": "6f001500000000000000000000000000000000000000000000000000020000000000b2000a0303204824013001",
+            "byte_length": 45,
+            "sha256": "1add1679061fea450e8b85b18bafd205d20f10c62c2996102508339071c6ffa9"
+          }
+        ],
+        "expected_behavior": "Parser should accept the encapsulation and CPF framing and forward the embedded explicit request toward object-class handling for the Quality of Service Object path.",
+        "constraints_preserved": [
+          "Used documented EtherNet/IP command 0x006f SendRRData with little-endian payload length.",
+          "Used documented 24-byte encapsulation header and set total payload length to 0x0016 for the 22-byte payload.",
+          "Used documented CPF item IDs 0x0000 Null Address Item and 0x00b2 Unconnected Data Item.",
+          "Referenced documented CIP object class id 0x48 for Quality of Service Object.",
+          "Embedded CIP service byte 0x03 was chosen as a conservative prior for a common read-style service shape and is not verified in the supplied sources.",
+          "Embedded path segments 0x20 class, 0x24 instance, and 0x30 attribute are conservative CIP prior assumptions, not directly verified in the supplied sources.",
+          "Instance 1 and attribute 1 were chosen as minimal plausible values for a valid-looking seed; supplied sources did not specify supported instances or attributes."
+        ],
+        "issue_safety_notes": "No issue hypothesis is claimed; this seed is a structure-preserving parser-coverage candidate.",
+        "sequence_sha256": "d3c927f7acfbd9921f6e3860e95cf3c383834ef6601108353c26a568389aa9c5",
+        "total_bytes": 45,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-024",
+        "seed_id": "pk6-024",
+        "title": "SendRRData explicit request for No_Operation service",
+        "strategy": "function_code_coverage",
+        "target_operation": "No_Operation",
+        "purpose": "Exercise another explicit-message parser path by wrapping a minimally encoded CIP No_Operation-style service request inside SendRRData and CPF.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "sendrrdata_no_operation_minimal",
+            "hex": "6f001300000000000000000000000000000000000000000000000000020000000000b20008000020022401",
+            "byte_length": 43,
+            "sha256": "68fede64d7521dfc9d79089635a9f1c91f2e55b5a9c6eb929d118a44cb5076aa"
+          }
+        ],
+        "expected_behavior": "Parser should accept the encapsulation and CPF framing and pass the embedded explicit request onward for service dispatch or normal protocol rejection if unsupported.",
+        "constraints_preserved": [
+          "Used documented SendRRData encapsulation command 0x006f and 24-byte encapsulation header.",
+          "Length field 0x0014 matches the 20-byte payload after the encapsulation header.",
+          "Used documented CPF item pairing for SendRRData: Null Address Item then Unconnected Data Item.",
+          "Embedded CIP request uses service byte 0x00 as an inferred No_Operation mapping from the plan name; this association was not explicitly verified in supplied sources.",
+          "Embedded path uses conservative CIP logical segments to class 0x02 Message Router and instance 0x01; supplied sources documented class 0x02 but not the exact path encoding template.",
+          "Zero session handle retained as a conservative stand-alone seed assumption, not as a verified requirement."
+        ],
+        "issue_safety_notes": "Generated for benign parser coverage only, with no vulnerability or malformedness claim.",
+        "sequence_sha256": "cae73b912e6b5dd56710805cb91104143aba1d42f7b5df91981adc5ccde0f8d2",
+        "total_bytes": 43,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-025",
+        "seed_id": "plan-025-seed-1",
+        "title": "Function coverage for Multiple_Service_Packet via NOP request",
+        "strategy": "function_code_coverage",
+        "target_operation": "Multiple_Service_Packet",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Multiple_Service_Packet NOP request",
+            "hex": "00000000000000000000000000000000",
+            "byte_length": 16,
+            "sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+          }
+        ],
+        "expected_behavior": "Encapsulation header with command 0x0000, length 0, success status 0x00000000; server accepts and processes NOP as valid request",
+        "constraints_preserved": [
+          "Encapsulation header 24 bytes little-endian length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "1b5847eaec2d70f5852c3244d522cdcd63e9730dfd4fee27dbe04f7ec8823769",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-026",
+        "seed_id": "plan-026-seed-1",
+        "title": "Function coverage for ListServices via explicit request",
+        "strategy": "function_code_coverage",
+        "target_operation": "ListServices",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "protocol_format:opener:common-headers-encap:32026d320478",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListServices request",
+            "hex": "040009000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 33,
+            "sha256": "5fa19a333d1f4447c8a4a11ae2dab381dae905f5de629573dd9d05cae0d8b79d"
+          }
+        ],
+        "expected_behavior": "Encapsulation header command 0x0004, length 0, session 0, success status 0x00000000; server accepts and processes ListServices request",
+        "constraints_preserved": [
+          "Encapsulation header 24 bytes little-endian length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "43f0dd1e7055dd0528c9e03a15aca7bd37bcf99c8607d971d5b4a7158ff4b30f",
+        "total_bytes": 33,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-027",
+        "seed_id": "plan-027-seed-1",
+        "title": "Function coverage for ListInterfaces via explicit request",
+        "strategy": "function_code_coverage",
+        "target_operation": "ListInterfaces",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e",
+          "protocol_format:opener:template-catalog:a7f05bcffdbd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListInterfaces request",
+            "hex": "640009000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 33,
+            "sha256": "bd9f4f20d7cc7ecdf8200a2892e4d21b6ce56246384ba4eb53836a40440fc863"
+          }
+        ],
+        "expected_behavior": "Encapsulation header command 0x0064, length 0, session 0, success status 0x00000000; server accepts and processes ListInterfaces request",
+        "constraints_preserved": [
+          "Encapsulation header 24 bytes little-endian length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "04ec205670190407032142bb563f9f15bcfa1d31ac327f02cca8579f212d1f8b",
+        "total_bytes": 33,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-028",
+        "seed_id": "plan-028-seed-1",
+        "title": "Function coverage for ListIdentity via explicit request",
+        "strategy": "function_code_coverage",
+        "target_operation": "ListIdentity",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:515064cfcdad",
+          "protocol_format:opener:format-overview:8e03e5bb8ecf",
+          "function_code:function:function-text:3e4eac4fe64e",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListIdentity request",
+            "hex": "630009000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 33,
+            "sha256": "8aec816bcf0ecc5a451b3f3b8eb46f23f499e21f85897eb6ea5e285e34c182c3"
+          }
+        ],
+        "expected_behavior": "Encapsulation header command 0x0063, length 0, session 0, success status 0x00000000; server accepts and processes ListIdentity request",
+        "constraints_preserved": [
+          "Encapsulation header 24 bytes little-endian length",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "7d9c5632d9e6908845872ebc2239feb0556c6a05eb3c47b552cea8c6828a4096",
+        "total_bytes": 33,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-029",
+        "seed_id": "plan-029",
+        "title": "Function coverage for Large_Forward_Open",
+        "strategy": "function_code_coverage",
+        "target_operation": "Large_Forward_Open",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:3e4eac4fe64e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Large_Forward_Open request",
+            "hex": "00002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 64,
+            "sha256": "910cf85260560388b3a40546aeb94fe0acaa7938afc7ab77a912591455ee54ea"
+          }
+        ],
+        "expected_behavior": "Parser recognizes the encapsulation command and processes the message per documented Large_Forward_Open operation.",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header",
+          "Diversify discovery, session and explicit-message paths",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex must be lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b0cffedb02663d02c70c41eadb26f15d057fb4a36dce59a7e01df4b1e9e3dd79",
+        "total_bytes": 64,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-034",
+        "seed_id": "plan-034-001",
+        "title": "Function coverage for GroupSync",
+        "strategy": "function_code_coverage",
+        "target_operation": "GroupSync",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "006f240000000000ffffffff0000000000000000ffffffff000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 60,
+            "sha256": "4083e25eb0c688ec40bd241d6bb3b4287bc1f93dce7583a5afdaa1d45da317c7"
+          }
+        ],
+        "expected_behavior": "Valid encapsulation request with group synchronization request, accepted by OpENer server.",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths",
+          "Supplied protocol sources are primary and must not be contradicted",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex must be lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "PK-only (P+/V-) candidate seed sequence for fuzzing corpus",
+        "sequence_sha256": "3fa92c0e65df0fcfd0d6b89bea529f6a4074ff95d6c4f45751d1a023f4cb9ff4",
+        "total_bytes": 60,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-037",
+        "seed_id": "pk-only-seed-001",
+        "title": "Function coverage for Get_Attribute_Single",
+        "strategy": "function_code_coverage",
+        "target_operation": "Get_Attribute_Single",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:a6b9b629463c"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Get_Attribute_Single_Request",
+            "hex": "6f0000000000000000000000000000000000000000000000",
+            "byte_length": 24,
+            "sha256": "e25e305a43f0e2adedceb47319733012ae4d58df1f78e2633c938c4d1f9fb3cd"
+          }
+        ],
+        "expected_behavior": "Parser accepts request and returns success response for documented Get_Attribute_Single operation.",
+        "constraints_preserved": [
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length.",
+          "Use a 24-byte encapsulation header when that form is selected.",
+          "Diversify discovery, session and explicit-message paths."
+        ],
+        "issue_safety_notes": "No vulnerability issues; PK-only seed generated.",
+        "sequence_sha256": "f4e3f651c1ee8c7228b8f37b5401c8b1865537d0623bffa48a77a0c6850e124f",
+        "total_bytes": 24,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-041",
+        "seed_id": "seed-041",
+        "title": "Function coverage for Find_Next_Object_Instance",
+        "strategy": "function_code_coverage",
+        "target_operation": "Find_Next_Object_Instance",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "ListIdentity Request",
+            "hex": "6f0027000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 63,
+            "sha256": "03955813285ff9026f3d6cf7d9df701aab8732652d7fb82cecaad56419456101"
+          }
+        ],
+        "expected_behavior": "Server returns successful ListIdentity response confirming parser handles requested instance.",
+        "constraints_preserved": [
+          "24-byte encapsulation header with little-endian payload length",
+          "Null Address Item + Unconnected Data Item for SendRRData",
+          "Command 0x0063 and service code 0x02 documented in sources"
+        ],
+        "issue_safety_notes": "No issue; fully valid request per protocol sources.",
+        "sequence_sha256": "6ca516368913794e475071d00c38ee24227c275d2eec233c309120416c481ce3",
+        "total_bytes": 63,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-042",
+        "seed_id": "seed-042",
+        "title": "Function coverage for Embedded Service Error",
+        "strategy": "function_code_coverage",
+        "target_operation": "Embedded Service Error",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a",
+          "function_code:function:function-text:3b15ec1ab4ca"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "UnconnectedSend Request",
+            "hex": "700027000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 63,
+            "sha256": "bc33a05712dcc90ab208c2d0b140417a02bb06a6a60f8782158fb51dfb7d5863"
+          }
+        ],
+        "expected_behavior": "Server returns error response confirming parser handles embedded status.",
+        "constraints_preserved": [
+          "24-byte encapsulation header with little-endian payload length",
+          "Connected Address Item + Connected Data Item for SendUnitData",
+          "Command 0x0070 documented in sources"
+        ],
+        "issue_safety_notes": "No issue; fully valid request per protocol sources.",
+        "sequence_sha256": "a0697fb98dd0f3366b71ce71b7160ca3c42588f4b5d0807fbcc05869420a9d60",
+        "total_bytes": 63,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-045",
+        "seed_id": "045a",
+        "title": "Function coverage for Connection Manager Object",
+        "strategy": "function_code_coverage",
+        "target_operation": "Connection Manager Object",
+        "purpose": "Valid request centered on this documented operation to cover more parser entry points",
+        "evidence_ids": [
+          "function_code:function:function-text:d62ad498ac4f",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:578655b8e58e",
+          "function_code:function:function-text:3e4eac4fe64e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "Connection Manager Object valid request",
+            "hex": "00000f00f000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 39,
+            "sha256": "ed69ef4b6825608fcf43ff8997a88e1bd4165d2439fc9d4b35bba84c2407fe63"
+          }
+        ],
+        "expected_behavior": "Request processed by Connection Manager object parser entry point",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation header with little-endian payload length",
+          "24-byte encapsulation header when selected",
+          "Little-endian fields"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "92319cc67dab739030d0f75fc874f66e5e70eb0af64e71b6a8dc989ecb2bb2d9",
+        "total_bytes": 39,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-049",
+        "seed_id": "pk-049",
+        "title": "Function coverage for Write-Once Value Or Medium Already Written",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write-Once Value Or Medium Already Written",
+        "purpose": "Ensure initial corpus covers more parser entry points for this documented CIP operation via valid request",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a",
+          "function_code:function:function-text:3b15ec1ab4ca"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write-Once Value Or Medium Already Written request",
+            "hex": "000012000006000000000000000000000006000000020000000100000000000000000000000000000000",
+            "byte_length": 42,
+            "sha256": "7cd4b26a1abfa5d8aeeb02a72c3a83cb705af138a09d3ae02d5c8e6d113f56d2"
+          }
+        ],
+        "expected_behavior": "Request processed and returns status 0x21 (Write-Once Value Or Medium Already Written) per documented CIP general status codes",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation header with little-endian payload length",
+          "24-byte encapsulation header",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills documentation gaps only",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources",
+          "Message hex is lowercase hexadecimal without separators"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "b19f249e4ec874db1ec88b7b867521853c83424fd6d0c98ecb7098609bff8af4",
+        "total_bytes": 42,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-053",
+        "seed_id": "seed-053-01",
+        "title": "Function coverage for Unexpected Attribute In List",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unexpected Attribute In List",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "ListIdentity valid",
+            "hex": "0004000000000000000000000000000000000000",
+            "byte_length": 20,
+            "sha256": "b1f5be8a56e9903eae3110f146b965851378590cbf58f3c07be7e12f948a4b5b"
+          }
+        ],
+        "expected_behavior": "Encapsulation header + null address + unconnected data item parsed successfully without attribute list error path; coverage for unexpected attribute in list entry point.",
+        "constraints_preserved": [
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length.",
+          "Use a 24-byte encapsulation header when that form is selected.",
+          "Diversify discovery, session and explicit-message paths."
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "38b6475ca52374df27bd0b77aead780b0e3b06055d99fc1cdd7a0c83752e945c",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-054",
+        "seed_id": "seed-054-01",
+        "title": "Function coverage for Unconnected Data Item",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unconnected Data Item",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:40a9289da660"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData valid",
+            "hex": "006f000000000000000000000000000000000000",
+            "byte_length": 20,
+            "sha256": "c100b104a07ec169ab75b656a095e2265f64232ae5b60c2691d8020ad3a0251b"
+          }
+        ],
+        "expected_behavior": "Encapsulation header + null address + unconnected data item parsed successfully; coverage for common packet format unconnected data item path.",
+        "constraints_preserved": [
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length.",
+          "Use a 24-byte encapsulation header when that form is selected.",
+          "Diversify discovery, session and explicit-message paths."
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "beede617d506f5590b0f9ca38a5592ae9ade1f30f4c80e85e0a9517b894b3f50",
+        "total_bytes": 20,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-061",
+        "seed_id": "seed-061",
+        "title": "Function coverage for Socket Address Information O-to-T",
+        "strategy": "function_code_coverage",
+        "target_operation": "Socket Address Information O-to-T",
+        "purpose": "Valid single-request SendRRData using Socket Address Information O-to-T item to exercise parser entry points",
+        "evidence_ids": [
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData Request",
+            "hex": "00000a0000000000000000000000000000000000000000000100000b800200010000",
+            "byte_length": 34,
+            "sha256": "b50b36f356af4d735767861c0dabd1d7662acdd55cb0973439c6eaedf41510a4"
+          }
+        ],
+        "expected_behavior": "Server accepts and processes request",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header",
+          "Diversify discovery, session and explicit-message paths",
+          "Complete documented framing, length/count/checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues; valid request for corpus",
+        "sequence_sha256": "83fc49d510b2ff2f20308bf2098e2af37646b5ca9977653c15e6ff146053f85e",
+        "total_bytes": 34,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-062",
+        "seed_id": "seed-062",
+        "title": "Function coverage for Sequenced Address Item",
+        "strategy": "function_code_coverage",
+        "target_operation": "Sequenced Address Item",
+        "purpose": "Valid single-request SendRRData using Sequenced Address Item to exercise parser entry points",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:f14ecde0d175",
+          "function_code:function:function-text:0d83a9cb1819",
+          "function_code:function:operation-catalog:a8ab6b7392b2",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:3b15ec1ab4ca",
+          "function_code:function:function-text:578655b8e58e"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "SendRRData Request",
+            "hex": "000012000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "byte_length": 42,
+            "sha256": "408a36c69ba4a8844efe9d71c3be0873b25179a7714639c11d3bc039f59e09d5"
+          }
+        ],
+        "expected_behavior": "Server accepts and processes request",
+        "constraints_preserved": [
+          "EtherNet/IP encapsulation headers with little-endian payload length",
+          "24-byte encapsulation header",
+          "Diversify discovery, session and explicit-message paths",
+          "Complete documented framing, length/count/checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues; valid request for corpus",
+        "sequence_sha256": "576180e25f5158bd4d0b96c4799d8c66f83f97e6582b66b7050aff60fdddb862",
+        "total_bytes": 42,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed encapsulation length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-065",
+        "seed_id": "seed-0492",
+        "title": "Function coverage for Reply Data Too Large",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reply Data Too Large",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:a6b9b629463c",
+          "function_code:function:operation-catalog:e8810af4c6bf",
+          "function_code:function:function-text:40a9289da660",
+          "function_code:function:function-text:515064cfcdad",
+          "function_code:function:function-text:b3c070259d0a",
+          "function_code:function:function-text:3b15ec1ab4ca"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "standalone",
+            "label": "valid request for Reply Data Too Large",
+            "hex": "00000000aabbccddeeff001122334455667788",
+            "byte_length": 19,
+            "sha256": "6dbcf1d807bbc02774781df730f8e728f883dffe6e92947e5ab8dd66b25c1a78"
+          }
+        ],
+        "expected_behavior": "Parser processes the encapsulation command and Common Packet Format items without triggering Reply Data Too Large logic; returns 0x00000000 success with appropriate encapsulation header.",
+        "constraints_preserved": [
+          "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+          "Use a 24-byte encapsulation header when that form is selected",
+          "Diversify discovery, session and explicit-message paths"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "1b77b010fc7e0c458004c2dcdbcf23f673f2c84b2f49760f2149f1724ba05b81",
+        "total_bytes": 19,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "seed-004: duplicate sequence removed",
+    "plan011-001: duplicate sequence removed",
+    "plan012-001: duplicate sequence removed",
+    "seed-015: duplicate sequence removed",
+    "pk6-023: duplicate sequence removed",
+    "plan-030: duplicate sequence removed",
+    "plan-031: duplicate sequence removed",
+    "plan-032: duplicate sequence removed",
+    "plan-033-001: message[0] invalid hex: hex value has an odd number of characters",
+    "plan-035-001: duplicate sequence removed",
+    "plan-036-001: duplicate sequence removed",
+    "seed-043: duplicate sequence removed",
+    "seed-044: duplicate sequence removed",
+    "046a: duplicate sequence removed",
+    "047a: duplicate sequence removed",
+    "048a: duplicate sequence removed",
+    "pk-050: duplicate sequence removed",
+    "pk-051: duplicate sequence removed",
+    "pk-052: duplicate sequence removed",
+    "seed-055-01: duplicate sequence removed",
+    "seed-056-01: duplicate sequence removed",
+    "seed-057-001: duplicate sequence removed",
+    "seed-058-001: duplicate sequence removed",
+    "seed-059-001: duplicate sequence removed",
+    "seed-060-001: duplicate sequence removed",
+    "seed-063: duplicate sequence removed",
+    "seed-064: duplicate sequence removed"
+  ]
+}

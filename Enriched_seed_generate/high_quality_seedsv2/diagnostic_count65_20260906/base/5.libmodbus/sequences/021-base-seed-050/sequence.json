@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-seed-050",
+  "title": "Base Read Discrete Inputs variant 5",
+  "strategy": "baseline_valid",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Produce a canonical Read Discrete Inputs request with a different unit, address range, transaction identifier, and bit count from the other seeds; include a coherent exception-shaped response frame for response diversity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Discrete Inputs request, unit 0x22, start 0x0000, quantity 17",
+      "hex": "002a00000006220200000011",
+      "byte_length": 12,
+      "sha256": "d24f81b8c18969e3c82942b8697c5da7f10af346783ebf2dc75707eb2a0fcda2"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Discrete Inputs exception response, unit 0x22, exception 0x82",
+      "hex": "002a00000003112282",
+      "byte_length": 9,
+      "sha256": "cef9bf868a326e15c15f335f63fc267b60787026b8a0e387bf005affb76c55e8"
+    }
+  ],
+  "expected_behavior": "A compliant server may return three packed data bytes for seventeen discrete inputs, or a normal protocol/device exception if the requested unit or range is unavailable.",
+  "constraints_preserved": [
+    "7-byte MBAP header is used.",
+    "Protocol identifier is 0x0000.",
+    "MBAP length 0x0006 covers the unit identifier and request PDU.",
+    "Function code 0x02 and the two-byte start and quantity fields are present in canonical order.",
+    "Quantity 17 implies a three-byte packed input response."
+  ],
+  "issue_safety_notes": "Issue knowledge is unavailable; the candidate is intended as a conservative baseline based only on model-prior protocol knowledge and supplied base constraints.",
+  "sequence_sha256": "dbd8c24130a2a95cf08e5fb58ac7bac7a61c8c74ea67cadfe693182e4e1fcb4d",
+  "total_bytes": 21,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b58f95f72b738b23045757b5eb21a76867f8692bf77de575e8948a4b909bb131",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

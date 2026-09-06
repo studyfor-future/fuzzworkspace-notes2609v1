@@ -1,0 +1,141 @@
+{
+  "coverage_summary": [
+    "plan-033: Confirmed VT-Close service (f1c980ef7dde) with valid BVLC+NPDU+APDU headers covering parser entry at service choice 0x16",
+    "plan-034: Unconfirmed UTCTimeSynchronization (64bab0235519) exercising unconfirmed path with consistent BVLC length",
+    "plan-035: Unrecognized-Service coverage using reject-reason style while keeping valid structure",
+    "plan-036: UnconfirmedTextMessage (95a473051f77) adding text-message nesting diversity"
+  ],
+  "generation_notes": "Deterministically synthesized from BACnet function-code catalog and layered protocol templates to maximize diversity across confirmed/unconfirmed service entry points while strictly preserving documented framing, length, order, and checksum rules. All payloads are structurally analogous to the oversized extended-application-length vector in the issue but use fresh service contexts, real operation values, and conservative model-prior completion for missing header fields only.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Preserve full BVLC four-byte length field",
+        "Use documented APDU PDU type Confirmed-Request-PDU (0x00)",
+        "Maintain order, checksum, and length rules from protocol_format",
+        "Conservative fill of missing header fields only"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60",
+        "function_code:function:function-text:f1c980ef7dde",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "function_code:function:function-text:d3664eeda33b",
+        "function_code:function:function-text:457cd2894efe"
+      ],
+      "expected_behavior": "Valid confirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for service choice 0x16 exercised without crash.",
+      "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+          "index": 0,
+          "label": "BVLC+NPDU+Confirmed-Request for VT-Close"
+        }
+      ],
+      "plan_id": "plan-033",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "bacnet-plan-033",
+      "strategy": "function_code_coverage",
+      "target_operation": "VT-Close",
+      "title": "Function coverage for VT-Close"
+    },
+    {
+      "constraints_preserved": [
+        "Preserve full BVLC four-byte length field",
+        "Use documented APDU PDU type Unconfirmed-Request-PDU (0x10)",
+        "Maintain order, checksum, and length rules from protocol_format",
+        "Conservative fill of missing header fields only"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:64bab0235519",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:95a473051f77",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "Valid unconfirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unconfirmed service exercised without crash.",
+      "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+          "index": 0,
+          "label": "BVLC+NPDU+Unconfirmed-Request for UTCTimeSynchronization"
+        }
+      ],
+      "plan_id": "plan-034",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "bacnet-plan-034",
+      "strategy": "function_code_coverage",
+      "target_operation": "UTCTimeSynchronization",
+      "title": "Function coverage for UTCTimeSynchronization"
+    },
+    {
+      "constraints_preserved": [
+        "Preserve full BVLC four-byte length field",
+        "Use documented APDU PDU type Confirmed-Request-PDU (0x00)",
+        "Maintain order, checksum, and length rules from protocol_format",
+        "Conservative fill of missing header fields only"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:00f4c0ca11c4",
+        "function_code:function:function-text:7cfded47457a",
+        "function_code:function:function-text:f1c980ef7dde",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+        "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+      ],
+      "expected_behavior": "Valid confirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unrecognized service exercised without crash.",
+      "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+          "index": 0,
+          "label": "BVLC+NPDU+Confirmed-Request for unrecognized service"
+        }
+      ],
+      "plan_id": "plan-035",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "bacnet-plan-035",
+      "strategy": "function_code_coverage",
+      "target_operation": "Unrecognized-Service",
+      "title": "Function coverage for Unrecognized-Service"
+    },
+    {
+      "constraints_preserved": [
+        "Preserve full BVLC four-byte length field",
+        "Use documented APDU PDU type Unconfirmed-Request-PDU (0x10)",
+        "Maintain order, checksum, and length rules from protocol_format",
+        "Conservative fill of missing header fields only"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:64bab0235519",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:95a473051f77",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "Valid unconfirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unconfirmed text service exercised without crash.",
+      "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+          "index": 0,
+          "label": "BVLC+NPDU+Unconfirmed-Request for UnconfirmedTextMessage"
+        }
+      ],
+      "plan_id": "plan-036",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "bacnet-plan-036",
+      "strategy": "function_code_coverage",
+      "target_operation": "UnconfirmedTextMessage",
+      "title": "Function coverage for UnconfirmedTextMessage"
+    }
+  ],
+  "target_issue": 1270
+}

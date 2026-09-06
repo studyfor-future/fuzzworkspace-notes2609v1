@@ -1,0 +1,166 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": 748,
+  "generation_notes": "Exactly four distinct VK-only Modbus/TCP message sequences are provided. Historical issue evidence guides operation selection, parser depth, boundary coverage, repeated processing, and field interactions without copying exact reported payloads. Model-prior protocol details are fallible and not externally verified. Every message uses a seven-byte MBAP header, protocol identifier 0000, internally consistent MBAP length, and a recognizable function-specific structure.",
+  "coverage_summary": [
+    "Exercises Diagnostics with repeated requests, varied transaction identifiers, unit identifiers, subfunctions, and data values.",
+    "Exercises nested Read File Record parsing with two independently structured subrequests and a matching aggregate byte count.",
+    "Exercises compound Read/Write Multiple Registers processing across repeated transactions with varied read and write ranges and payload sizes.",
+    "Exercises Encapsulated Interface Transport device-identification parsing with multiple unit identifiers and object identifiers.",
+    "Covers issue-guided short-frame sensitivity, nested parser depth, repeated state handling, length/count relationships, and receive/dispatch paths.",
+    "All MBAP protocol identifiers and visible length fields are internally consistent, and no historical crash byte sequence is reproduced verbatim."
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-009",
+      "seed_id": "seed-diagnostics-repeat-02",
+      "title": "Diagnostics repeated compact requests",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Diagnostics",
+      "purpose": "Exercise compact fixed-format Diagnostics requests over repeated transactions while varying unit, subfunction, and data fields near the minimum complete request shape.",
+      "evidence_ids": [
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics_loopback_request_a",
+          "hex": "0101000000061108000055aa"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "diagnostics_restart_request_b",
+          "hex": "010200000006120800010f0f"
+        }
+      ],
+      "expected_behavior": "The server should parse each complete Diagnostics request independently and return a normal response or a protocol-level exception without consuming bytes outside the declared ADU boundaries.",
+      "constraints_preserved": [
+        "Each message has a seven-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000 in both messages",
+        "Each MBAP length 0006 equals the unit identifier plus the five-byte Diagnostics PDU",
+        "Each request contains a function code, two-byte subfunction, and two-byte data field",
+        "Transaction identifiers and unit identifiers differ across the repeated requests"
+      ],
+      "issue_safety_notes": "This is a fresh structural analogue for short and boundary-sensitive request handling. It does not reproduce the reported write-bits input or assert that the cited issue mechanism applies to Diagnostics."
+    },
+    {
+      "plan_id": "vk-plan-010",
+      "seed_id": "seed-read-file-record-depth-02",
+      "title": "Read File Record dual-subrequest parser depth",
+      "strategy": "parser_depth",
+      "target_operation": "Read File Record",
+      "purpose": "Reach nested record parsing with two complete subrequests so mutations can independently target aggregate byte count, reference type, file number, record number, and record length fields.",
+      "evidence_ids": [
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:763:763-summary:e75d690140f2",
+        "issue:612:612-summary:7b008d4bca1d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_file_record_two_subrequests",
+          "hex": "20010000001102140e0600010000000206000200030001"
+        }
+      ],
+      "expected_behavior": "The server should parse the complete Read File Record request and either return data for the requested records or issue a standard exception for unsupported or unavailable file access.",
+      "constraints_preserved": [
+        "The message has a seven-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "MBAP length 0011 equals the unit identifier plus the sixteen-byte PDU",
+        "Read File Record byte count 0e equals two seven-byte subrequests",
+        "Each nested subrequest contains reference type 06 and three two-byte fields",
+        "No bytes follow the declared ADU"
+      ],
+      "issue_safety_notes": "The nested structure is an issue-guided parser analogue and is not the historical PoC. It preserves aggregate and nested length relationships and does not claim direct reachability of modbus_mapping_free."
+    },
+    {
+      "plan_id": "vk-plan-011",
+      "seed_id": "seed-read-write-registers-repeat-02",
+      "title": "Repeated compound register transactions",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Exercise repeated compound read/write processing with different ranges and payload widths, exposing transaction-state and counted-data interactions across two complete requests.",
+      "evidence_ids": [
+        "issue:749:749-summary:29b9071582b0",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:750:750-summary:3dcb92ca7c5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_write_registers_four_byte_write",
+          "hex": "30010000000f031700100002002000020411223344"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "read_write_registers_two_byte_write",
+          "hex": "30020000000d0417000000010010000102a55a"
+        }
+      ],
+      "expected_behavior": "The server should parse each compound request, apply or reject the write range according to normal device policy, and produce a normal read response or a standard exception while maintaining transaction boundaries.",
+      "constraints_preserved": [
+        "Each message has a seven-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "The first MBAP length 000f matches a unit identifier plus fourteen-byte PDU",
+        "The second MBAP length 000d matches a unit identifier plus twelve-byte PDU",
+        "Read and write quantities match their corresponding address fields",
+        "Each write byte count matches the number of encoded register data bytes",
+        "Transaction identifiers and unit identifiers differ between messages"
+      ],
+      "issue_safety_notes": "These are fresh compound request analogues for repeated server processing and state-sensitive handling. They do not reproduce the reported multi-request stream or assume the suspected use-after-free cause is confirmed."
+    },
+    {
+      "plan_id": "vk-plan-012",
+      "seed_id": "seed-encapsulated-interface-dispatch-02",
+      "title": "Encapsulated Interface Transport identification variants",
+      "strategy": "function_code_coverage",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Cover the MEI-based device-identification dispatch path with repeated valid requests that vary unit, transaction, read-code, and object-id fields.",
+      "evidence_ids": [
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:803:803-summary:fea416ab8355",
+        "issue:867:867-summary:58115ace3a65"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "device_identification_basic",
+          "hex": "400100000005052b0e0100"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "device_identification_regular",
+          "hex": "400200000005062b0e0200"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "device_identification_object_variant",
+          "hex": "400300000005072b0e0101"
+        }
+      ],
+      "expected_behavior": "The server should parse each complete Encapsulated Interface Transport request and return device-identification data or a standard exception when the requested service is unavailable.",
+      "constraints_preserved": [
+        "Each message has a seven-byte Modbus/TCP MBAP header",
+        "Protocol identifier is 0000",
+        "Each MBAP length 0005 equals the unit identifier plus the four-byte PDU",
+        "Each PDU contains function code 2b, MEI type 0e, a read-code byte, and an object-id byte",
+        "Transaction identifiers and unit identifiers vary across messages",
+        "No message contains trailing bytes beyond its declared ADU"
+      ],
+      "issue_safety_notes": "This sequence targets receive and function dispatch with conservative MEI-shaped requests. The bytes are newly constructed, not copied from any historical report, and the model-prior interpretation of the fields is not externally verified."
+    }
+  ]
+}

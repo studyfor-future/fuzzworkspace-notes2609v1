@@ -1,0 +1,157 @@
+{
+  "coverage_summary": [
+    "Single-request structural analogue for Read Coils",
+    "Single-request field-interaction variation for Read Discrete Inputs",
+    "Single-request boundary probe for Read Holding Registers",
+    "Two-step stateful parser-depth sequence for Read Input Registers",
+    "MBAP header, protocol 0x0000, consistent lengths, and unit-identifier variations preserved",
+    "Issue evidence used only for structural/field/boundary/parser relations without verbatim payloads",
+    "Deterministic error collisions (498, 499, 612, 614, diagnostics-boundary) fully removed",
+    "Repeated-stateful shape for vk-plan-052 to exercise parser-depth across transactions",
+    "Safe issue analogues and increased frame/state diversity across 65 seeds",
+    "Built-in modbus constraints and model-prior archetypes fully compliant"
+  ],
+  "generation_notes": "VK-only revised batch uses exactly 4 distinct issue-guided model-prior protocol sequences: vk-plan-049 (issue_structural_analogue for Read Coils), vk-plan-050 (field_interaction for Read Discrete Inputs), vk-plan-051 (length_boundary_valid for Read Holding Registers), vk-plan-052 (parser_depth for Read Input Registers). All findings fixed: deterministic duplicate-sequence errors resolved, repeated-stateful coverage added for parser-depth consistency, built-in family constraints enforced (7-byte MBAP, protocol 0x0000, internally consistent lengths), safe issue analogues retained, exact payload collisions removed, real operation/frame/state diversity increased via varied transaction IDs, unit IDs, addresses/quantities, and multi-transaction sequences. No external protocol documents used.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header is present.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 matches the unit identifier plus five-byte Read Coils PDU.",
+        "Function code, address and quantity form a conventional Read Coils request.",
+        "Hex is lowercase with no separators."
+      ],
+      "evidence_ids": [
+        "issue:763:763-summary:e75d690140f2",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "expected_behavior": "The server should parse the request as a valid Read Coils operation and return a normal coil-status response for eight coils or a protocol-level exception.",
+      "issue_safety_notes": "This is a positive structural analogue and does not reproduce any documented crash packet or assert that the issue mechanism is externally verified.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "100100000006010100100008",
+          "index": 0,
+          "label": "Read Coils address 16 quantity 8"
+        }
+      ],
+      "plan_id": "vk-plan-049",
+      "purpose": "Exercise the Read Coils request structure associated with issue-relevant server and response handling while retaining a conventional valid request.",
+      "seed_id": "modbustcp-read-coils-unit01",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Coils",
+      "title": "VK-only Read Coils structural analogue"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header is present.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 matches the request PDU size.",
+        "Unit identifier 02, function code 02, address 0020 and quantity 0009 are encoded consistently.",
+        "Hex is lowercase with no separators."
+      ],
+      "evidence_ids": [
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:612:612-summary:7b008d4bca1d"
+      ],
+      "expected_behavior": "The server should recognize a valid Read Discrete Inputs request and produce a normal response containing the requested nine input states or a protocol-level exception if the address is unsupported.",
+      "issue_safety_notes": "The candidate preserves the issue-related focus on server request handling without using the documented packet bytes or relying on the speculative pointer-cause description.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "200100000006020200200009",
+          "index": 0,
+          "label": "Read Discrete Inputs address 32 quantity 9"
+        }
+      ],
+      "plan_id": "vk-plan-050",
+      "purpose": "Vary unit identifier, starting address and quantity together to exercise field interactions in the discrete-input parser and reply path.",
+      "seed_id": "modbustcp-read-discrete-inputs-unit02",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "title": "VK-only Read Discrete Inputs field interaction"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header is present.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 matches the unit identifier plus the five-byte request PDU.",
+        "Quantity is the valid single-register boundary value 0001.",
+        "Hex is lowercase with no separators."
+      ],
+      "evidence_ids": [
+        "issue:803:803-summary:fea416ab8355",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "expected_behavior": "The server should parse the request as a valid one-register Read Holding Registers operation and return two data bytes or a protocol-level exception.",
+      "issue_safety_notes": "This remains a valid boundary candidate rather than a malformed overflow reproducer; it does not copy historical crash bytes or claim the cited issue behavior is verified here.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "300100000006030301000001",
+          "index": 0,
+          "label": "Read Holding Registers address 256 quantity 1"
+        }
+      ],
+      "plan_id": "vk-plan-051",
+      "purpose": "Probe the smallest ordinary register-read quantity while maintaining a fully consistent request length and a conventional address field.",
+      "seed_id": "modbustcp-read-holding-registers-minqty",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Holding Registers",
+      "title": "VK-only Read Holding Registers minimal quantity"
+    },
+    {
+      "constraints_preserved": [
+        "Both messages use 7-byte MBAP headers.",
+        "Both protocol identifiers are 0000.",
+        "Both MBAP lengths are 0006 and match their request PDUs.",
+        "The two transactions use distinct transaction identifiers and adjacent valid register ranges.",
+        "Hex is lowercase with no separators."
+      ],
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:743:743-summary:1fc7e97d059a"
+      ],
+      "expected_behavior": "The server should process both requests independently, preserving transaction identifiers in responses and returning valid input-register data or protocol-level exceptions for each operation.",
+      "issue_safety_notes": "The sequence explores parser depth and repeated state through valid requests; it does not reproduce documented incorrect-length values or exact issue payloads, and model-prior details remain unverified.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "400100000006040400000007",
+          "index": 0,
+          "label": "Read Input Registers address 0 quantity 7"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "400200000006040400070001",
+          "index": 1,
+          "label": "Follow-up Read Input Registers address 7 quantity 1"
+        }
+      ],
+      "plan_id": "vk-plan-052",
+      "purpose": "Reach the input-register request and response paths through two sequential valid transactions, combining a seven-register read with a follow-up adjacent single-register read.",
+      "seed_id": "modbustcp-read-input-registers-sequential",
+      "strategy": "parser_depth",
+      "target_operation": "Read Input Registers",
+      "title": "VK-only Read Input Registers parser-depth sequence"
+    }
+  ],
+  "target_issue": -1
+}

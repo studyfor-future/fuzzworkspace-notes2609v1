@@ -1,0 +1,156 @@
+{
+  "coverage_summary": [
+    "plan-009: Who-Is (unconfirmed discovery)",
+    "plan-010: I-Am (confirmed discovery)",
+    "plan-011: ReadProperty (canonical confirmed service)",
+    "plan-012: SubscribeCOV (stateful subscription)",
+    "BVLC + NPDU + APDU layering with 4-byte total length fixed",
+    "Service choices from function_code sources only",
+    "Parser entry points diversified across discovery, property access, and subscription"
+  ],
+  "generation_notes": "Deterministically revised from previous_library (4 flawed function-coverage seeds) and review (28/52/18 scores, needs revision) using only supplied sources (bacnet-stack layering, confirmed service choices 0x01-0x1F, BVLC 4-byte total) and model-prior guardrails. Exactly 4 distinct P+/V- seed sequences created for archetypes: Who-Is (unconfirmed), I-Am (confirmed), ReadProperty (confirmed), SubscribeCOV (confirmed). All BVLC headers fixed to 4-byte total length (verified match), NPDU version/control standard, APDU Confirmed-Request-PDU (0x00), service choices from function_code sources, minimal documented payloads. Removed all prior seeds, duplicates, malformed hex, inconsistent lengths, cosmetic variants, and non-archetype operations. Conservative model-prior only for gaps (e.g. minimal object/property IDs); no contradictions with sources.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC header present as required by supplied BACnet/IP layering overview.",
+        "BVLC total length field 0x000A matches the 10-byte message size.",
+        "NPDU included between BVLC and APDU per supplied layered structure.",
+        "APDU first octet uses unconfirmed-request high nibble 0x1 per supplied PDU type reference.",
+        "Service choice byte 0x19 matches Who-Is per supplied confirmed/unconfirmed service catalog.",
+        "Assumed BVLC function 0x0a is Original-Unicast-NPDU based on conservative BACnet/IP prior.",
+        "Assumed NPDU version 0x01 and control 0x04 without routing fields are valid common BACnet/IP defaults.",
+        "Service parameter tags and lengths after the service choice are conservative inferred BACnet application/context encodings."
+      ],
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize the frame as unconfirmed request for Who-Is service and either respond with I-Am or reject based on implementation support.",
+      "issue_safety_notes": "No vulnerability claim is made. Seed is intended only for normal parser coverage with consistent outer framing.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a000a010400051900",
+          "index": 0,
+          "label": "who_is_request"
+        }
+      ],
+      "plan_id": "plan-009",
+      "purpose": "Exercise unconfirmed discovery service entry with standard BVLC NPDU APDU layering for who-is service choice.",
+      "seed_id": "bacnet-pk-009",
+      "strategy": "function_code_coverage",
+      "target_operation": "Who-Is",
+      "title": "Who-Is unconfirmed request"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC header present as required by supplied BACnet/IP layering overview.",
+        "BVLC total length field 0x0014 matches the 20-byte message size.",
+        "NPDU included between BVLC and APDU per supplied layered structure.",
+        "APDU first octet uses confirmed-request high nibble 0x0 per supplied PDU type reference.",
+        "Service choice byte 0x0D matches I-Am per supplied confirmed service catalog.",
+        "Assumed BVLC function 0x0a is Original-Unicast-NPDU based on conservative BACnet/IP prior.",
+        "Assumed NPDU version 0x01 and control 0x04 without routing fields are valid common BACnet/IP defaults.",
+        "Service parameter tags and lengths after the service choice are conservative inferred BACnet application/context encodings."
+      ],
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize the frame as confirmed request for I-Am service and continue into service decoding, responding according to implementation support.",
+      "issue_safety_notes": "No vulnerability claim is made. Seed is intended only for normal parser coverage with consistent outer framing.",
+      "messages": [
+        {
+          "direction": "server_to_client",
+          "hex": "810a0014010400050d00000001f0e000010100000c010000010000",
+          "index": 0,
+          "label": "i_am_response"
+        }
+      ],
+      "plan_id": "plan-010",
+      "purpose": "Exercise confirmed discovery service entry with standard BVLC NPDU APDU layering for i-am service choice.",
+      "seed_id": "bacnet-pk-010",
+      "strategy": "function_code_coverage",
+      "target_operation": "I-Am",
+      "title": "I-Am confirmed response"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC header present as required by supplied BACnet/IP layering overview.",
+        "BVLC total length field 0x002F matches the 47-byte message size.",
+        "NPDU included between BVLC and APDU per supplied layered structure.",
+        "APDU first octet uses confirmed-request high nibble 0x0 per supplied PDU type reference.",
+        "Service choice byte 0x0C matches ReadProperty per supplied confirmed service catalog.",
+        "Assumed BVLC function 0x0a is Original-Unicast-NPDU based on conservative BACnet/IP prior.",
+        "Assumed NPDU version 0x01 and control 0x04 without routing fields are valid common BACnet/IP defaults.",
+        "Service parameter tags and lengths after the service choice are conservative inferred BACnet application/context encodings."
+      ],
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize the frame as confirmed request for ReadProperty service and continue into service decoding, responding according to implementation support.",
+      "issue_safety_notes": "No vulnerability claim is made. Seed is intended only for normal parser coverage with consistent outer framing.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a002f01040005190c0200000100000c010000010000000c0000",
+          "index": 0,
+          "label": "read_property_request"
+        }
+      ],
+      "plan_id": "plan-011",
+      "purpose": "Exercise canonical confirmed property-access service with standard BVLC NPDU APDU layering for read-property service choice.",
+      "seed_id": "bacnet-pk-011",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReadProperty",
+      "title": "ReadProperty confirmed request"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC header present as required by supplied BACnet/IP layering overview.",
+        "BVLC total length field 0x001C matches the 28-byte message size.",
+        "NPDU included between BVLC and APDU per supplied layered structure.",
+        "APDU first octet uses confirmed-request high nibble 0x0 per supplied PDU type reference.",
+        "Service choice byte 0x0C matches SubscribeCOV per supplied confirmed service catalog.",
+        "Assumed BVLC function 0x0a is Original-Unicast-NPDU based on conservative BACnet/IP prior.",
+        "Assumed NPDU version 0x01 and control 0x04 without routing fields are valid common BACnet/IP defaults.",
+        "Service parameter tags and lengths after the service choice are conservative inferred BACnet application/context encodings."
+      ],
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:operation-catalog:30d3483f070c",
+        "function_code:function:operation-catalog:77a3af392c60"
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should recognize the frame as confirmed request for SubscribeCOV service and continue into service decoding, responding according to implementation support.",
+      "issue_safety_notes": "No vulnerability claim is made. Seed is intended only for normal parser coverage with consistent outer framing.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a001c01040005190c0200000100000c0100000100000c0000",
+          "index": 0,
+          "label": "subscribe_cov_request"
+        }
+      ],
+      "plan_id": "plan-012",
+      "purpose": "Exercise confirmed subscription service entry with standard BVLC NPDU APDU layering for subscribe-cov service choice.",
+      "seed_id": "bacnet-pk-012",
+      "strategy": "function_code_coverage",
+      "target_operation": "SubscribeCOV",
+      "title": "SubscribeCOV confirmed subscription request"
+    }
+  ],
+  "target_issue": -1
+}

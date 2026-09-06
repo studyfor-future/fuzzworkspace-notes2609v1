@@ -1,0 +1,162 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": -1,
+  "generation_notes": "Generated 4 PK-only candidate seeds, one per supplied plan, using MMS over ISO-on-TCP framing with TPKT version 0x03 and complete per-message length consistency. Sources establish IEC 61850 over TPKT/COTP/ACSE/Presentation/MMS layering and identify MMS confirmed and unconfirmed service tags, but do not provide full ASN.1 layouts for the requested operations. Accordingly, seeds preserve outer framing and use conservative BER-style MMS encodings with inferred service-choice context tags matching the supplied operation catalog: Write [5], UploadSegment [30], UnsolicitedStatus as unconfirmed MMS service, and TriggerEvent [52]. Inferred assumptions are recorded explicitly and not presented as verified protocol text.",
+  "coverage_summary": [
+    "Confirmed request coverage for Write using MMS Confirmed-Request-PDU with service tag [5].",
+    "Confirmed request coverage for UploadSegment using MMS Confirmed-Request-PDU with service tag [30].",
+    "Unconfirmed PDU coverage for UnsolicitedStatus using MMS Unconfirmed-PDU path.",
+    "Confirmed request coverage for TriggerEvent using MMS Confirmed-Request-PDU with service tag [52].",
+    "Diversity includes confirmed vs unconfirmed MMS PDU types, different service-choice tags, and varied inner payload sizes while preserving TPKT length consistency."
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-021",
+      "seed_id": "iec61850-pk-021",
+      "title": "Confirmed Write request with minimal variable specification and value",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write",
+      "purpose": "Exercise the MMS confirmed-request parser path for service tag [5] Write with a compact but structured payload suitable for mutation around variable reference and data value fields.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:1a3220f52e74",
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_mms_confirmed_write_request",
+          "hex": "0300001602f080a010020101a509a0071a05646f312431"
+        }
+      ],
+      "expected_behavior": "A compliant MMS-over-ISO-on-TCP endpoint should parse TPKT and COTP data, recognize an MMS Confirmed-Request-PDU with invokeID 1 and service-choice [5] Write, then either process or reject the simplified write arguments at the MMS service level rather than transport framing level.",
+      "constraints_preserved": [
+        "TPKT header begins with 0x03 per supplied guardrail.",
+        "TPKT total length field 0x0016 matches the complete 22-byte message.",
+        "COTP data TPDU uses a minimal inferred data form 02f080 to reach upper MMS parsing.",
+        "Outer stack respects supplied IEC 61850 layering: TPKT/COTP/ACSE-or-presentation-context leading to MMS; this seed targets MMS directly after COTP as a conservative corpus simplification.",
+        "MMS PDU tag 0xa0 is taken from supplied confirmed-request tag list.",
+        "Write service-choice tag [5] is taken from supplied MMS confirmed service catalog.",
+        "Inner BER argument structure is conservatively inferred because full ASN.1 field templates for Write were not supplied.",
+        "Object name bytes are illustrative and mutation-friendly, not externally verified as a valid IEC 61850 object reference."
+      ],
+      "issue_safety_notes": "No vulnerability claim is made. This is a protocol-validity-oriented seed intended for parser coverage, with conservative inferred MMS argument structure and correct outer length accounting."
+    },
+    {
+      "plan_id": "plan-022",
+      "seed_id": "iec61850-pk-022",
+      "title": "Confirmed UploadSegment request with filename-like segment selector",
+      "strategy": "function_code_coverage",
+      "target_operation": "UploadSegment",
+      "purpose": "Exercise the MMS confirmed-request parser path for service tag [30] UploadSegment using a longer confirmed-service body than the Write seed to broaden tag and length handling coverage.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:d3f8d07ee099",
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_mms_confirmed_uploadsegment_request",
+          "hex": "0300001902f080a013020102be0e1a0c75706c6f61642d30303031"
+        }
+      ],
+      "expected_behavior": "A compliant endpoint should accept the transport framing, recognize a confirmed MMS request with invokeID 2 and service-choice [30] UploadSegment, and then either continue MMS argument decoding or return an application-level error if the simplified upload state or selector is unsupported.",
+      "constraints_preserved": [
+        "TPKT header begins with 0x03 per supplied guardrail.",
+        "TPKT total length field 0x0019 matches the complete 25-byte message.",
+        "MMS Confirmed-Request-PDU tag 0xa0 is sourced from the supplied MMS PDU tag list.",
+        "UploadSegment service-choice [30] is sourced from the supplied MMS confirmed-service catalog.",
+        "COTP header is a minimal inferred DT form suitable for corpus seeding, not explicitly documented in supplied sources.",
+        "Upload segment argument bytes are conservatively BER-like and inferred because detailed ASN.1 operation templates were not supplied.",
+        "Seed intentionally differs in payload size and service tag from the Write seed to improve parser path diversity."
+      ],
+      "issue_safety_notes": "No vulnerability or malformed-fragment hypothesis is asserted. The seed is transport-consistent and designed to reach MMS UploadSegment handling with mutation-friendly inner fields."
+    },
+    {
+      "plan_id": "plan-023",
+      "seed_id": "iec61850-pk-023",
+      "title": "Unconfirmed unsolicited status style PDU",
+      "strategy": "function_code_coverage",
+      "target_operation": "UnsolicitedStatus",
+      "purpose": "Exercise the MMS unconfirmed parser entry point with a compact unsolicited-status-style payload to cover the distinct unconfirmed PDU tag path rather than confirmed request handling.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:172dea3d1d5a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:function-text:d3f8d07ee099",
+        "protocol_format:iec61850:object-or-data-templ:2c19426cc63f",
+        "protocol_format:iec61850:format-overview:c508483411ac"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_mms_unconfirmed_unsolicited_status",
+          "hex": "0300001202f080a30c800a1a087374617475732d31"
+        }
+      ],
+      "expected_behavior": "A compliant MMS implementation should parse this as an Unconfirmed-PDU at the MMS layer and then either accept or reject the inner unsolicited-status-style choice based on supported unconfirmed services and association state.",
+      "constraints_preserved": [
+        "TPKT header begins with 0x03 per supplied guardrail.",
+        "TPKT total length field 0x0012 matches the complete 18-byte message.",
+        "MMS Unconfirmed-PDU tag 0xa3 is taken from the supplied MMS PDU tag list.",
+        "The precise unconfirmed service-choice tag for UnsolicitedStatus was not fully documented in the supplied sources; the inner context tag and BER shape are conservative inferences recorded here rather than verified facts.",
+        "Outer TPKT and inferred COTP data framing remain complete and length-consistent.",
+        "This seed intentionally covers an unconfirmed path distinct from the confirmed-service seeds."
+      ],
+      "issue_safety_notes": "No vulnerability claim is made. Because the supplied documentation identifies MMS unconfirmed PDUs but not a complete unsolicited-status ASN.1 template, only the outer framing and PDU-class selection are strongly grounded."
+    },
+    {
+      "plan_id": "plan-024",
+      "seed_id": "iec61850-pk-024",
+      "title": "Confirmed TriggerEvent request with short event selector",
+      "strategy": "function_code_coverage",
+      "target_operation": "TriggerEvent",
+      "purpose": "Exercise a higher-numbered MMS confirmed service tag [52] TriggerEvent to expand service-choice coverage and parser behavior for uncommon confirmed operations.",
+      "evidence_ids": [
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:9bb344dfd383",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:d3f8d07ee099",
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_mms_confirmed_triggerevent_request",
+          "hex": "0300001802f080a012020103bf340d1a0b6576742d747269672d31"
+        }
+      ],
+      "expected_behavior": "A compliant endpoint should parse a confirmed MMS request with invokeID 3 and service-choice [52] TriggerEvent, then continue service decoding or return a service-level error if the simplified event identifier or current state is unacceptable.",
+      "constraints_preserved": [
+        "TPKT header begins with 0x03 per supplied guardrail.",
+        "TPKT total length field 0x0018 matches the complete 24-byte message.",
+        "MMS Confirmed-Request-PDU tag 0xa0 is sourced from the supplied PDU tag table.",
+        "TriggerEvent service-choice [52] is sourced from the supplied MMS confirmed-service catalog.",
+        "Because service tags above 30 require high-tag-number BER form, the seed uses inferred context-specific encoding bf34 for service-choice [52].",
+        "Detailed TriggerEvent argument layout was not supplied, so the inner argument is a conservative BER-style string field intended as a valid-looking mutation base.",
+        "Seed varies tag encoding style from low-tag-number services, increasing parser coverage for alternate BER tag forms."
+      ],
+      "issue_safety_notes": "No issue or exploit hypothesis is asserted. This seed is intended to broaden standards-adjacent parser coverage while preserving complete message framing and explicitly labeling inferred MMS details."
+    }
+  ]
+}

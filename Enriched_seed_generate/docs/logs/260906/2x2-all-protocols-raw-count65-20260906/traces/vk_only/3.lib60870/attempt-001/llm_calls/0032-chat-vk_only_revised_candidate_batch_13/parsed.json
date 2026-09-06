@@ -1,0 +1,171 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "VK-only revision using supplied issue evidence, built-in IEC 60870 family constraints, and fallible model-prior protocol knowledge. The four sequences retain the requested operations while adding link-control and clock-synchronization state transitions, a dedicated Double Command field interaction, distinct I-frame sizes, and complete length/count consistency. Historical crash payloads are not copied and model-prior details are not externally verified.",
+  "coverage_summary": [
+    "General Interrogation reached after STARTDT activation and Clock Synchronization state preparation",
+    "Single Command uses a complete non-sequence information object with distinct IOA and command qualifier fields",
+    "Double Command has a dedicated two-object field-interaction path preceded by TESTFR activation",
+    "Measured Value exercises a distinct parser path with complete IOA, value, and quality fields",
+    "All IEC 104 frames use lowercase hexadecimal and internally consistent 0x68 length octets",
+    "Issue analogues preserve malformed-parser relevance through complete, mutation-friendly structures rather than exact crash payloads"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-049",
+      "seed_id": "vk-revised-049-gi-clock",
+      "title": "VK-only General Interrogation after link activation and clock state preparation",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "General Interrogation",
+      "purpose": "Exercise a recognizable General Interrogation parser structure after STARTDT activation and a Clock Synchronization exchange, while retaining a sequence-form analogue with a declared element count that is fully represented by the message body.",
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:53:53-summary:9148432dbf39",
+        "vk_task_context:task-contract:e5a446a8785a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "startdt_activation",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "startdt_confirmation",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "clock_synchronization",
+          "hex": "6814000000000067010600010000000000010203040506"
+        },
+        {
+          "index": 3,
+          "direction": "client_to_server",
+          "label": "general_interrogation_sequence_form",
+          "hex": "680e0400000064810600010000000014"
+        }
+      ],
+      "expected_behavior": "The peer should process the link-control transition and then parse the complete Clock Synchronization and General Interrogation information structures without relying on bytes beyond the declared frame lengths. The sequence is suitable for mutation around VSQ, COT, CA, IOA, qualifier, and time fields.",
+      "constraints_preserved": [
+        "iec60870_5_104_apci_framing",
+        "start_byte_is_0x68",
+        "each_frame_length_octet_matches_control_and_asdu_bytes",
+        "sequence_count_matches_present_sequence_structure",
+        "clock_time_field_has_complete_model_prior_width"
+      ],
+      "issue_safety_notes": "The sequence is a safe structural analogue to the reported missing-IOA and VSQ/body mismatch conditions. It intentionally supplies complete fields and does not copy either GHSA crash payload or the reported Clock Synchronization byte stream; observed acceptance, rejection, or diagnostics remain implementation-dependent."
+    },
+    {
+      "plan_id": "vk-plan-050",
+      "seed_id": "vk-revised-050-single",
+      "title": "VK-only Single Command with complete address and qualifier interaction",
+      "strategy": "field_interaction",
+      "target_operation": "Single Command",
+      "purpose": "Reach the Single Command information-object parser with interacting COT, common address, IOA, and command qualifier fields, using a compact complete body that can be mutated toward boundary and state variants.",
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "single_command",
+          "hex": "680e080000002d010600010002000001"
+        }
+      ],
+      "expected_behavior": "The server should parse one complete Single Command object, including its three-byte IOA and one-byte command qualifier, or reject it through normal validation. Mutations can independently vary the object address, activation qualifier, COT, common address, and sequence bit while preserving the enclosing frame length.",
+      "constraints_preserved": [
+        "iec60870_5_104_i_frame",
+        "start_byte_is_0x68",
+        "length_octet_0x0e_matches_four_control_and_ten_asdu_bytes",
+        "vsq_count_is_one",
+        "non_sequence_object_contains_complete_ioa_and_command_qualifier"
+      ],
+      "issue_safety_notes": "This preserves the issue-relevant address-parser and declared-count interaction as a bounded analogue, but does not advertise an out-of-bounds read as expected behavior and does not copy the GHSA-7V97-JMWV-W5J7 reproduction bytes."
+    },
+    {
+      "plan_id": "vk-plan-051",
+      "seed_id": "vk-revised-051-double-testfr",
+      "title": "VK-only Double Command with two-object field interaction after TESTFR",
+      "strategy": "field_interaction",
+      "target_operation": "Double Command",
+      "purpose": "Provide dedicated Double Command coverage with two independently addressable objects and a preceding TESTFR activation/confirmation exchange to vary link state and parser entry conditions.",
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "testfr_activation",
+          "hex": "680443000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "testfr_confirmation",
+          "hex": "680483000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "double_command_two_objects",
+          "hex": "6812040000002e02060001000100000102000000"
+        }
+      ],
+      "expected_behavior": "The peer should handle the TESTFR exchange and then parse or reject the complete two-object Double Command frame according to its normal state and validation rules. The two distinct IOAs and qualifiers create mutation points for object-count, address, and command-state interactions.",
+      "constraints_preserved": [
+        "iec60870_5_104_u_and_i_frame_archetypes",
+        "start_byte_is_0x68",
+        "u_frame_length_is_four",
+        "i_frame_length_octet_0x12_matches_four_control_and_fourteen_asdu_bytes",
+        "vsq_non_sequence_count_two_matches_two_complete_objects"
+      ],
+      "issue_safety_notes": "The short-ASDU and parser-boundary reports motivate this bounded analogue, but the frame contains all declared object fields and uses new bytes rather than any supplied issue payload. A crash is not assumed; the harness should record safe rejection, acceptance, or diagnostic behavior."
+    },
+    {
+      "plan_id": "vk-plan-052",
+      "seed_id": "vk-revised-052-measured",
+      "title": "VK-only Measured Value parser-depth sequence with complete quality fields",
+      "strategy": "parser_depth",
+      "target_operation": "Measured Value",
+      "purpose": "Exercise a measurement information-object path distinct from command and interrogation paths, including IOA, normalized value, and quality descriptor fields within a consistent I-frame.",
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "vk_task_context:task-contract:e5a446a8785a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "measured_value_normalized",
+          "hex": "68100c000000090103000100010000341200"
+        }
+      ],
+      "expected_behavior": "The server should parse or safely reject one complete measured-value object and its quality descriptor after the link is ready. The distinct type, COT, IOA, value, and quality fields provide parser-depth mutation points without depending on a missing field.",
+      "constraints_preserved": [
+        "iec60870_5_104_i_frame",
+        "start_byte_is_0x68",
+        "length_octet_0x10_matches_four_control_and_twelve_asdu_bytes",
+        "vsq_count_is_one",
+        "measurement_object_contains_complete_ioa_value_and_quality_descriptor"
+      ],
+      "issue_safety_notes": "The sequence is guided by reports involving deep information-object and time-related parser paths, while remaining a complete bounded measurement analogue. It does not copy the reported Clock Synchronization stream or either GHSA payload, and no specific vulnerability outcome is asserted."
+    }
+  ]
+}

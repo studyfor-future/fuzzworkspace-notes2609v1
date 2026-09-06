@@ -1,0 +1,53 @@
+{
+  "seed_id": "bacnet-pk-023-atomwritefile",
+  "title": "AtomicWriteFile request seed",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Cover boundary length handling and confirmed service dispatch for AtomicWriteFile.",
+  "evidence_ids": [
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:operation-catalog:30d3483f070c",
+    "function_code:function:function-text:d3664eeda33b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC NPDU AtomicWriteFile request",
+      "hex": "810a0011010000050007000000007b0000",
+      "byte_length": 17,
+      "sha256": "78d1c5541e803416514f3feb047844585381dc765f1b281342ff930570f7dcca"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP receiver should parse the confirmed request and dispatch AtomicWriteFile service with proper length boundary enforcement.",
+  "constraints_preserved": [
+    "BVLC type 0x81 and function 0x0a with four-byte header",
+    "BVLC total length 0x0017 matching complete frame",
+    "NPDU version 0x01 with zero control and no routing fields",
+    "APDU first octet 0x00 for Confirmed-Request-PDU",
+    "Invoke ID 0x01 and max segments 0x05",
+    "Service choice 0x07 for AtomicWriteFile from function text",
+    "Object type 0x0000, instance 123, property 0, file index 0"
+  ],
+  "issue_safety_notes": "Positive structural seed only; no vulnerability claims.",
+  "sequence_sha256": "b33275daa1203102f4eaa272ee9e215af21cab4e1b1e64e565149f4aaf863751",
+  "total_bytes": 17,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "78d1c5541e803416514f3feb047844585381dc765f1b281342ff930570f7dcca",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

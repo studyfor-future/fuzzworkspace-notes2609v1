@@ -1,0 +1,126 @@
+{
+  "protocol_name": "bacnet-stack",
+  "target_issue": -1,
+  "generation_notes": "Generated four single-request BACnet/IP seed sequences using model-prior plausible BVLC, NPDU, and confirmed-service APDU layering. BVLC total lengths, field ordering, and nested tag closure relationships are kept internally consistent. Protocol validity and operation encodings are model-prior plausibility, not externally verified; no external protocol documents or vulnerability issues were supplied.",
+  "coverage_summary": [
+    "WriteProperty with a boundary-adjacent scalar value and priority field",
+    "SubscribeCOV with monitored object, notification mode, and lifetime field interaction",
+    "ReadRange with nested position-based range parameters",
+    "AtomicReadFile with stream access and signed offset plus requested count",
+    "Diverse property, subscription, range, and file service forms using distinct request sizes"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-025",
+      "seed_id": "base-seed-025-v3",
+      "title": "Base WriteProperty variant 3",
+      "strategy": "length_boundary_valid",
+      "target_operation": "WriteProperty",
+      "purpose": "Exercise a compact confirmed WriteProperty request containing a scalar present-value payload and priority while retaining consistent nested tags and a boundary-adjacent total frame length.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BACnet/IP Confirmed WriteProperty request",
+          "hex": "810a0019010402000fc400080001910c3e4442c800003f4901"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP server should parse the request as a confirmed WriteProperty operation for the selected object and property, then return a success or standards-conforming error response according to object and authorization state.",
+      "constraints_preserved": [
+        "BVLC type is BACnet/IP and function is Original-Unicast-NPDU",
+        "BVLC total length is 0x0019 and matches the encoded frame size",
+        "NPDU and confirmed-request APDU are ordered before service parameters",
+        "Present-value opening and closing context tags are balanced",
+        "Message hex is lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "No vulnerability issue knowledge is available. This is a conservative model-prior seed intended for parser and operation coverage, not an exploit or reproduction of a known issue."
+    },
+    {
+      "plan_id": "base-plan-026",
+      "seed_id": "base-seed-026-v3",
+      "title": "Base SubscribeCOV variant 3",
+      "strategy": "field_interaction",
+      "target_operation": "SubscribeCOV",
+      "purpose": "Vary the subscriber process identifier together with confirmed-notification mode and lifetime while preserving the monitored object and nested service structure.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BACnet/IP Confirmed SubscribeCOV request",
+          "hex": "810a001d01040201050507091c0008000229013a0000012c"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP server should parse the request as a confirmed SubscribeCOV operation and either establish the subscription or return a protocol-level error for unsupported, invalid, or unauthorized values.",
+      "constraints_preserved": [
+        "BVLC total length is 0x001d and matches the encoded frame size",
+        "Confirmed request service choice is positioned after NPDU and invoke data",
+        "Subscriber process identifier and lifetime use consistent context-tag length forms",
+        "Monitored object identifier is encoded as a four-octet object value",
+        "Message hex is lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "No external issue reports or vulnerability details are available. Field combinations are selected from conservative model-prior BACnet service shapes and should be treated as plausibility seeds only."
+    },
+    {
+      "plan_id": "base-plan-027",
+      "seed_id": "base-seed-027-v3",
+      "title": "Base ReadRange variant 3",
+      "strategy": "parser_depth",
+      "target_operation": "ReadRange",
+      "purpose": "Reach nested range-selection parsing with a position-based range containing a negative signed start position and an unsigned item count.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BACnet/IP Confirmed ReadRange request with position range",
+          "hex": "810a001c0104020226c40008000319553e0cfffffffe1c000000053f"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP server should parse the confirmed ReadRange request, interpret the nested position range, and return a range result or a protocol-level error based on object, property, and range support.",
+      "constraints_preserved": [
+        "BVLC total length is 0x001c and matches the encoded frame size",
+        "ReadRange request contains object identifier and property identifier before range data",
+        "Nested range opening and closing tags are balanced",
+        "Signed start position and unsigned count each carry four value octets",
+        "Message hex is lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "Issue knowledge is unavailable and no known vulnerability is being targeted. The deeper nested form is a model-prior parser-coverage analogue with conservative values, not an externally validated test case."
+    },
+    {
+      "plan_id": "base-plan-028",
+      "seed_id": "base-seed-028-v3",
+      "title": "Base AtomicReadFile variant 3",
+      "strategy": "other",
+      "target_operation": "AtomicReadFile",
+      "purpose": "Provide a structurally distinct file-service seed using stream access with a negative file offset and a bounded requested octet count.",
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "BACnet/IP Confirmed AtomicReadFile stream request",
+          "hex": "810a001a0104020306c4000a00070e0cfffffffc1c00000020"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP server should parse the confirmed AtomicReadFile stream request and return file data or a protocol-level error based on file availability, access permissions, and supported access parameters.",
+      "constraints_preserved": [
+        "BVLC total length is 0x001a and matches the encoded frame size",
+        "File object identifier is encoded before the stream-access parameters",
+        "Stream access choice is enclosed by matching context tags",
+        "Negative start position and requested octet count have explicit four-octet values",
+        "Message hex is lowercase hexadecimal without separators"
+      ],
+      "issue_safety_notes": "No external protocol evidence or vulnerability issue knowledge is available. This seed is a conservative model-prior structural variant for file-service coverage and is not a claim of verified protocol validity."
+    }
+  ]
+}

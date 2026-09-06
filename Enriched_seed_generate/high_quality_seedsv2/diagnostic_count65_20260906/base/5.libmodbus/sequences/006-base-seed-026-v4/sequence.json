@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-026-v4",
+  "title": "Base Read Discrete Inputs with packed response",
+  "strategy": "field_interaction",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Exercise interaction between unit selection, starting address, non-byte-aligned quantity, and packed response sizing using a complete request and response pair.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Discrete Inputs request, unit 10, start 16, quantity 13",
+      "hex": "0002000000060a020010000d",
+      "byte_length": 12,
+      "sha256": "bbc07870bc9c1aff8c6e7880541860ab9d09d523823be0fe2b4ae84cc79320ec"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Discrete Inputs response, unit 10, two packed data bytes",
+      "hex": "0002000000050a0202ff1f",
+      "byte_length": 11,
+      "sha256": "b48e892eae7a2e2b6084ad2f976b5f0d0c00faec39b7d18bb11a73eda547fc56"
+    }
+  ],
+  "expected_behavior": "The server should parse the request as Read Discrete Inputs for unit 10 and may return two packed data bytes for 13 inputs. The response transaction and unit identifiers match the request.",
+  "constraints_preserved": [
+    "Both frames use protocol identifier 0000 and 7-byte MBAP headers.",
+    "The request MBAP length is 0006 for the unit identifier plus the 5-byte request PDU.",
+    "The response MBAP length is 0005 for the unit identifier plus the function, byte count, and two data bytes.",
+    "Function code 02 is preserved in the normal response.",
+    "The requested quantity 000d requires two packed bytes, and the response byte count is 02.",
+    "The response transaction identifier 0002 and unit identifier 0a match the request."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The response is a conservative normal-form model-prior example intended for parser and field-interaction coverage.",
+  "sequence_sha256": "fd4f704d80fcf49037f6ee0fcdf86f934df5b69998f3494ee25894db83393755",
+  "total_bytes": 23,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "16beb5c61c4ae2bd219f248d70b814a2575a3b10096763af8f21a3b5178fd1b2",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

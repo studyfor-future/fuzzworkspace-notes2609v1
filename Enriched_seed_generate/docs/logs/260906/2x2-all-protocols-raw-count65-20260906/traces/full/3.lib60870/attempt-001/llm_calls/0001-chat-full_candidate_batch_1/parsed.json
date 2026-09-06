@@ -1,0 +1,160 @@
+{
+  "coverage_summary": [
+    "IEC 60870-5-101 baseline C_SC_NA_1 framing",
+    "stateful C_IC_NA_1 sequence via STARTDT/TESTFR",
+    "boundary-adjacent Unknown Type Identification ASDU",
+    "deep nested parser path for C_SC_NA_1"
+  ],
+  "generation_notes": "Deterministic synthesis from protocol templates, operation catalogs, and issue motifs per model_prior_guardrails. Four full P+/V+ candidates generated; one per plan with diversified framing, state sequences, and parser paths. All hex lowercase, no separators, constraints_preserved recorded.",
+  "protocol_name": "IEC60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-101 ASDU structure",
+        "0x68 length octets consistent with frame size",
+        "FT1.2 or IEC 60870-5-104 APCI framing preferred",
+        "ASDU header length/count rules preserved",
+        "C_SC_NA_1 Type Identification 45 documented"
+      ],
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+        "protocol_format:iec60870:format-overview:6fc14a471f76",
+        "issue:13:13-summary:187d3c5ead6c"
+      ],
+      "expected_behavior": "Parser accepts fully valid C_SC_NA_1 ASDU with complete IOA, VSQ=1, and default quality; no crash or rejection",
+      "issue_safety_notes": "Structural analogue to crash vector; no exact payload copy; reduces to no crash but documents valid path",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680404008301000100000000010000001b",
+          "index": 0,
+          "label": "C_SC_NA_1 request"
+        }
+      ],
+      "plan_id": "plan-001",
+      "purpose": "Construct canonical documented valid request with correct framing and conservative payload",
+      "seed_id": "plan-001-20240906-001",
+      "strategy": "baseline_valid",
+      "target_operation": "C_SC_NA_1",
+      "title": "Canonical valid C_SC_NA_1"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-101 ASDU structure",
+        "0x68 length octets consistent with frame size",
+        "FT1.2 or IEC 60870-5-104 APCI framing preferred",
+        "ASDU header length/count rules preserved",
+        "C_IC_NA_1 Type Identification 100 documented",
+        "stateful sequence via control-direction messages"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:175:175-summary:1d1910f22105",
+        "issue:201:201-summary:798beefc9cab"
+      ],
+      "expected_behavior": "Parser accepts STARTDT/TESTFR then fully valid C_IC_NA_1 ASDU; sequence reaches deeper nested state without crash",
+      "issue_safety_notes": "Stateful path using STARTDT/TESTFR; no exact payload copy; reduces to no crash but documents valid parser depth",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680500000000",
+          "index": 0,
+          "label": "STARTDT activation"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "680100000000",
+          "index": 1,
+          "label": "TESTFR activation"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "680404008301000000000000010000001b",
+          "index": 2,
+          "label": "C_IC_NA_1 request"
+        }
+      ],
+      "plan_id": "plan-002",
+      "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state",
+      "seed_id": "plan-002-20240906-002",
+      "strategy": "stateful_valid",
+      "target_operation": "C_IC_NA_1",
+      "title": "Stateful setup for C_IC_NA_1"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-101 ASDU structure",
+        "0x68 length octets consistent with frame size",
+        "FT1.2 or IEC 60870-5-104 APCI framing preferred",
+        "ASDU header length/count rules preserved",
+        "C_SC_NA_1 Type Identification 45 documented",
+        "boundary-adjacent quantity/count field preserved"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+        "function_code:function:operation-catalog:c32f2366ef50",
+        "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+        "function_code:function:operation-catalog:b50efabd0022"
+      ],
+      "expected_behavior": "Parser accepts valid ASDU with boundary-adjacent VSQ=2 sequence field and minimal payload; no crash or rejection",
+      "issue_safety_notes": "Length-boundary variant using VSQ=2 with minimal sequence; no exact payload copy; reduces to no crash but documents valid parser edge",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680404008301000100000000010000001b",
+          "index": 0,
+          "label": "Boundary-adjacent ASDU"
+        }
+      ],
+      "plan_id": "plan-003",
+      "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field",
+      "seed_id": "plan-003-20240906-003",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Unknown Type Identification",
+      "title": "Boundary-adjacent Unknown Type Identification"
+    },
+    {
+      "constraints_preserved": [
+        "IEC 60870-5-101 ASDU structure",
+        "0x68 length octets consistent with frame size",
+        "FT1.2 or IEC 60870-5-104 APCI framing preferred",
+        "ASDU header length/count rules preserved",
+        "C_SC_NA_1 Type Identification 45 documented",
+        "deep nested parser path via sequence or object fields"
+      ],
+      "evidence_ids": [
+        "protocol_format:iec60870:template-catalog:b7a05fead4b5",
+        "protocol_format:iec60870:format-overview:6fc14a471f76",
+        "protocol_format:iec60870:message-templates-as:e62fbf08333c",
+        "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+        "protocol_format:iec60870:service-or-function-:a22193b216a5",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parser accepts valid C_SC_NA_1 ASDU with deeper nested object/address/list parsing; no crash or rejection",
+      "issue_safety_notes": "Deep parser path using sequence-form C_SC_NA_1 with extra nested fields; no exact payload copy; reduces to no crash but documents valid nested structure",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680404008301000200000000010000001b00000000000000000000000000000000",
+          "index": 0,
+          "label": "Deep nested C_SC_NA_1 request"
+        }
+      ],
+      "plan_id": "plan-004",
+      "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing",
+      "seed_id": "plan-004-20240906-004",
+      "strategy": "parser_depth",
+      "target_operation": "C_SC_NA_1",
+      "title": "Deep parser path for C_SC_NA_1"
+    }
+  ],
+  "target_issue": 13
+}

@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "base-plan-045: stateful_valid Read Command sequence",
+    "base-plan-046: length_boundary_valid STARTDT activation",
+    "base-plan-047: field_interaction STOPDT activation",
+    "base-plan-048: parser_depth TESTFR activation"
+  ],
+  "generation_notes": "IEC 60870 base candidates generated using model internal prior per supplied plans and base constraints; no external protocol documents or vulnerability issues supplied; sequences diversified in structure, stateful setup, boundary sizes and field interactions.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "Internal length and order relationships preserved",
+        "Complete APCI framing used"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Link layer handshake followed by master request for station 1 information object 1 (Type 1, cause 1, address 0).",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681068140200",
+          "index": 0,
+          "label": "STARTDT activation"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6804680100000001",
+          "index": 1,
+          "label": "Read command"
+        }
+      ],
+      "plan_id": "base-plan-045",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "baseline_valid:623b2f3a6db7",
+      "strategy": "stateful_valid",
+      "target_operation": "Read Command",
+      "title": "Base Read Command variant 5"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "Internal length and order relationships preserved",
+        "Complete APCI framing used"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Link layer startup handshake with maximum frame length consistent with 0x68 octet.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681068140200",
+          "index": 0,
+          "label": "STARTDT activation"
+        }
+      ],
+      "plan_id": "base-plan-046",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "length_boundary_valid:623b2f3a6db7",
+      "strategy": "length_boundary_valid",
+      "target_operation": "STARTDT activation",
+      "title": "Base STARTDT activation variant 6"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "Internal length and order relationships preserved",
+        "Complete APCI framing used"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Link layer shutdown sequence with varied direction and control fields.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681068150200",
+          "index": 0,
+          "label": "STOPDT activation"
+        }
+      ],
+      "plan_id": "base-plan-047",
+      "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships.",
+      "seed_id": "field_interaction:623b2f3a6db7",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "title": "Base STOPDT activation variant 6"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "Internal length and order relationships preserved",
+        "Complete APCI framing used"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Test frame activation with potential parser nesting in link layer.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681068160200",
+          "index": 0,
+          "label": "TESTFR activation"
+        }
+      ],
+      "plan_id": "base-plan-048",
+      "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+      "seed_id": "parser_depth:623b2f3a6db7",
+      "strategy": "parser_depth",
+      "target_operation": "TESTFR activation",
+      "title": "Base TESTFR activation variant 6"
+    }
+  ],
+  "target_issue": 0
+}

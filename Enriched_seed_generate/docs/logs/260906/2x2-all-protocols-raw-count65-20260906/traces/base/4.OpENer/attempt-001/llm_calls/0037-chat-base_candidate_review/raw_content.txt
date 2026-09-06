@@ -1,0 +1,652 @@
+{
+  "overall_score": 27,
+  "needs_revision": true,
+  "protocol_validity_score": 22,
+  "seed_utility_score": 31,
+  "diversity_score": 46,
+  "issue_enhancement_score": 8,
+  "global_feedback": [
+    "The library is internally inconsistent with its own generation notes: it claims 65 final seeds but also repeatedly claims exactly 4 distinct sequences, and many included sequences do not resemble the claimed conservative 24-byte encapsulation framing.",
+    "Deterministic errors are not fully resolved in spirit: unknown/blank plan_id entries remain present, and several sequences are clearly malformed or too short to satisfy the stated encapsulation-header preference.",
+    "A minority of seeds are plausibly structured EtherNet/IP-style frames with coherent little-endian length fields and CPF-style layouts, but a large fraction are arbitrary or truncated hex blobs that are not useful as high-quality Base seeds.",
+    "Structural diversity exists across discovery, session, explicit, and connected-message paths, but much of it is diluted by placeholder-like variants, repeated zero-heavy templates, and low-plactical malformed frames.",
+    "Several sequences use direction values such as standalone or inject server_to_client responses; those can be useful for stateful corpus variety, but many are unsupported by accompanying framing consistency and thus reduce corpus reliability.",
+    "Many messages claim 24-byte encapsulation headers while the hex length is 4, 8, 12, 16, or other nonconforming sizes. These should be rejected or rewritten rather than kept as Base seeds.",
+    "Operation naming/plausibility is uneven: some seeds map plausible encapsulation commands to explicit-message carriers, while others attach target_operation labels to bytes that do not support the claim structurally.",
+    "Usefulness for mutation is mixed: the better seeds provide complete outer framing and nested payload boundaries, but numerous low-structure seeds would mostly waste mutation effort on transport rejection."
+  ],
+  "sequence_feedback": [
+    {
+      "seed_id": "base-plan-001-seed-2",
+      "score": 20,
+      "keep": false,
+      "problems": [
+        "Encapsulation command/length layout is not plausibly canonical for the stated operation.",
+        "Hex length exceeds 24-byte header while declared payload length and body relationship are unclear.",
+        "Uses service-code style wording for what should be discovery encapsulation, suggesting protocol confusion."
+      ],
+      "recommended_action": "Rewrite as a clearly framed 24-byte discovery request with command, zero payload length, and no invented trailing padding."
+    },
+    {
+      "seed_id": "base-plan-002-seed-2",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "Similar structural issue as the prior discovery seed.",
+        "Claimed field interaction is not visible in a meaningful framed way.",
+        "Header/body relationship is not convincingly internally consistent."
+      ],
+      "recommended_action": "Replace with a single clean discovery-form encapsulation frame distinct from ListIdentity by command value and optionally benign header-field variation."
+    },
+    {
+      "seed_id": "base-plan-003-seed-2",
+      "score": 24,
+      "keep": false,
+      "problems": [
+        "Two-message setup_then_request shape is weakly justified for RegisterSession because both messages are nearly placeholder frames.",
+        "First setup message appears operationless and not clearly useful.",
+        "Header semantics are unclear and likely not conservative."
+      ],
+      "recommended_action": "Condense to one plausible RegisterSession request or provide a realistic request/response pair with coherent session-handle reuse."
+    },
+    {
+      "seed_id": "base-plan-004-seed-2",
+      "score": 22,
+      "keep": false,
+      "problems": [
+        "Same placeholder setup issue as the prior seed.",
+        "Boundary-valid claim is unsupported by visible framing details.",
+        "Unregister request plausibility is weak without a nonzero prior session context."
+      ],
+      "recommended_action": "Rewrite as a setup response carrying a nonzero session handle followed by a zero-payload unregister request reusing that handle."
+    },
+    {
+      "seed_id": "seed-opener-001",
+      "score": 4,
+      "keep": false,
+      "problems": [
+        "Arbitrary ASCII-like bytes rather than plausible encapsulation framing.",
+        "Does not satisfy the claimed 24-byte header requirement.",
+        "Not mutation-useful as a protocol seed."
+      ],
+      "recommended_action": "Drop and replace with a fully framed SendRRData message."
+    },
+    {
+      "seed_id": "seed-opener-002",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Hex is well-formed but reads as arbitrary pattern bytes.",
+        "No clear 24-byte encapsulation header or nested structure.",
+        "Parser-depth claim is unsupported by framing."
+      ],
+      "recommended_action": "Replace with a complete SendUnitData frame containing explicit CPF item structure."
+    },
+    {
+      "seed_id": "seed-opener-003",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "Far too short and unframed for the claimed operation.",
+        "No visible encapsulation or path structure.",
+        "Purely arbitrary payload."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-opener-004",
+      "score": 2,
+      "keep": false,
+      "problems": [
+        "Far too short and unframed for the claimed operation.",
+        "No visible encapsulation or explicit-message carrier.",
+        "Not suitable as Base seed."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seq-009-r1",
+      "score": 72,
+      "keep": true,
+      "problems": [
+        "ForwardOpen semantics remain model-prior only and may not be fully correct.",
+        "Inner field meanings are not externally verifiable.",
+        "Could benefit from a session-established variant."
+      ],
+      "recommended_action": "Keep as one of the better explicit-message seeds; optionally add a paired session-based variant."
+    },
+    {
+      "seed_id": "seq-010-r1",
+      "score": 74,
+      "keep": true,
+      "problems": [
+        "Stateful sequence omits server response and therefore uses an inferred session handle without confirmation.",
+        "Some inner nested-service bytes remain uncertain under model prior."
+      ],
+      "recommended_action": "Keep, but improve by adding a realistic RegisterSession response and handle reuse."
+    },
+    {
+      "seed_id": "seq-011-r1",
+      "score": 83,
+      "keep": true,
+      "problems": [
+        "Minimal discovery request is simple and stable but low in structural richness."
+      ],
+      "recommended_action": "Keep as a canonical small discovery seed."
+    },
+    {
+      "seed_id": "seq-012-r1",
+      "score": 78,
+      "keep": true,
+      "problems": [
+        "Field-interaction variation is modest.",
+        "Discovery-seed semantics are still model-prior only."
+      ],
+      "recommended_action": "Keep as a distinct discovery variant."
+    },
+    {
+      "seed_id": "seed-013",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Hex length is only 12 bytes, not a 24-byte encapsulation frame.",
+        "Expected behavior text contradicts the actual message size.",
+        "Not a RegisterSession-form seed."
+      ],
+      "recommended_action": "Drop and rewrite from scratch."
+    },
+    {
+      "seed_id": "seed-014",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Hex length is only 12 bytes.",
+        "Claimed setup_then_request shape contains only one message.",
+        "Not a plausible unregister framing."
+      ],
+      "recommended_action": "Drop and rewrite."
+    },
+    {
+      "seed_id": "seed-015",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Tiny malformed placeholder.",
+        "No SendRRData structure.",
+        "Expected behavior is unsupported."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-016",
+      "score": 1,
+      "keep": false,
+      "problems": [
+        "Tiny malformed placeholder.",
+        "No SendUnitData framing.",
+        "Not useful for mutation."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-plan-017-001",
+      "score": 76,
+      "keep": true,
+      "problems": [
+        "Second frame plausibility is decent but still model-prior uncertain.",
+        "Could use a confirmed response pair for stronger state progression."
+      ],
+      "recommended_action": "Keep as a useful stateful explicit seed."
+    },
+    {
+      "seed_id": "base-plan-018-001",
+      "score": 71,
+      "keep": true,
+      "problems": [
+        "Length-boundary characterization is modest rather than strongly boundary-oriented.",
+        "Inner write payload semantics remain uncertain."
+      ],
+      "recommended_action": "Keep; consider adding a shorter and longer companion write variant."
+    },
+    {
+      "seed_id": "base-plan-019-001",
+      "score": 68,
+      "keep": true,
+      "problems": [
+        "ForwardOpen body remains speculative.",
+        "No session-associated variant."
+      ],
+      "recommended_action": "Keep as a structurally distinct explicit seed."
+    },
+    {
+      "seed_id": "base-plan-020-001",
+      "score": 73,
+      "keep": true,
+      "problems": [
+        "Nested explicit payload is plausible but unverifiable.",
+        "Would benefit from a paired error response."
+      ],
+      "recommended_action": "Keep."
+    },
+    {
+      "seed_id": "3",
+      "score": 6,
+      "keep": false,
+      "problems": [
+        "Header is not plausibly canonical for discovery.",
+        "Command bytes and declared purpose do not align.",
+        "Mostly zero/pattern filler."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "3-3",
+      "score": 5,
+      "keep": false,
+      "problems": [
+        "Both messages are identical, reducing value.",
+        "RegisterSession semantics unsupported by bytes.",
+        "Setup_then_request shape is cosmetic."
+      ],
+      "recommended_action": "Drop and replace with a true request/response or request/follow-up sequence."
+    },
+    {
+      "seed_id": "base-plan-025-seed-1",
+      "score": 77,
+      "keep": true,
+      "problems": [
+        "Compact payload may limit parser depth.",
+        "Inner path semantics remain model-prior only."
+      ],
+      "recommended_action": "Keep as a small explicit-message seed."
+    },
+    {
+      "seed_id": "base-plan-026-seed-1",
+      "score": 82,
+      "keep": true,
+      "problems": [
+        "Connected semantics are still uncertain without prior connection establishment."
+      ],
+      "recommended_action": "Keep as a structurally valuable connected-message seed; add a paired connection-setup seed if possible."
+    },
+    {
+      "seed_id": "base-plan-027-seed-1",
+      "score": 86,
+      "keep": true,
+      "problems": [
+        "Includes synthetic server response, which is acceptable for corpus variety but should be marked intentional.",
+        "Specific status expectations are uncertain."
+      ],
+      "recommended_action": "Keep as one of the strongest stateful seeds."
+    },
+    {
+      "seed_id": "base-plan-028-seed-1",
+      "score": 79,
+      "keep": true,
+      "problems": [
+        "Write semantics unverified.",
+        "Could benefit from a matching response."
+      ],
+      "recommended_action": "Keep."
+    },
+    {
+      "seed_id": "s-029",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Not a plausible ForwardOpen frame.",
+        "Mostly zero padding.",
+        "Too short/simple relative to claimed operation."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "s-031",
+      "score": 10,
+      "keep": false,
+      "problems": [
+        "Stateful ListIdentity is not compelling here.",
+        "Both frames are identical placeholders.",
+        "Poor mutation utility."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "v4-033-001",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "16-byte message, not 24-byte encapsulation header.",
+        "Expected behavior unsupported.",
+        "Not a useful RegisterSession frame."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "v4-034-001",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "16-byte message.",
+        "Malformed/truncated structure.",
+        "Parser-depth claim unsupported."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "v4-035-001",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "16-byte message.",
+        "No SendRRData structure.",
+        "Placeholder only."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "v4-036-001",
+      "score": 3,
+      "keep": false,
+      "problems": [
+        "16-byte message.",
+        "No SendUnitData structure.",
+        "Claimed validity unsupported."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-plan-037-v2",
+      "score": 7,
+      "keep": false,
+      "problems": [
+        "Message length does not match claimed 24-byte header form.",
+        "Arbitrary bytes do not obviously encode the stated operation.",
+        "Low utility."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-plan-038-v2",
+      "score": 8,
+      "keep": false,
+      "problems": [
+        "Both frames are too short and weakly structured.",
+        "Setup_then_request is nominal only.",
+        "No explicit-message carrier visible."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-plan-039-v2",
+      "score": 7,
+      "keep": false,
+      "problems": [
+        "Too short and understructured for ForwardOpen.",
+        "Boundary-valid claim unsupported."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-plan-040-v2",
+      "score": 7,
+      "keep": false,
+      "problems": [
+        "Too short and understructured for UnconnectedSend.",
+        "Field interaction is not meaningfully encoded."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-041-1",
+      "score": 15,
+      "keep": false,
+      "problems": [
+        "24-byte length may be present, but command bytes do not convincingly map to ListIdentity.",
+        "Mostly zero filler.",
+        "Parser-depth claim unsupported."
+      ],
+      "recommended_action": "Rewrite or remove."
+    },
+    {
+      "seed_id": "seed-042-1",
+      "score": 16,
+      "keep": false,
+      "problems": [
+        "Same weak framing pattern as neighboring seed.",
+        "Low structural distinction from placeholder forms."
+      ],
+      "recommended_action": "Rewrite or remove."
+    },
+    {
+      "seed_id": "seed-043-1",
+      "score": 18,
+      "keep": false,
+      "problems": [
+        "Uses direction value standalone in a stateful exchange.",
+        "Messages are weak placeholders rather than robust RegisterSession frames."
+      ],
+      "recommended_action": "Replace with a coherent request/response pair."
+    },
+    {
+      "seed_id": "seed-044-1",
+      "score": 17,
+      "keep": false,
+      "problems": [
+        "Same weak placeholder issue.",
+        "Operation family distinction is mostly textual, not structural."
+      ],
+      "recommended_action": "Rewrite."
+    },
+    {
+      "seed_id": "seed-045",
+      "score": 0,
+      "keep": false,
+      "problems": [
+        "Hex length is only 4 bytes per message.",
+        "Fails basic encapsulation framing.",
+        "Not usable."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-046",
+      "score": 0,
+      "keep": false,
+      "problems": [
+        "Hex length is only 4 bytes.",
+        "No protocol structure."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-047",
+      "score": 0,
+      "keep": false,
+      "problems": [
+        "Hex length is only 4 bytes.",
+        "No framing or path structure."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "seed-053-001",
+      "score": 34,
+      "keep": false,
+      "problems": [
+        "Blank plan_id triggers deterministic concern about unknown plan mapping.",
+        "Multi-message bidirectional sequence is interesting but header/length consistency is not trustworthy throughout.",
+        "Target operation combines two operations in one seed, reducing plan fidelity."
+      ],
+      "recommended_action": "Split into separate plan-mapped seeds with verified internal length accounting."
+    },
+    {
+      "seed_id": "seed-054-001",
+      "score": 42,
+      "keep": false,
+      "problems": [
+        "Blank plan_id.",
+        "Interesting stateful diversity, but several message lengths and command/payload relations are doubtful.",
+        "Unregister frame plausibility is weak."
+      ],
+      "recommended_action": "Retain the idea but rewrite under a valid plan_id with tighter framing checks."
+    },
+    {
+      "seed_id": "seed-055-001",
+      "score": 28,
+      "keep": false,
+      "problems": [
+        "Blank plan_id.",
+        "Declared zero payload but hex includes extra bytes beyond a minimal header form.",
+        "Standalone direction is acceptable, but framing is not convincingly canonical."
+      ],
+      "recommended_action": "Rewrite as a strict minimal discovery request and assign to a valid plan."
+    },
+    {
+      "seed_id": "seed-056-001",
+      "score": 58,
+      "keep": true,
+      "problems": [
+        "Blank plan_id remains a management error.",
+        "Some response/body semantics are speculative."
+      ],
+      "recommended_action": "Keep the general structure, but reassign to a valid plan_id and recheck all lengths."
+    },
+    {
+      "seed_id": "opener-base-053-02",
+      "score": 80,
+      "keep": true,
+      "problems": [
+        "Title says variant 7 while plan is base-plan-053, indicating metadata inconsistency."
+      ],
+      "recommended_action": "Keep after metadata cleanup."
+    },
+    {
+      "seed_id": "opener-base-054-02",
+      "score": 75,
+      "keep": true,
+      "problems": [
+        "Title/variant metadata inconsistent with plan numbering.",
+        "First message being server_to_client as setup state is acceptable but should be justified consistently across corpus."
+      ],
+      "recommended_action": "Keep after metadata cleanup."
+    },
+    {
+      "seed_id": "opener-base-055-02",
+      "score": 67,
+      "keep": true,
+      "problems": [
+        "Stated payload length in notes appears inconsistent with the encoded bytes.",
+        "Single explicit seed is plausible but needs recalculated CPF/body length validation."
+      ],
+      "recommended_action": "Keep conditionally after exact byte-count verification."
+    },
+    {
+      "seed_id": "opener-base-056-02",
+      "score": 69,
+      "keep": true,
+      "problems": [
+        "Connected-message structure is useful, but encoded length/accounting should be revalidated.",
+        "Operation still depends on absent connection context."
+      ],
+      "recommended_action": "Keep conditionally after byte-count validation."
+    },
+    {
+      "seed_id": "seed_058",
+      "score": 14,
+      "keep": false,
+      "problems": [
+        "Not a plausible explicit-message or encapsulation form for SetAttributeSingle.",
+        "Expected behavior mentions class/instance/element details not visible structurally.",
+        "Header interpretation is unclear."
+      ],
+      "recommended_action": "Rewrite as SendRRData-carried explicit write request."
+    },
+    {
+      "seed_id": "seed_059",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Two nearly identical placeholder frames.",
+        "Not a plausible ForwardOpen sequence.",
+        "Stateful claim unsupported."
+      ],
+      "recommended_action": "Drop and replace with a real setup plus explicit carrier."
+    },
+    {
+      "seed_id": "seed_060",
+      "score": 12,
+      "keep": false,
+      "problems": [
+        "Placeholder framing only.",
+        "Boundary-valid claim unsupported.",
+        "No visible UnconnectedSend structure."
+      ],
+      "recommended_action": "Drop."
+    },
+    {
+      "seed_id": "base-1",
+      "score": 19,
+      "keep": false,
+      "problems": [
+        "Header length/payload relation is dubious.",
+        "Expected behavior refers to response for a request seed.",
+        "Mostly zero filler."
+      ],
+      "recommended_action": "Rewrite as a clean discovery request."
+    },
+    {
+      "seed_id": "base-2",
+      "score": 19,
+      "keep": false,
+      "problems": [
+        "Same weak discovery framing issue as base-1.",
+        "Parser-depth claim unsupported by message content."
+      ],
+      "recommended_action": "Rewrite."
+    },
+    {
+      "seed_id": "base-3",
+      "score": 17,
+      "keep": false,
+      "problems": [
+        "Stateful shape uses standalone direction inconsistently.",
+        "Messages are placeholder-like and weakly mapped to RegisterSession."
+      ],
+      "recommended_action": "Replace with a coherent request/response sequence."
+    },
+    {
+      "seed_id": "base-4",
+      "score": 17,
+      "keep": false,
+      "problems": [
+        "Same placeholder problem as base-3.",
+        "Unregister requires clearer session-handle context."
+      ],
+      "recommended_action": "Rewrite."
+    },
+    {
+      "seed_id": "seed-1",
+      "score": 23,
+      "keep": false,
+      "problems": [
+        "Large zero-heavy blob with little internal structure.",
+        "Length field may be plausible, but payload lacks useful CPF/CIP content.",
+        "Low mutation guidance value."
+      ],
+      "recommended_action": "Replace with a complete SendRRData frame containing explicit nested items."
+    }
+  ],
+  "coverage_gaps": [
+    "Reduce the corpus to only fully framed, internally consistent seeds; too many placeholder or truncated messages remain.",
+    "Ensure every sequence has a valid nonblank plan_id and that title/variant metadata matches the associated plan.",
+    "Rebuild discovery seeds around a small set of clearly plausible 24-byte encapsulation requests instead of many cosmetic zero-heavy variants.",
+    "Add a compact, validated RegisterSession request/response pair and reuse that session handle across follow-on seeds consistently.",
+    "Add at least one validated UnregisterSession request using a prior nonzero session handle with zero command-specific payload.",
+    "Strengthen explicit-message coverage with a few high-confidence SendRRData seeds using consistent CPF item counts and byte lengths rather than many speculative placeholders.",
+    "Add one or two clearly structured SendUnitData connected-message seeds with consistent address/data item lengths and optional prior connection-establishment context.",
+    "Include paired request/response variants only where framing is exact; otherwise prefer single client_to_server requests for Base quality.",
+    "Eliminate seeds that are shorter than a 24-byte encapsulation header when the seed claims to use that form.",
+    "Favor structurally distinct object paths, service bytes, and CPF layouts over repeated nearly identical all-zero forms."
+  ]
+}

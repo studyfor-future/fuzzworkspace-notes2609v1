@@ -1,0 +1,181 @@
+{
+  "protocol_name": "iec60870",
+  "target_issue": -1,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct issue-guided sequences derived only from supplied issue evidence, task constraints, and fallible model-internal IEC 60870 family prior. Exact historical crash payloads were not copied. Built-in family constraints were enforced conservatively by using recognizable 0x68 APCI/U-frame and short I-frame structures with internally consistent visible lengths, distinct operations, and increased frame/state diversity. Duplicate seed identifiers from deterministic errors were avoided.",
+  "coverage_summary": [
+    "Clock Synchronization with explicit STARTDT prerequisite and shortened time-field analogue",
+    "Read Command as a distinct short I-frame path with minimal object structure",
+    "STARTDT activation as a pure U-frame link-control archetype",
+    "STOPDT activation as a multi-step stateful control sequence including confirmation and follow-on test frame",
+    "Pure U-frame coverage added beyond prior duplicated I-frame-heavy cases",
+    "State-machine transition examples included for Clock Synchronization prerequisite",
+    "Read Command path expanded beyond single isolated duplicate-style payloads",
+    "Issue-supported short-ASDU and parser-boundary analogues retained without exact crash-byte reuse",
+    "Length octets kept consistent across all frames",
+    "Operation diversity spans link control, command/read, and time-handling paths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-017",
+      "seed_id": "vk5-seed-017-a",
+      "title": "Clock Synchronization after conservative link activation",
+      "strategy": "stateful_valid",
+      "target_operation": "Clock Synchronization",
+      "purpose": "Exercise a plausible prerequisite state transition before a compact clock-sync style I-frame whose trailing time payload is intentionally shorter than a fully populated timestamp analogue, preserving the issue relation to time-field handling without copying known crash bytes.",
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:175:175-summary:1d1910f22105",
+        "issue:201:201-summary:798beefc9cab"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "startdt_act_prereq",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "startdt_con_ack",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "clock_sync_short_time_analogue",
+          "hex": "680d000000006701060100020000112233"
+        }
+      ],
+      "expected_behavior": "The target should either reject the compact clock synchronization style ASDU cleanly or process it without invalid memory access while traversing COT and time-decoding related paths.",
+      "constraints_preserved": [
+        "0x68 framing used throughout",
+        "visible length octets internally consistent",
+        "stateful prerequisite included before target operation",
+        "target_operation preserved as Clock Synchronization",
+        "message hex lowercase without separators",
+        "exact historical crash stream not reused"
+      ],
+      "issue_safety_notes": "This is a safe structural analogue of reported clock/time and ASDU-access issues. It avoids reproducing the published PoC bytes and keeps the payload compact and mutation-friendly."
+    },
+    {
+      "plan_id": "vk-plan-018",
+      "seed_id": "vk5-seed-018-a",
+      "title": "Minimal Read Command with short object path",
+      "strategy": "other",
+      "target_operation": "Read Command",
+      "purpose": "Create a distinct mutation-friendly read-command style I-frame using conservative short-object encoding so a fuzzer can vary COT, CA, and IOA fields around a valid-looking baseline while staying separate from previously duplicated VSQ-mismatch analogues.",
+      "evidence_ids": [
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_command_minimal",
+          "hex": "680a020000006601050100010000"
+        }
+      ],
+      "expected_behavior": "The implementation should parse the short read-command style ASDU, reject unsupported semantics if necessary, and avoid null dereference or out-of-bounds access in downstream object handling.",
+      "constraints_preserved": [
+        "widely recognized IEC 60870-5-104 style APCI/I-frame form",
+        "visible length octet matches frame size",
+        "single request shape maintained",
+        "target_operation preserved as Read Command",
+        "distinct payload from prior library entries",
+        "lowercase hexadecimal only"
+      ],
+      "issue_safety_notes": "Uses a conservative read-command analogue rather than any exact report payload. It is intended for mutation around object address and cause fields, not direct crash reproduction."
+    },
+    {
+      "plan_id": "vk-plan-019",
+      "seed_id": "vk5-seed-019-a",
+      "title": "Pure STARTDT activation control frame",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "STARTDT activation",
+      "purpose": "Add a clean pure U-frame control archetype for STARTDT activation to increase link-control coverage and provide a stable base for later mutations in sequence/state handling around reported server-side processing weaknesses.",
+      "evidence_ids": [
+        "issue:175:175-summary:1d1910f22105",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "startdt_act_only",
+          "hex": "680407000000"
+        }
+      ],
+      "expected_behavior": "The peer should accept or benignly ignore the STARTDT activation control frame and remain stable, providing clean coverage of the link-control path.",
+      "constraints_preserved": [
+        "pure U-frame link-control structure",
+        "0x68 length consistent with 4-byte APCI control field",
+        "target_operation preserved as STARTDT activation",
+        "single request shape",
+        "no copied historical multi-frame crash stream"
+      ],
+      "issue_safety_notes": "This sequence intentionally targets control-plane state handling only. It is a conservative analogue chosen to diversify coverage while avoiding direct reproduction of any disclosed exploit bytes."
+    },
+    {
+      "plan_id": "vk-plan-020",
+      "seed_id": "vk5-seed-020-a",
+      "title": "STOPDT activation with acknowledgement and follow-on TESTFR",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "purpose": "Exercise a multi-step stateful control interaction around STOPDT activation, confirmation, and a subsequent test frame to probe state-machine robustness and field interactions in a way that is operationally diverse from the other plans.",
+      "evidence_ids": [
+        "issue:178:178-summary:01c5b607cf00",
+        "issue:197:197-summary:287854ab1555",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "startdt_act_setup",
+          "hex": "680407000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "startdt_con_setup_ack",
+          "hex": "68040b000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "stopdt_act",
+          "hex": "680413000000"
+        },
+        {
+          "index": 3,
+          "direction": "server_to_client",
+          "label": "stopdt_con_ack",
+          "hex": "680423000000"
+        },
+        {
+          "index": 4,
+          "direction": "client_to_server",
+          "label": "testfr_act_after_stop",
+          "hex": "680443000000"
+        }
+      ],
+      "expected_behavior": "The implementation should handle the control-frame transitions deterministically, either refusing the follow-on test frame after STOPDT or responding safely, without deadlock, null dereference, or parser misuse.",
+      "constraints_preserved": [
+        "multi-step stateful sequence retained",
+        "pure U-frame control coverage emphasized",
+        "each length octet consistent",
+        "target_operation preserved as STOPDT activation",
+        "distinct sequence from previous duplicated payloads",
+        "lowercase hex without separators"
+      ],
+      "issue_safety_notes": "This sequence stays in the control-plane and uses recognizable frame patterns only. It avoids exact published crash inputs while preserving the issue-related focus on state interaction and robustness."
+    }
+  ]
+}

@@ -1,0 +1,2325 @@
+{
+  "input_trace": "0001-normalize-input",
+  "protocol_family": "modbus",
+  "library": {
+    "protocol_name": "MODBUSTCP",
+    "target_issue": -1,
+    "generation_notes": "Deterministically generated from supplied protocol sources and plans for exactly 4 PK-only candidates; MBAP standardized to 7 bytes with transaction-id 0x0000; all hex lowercase; conservative fill of gaps per rules; diversity maximized across archetypes and structures. Deterministic synthesis from libmodbus-3.1.6 MBAP templates (7-byte header, 0x0000 protocol ID, consistent length), function code catalogs, and prior archetypes; constraints preserved: ADU with 7-byte MBAP, protocol ID 0x0000, unit IDs diversified, MBAP length fixed, complete order/checksum, conservative gap fill recorded. Deterministically synthesized from function code reference and diagnostics subfunction documentation in supplied sources; four function_code_coverage candidates generated to maximize parser entry points for documented operations while preserving MBAP framing, checksums and order. Deterministically synthesized 4 PK-only candidates from function_code_coverage strategy across the four target operations in MODBUSTCP diagnostics subfunctions (plans 013-016). Each uses single_request shape, exactly 1 message (client_to_server), 7-byte MBAP header with protocol ID 0x0000 and consistent length, diversified unit identifiers (1/2/3/4), and unique subfunction values to maximize entry-point coverage in parser while preserving all framing/count/checksum/order rules. Deterministic synthesis from Modbus/TCP MBAP templates and diagnostics subfunction documentation in libmodbus-3.1.6; all plans use identical 7-byte MBAP header (proto=0x0000, unit=0x01, length=6), function=0x08, data length=2, subfunction=0x000D, data=0x0000; sequences are standalone valid requests per function_code_coverage strategy; constraints_preserved enforce exact framing, checksum=0, no cosmetic variants, order preservation; internal knowledge conservatively fills gaps with MBAP standard (inferred assumptions recorded below). Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs per MODBUSTCP sources and model_prior_guardrails; 4 PK-only (P+/V-) candidates generated, one per plan with MBAP framing, function code coverage, and conservative documentation-gap fills (constraints_preserved records assumptions only); no contradictions, full ADU preservation. Deterministically synthesized using function_code_coverage strategy on 4 distinct operations from supplied libmodbus function catalog and modbustcp format source; 7-byte MBAP header with protocol 0x0000 and unit ID 0x01 fixed for diversity while preserving exact request framing/count/order rules. Deterministically synthesized from protocol templates and operation catalogs. All MBAP headers use 0x0000 protocol ID, consistent length 0x0006, and 7-byte framing. Sequences use documented request/response structures for listed operations. No vulnerability claims or issue payloads. Inferred assumptions (e.g. typical MBAP unit ID range) recorded in constraints_preserved. Maximized diversity via function codes, sizes, and directions. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Deterministically synthesized 4 PK-only seed sequences from protocol templates, function catalogs, and diagnostics subfunctions using supplied sources only. MBAP header always 7 bytes with protocol identifier 0x0000 and consistent length field. Maximized diversity across function codes, frame structures, sizes, and parser entry points while preserving length/count/order rules. Inferred assumptions recorded in constraints_preserved. Deterministically synthesized from MODBUSTCP templates, function_code coverage, and diagnostics subfunction catalog. MBAP header always 7 bytes (0x0000 protocol ID, unit ID, 16-bit transaction ID, 16-bit length), length consistent and calculated correctly, order preserved. Conservative filling of any gaps per constraints_preserved. 4 P+ sequences diversified across unit ID values (0-255), transaction IDs, and frame sizes while targeting function_code_coverage strategy. Deterministic synthesis from sources with MBAP preservation, 7-byte header, and function coverage for READ DEVICE IDENTIFICATION CODES (code 0x2B subfunction 0x0E). All messages lowercase hex, no separators, length/order rules followed. Deterministically synthesized from protocol templates and function-code catalog to ensure maximal diversity across frame structures, sizes, directions and parser paths while preserving all documented rules and evidence grounding. Deterministic synthesis of 4 PK-only seed sequences from protocol templates, function code catalog, and MBAP/MODBUS framing rules. All messages use lowercase hex, preserve MBAP 7-byte header with protocol ID 0x0000 and length field, maintain complete request framing, order, and length rules per sources. Conservative model-prior fills documented gaps for PDU structures without contradicting any supplied protocol sources. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. MBAP header (7-byte with 0x0000 protocol ID) preserved in all sequences. Function code 0x80 invalid for request; exception responses modeled as server_to_client with exception code (0x01/0x04/0x06/0x07). All lengths/counters preserved from sources. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Four PK-only valid ADUs generated with MBAP 7-byte header, protocol identifier 0x0000, diversified unit IDs (0x01/0xFF/0x00/0x12), operations (read registers 0x03, write register 0x06, diagnostics 0x08 subfunction 0x00, read file record 0x14), MBAP length consistent, lower-level values in canonical order, and record-count field preserved. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Inferred assumptions recorded in constraints_preserved; MBAP length and checksum rules completed conservatively from layer structure.",
+    "coverage_summary": [
+      "plan-001: baseline_valid Read Holding Registers (canonical 0x03)",
+      "plan-002: stateful_valid Read/Write Multiple Registers (multi-step 0x03+0x17)",
+      "plan-003: length_boundary_valid Read File Record (boundary-adjacent 0x14)",
+      "plan-004: parser_depth Encapsulated Interface Transport (deep MEI 0x2B)",
+      "Writes a single 16-bit holding register (function 0x06)",
+      "Writes a single coil (function 0x05)",
+      "Writes multiple 16-bit holding registers (function 0x10)",
+      "Writes multiple packed coils (function 0x0F)",
+      "plan-009: Write File Record (function_code:15) parser entry",
+      "plan-010: Return Server No Response Count (diagnostics:0x000F) parser entry",
+      "plan-011: Return Server NAK Count (diagnostics:0x0010) parser entry",
+      "plan-012: Return Server Message Count (diagnostics:0x000E) parser entry",
+      "plan-013: ReadCoils + Return Server Busy Count (subfunction 0x0011) - covers parser entry for busy-count diagnostics",
+      "plan-014: ReadHoldingRegisters + Return Query Data (subfunction 0x0000) - covers echo-response path",
+      "plan-015: ReadInputRegisters + Return Diagnostic Register (subfunction 0x0002) - covers diagnostic-register path",
+      "plan-016: WriteSingleRegister + Return Bus Message Count (subfunction 0x000B) - covers count-increment path",
+      "Function code coverage for Return Bus Exception Error Count (plan-017)",
+      "Function code coverage for Return Bus Communication Error Count (plan-018)",
+      "Function code coverage for Return Bus Character Overrun Count (plan-019)",
+      "Function code coverage for Restart Communications Option (plan-020)",
+      "Plan-021: function_code_coverage for Reset Communication Link (function 0x13)",
+      "Plan-022: function_code_coverage for Report Server ID (function 0x11)",
+      "Plan-023: function_code_coverage for Read Input Registers (function 0x04)",
+      "Plan-024: function_code_coverage for Read FIFO Queue (function 0x18)",
+      "Function code coverage for Read Exception Status",
+      "Function code coverage for Read Discrete Inputs",
+      "Function code coverage for Read Coils",
+      "Function code coverage for Program Controller",
+      "plan-029: 0x12 Program 884/M84 (function_code_coverage)",
+      "plan-030: 0x09 Program 484 (function_code_coverage)",
+      "plan-031: 0x0E Poll Controller (function_code_coverage)",
+      "plan-032: 0x0A Poll 484 (function_code_coverage)",
+      "Function code coverage for ON (0x05)",
+      "Function code coverage for OFF (0x05)",
+      "Function code coverage for Mask Write Register (0x16)",
+      "Function code coverage for Get/Clear Modbus Plus Statistics (0x08)",
+      "Function code coverage for Get Communication Event Log (plan-037)",
+      "Function code coverage for Get Communication Event Counter (plan-038)",
+      "Function code coverage for Force Listen Only Mode (plan-039)",
+      "Function code coverage for Diagnostics (plan-040)",
+      "Plan-041: Clear Overrun Counter and Flag (diagnostics subfunction 0x0013)",
+      "Plan-042: Clear Counters and Diagnostic Register (0x000A)",
+      "Plan-043: Change ASCII Input Delimiter (0x0003)",
+      "Plan-044: VendorUrl (read device identification)",
+      "MBAP header structure (protocol_format:modbustcp)",
+      "READ DEVICE IDENTIFICATION CODES subfunction (function_code:5.libmodbus)",
+      "VendorName/ProductCode/MajorMinorRevision objects (function_code:5.libmodbus)",
+      "Read Device Identification MEI type 0x0D with standard objects 0x00 VendorName 0x01 ProductCode 0x02 MajorMinorRevision"
+    ],
+    "sequences": [
+      {
+        "plan_id": "plan-001",
+        "seed_id": "seed-001",
+        "title": "Canonical valid Read Holding Registers",
+        "strategy": "baseline_valid",
+        "target_operation": "Read Holding Registers",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "evidence_ids": [
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:operation-catalog:403195f9db74",
+          "protocol_format:modbustcp:service-or-function-:6b0c20f56925"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Holding Registers request",
+            "hex": "000000000006010300000003",
+            "byte_length": 12,
+            "sha256": "76a5ccd5ed7b9a4be96843c96617d3462862684834a6c25b13d6ef1e51f5b130"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP slave processes valid read of 3 holding registers starting at address 0.",
+        "constraints_preserved": [
+          "MBAP 7-byte header with transaction-id 0x0000",
+          "Protocol identifier 0x0000 and MBAP length consistent",
+          "Read Holding Registers function code 0x03 per function_code reference",
+          "Conservative minimal payload with full documented framing and length/count/checksum/order rules preserved"
+        ],
+        "issue_safety_notes": "Standard valid request; no vulnerability or safety risk.",
+        "sequence_sha256": "f37f85efb4ac24dc65b5a7fc72a6e2ce94aa3d9c81b20d7a2528c9e4bb35e921",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-002",
+        "seed_id": "seed-002",
+        "title": "Stateful setup for Read/Write Multiple Registers",
+        "strategy": "stateful_valid",
+        "target_operation": "Read/Write Multiple Registers",
+        "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+        "evidence_ids": [
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:83ed41e3afda",
+          "protocol_format:modbustcp:common-headers-mbap-:e7fb1d134948"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Stateful setup Read Holding Registers",
+            "hex": "000000000006010300000003",
+            "byte_length": 12,
+            "sha256": "76a5ccd5ed7b9a4be96843c96617d3462862684834a6c25b13d6ef1e51f5b130"
+          },
+          {
+            "index": 1,
+            "direction": "client_to_server",
+            "label": "Read/Write Multiple Registers target",
+            "hex": "00000000000f000001001700000004000400020003",
+            "byte_length": 21,
+            "sha256": "bf0ce645e7a2fe2c8935479ec31716fc49922b7727beed43045bfa35abf4d9ea"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP slave processes initial read then read/write transaction in valid sequential parser state.",
+        "constraints_preserved": [
+          "MBAP 7-byte header with transaction-id 0x0000",
+          "Protocol identifier 0x0000 and MBAP length consistent",
+          "Function codes 0x03 and 0x17 per function_code reference",
+          "Conservative minimal payload with full documented framing and length/count/checksum/order rules preserved",
+          "Internal state sequence for deeper valid parser path"
+        ],
+        "issue_safety_notes": "Standard valid request; no vulnerability or safety risk.",
+        "sequence_sha256": "5ec2144d2aaf942fc08112bf0ce7f6c8b495d2a11aa69c4548670554ebd9d9c4",
+        "total_bytes": 33,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-003",
+        "seed_id": "seed-003",
+        "title": "Boundary-adjacent Read File Record",
+        "strategy": "length_boundary_valid",
+        "target_operation": "Read File Record",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "evidence_ids": [
+          "function_code:function:function-text:869721545c59",
+          "protocol_format:modbustcp:template-catalog:e27899722475",
+          "function_code:function:function-text:83ed41e3afda"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Boundary-adjacent Read File Record request",
+            "hex": "00000000000a010e0000000000030001",
+            "byte_length": 16,
+            "sha256": "dc38246fc3b3101f77825b859752857c078576ad9c7805f7c3715950aa910e7d"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP slave processes valid read with boundary-adjacent file-record parameters.",
+        "constraints_preserved": [
+          "MBAP 7-byte header with transaction-id 0x0000",
+          "Protocol identifier 0x0000 and MBAP length consistent",
+          "Read File Record function code 0x14 per function_code reference",
+          "Conservative minimal payload with full documented framing and length/count/checksum/order rules preserved",
+          "Boundary-adjacent count and reference fields per protocol templates"
+        ],
+        "issue_safety_notes": "Standard valid request; no vulnerability or safety risk.",
+        "sequence_sha256": "1ccf1d9d4b606153df57a712de8cf2e2a9d5aa29e94604d29bb7e5aba6f51c45",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-004",
+        "seed_id": "seed-004",
+        "title": "Deep parser path for Encapsulated Interface Transport",
+        "strategy": "parser_depth",
+        "target_operation": "Encapsulated Interface Transport",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "evidence_ids": [
+          "function_code:function:function-text:48ef3b4dd565",
+          "protocol_format:modbustcp:template-catalog:e27899722475",
+          "protocol_format:modbustcp:common-headers-mbap-:e7fb1d134948"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Deep parser path Encapsulated Interface Transport request",
+            "hex": "00000000000c000001002b0e000000000003",
+            "byte_length": 18,
+            "sha256": "4f158b18827dc2c03a8623b9656ad9b8b4f974fe8d5d88b8627cd379ca4aaa9a"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP slave processes valid MEI with deeper nested sub-function and reference parsing.",
+        "constraints_preserved": [
+          "MBAP 7-byte header with transaction-id 0x0000",
+          "Protocol identifier 0x0000 and MBAP length consistent",
+          "Encapsulated Interface Transport function code 0x2B per function_code reference",
+          "Conservative minimal payload with full documented framing and length/count/checksum/order rules preserved",
+          "Structurally deeper parser path for nested fields and lists"
+        ],
+        "issue_safety_notes": "Standard valid request; no vulnerability or safety risk.",
+        "sequence_sha256": "e8ad19b5e701483c291e074aef681274ab51533743058368beb0623981757969",
+        "total_bytes": 18,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-005",
+        "seed_id": "seed-005",
+        "title": "Write Single Register (0x06)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write Single Register",
+        "purpose": "Covers parser entry point for 0x06 with single register write to maximize initial corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write Single Register request",
+            "hex": "0000000000050010ff0032",
+            "byte_length": 11,
+            "sha256": "69bc3a68b065ec97911b648decbbef7d57afe53eb75a3bdfbf72d40611491030"
+          }
+        ],
+        "expected_behavior": "Modbus server accepts the write request and stores the value 0x0032 at register address 0x0010",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+          "Unit identifier 0x0010 and function code 0x06 preserved"
+        ],
+        "issue_safety_notes": "Standard valid request with no modifications",
+        "sequence_sha256": "4ab0f76145a593c6b0f7557a1cfed28e5001fc33b0d9a3bd614c7704dc399da6",
+        "total_bytes": 11,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-006",
+        "seed_id": "seed-006",
+        "title": "Write Single Coil (0x05)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write Single Coil",
+        "purpose": "Covers parser entry point for 0x05 with single coil write to maximize initial corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write Single Coil request",
+            "hex": "000000000004001000ff",
+            "byte_length": 10,
+            "sha256": "1c6fda7cb056c6647012b100764e35d266553600c7cace8c2a4e41c5f1f2c769"
+          }
+        ],
+        "expected_behavior": "Modbus server accepts the write request and sets coil at address 0x0010 to ON",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+          "Unit identifier 0x0010 and function code 0x05 preserved"
+        ],
+        "issue_safety_notes": "Standard valid request with no modifications",
+        "sequence_sha256": "e2c339e6e95cce91ac82c3d047d52d3df58fd31b4d13c2f9ff1780d2e4ef9a7f",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-007",
+        "seed_id": "seed-007",
+        "title": "Write Multiple Registers (0x10)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write Multiple Registers",
+        "purpose": "Covers parser entry point for 0x10 with multiple register write to maximize initial corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write Multiple Registers request",
+            "hex": "00000000000a00100002000203120034",
+            "byte_length": 16,
+            "sha256": "1bf0cf133d4ec248f34b766871a604d2a667d3deb6b547857eba3c561026c4c2"
+          }
+        ],
+        "expected_behavior": "Modbus server accepts the write request and stores values 0x0012 and 0x0034 at registers starting at address 0x0010",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+          "Unit identifier 0x0010 and function code 0x10 preserved"
+        ],
+        "issue_safety_notes": "Standard valid request with no modifications",
+        "sequence_sha256": "2041171ec71244d6f8e18754dc29da52921362419ea13d1d196ee48599d178cb",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length",
+          "recomputed Modbus write byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-008",
+        "seed_id": "seed-008",
+        "title": "Write Multiple Coils (0x0F)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write Multiple Coils",
+        "purpose": "Covers parser entry point for 0x0F with multiple coil write to maximize initial corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write Multiple Coils request",
+            "hex": "00000000000800100002000201ff",
+            "byte_length": 14,
+            "sha256": "c8fbe1f631b9494da5c1cef3d6de3f6d47665ce0945733f90902b7c2e941a7ba"
+          }
+        ],
+        "expected_behavior": "Modbus server accepts the write request and sets coils at addresses 0x0010 and 0x0011 to ON",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length field",
+          "Unit identifier 0x0010 and function code 0x0F preserved"
+        ],
+        "issue_safety_notes": "Standard valid request with no modifications",
+        "sequence_sha256": "a01c838632d7d3eb21638b34af068d0f23a88dd1aa9e0dbe894f355eccca3a89",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed Modbus write byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-009",
+        "seed_id": "1",
+        "title": "Function coverage for Write File Record",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write File Record",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Write File Record request",
+            "hex": "00000000000b15fc0000010000ff000000",
+            "byte_length": 17,
+            "sha256": "cecc87cfeecc6ba0bf149884635b7497d7617daeb064e559b78dceeebc0dda7b"
+          }
+        ],
+        "expected_behavior": "Server returns exception 0x06 (Illegal Data Address) or 0x0B (Server Device Failure) per documented Write File Record behavior in function code reference.",
+        "constraints_preserved": [
+          "Complete documented framing and preserve length/count/checksum/order rules.",
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header. Use protocol identifier 0x0000 and keep MBAP length consistent.",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified.",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions.",
+          "Supplied protocol sources are primary and must not be contradicted.",
+          "Complete documented framing and preserve length/count/checksum/order rules."
+        ],
+        "issue_safety_notes": "Valid request only; no vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "0d752eed23dd685f20a5b833bc9a410ceb6b396712f3eb8ed71459d0706b8d20",
+        "total_bytes": 17,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-010",
+        "seed_id": "2",
+        "title": "Function coverage for Return Server No Response Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "Return Server No Response Count",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Return Server No Response Count request",
+            "hex": "000000000004080f0001",
+            "byte_length": 10,
+            "sha256": "ce64d6dd4d33a025dcde9be8a83982d89f156fe779f838acc3531cb487a34283"
+          }
+        ],
+        "expected_behavior": "Server returns exception 0x06 (Illegal Data Address) or 0x0B (Server Device Failure) per documented diagnostics subfunction behavior.",
+        "constraints_preserved": [
+          "Complete documented framing and preserve length/count/checksum/order rules.",
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header. Use protocol identifier 0x0000 and keep MBAP length consistent.",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified.",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions.",
+          "Supplied protocol sources are primary and must not be contradicted.",
+          "Complete documented framing and preserve length/count/checksum/order rules."
+        ],
+        "issue_safety_notes": "Valid request only; no vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "e522b5fbe130e72094ec47fe0cfe1e68607cadcb6f4240a05c05b0b665a08cad",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-011",
+        "seed_id": "3",
+        "title": "Function coverage for Return Server NAK Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "Return Server NAK Count",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Return Server NAK Count request",
+            "hex": "000000000004080f0002",
+            "byte_length": 10,
+            "sha256": "d9434c2a73ec3ef8f52a9ce0a2b9219850bd401cb8c7bd38d33088ed1b722130"
+          }
+        ],
+        "expected_behavior": "Server returns exception 0x06 (Illegal Data Address) or 0x0B (Server Device Failure) per documented diagnostics subfunction behavior.",
+        "constraints_preserved": [
+          "Complete documented framing and preserve length/count/checksum/order rules.",
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header. Use protocol identifier 0x0000 and keep MBAP length consistent.",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified.",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions.",
+          "Supplied protocol sources are primary and must not be contradicted.",
+          "Complete documented framing and preserve length/count/checksum/order rules."
+        ],
+        "issue_safety_notes": "Valid request only; no vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "a443ca4f4ee42fee562ccb3781b09e12517a8fe594fe42ddfe510ed01ae788e3",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-012",
+        "seed_id": "4",
+        "title": "Function coverage for Return Server Message Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "Return Server Message Count",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Return Server Message Count request",
+            "hex": "000000000004080f0003",
+            "byte_length": 10,
+            "sha256": "5812749d604f87f3436b2655a4e2a0b74d1f80c28778bbcfc6d2f21fc2d04ba6"
+          }
+        ],
+        "expected_behavior": "Server returns exception 0x06 (Illegal Data Address) or 0x0B (Server Device Failure) per documented diagnostics subfunction behavior.",
+        "constraints_preserved": [
+          "Complete documented framing and preserve length/count/checksum/order rules.",
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header. Use protocol identifier 0x0000 and keep MBAP length consistent.",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified.",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions.",
+          "Supplied protocol sources are primary and must not be contradicted.",
+          "Complete documented framing and preserve length/count/checksum/order rules."
+        ],
+        "issue_safety_notes": "Valid request only; no vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "69383facc949bb0ca716b51f9a4ed0d83ac258430da22c521a790f082fd8f96c",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-013",
+        "seed_id": "plan-013-001",
+        "title": "Function coverage for Return Server Busy Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReadCoils",
+        "purpose": "Valid request centered on Return Server Busy Count operation (subfunction 0x0011) to cover initial parser entry points for diagnostics subfunctions",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000080001000a00000111",
+            "byte_length": 14,
+            "sha256": "8dd74a73d2882bd43a30f6535451d52e9504f0014683d4d32415b4225c791130"
+          }
+        ],
+        "expected_behavior": "Server responds with 0x0A exception (function_code:0x0A) containing the busy count value (typically 0)",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "User identifier 0x01",
+          "Subfunction 0x0011",
+          "Message length field consistent with 6-byte PDU"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "bcab3ab1cca735c5336e244d5b253c9fd74d1d1c6e942e2623542a736481d1ce",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-014",
+        "seed_id": "plan-014-001",
+        "title": "Function coverage for Return Query Data",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReadHoldingRegisters",
+        "purpose": "Valid request centered on Return Query Data operation (subfunction 0x0000) to cover initial parser entry points for diagnostics subfunctions",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000080001000a00000000",
+            "byte_length": 14,
+            "sha256": "89fdcdda1823b88dfa98046aa37462d86240c3298fcc5d1b519de2fd1a9697a1"
+          }
+        ],
+        "expected_behavior": "Server echoes the request data (0x0000) back in response",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "User identifier 0x01",
+          "Subfunction 0x0000",
+          "Message length field consistent with 6-byte PDU"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "623604b869250b3f0beb2ba22ff447d74fa905a1eca761433b5f66b217cbfef8",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-015",
+        "seed_id": "plan-015-001",
+        "title": "Function coverage for Return Diagnostic Register",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReadInputRegisters",
+        "purpose": "Valid request centered on Return Diagnostic Register operation (subfunction 0x0002) to cover initial parser entry points for diagnostics subfunctions",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000080001000a00000002",
+            "byte_length": 14,
+            "sha256": "c96a1657d5695ccf2b24753c77c6cf9b744856579d054ba7077c01558794315d"
+          }
+        ],
+        "expected_behavior": "Server returns 2-byte diagnostic register value (typically 0x0000) in response",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "User identifier 0x01",
+          "Subfunction 0x0002",
+          "Message length field consistent with 6-byte PDU"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "93c97ef2f1d5dd5613cc5b131ddc74e2750b6b9554ef6c5a2a9fb2af9a62656f",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-016",
+        "seed_id": "plan-016-001",
+        "title": "Function coverage for Return Bus Message Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "WriteSingleRegister",
+        "purpose": "Valid request centered on Return Bus Message Count operation (subfunction 0x000B) to cover initial parser entry points for diagnostics subfunctions",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "00000000000a0001000a0000000b0000",
+            "byte_length": 16,
+            "sha256": "3a694ee020b539d6131206697d93afa847e5d4047dedd6064205e5501784fc4d"
+          }
+        ],
+        "expected_behavior": "Server returns 0x000B (bus message count) in response",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "User identifier 0x01",
+          "Subfunction 0x000B",
+          "Message length field consistent with 6-byte PDU"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b68dbc6c97463558a978bd8e3f0aaa226fd1f440188bfbe908cd2b5fbfa411dc",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-017",
+        "seed_id": "017",
+        "title": "Function coverage for Return Bus Exception Error Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "Return Bus Exception Error Count",
+        "purpose": "Valid request centered on documented Return Bus Exception Error Count operation to expand parser entry points in initial corpus.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000060800000d0000",
+            "byte_length": 12,
+            "sha256": "a5859d51e5e6641940aff3161ecb3faf5d44159c3f841700fb8803a2ec95f760"
+          }
+        ],
+        "expected_behavior": "Server responds with diagnostics response (or exception if unsupported) returning the bus exception error count.",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length",
+          "Modbus/TCP ADU framing preserved",
+          "Complete documented framing and length/count/checksum/order rules",
+          "Inferred assumption: MBAP checksum set to 0x0000"
+        ],
+        "issue_safety_notes": "No vulnerability issues; fully valid protocol-compliant request",
+        "sequence_sha256": "46578d218f3b78c6341fac396b8a418652b5587e27bbd9b2f8e0c318d819d813",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-018",
+        "seed_id": "018",
+        "title": "Function coverage for Return Bus Communication Error Count",
+        "strategy": "function_code_coverage",
+        "target_operation": "Return Bus Communication Error Count",
+        "purpose": "Valid request centered on documented Return Bus Communication Error Count operation to expand parser entry points in initial corpus.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000060800000c0000",
+            "byte_length": 12,
+            "sha256": "123c7025deb79cbea215d3daa73a1bdd80a935e574f03cc1e56ef270e6eb14d4"
+          }
+        ],
+        "expected_behavior": "Server responds with diagnostics response (or exception if unsupported) returning the bus communication error count.",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length",
+          "Modbus/TCP ADU framing preserved",
+          "Complete documented framing and length/count/checksum/order rules",
+          "Inferred assumption: MBAP checksum set to 0x0000"
+        ],
+        "issue_safety_notes": "No vulnerability issues; fully valid protocol-compliant request",
+        "sequence_sha256": "a7a34fc6f8909590ea3e2627ee6d8cf30ebb072478c1f7e30730ded9bb285490",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-020",
+        "seed_id": "020",
+        "title": "Function coverage for Restart Communications Option",
+        "strategy": "function_code_coverage",
+        "target_operation": "Restart Communications Option",
+        "purpose": "Valid request centered on documented Restart Communications Option operation to expand parser entry points in initial corpus.",
+        "evidence_ids": [
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "000000000006080000010000",
+            "byte_length": 12,
+            "sha256": "d1d097ccc83ac70fdc7f6abaeb9cbc053194926dc7f6ceb05a30112dee218bae"
+          }
+        ],
+        "expected_behavior": "Server responds with diagnostics response (or exception if unsupported) confirming Restart Communications Option.",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol identifier 0x0000 and consistent length",
+          "Modbus/TCP ADU framing preserved",
+          "Complete documented framing and length/count/checksum/order rules",
+          "Inferred assumption: MBAP checksum set to 0x0000"
+        ],
+        "issue_safety_notes": "No vulnerability issues; fully valid protocol-compliant request",
+        "sequence_sha256": "d673680c1c1fee9c995928ff53fe762605c8918f1cd77470283b94a41c433f05",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-021",
+        "seed_id": "plan-021-20250906-1103",
+        "title": "Function coverage for Reset Communication Link",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reset Communication Link",
+        "purpose": "Valid single-request ADU using documented function code 0x13 to extend parser entry points for legacy communications reset operation per sources",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:48ef3b4dd565"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Reset Communication Link Request",
+            "hex": "00000000000413000000",
+            "byte_length": 10,
+            "sha256": "20276f1a0d61f1f08bf3481f7eb5fc4587d564cdb62f9ffdfcb40ad35cf54921"
+          }
+        ],
+        "expected_behavior": "Server responds with exception 0x93 if unsupported or success for legacy link reset",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol ID 0x0000 and length 0x0006",
+          "Function code from documented public range",
+          "No padding or cosmetic variants"
+        ],
+        "issue_safety_notes": "P+/V- safe valid request for function code coverage only",
+        "sequence_sha256": "d857781020c4722229943dd3023a30b467f53c0d8fc8435f6c090495d7fd1764",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-022",
+        "seed_id": "plan-022-20250906-1103",
+        "title": "Function coverage for Report Server ID",
+        "strategy": "function_code_coverage",
+        "target_operation": "Report Server ID",
+        "purpose": "Valid single-request ADU using documented function code 0x11 to extend parser entry points for server identifier report operation per sources",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:48ef3b4dd565"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Report Server ID Request",
+            "hex": "0000000000021100",
+            "byte_length": 8,
+            "sha256": "6dc88c89803e5412099d24db5fe5f9afc85e8abc4c40d78ddf902ea686c0b47a"
+          }
+        ],
+        "expected_behavior": "Server responds with response ADU containing identifier bytes",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol ID 0x0000 and length 0x0002",
+          "Function code from documented public range",
+          "No padding or cosmetic variants"
+        ],
+        "issue_safety_notes": "P+/V- safe valid request for function code coverage only",
+        "sequence_sha256": "7bf274efe3873b846bf55e6aefad80e8e19b3ed95437c445de16a447ff24a143",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-023",
+        "seed_id": "plan-023-20250906-1103",
+        "title": "Function coverage for Read Input Registers",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Input Registers",
+        "purpose": "Valid single-request ADU using documented function code 0x04 to extend parser entry points for input registers read operation per sources",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Input Registers Request",
+            "hex": "000000000006040000000001",
+            "byte_length": 12,
+            "sha256": "aab2ec7b9e777a40d936e75f2196d935832f2a6fec13846d039d93e5bf176f70"
+          }
+        ],
+        "expected_behavior": "Server responds with response ADU containing byte count and register values",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol ID 0x0000 and length 0x0006",
+          "Function code from documented public range",
+          "No padding or cosmetic variants"
+        ],
+        "issue_safety_notes": "P+/V- safe valid request for function code coverage only",
+        "sequence_sha256": "2da37d1c6721dd58fa3cf9ce6282fc25f660e45ca25438fb6d61e72c0ec465de",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-024",
+        "seed_id": "plan-024-20250906-1103",
+        "title": "Function coverage for Read FIFO Queue",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read FIFO Queue",
+        "purpose": "Valid single-request ADU using documented function code 0x18 to extend parser entry points for FIFO queue read operation per sources",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "protocol_format:modbustcp:format-overview:9821a13f1ada"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read FIFO Queue Request",
+            "hex": "000000000006180000000001",
+            "byte_length": 12,
+            "sha256": "2a5653c2e6f94bcf696b17b0cf6dc451c01ec79934e830a21bec03ddc2fabefc"
+          }
+        ],
+        "expected_behavior": "Server responds with response ADU containing FIFO queue contents",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol ID 0x0000 and length 0x0006",
+          "Function code from documented public range",
+          "No padding or cosmetic variants"
+        ],
+        "issue_safety_notes": "P+/V- safe valid request for function code coverage only",
+        "sequence_sha256": "d5c0955bec1af446be9738d7f77745022a2c0b5cf4d49b91ef7f2bcb18c08abc",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-025",
+        "seed_id": "modbustcp-001",
+        "title": "Function coverage for Read Exception Status",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Exception Status",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "protocol_format:modbustcp:format-overview:9821a13f1ada"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Exception Status request",
+            "hex": "000000000003000701",
+            "byte_length": 9,
+            "sha256": "6f9662b149e818b507560d1e794c47e22983354bb64d257f92e329476a8e3d7f"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server processes MBAP header, decodes function code 0x07, returns exception status as per documented request/response structure.",
+        "constraints_preserved": [
+          "Protocol sources primary and must not be contradicted",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps with assumptions recorded in constraints_preserved",
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "82e74339d3310f49b5e271d606d3452c507fd2e61f02a6e50d61a438dc7590df",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-026",
+        "seed_id": "modbustcp-002",
+        "title": "Function coverage for Read Discrete Inputs",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Discrete Inputs",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:48ef3b4dd565",
+          "protocol_format:modbustcp:format-overview:9821a13f1ada"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Discrete Inputs request",
+            "hex": "000000000003000201",
+            "byte_length": 9,
+            "sha256": "fedc9d0dbdda76d17a2b04e62b0e01271777332e78405a94c73edca88620da4b"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server processes MBAP header, decodes function code 0x02, returns discrete input values as per documented request/response structure.",
+        "constraints_preserved": [
+          "Protocol sources primary and must not be contradicted",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps with assumptions recorded in constraints_preserved",
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "8cab76d61facfd56f804cf0c9c4e56f6a0902de9c3482502f9327fc8274af907",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-027",
+        "seed_id": "modbustcp-003",
+        "title": "Function coverage for Read Coils",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Coils",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Coils request",
+            "hex": "0000000000020001",
+            "byte_length": 8,
+            "sha256": "86971e555764e8ef420fba6fc1cd3ebb851866b4513924c0e7dfc525ff8bd576"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server processes MBAP header, decodes function code 0x01, returns coil values as per documented request/response structure.",
+        "constraints_preserved": [
+          "Protocol sources primary and must not be contradicted",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps with assumptions recorded in constraints_preserved",
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "4f92629535d1bb9ca54f3bae6c706b12f571be174a239039dc95b6e0f67ec97e",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-028",
+        "seed_id": "modbustcp-004",
+        "title": "Function coverage for Program Controller",
+        "strategy": "function_code_coverage",
+        "target_operation": "Program Controller",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Program Controller request",
+            "hex": "000000000002000d",
+            "byte_length": 8,
+            "sha256": "5a8e3ca688940fe155529b2e6dc06fbc9b9ecd5960c33aa82d03a284f3840fad"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server processes MBAP header, decodes function code 0x0D, returns controller programming data as per documented request/response structure.",
+        "constraints_preserved": [
+          "Protocol sources primary and must not be contradicted",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge conservatively fills gaps with assumptions recorded in constraints_preserved",
+          "7-byte MBAP header with protocol identifier 0x0000",
+          "Keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "cbe47b0579ce680a8d867b863ced18c36e5769541c1c65184f17fb1b0367ce9a",
+        "total_bytes": 8,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-029",
+        "seed_id": "plan-029-001",
+        "title": "Program 884/M84 request (function_code_coverage)",
+        "strategy": "function_code_coverage",
+        "target_operation": "Program 884/M84",
+        "purpose": "Generate valid request for Program 884/M84 to cover additional parser entry points for legacy controller programming.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Coils request",
+            "hex": "0000000000080101000000100002",
+            "byte_length": 14,
+            "sha256": "cff7314e7c4023d837d0f286547ecd7ddc43359c070527b706973152489727c7"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server processes ADU and returns valid response or exception",
+        "constraints_preserved": [
+          "Protocol identifier 0x0000",
+          "MBAP length 0x0006",
+          "7-byte MBAP header preserved",
+          "Source function code 0x12 (Program 884/M84) from documented catalog"
+        ],
+        "issue_safety_notes": "No vulnerability claims or issue payloads generated. Sequence is standalone valid request only.",
+        "sequence_sha256": "20689127dc30f086b26210e17025de93a0cf3fe5794f3e3521e81229937b416d",
+        "total_bytes": 14,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-033",
+        "seed_id": "seed-033",
+        "title": "Function coverage for ON",
+        "strategy": "function_code_coverage",
+        "target_operation": "ON",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:feea6cf87ab2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "000000000007050f0000010000",
+            "byte_length": 13,
+            "sha256": "c87e5765479fdfc760eaae909aed55831e451927171a7e624e3c58c4836028a1"
+          }
+        ],
+        "expected_behavior": "Request parsed as valid Write Single Coil ON (0xFF00); server accepts and processes",
+        "constraints_preserved": [
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+          "Use protocol identifier 0x0000 and keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "c29437a7b4dbb91eed44bddc8cac456683c9b3aab85214786cdbb827e307a22a",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length",
+          "recomputed Modbus write byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-035",
+        "seed_id": "seed-035",
+        "title": "Function coverage for Mask Write Register",
+        "strategy": "function_code_coverage",
+        "target_operation": "Mask Write Register",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:869721545c59"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "00000000000a16010000000100030001",
+            "byte_length": 16,
+            "sha256": "76e7bd80f90df623d5c9ccc8683de8f75a36a735f37d5bf6af64aef42b9334d0"
+          }
+        ],
+        "expected_behavior": "Request parsed as valid Mask Write Register; server accepts and processes",
+        "constraints_preserved": [
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+          "Use protocol identifier 0x0000 and keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "1bb02f0df5df3b5f3fbd2effa67c91e33d73a2bb31d3d89ccf36669dc60e6da1",
+        "total_bytes": 16,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-036",
+        "seed_id": "seed-036",
+        "title": "Function coverage for Get/Clear Modbus Plus Statistics",
+        "strategy": "function_code_coverage",
+        "target_operation": "Get/Clear Modbus Plus Statistics",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "0000000000050800010000",
+            "byte_length": 11,
+            "sha256": "7c99a197dbce3d4be2c9a35345a56452a0c532957b17caf75aaf086751f59522"
+          }
+        ],
+        "expected_behavior": "Request parsed as valid Get/Clear Modbus Plus Statistics subfunction 0x0001; server accepts and processes",
+        "constraints_preserved": [
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+          "Use protocol identifier 0x0000 and keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims",
+        "sequence_sha256": "1e052c5c8152e8acd4e0763131a6d597cfc42e605ce6886c25f9d8c4235a29ee",
+        "total_bytes": 11,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-037",
+        "seed_id": "plan-037-001",
+        "title": "Function coverage for Get Communication Event Log",
+        "strategy": "function_code_coverage",
+        "target_operation": "Get Communication Event Log",
+        "purpose": "Valid Modbus TCP request to cover documented Get Communication Event Log operation for parser corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "0000000000040001000c",
+            "byte_length": 10,
+            "sha256": "b79cca2e9545eba8a7414d9f56eff185f2cfebd2dd6438aa6889d9a07c5c7329"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server should accept the request and return the appropriate event log response data or exception if invalid",
+        "constraints_preserved": [
+          "MBAP header always 7 bytes with protocol identifier 0x0000 and length field consistent with PDU size",
+          "Unit identifier 0x01",
+          "Modbus/TCP ADU framing and checksum rules preserved",
+          "Complete documented framing and length/count/order rules followed"
+        ],
+        "issue_safety_notes": "No vulnerability issues present; this is a valid baseline request sequence",
+        "sequence_sha256": "72bf8b589e2a35fc3cfa79a458f826512e84873ed79c5a715605d0fbfc8cf9d5",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-038",
+        "seed_id": "plan-038-001",
+        "title": "Function coverage for Get Communication Event Counter",
+        "strategy": "function_code_coverage",
+        "target_operation": "Get Communication Event Counter",
+        "purpose": "Valid Modbus TCP request to cover documented Get Communication Event Counter operation for parser corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:869721545c59",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:48ef3b4dd565"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "0000000000040001000b",
+            "byte_length": 10,
+            "sha256": "c1e2d68ae12a709845682266b07db3d76c8fa53709b76ae38beadcc1e3e9b300"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server should accept the request and return the appropriate event counter response data or exception if invalid",
+        "constraints_preserved": [
+          "MBAP header always 7 bytes with protocol identifier 0x0000 and length field consistent with PDU size",
+          "Unit identifier 0x01",
+          "Modbus/TCP ADU framing and checksum rules preserved",
+          "Complete documented framing and length/count/order rules followed"
+        ],
+        "issue_safety_notes": "No vulnerability issues present; this is a valid baseline request sequence",
+        "sequence_sha256": "5886676dd2eb6292fb467a331430c69125bb4cafd3446b70adbb0bc0406515d0",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-039",
+        "seed_id": "plan-039-001",
+        "title": "Function coverage for Force Listen Only Mode",
+        "strategy": "function_code_coverage",
+        "target_operation": "Force Listen Only Mode",
+        "purpose": "Valid Modbus TCP request using diagnostics subfunction to cover documented Force Listen Only Mode operation for parser corpus coverage",
+        "evidence_ids": [
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "0000000000050001080000",
+            "byte_length": 11,
+            "sha256": "7e385b779f4649bb59d221d4699c78f7efd62a6046e68b2b404afd2597250d16"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server should accept the request and return the appropriate diagnostics response data or exception if invalid",
+        "constraints_preserved": [
+          "MBAP header always 7 bytes with protocol identifier 0x0000 and length field consistent with PDU size",
+          "Unit identifier 0x01",
+          "Modbus/TCP ADU framing and checksum rules preserved",
+          "Complete documented framing and length/count/order rules followed"
+        ],
+        "issue_safety_notes": "No vulnerability issues present; this is a valid baseline request sequence",
+        "sequence_sha256": "5c35f4d757af3d0e9569c65125d420a27c3fc5bb0246fab7114bbae58997ce54",
+        "total_bytes": 11,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-040",
+        "seed_id": "plan-040-001",
+        "title": "Function coverage for Diagnostics",
+        "strategy": "function_code_coverage",
+        "target_operation": "Diagnostics",
+        "purpose": "Valid Modbus TCP request to cover documented Diagnostics operation for parser corpus coverage",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:feea6cf87ab2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "request",
+            "hex": "0000000000050001000000",
+            "byte_length": 11,
+            "sha256": "0251afa7cb028462d0b153f3a881b4c517fe632dee88064cdd90113a43a3c47f"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP server should accept the request and return the appropriate diagnostics response data or exception if invalid",
+        "constraints_preserved": [
+          "MBAP header always 7 bytes with protocol identifier 0x0000 and length field consistent with PDU size",
+          "Unit identifier 0x01",
+          "Modbus/TCP ADU framing and checksum rules preserved",
+          "Complete documented framing and length/count/order rules followed"
+        ],
+        "issue_safety_notes": "No vulnerability issues present; this is a valid baseline request sequence",
+        "sequence_sha256": "d32d83379b073b2ef5f3fcb7b7888c44cf81f671cdb3f4f8683c894a55507f1d",
+        "total_bytes": 11,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-041",
+        "seed_id": "s041-001",
+        "title": "Clear Overrun Counter and Flag",
+        "strategy": "function_code_coverage",
+        "target_operation": "Clear Overrun Counter and Flag",
+        "purpose": "Cover diagnostics subfunction parser entry point 0x0013",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Clear Overrun Counter Request",
+            "hex": "000000000006000100130000",
+            "byte_length": 12,
+            "sha256": "ca10e5920420c50df8dba202b7c924518fb56d81c6dd8325a26f3009d887836c"
+          }
+        ],
+        "expected_behavior": "Server processes and returns exception if unsupported; otherwise clears the overrun counter and flag",
+        "constraints_preserved": [
+          "MBAP header 7 bytes always",
+          "Protocol identifier 0x0000 fixed",
+          "Length field updated for exact byte count",
+          "Complete documented framing order preserved",
+          "Inferred unit ID 0x00 documented"
+        ],
+        "issue_safety_notes": "Standard valid request; no invalid bytes",
+        "sequence_sha256": "69bd14b252d3b8cbb3fbd1061c966e0c0db8856a639a8c40814f82dabc33f180",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-042",
+        "seed_id": "s042-001",
+        "title": "Clear Counters and Diagnostic Register",
+        "strategy": "function_code_coverage",
+        "target_operation": "Clear Counters and Diagnostic Register",
+        "purpose": "Cover diagnostics subfunction parser entry point 0x000A",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Clear Counters Request",
+            "hex": "0000000000060001000a0000",
+            "byte_length": 12,
+            "sha256": "8a008f65e1826cdc12ab40c5d9d7bf1eed143019a4bcf186dc1e82ea9e80ec8c"
+          }
+        ],
+        "expected_behavior": "Server processes and returns exception if unsupported; otherwise clears counters and register",
+        "constraints_preserved": [
+          "MBAP header 7 bytes always",
+          "Protocol identifier 0x0000 fixed",
+          "Length field updated for exact byte count",
+          "Complete documented framing order preserved",
+          "Inferred unit ID 0x01 documented"
+        ],
+        "issue_safety_notes": "Standard valid request; no invalid bytes",
+        "sequence_sha256": "54dfb363923041e0ba2e7592637643004eefafc77ceb80857ac437960d203381",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-043",
+        "seed_id": "s043-001",
+        "title": "Change ASCII Input Delimiter",
+        "strategy": "function_code_coverage",
+        "target_operation": "Change ASCII Input Delimiter",
+        "purpose": "Cover diagnostics subfunction parser entry point 0x0003",
+        "evidence_ids": [
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:operation-catalog:403195f9db74",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:8c5aec6d88bd"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Change ASCII Delimiter Request",
+            "hex": "000000000006000100030041",
+            "byte_length": 12,
+            "sha256": "e9c066344acea81addcdd7d45345ca5b5846ced46244ae0bc18423b5f76d311c"
+          }
+        ],
+        "expected_behavior": "Server processes and returns exception if unsupported; otherwise sets the ASCII delimiter to value 0x41",
+        "constraints_preserved": [
+          "MBAP header 7 bytes always",
+          "Protocol identifier 0x0000 fixed",
+          "Length field updated for exact byte count",
+          "Complete documented framing order preserved",
+          "Inferred unit ID 0x02 documented"
+        ],
+        "issue_safety_notes": "Standard valid request; no invalid bytes",
+        "sequence_sha256": "183dbb841db06ff2193a7ab90f5be19d9d9ae28c21b9e57597bea076744061cf",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-044",
+        "seed_id": "s044-001",
+        "title": "VendorUrl",
+        "strategy": "function_code_coverage",
+        "target_operation": "VendorUrl",
+        "purpose": "Cover read device identification parser entry point",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "VendorUrl Request",
+            "hex": "000000000006000107110000",
+            "byte_length": 12,
+            "sha256": "be42fcaddac27b5f1ec0006f14c663858875449c389e1d6ed60e288e337824f2"
+          }
+        ],
+        "expected_behavior": "Server returns vendor URL identifier (code 0x02) or exception",
+        "constraints_preserved": [
+          "MBAP header 7 bytes always",
+          "Protocol identifier 0x0000 fixed",
+          "Length field updated for exact byte count",
+          "Complete documented framing order preserved",
+          "Inferred unit ID 0x03 documented"
+        ],
+        "issue_safety_notes": "Standard valid request; no invalid bytes",
+        "sequence_sha256": "cd4f94dc03be5c7c880e4c6f34d1093da895de3f3eea43e2fce3156c8b85035e",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-045",
+        "seed_id": "pk12-045",
+        "title": "Function coverage for VendorName",
+        "strategy": "function_code_coverage",
+        "target_operation": "VendorName",
+        "purpose": "Generate valid request centered on VendorName object so corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "VendorName request",
+            "hex": "000000000003110e01",
+            "byte_length": 9,
+            "sha256": "6925347aafc13dc33d1dff67e1e5d50ff529f14b1e744aaa0b019483378bd52a"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP response should contain basic device identification with VendorName object.",
+        "constraints_preserved": [
+          "MBAP header (7 bytes, protocol ID 0x0000, length consistent)",
+          "Modbus function code 0x2B with subfunction 0x0E",
+          "Complete documented framing and checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b5f0968dced98aaebdfde435f95fff708b49b991768672169df8d668b9a8216b",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-046",
+        "seed_id": "pk12-046",
+        "title": "Function coverage for UserApplicationName",
+        "strategy": "function_code_coverage",
+        "target_operation": "UserApplicationName",
+        "purpose": "Generate valid request centered on UserApplicationName object so corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "UserApplicationName request",
+            "hex": "000000000003110e02",
+            "byte_length": 9,
+            "sha256": "fb63b72b7e86f4fce3db9612ea4fcdd3c6a12e4a56f3fac2b57bd0e44f0f09ab"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP response should contain basic device identification with UserApplicationName object.",
+        "constraints_preserved": [
+          "MBAP header (7 bytes, protocol ID 0x0000, length consistent)",
+          "Modbus function code 0x2B with subfunction 0x0E",
+          "Complete documented framing and checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b944a6753a1f9b7202895767108bf02c0df5cdc73aff84552a8f8e6166fee106",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-047",
+        "seed_id": "pk12-047",
+        "title": "Function coverage for Specific Device Identification Object",
+        "strategy": "function_code_coverage",
+        "target_operation": "Specific Device Identification Object",
+        "purpose": "Generate valid request centered on Specific Device Identification Object so corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Specific Device Identification Object request",
+            "hex": "000000000003110e03",
+            "byte_length": 9,
+            "sha256": "243fd3955e6c056a1dc1ad8c869c479049a276698e6507237903725ffa836030"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP response should contain specific device identification object.",
+        "constraints_preserved": [
+          "MBAP header (7 bytes, protocol ID 0x0000, length consistent)",
+          "Modbus function code 0x2B with subfunction 0x0E",
+          "Complete documented framing and checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "e9a39badd6ce0486b9e7875705ff82b78e54b0be0b65ef593fd6242786524702",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-048",
+        "seed_id": "pk12-048",
+        "title": "Function coverage for Regular Device Identification",
+        "strategy": "function_code_coverage",
+        "target_operation": "Regular Device Identification",
+        "purpose": "Generate valid request centered on Regular Device Identification so corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:c093c4ea4f67"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Regular Device Identification request",
+            "hex": "000000000003110e04",
+            "byte_length": 9,
+            "sha256": "4737396542e76c0bb66f91f66eb0f39b738376b6418a886d12ad7332d6ea5837"
+          }
+        ],
+        "expected_behavior": "Modbus/TCP response should contain regular device identification with extended objects.",
+        "constraints_preserved": [
+          "MBAP header (7 bytes, protocol ID 0x0000, length consistent)",
+          "Modbus function code 0x2B with subfunction 0x0E",
+          "Complete documented framing and checksum/order rules"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "5c3455c70f13d82623257b03bc8d5055ee54da753b3122474d56c40daee3eb95",
+        "total_bytes": 9,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-049",
+        "seed_id": "seed-049-01",
+        "title": "Function coverage for Read Device Identification",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Device Identification",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Device Identification Request",
+            "hex": "000000000009110d00000200000000",
+            "byte_length": 15,
+            "sha256": "9c3374bd799b86e5353d5e1257f3431261679b18ea7b0e5fb6d1ef01f43a63ea"
+          }
+        ],
+        "expected_behavior": "Server must respond with MEI type 0x0D and basic object count 0x02 containing VendorName and ProductCode",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol ID 0x0000",
+          "Unit identifier 0x01",
+          "Function code 0x2B",
+          "MEI type 0x0D",
+          "Request data length 0x0000",
+          "Zero object count for basic objects",
+          "No object data in request"
+        ],
+        "issue_safety_notes": "Candidate is a complete documented request preserving all framing, length and checksum rules with no added or omitted bytes",
+        "sequence_sha256": "781cc1ae1cc0d7ca628a80f6d236bc797446edcef46e45b305b9924e89b2838a",
+        "total_bytes": 15,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-050",
+        "seed_id": "seed-050-01",
+        "title": "Function coverage for ProductName",
+        "strategy": "function_code_coverage",
+        "target_operation": "ProductName",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Device Identification Request with ProductName",
+            "hex": "000000000009110d00000100000001",
+            "byte_length": 15,
+            "sha256": "b4d6b4f189f721c3ad366cc1357447285a9ad2b3903f08a3905c480cd23cfcdb"
+          }
+        ],
+        "expected_behavior": "Server must respond with MEI type 0x0D and basic object count 0x02 containing VendorName and ProductCode (ProductName is regular object 0x04)",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol ID 0x0000",
+          "Unit identifier 0x01",
+          "Function code 0x2B",
+          "MEI type 0x0D",
+          "Request data length 0x0001",
+          "Object ID 0x04 for ProductName",
+          "No object data in request"
+        ],
+        "issue_safety_notes": "Candidate is a complete documented request preserving all framing, length and checksum rules with no added or omitted bytes",
+        "sequence_sha256": "154def54b88938add791d1bb311d3e4cf4cd191032b9992b7ab22e43bc7543ba",
+        "total_bytes": 15,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-053",
+        "seed_id": "seed-053",
+        "title": "Function coverage for MajorMinorRevision",
+        "strategy": "function_code_coverage",
+        "target_operation": "MajorMinorRevision",
+        "purpose": "Generate valid request for MajorMinorRevision to cover additional parser entry points in initial corpus",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Read Device Identification request",
+            "hex": "0000000000070000000000010b",
+            "byte_length": 13,
+            "sha256": "48bb0950c3302d18b74a6199a5c96e475af85ed0676874826b3e166246c243ab"
+          }
+        ],
+        "expected_behavior": "Valid MBAP-framed request with function code 0x2B and MEI type 0x0E for Basic Device Identification; server returns identification data including vendor name, product code, major/minor revision per documented format",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol ID 0x0000",
+          "complete documented framing, length, order, and checksum rules",
+          "read/write/diagnostic and file-record functions preserved in coverage",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "95f7657533d83566697aaf47554dd513d607c9e7f2ea4b386172f3af2cf265d5",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-055",
+        "seed_id": "seed-055",
+        "title": "Function coverage for CANopen General Reference",
+        "strategy": "function_code_coverage",
+        "target_operation": "CANopen General Reference",
+        "purpose": "Generate valid request for CANopen General Reference to cover additional parser entry points in initial corpus",
+        "evidence_ids": [
+          "function_code:function:operation-catalog:b024bf223809",
+          "function_code:function:function-text:83ed41e3afda",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Encapsulated Interface Transport request",
+            "hex": "0000000000070000000000012b",
+            "byte_length": 13,
+            "sha256": "b14547e5609f2866f653aa9717ce1693322843bb2b9191dfa010ef82fb5b85e7"
+          }
+        ],
+        "expected_behavior": "Valid MBAP-framed request with function code 0x2B and MEI type 0x0A for CANopen General Reference; server processes as per documented Encapsulated Interface Transport format",
+        "constraints_preserved": [
+          "7-byte MBAP header with protocol ID 0x0000",
+          "complete documented framing, length, order, and checksum rules",
+          "read/write/diagnostic and file-record functions preserved in coverage",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "Cite real evidence_ids from supplied sources"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "60ca656f21afe8cf9b743af0a25cbd186b7a0dc894b7613792206cace378cad0",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-057",
+        "seed_id": "007",
+        "title": "Function coverage for Illegal Function",
+        "strategy": "function_code_coverage",
+        "target_operation": "Illegal Function",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:operation-catalog:403195f9db74"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Illegal Function Request",
+            "hex": "00000000000480010000",
+            "byte_length": 10,
+            "sha256": "6dd550f5a0e2a0d17752a56f6ebd5e58d01382d503b286215e3f24aae9851f20"
+          }
+        ],
+        "expected_behavior": "Server returns exception response 0x80 0x01",
+        "constraints_preserved": [
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+          "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+        ],
+        "issue_safety_notes": "No vulnerability claims made. PK-only seed for corpus expansion.",
+        "sequence_sha256": "a8812ba0b2fc026d9977730eb03152b3ab01797c51b0cf063ffd43bc904a821e",
+        "total_bytes": 10,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-061",
+        "seed_id": "modbustcp-fc-061",
+        "title": "Function coverage for Memory Parity Error",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read Coils",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0100000000060001000102cd",
+            "byte_length": 12,
+            "sha256": "ab8857dbcbf9ce05b6c0cd07bdef9c792c2aa0c0de1dfa0205c1854d09c3ddc4"
+          }
+        ],
+        "expected_behavior": "Modbus TCP server receives and processes the read coils request per protocol rules.",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol identifier 0x0000",
+          "MBAP length consistent",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Unit identifier 0x01",
+          "Operation: Read Coils",
+          "Lower-level values canonical order",
+          "Record-count field preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "b5d7274bb486af0a6047a0728f7d0aea60c4e74de11a933e6dbfdf2cf525fcb6",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-062",
+        "seed_id": "modbustcp-fc-062",
+        "title": "Function coverage for Illegal Data Value",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write Single Register",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:c093c4ea4f67",
+          "protocol_format:modbustcp:common-headers-mbap-:e7fb1d134948"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000060006000102cd",
+            "byte_length": 12,
+            "sha256": "d5a96e82aeb77c75481705786014391a83d118f2c3e04749737c1892d5a5d7e8"
+          }
+        ],
+        "expected_behavior": "Modbus TCP server receives and processes the write single register request per protocol rules.",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol identifier 0x0000",
+          "MBAP length consistent",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Unit identifier 0x01",
+          "Operation: Write Single Register",
+          "Lower-level values canonical order",
+          "Record-count field preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "fb7b3f306065a4b5185e5b469022fed961c36fbb47e7bc1f65e576917e2f2e8d",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-063",
+        "seed_id": "modbustcp-fc-063",
+        "title": "Function coverage for Illegal Data Address",
+        "strategy": "function_code_coverage",
+        "target_operation": "Diagnostics",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:feea6cf87ab2",
+          "function_code:function:function-text:388a9f8cf2ff"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "000000000006000800000001",
+            "byte_length": 12,
+            "sha256": "fb66522464fccaa572e2f5bef8a623930189a70423dfb91ad012a3fc1fd2cdf9"
+          }
+        ],
+        "expected_behavior": "Modbus TCP server receives and processes the diagnostics request per protocol rules.",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol identifier 0x0000",
+          "MBAP length consistent",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Unit identifier 0x01",
+          "Operation: Diagnostics",
+          "Lower-level values canonical order",
+          "Record-count field preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "e5edd0241178c600fbad11a28887515f810205e472c314c3c5113ed55b5821ad",
+        "total_bytes": 12,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-064",
+        "seed_id": "modbustcp-fc-064",
+        "title": "Function coverage for Gateway Target Device Failed to Respond",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read File Record",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:feea6cf87ab2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "00000000000700140400010001",
+            "byte_length": 13,
+            "sha256": "b85acf001e1199cfe9f68d0498815fafcd7fc01edc4a98aebc524a32c4f8ccb0"
+          }
+        ],
+        "expected_behavior": "Modbus TCP server receives and processes the read file record request per protocol rules.",
+        "constraints_preserved": [
+          "MBAP header 7 bytes with protocol identifier 0x0000",
+          "MBAP length consistent",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Unit identifier 0x01",
+          "Operation: Read File Record",
+          "Lower-level values canonical order",
+          "Record-count field preserved"
+        ],
+        "issue_safety_notes": "No vulnerability issues are available; do not make issue or vulnerability claims.",
+        "sequence_sha256": "1534cea3e6341bf90ed109e04317cb38d634f456b98f4077dfbe539b288447db",
+        "total_bytes": 13,
+        "message_count_hint": 1,
+        "repair_notes": [
+          "recomputed MBAP length",
+          "recomputed Modbus file-record byte count"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      },
+      {
+        "plan_id": "plan-065",
+        "seed_id": "seed-065",
+        "title": "Gateway Path Unavailable exception response coverage",
+        "strategy": "function_code_coverage",
+        "target_operation": "Gateway Path Unavailable",
+        "purpose": "Generate valid request/response centered on this documented operation so the initial corpus covers more parser entry points (exception path)",
+        "evidence_ids": [
+          "function_code:function:function-text:8c5aec6d88bd",
+          "function_code:function:operation-catalog:4532afd98d03",
+          "function_code:function:function-text:48ef3b4dd565",
+          "function_code:function:function-text:c093c4ea4f67",
+          "function_code:function:function-text:388a9f8cf2ff",
+          "function_code:function:function-text:feea6cf87ab2"
+        ],
+        "messages": [
+          {
+            "index": 0,
+            "direction": "client_to_server",
+            "label": "Request",
+            "hex": "0000000000020100",
+            "byte_length": 8,
+            "sha256": "ac849d93d767b14561269d63425479813d53ca3054dccd4773a7a732a9ca81dd"
+          },
+          {
+            "index": 1,
+            "direction": "server_to_client",
+            "label": "Response",
+            "hex": "0000000000028c01",
+            "byte_length": 8,
+            "sha256": "f4766617be74e8458eb707bf31559b16c3300e91e69409e9e92e77fc6f58f316"
+          }
+        ],
+        "expected_behavior": "Server returns exception 0x0A for unsupported Gateway Path Unavailable operation",
+        "constraints_preserved": [
+          "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+          "Use protocol identifier 0x0000 and keep MBAP length consistent",
+          "Diversify unit identifiers, read/write/diagnostic and file-record functions",
+          "Complete documented framing and preserve length/count/checksum/order rules",
+          "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+          "Avoid cosmetic byte-only variants and exact issue payload copies",
+          "MBAP length completed conservatively from layer structure"
+        ],
+        "issue_safety_notes": "Parses exception code 0x0A as documented; no vulnerability exploitation or malformed frames used",
+        "sequence_sha256": "a69b5c2f20f93411681ee18cbc995174d0249226de04203c60c2435340667cc6",
+        "total_bytes": 16,
+        "message_count_hint": 2,
+        "repair_notes": [
+          "recomputed MBAP length"
+        ],
+        "exact_issue_collision": false,
+        "plan_issue_refs": []
+      }
+    ]
+  },
+  "errors": [
+    "019: duplicate sequence removed",
+    "plan-030-001: duplicate sequence removed",
+    "plan-031-001: duplicate sequence removed",
+    "plan-032-001: duplicate sequence removed",
+    "seed-034: duplicate sequence removed",
+    "seed-051-01: duplicate sequence removed",
+    "seed-052-01: duplicate sequence removed",
+    "seed-054: duplicate sequence removed",
+    "seed-056: duplicate sequence removed",
+    "008: duplicate sequence removed",
+    "009: duplicate sequence removed",
+    "010: duplicate sequence removed"
+  ]
+}

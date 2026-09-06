@@ -1,0 +1,142 @@
+{
+  "coverage_summary": [
+    "Conservative canonical ADU for Read Coils (field_interaction, single_request)",
+    "Conservative canonical ADU for Read Discrete Inputs (parser_depth, single_request)",
+    "Setup-then-target sequence for Read Holding Registers (other, setup_then_request)",
+    "Setup-then-request sequence for Read Input Registers (baseline_valid, setup_then_request)"
+  ],
+  "generation_notes": "Generated exactly 4 revised Base (P-/V-) candidate seed sequences, one per plan_id using only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Model-prior conservative diversity generation for revised base_candidate_batch_16 using internal Modbus/TCP ADU knowledge only. Four seed sequences produced exactly once per plan_id with diversified operations, frames and sizes while preserving 7-byte MBAP structure, 0x0000 identifier and consistent length/checksum/order relationships. Generated using model internal prior only. No external protocol documents or vulnerability issues are used. 4 base seed sequences for modbustcp generated per plan using model internal prior knowledge and base constraints; no external protocol docs or issues used. Generated using only internal Modbus/TCP prior and base constraints. No external documents or issues applied. Exactly 4 Base (P-/V-) candidate seed sequences generated for modbustcp using only internal model-prior knowledge. No external protocol docs or vulnerability data used. Diversified target operations (Read Coils, Read Discrete Inputs, Read Holding Registers, Read Input Registers) with consistent MBAP headers and conservative message forms. One plan per plan_id. Generated four conservative Modbus/TCP seed sequences using model-prior plausibility and the supplied Base constraints only. Each ADU uses a 7-byte MBAP header, protocol identifier 0000, internally consistent length fields, and recognized read function forms. Protocol validity is not externally verified; issue knowledge is unavailable. Generated from model internal protocol prior and the supplied Base constraints only. MBAP protocol identifiers are 0000, transaction fields are distinct within each sequence, and all declared lengths, unit identifiers, function payloads, counts, and byte counts are internally consistent. Protocol validity is model-prior plausibility and is not externally verified. Generating four conservative Modbus/TCP seeds from model-prior knowledge only. Each ADU uses a 7-byte MBAP header with protocol identifier 0000 and an internally consistent length field; issue knowledge is unavailable and validity is not externally verified. Generated from model-prior Modbus/TCP knowledge and the supplied Base constraints only. The messages use plausible 7-byte MBAP headers, protocol identifier 0000, internally consistent length fields, conservative function codes, and varied unit identifiers, addresses, counts, and sequence shapes. Protocol validity is model-prior plausibility and is not externally verified. Generated exactly 4 conservative, model-prior Base (P-/V-) candidate seed sequences using only internal protocol knowledge per plan. All messages are complete, widely recognized Modbus/TCP ADU forms with 7-byte MBAP header (protocol 0x0000, consistent length). Diversified operations, frame shapes, sizes, directions, and stateful setups while preserving all hard base constraints. Message hex are lowercase without separators. Four conservative Modbus/TCP candidate sequences generated from model-prior protocol knowledge and the supplied Base constraints only. MBAP protocol identifiers are zero, lengths are internally consistent, and message forms are plausible but not externally verified. Generated four mutation-friendly Modbus/TCP seed sequences using conservative model-prior protocol forms. MBAP protocol identifiers are zero, length fields match the following unit identifier and PDU bytes, and validity is treated as model-prior plausibility rather than external verification. Generated four conservative Modbus/TCP seed sequences from model-prior plausibility and the supplied Base constraints only. Each ADU uses a 7-byte MBAP header with protocol identifier 0000 and an internally consistent length field. No external protocol documents or vulnerability issue knowledge were supplied or used. Generated from model-prior Modbus/TCP knowledge and the supplied Base constraints only. Protocol validity is plausible but not externally verified; no external issue knowledge was available. Generated from model-internal Modbus/TCP knowledge and the supplied Base constraints only. Messages are conservative plausibility seeds, not externally verified, and use consistent MBAP length fields and request/response structure where responses are included. Generated one conservative Modbus/TCP base seed from model-prior knowledge only. The sequence follows the requested plan and uses a single plausible Write Single Coil request ADU with a 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP length. Validity is treated as plausible from training prior and not externally verified.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header is present.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 counts the unit identifier and PDU.",
+        "Function code 01, starting address 0013, and quantity 000d form a complete Read Coils request.",
+        "Hex is lowercase and contains no separators."
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "A conforming server should parse the request as a Read Coils operation and return a normal coil-status response containing enough packed output bytes for 13 requested coils, or a standard protocol exception if the addressed range is unavailable.",
+      "issue_safety_notes": "No vulnerability or issue knowledge was supplied or used; this is a model-prior plausibility seed and is not an externally verified exploit analogue.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00010000000611010013000d",
+          "index": 0,
+          "label": "Read Coils request, unit 17, start address 19, quantity 13"
+        }
+      ],
+      "plan_id": "base-plan-061",
+      "purpose": "Exercise the Read Coils function with a nonzero starting address and a quantity that produces a distinct field combination while retaining a complete canonical request.",
+      "seed_id": "base-seed-061",
+      "strategy": "field_interaction",
+      "target_operation": "Read Coils",
+      "title": "Base Read Coils variant 6"
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header is present.",
+        "Protocol identifier is 0000.",
+        "MBAP length 0006 matches the six bytes after the transaction and protocol fields.",
+        "Function code 02, address 0000, and quantity 0010 are structurally complete.",
+        "The requested quantity maps cleanly to a two-byte packed response payload.",
+        "Hex is lowercase and contains no separators."
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "A conforming server should parse function code 02 and request 16 discrete inputs, producing a response with a two-byte packed status payload or a standard protocol exception.",
+      "issue_safety_notes": "No issue reports or external protocol documents were available; parser-depth intent is based only on model-prior protocol plausibility and does not assert a vulnerability.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000200000006120200000010",
+          "index": 0,
+          "label": "Read Discrete Inputs request, unit 18, start address 0, quantity 16"
+        }
+      ],
+      "plan_id": "base-plan-062",
+      "purpose": "Use a larger but conventional discrete-input quantity to exercise quantity decoding, response byte-count calculation, and packed-bit response parsing.",
+      "seed_id": "base-seed-062",
+      "strategy": "parser_depth",
+      "target_operation": "Read Discrete Inputs",
+      "title": "Base Read Discrete Inputs variant 6"
+    },
+    {
+      "constraints_preserved": [
+        "Both frames use 7-byte MBAP headers.",
+        "Protocol identifier is 0000 in both directions.",
+        "Request MBAP length 0006 is correct for the unit and five-byte request PDU.",
+        "Response MBAP length 0013 equals one unit byte plus one function byte, one byte count, and 16 data bytes.",
+        "Response transaction identifier and unit identifier match the request.",
+        "Function code 03 and quantity 0008 are complete and consistent with the response byte count.",
+        "Hex is lowercase and contains no separators."
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "The server should associate both frames by transaction identifier 0003 and interpret the operation as reading eight holding registers, with a response byte count of 16 and eight two-byte register values.",
+      "issue_safety_notes": "No vulnerability issue knowledge is available; the two-frame exchange is a conservative structural seed based on model-internal protocol knowledge only.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000300000006130300000008",
+          "index": 0,
+          "label": "Holding-register transaction setup request, unit 19, start address 0, quantity 8"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "00030000001313031000010002000300040005000600070008",
+          "index": 1,
+          "label": "Read Holding Registers response, unit 19, 8 registers"
+        }
+      ],
+      "plan_id": "base-plan-063",
+      "purpose": "Provide a structurally distinct multi-message transaction with a multi-register Read Holding Registers request and a matching normal response payload.",
+      "seed_id": "base-seed-063",
+      "strategy": "other",
+      "target_operation": "Read Holding Registers",
+      "title": "Base Read Holding Registers variant 6"
+    },
+    {
+      "constraints_preserved": [
+        "Both frames use 7-byte MBAP headers.",
+        "Protocol identifier is 0000 in both directions.",
+        "Request MBAP length 0006 is correct.",
+        "Response MBAP length 0005 equals the unit, function, byte-count, and two data bytes.",
+        "Transaction identifier 0004 and unit identifier 14 are preserved across the exchange.",
+        "Function code 04, start address 0020, quantity 0001, and response byte count 02 are consistent.",
+        "Hex is lowercase and contains no separators."
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:0cd5de02ccdf"
+      ],
+      "expected_behavior": "The server should parse function code 04 for one input register and return a normal response with byte count 02 and one two-byte register value, or a standard protocol exception if the address is unsupported.",
+      "issue_safety_notes": "Issue knowledge is unavailable and no external verification is claimed; this is a conservative baseline seed generated from model-prior Modbus/TCP knowledge and the supplied Base constraints.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000400000006140400200001",
+          "index": 0,
+          "label": "Input-register transaction setup request, unit 20, start address 32, quantity 1"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0004000000051404021234",
+          "index": 1,
+          "label": "Read Input Registers response, unit 20, one register"
+        }
+      ],
+      "plan_id": "base-plan-064",
+      "purpose": "Produce a canonical minimal Read Input Registers exchange using a single requested register and a matching two-byte response.",
+      "seed_id": "base-seed-064",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Input Registers",
+      "title": "Base Read Input Registers variant 6"
+    }
+  ],
+  "target_issue": -1
+}

@@ -1,0 +1,108 @@
+{
+  "id": "chatcmpl-ELBSpZa7hhGiFUjJSOJFMiFTZhtVC",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"ETHERNETIP\",\n  \"target_issue\": 582,\n  \"generation_notes\": \"Rebuilt as exactly 4 distinct, mechanically consistent EtherNet/IP seeds using the supplied encapsulation-command catalog, 24-byte encapsulation header rules, and CPF item definitions. Invalid QoS and duplicate NOP/No_Operation/Multiple_Service_Packet variants were removed because the supplied sources did not provide complete source-backed request grammars for those claimed operations. The revised set instead preserves source-backed framing and field relationships while improving diversity across discovery, session lifecycle, unconnected explicit messaging, and connected-data CPF parsing. Where full CIP object-path semantics were not documented in the supplied sources, conservative minimal payloads were used only to satisfy documented outer framing and issue-path reachability, and expected behavior is limited to normal success or ordinary protocol error handling rather than asserted application-level success. Issue-guided content is retained only as safe structural analogues: RegisterSession precedes session-bound traffic; SendRRData uses a valid session and CPF with Null Address plus Unconnected Data; the issue-582 analogue keeps data_length >= 6 and a valid session but uses a bounded, internally consistent CIP payload rather than the historical forged short payload/path-size collision.\",\n  \"coverage_summary\": [\n    \"24-byte EtherNet/IP encapsulation header used in every message with little-endian command and payload length\",\n    \"Discovery coverage via ListServices empty-payload request\",\n    \"Session establishment coverage via RegisterSession request with 4-byte payload\",\n    \"Session teardown coverage via UnregisterSession using the negotiated-handle placeholder\",\n    \"Explicit unconnected-message path via SendRRData with documented Null Address Item and Unconnected Data Item CPF combination\",\n    \"Connected CPF parser entry via SendUnitData with documented Connected Address Item and Connected Data Item combination\",\n    \"Issue-582 structural analogue preserved safely by using RegisterSession then SendRRData with valid session and bounded CIP payload\",\n    \"Field-relationship diversity across empty encapsulation payload, fixed 4-byte RegisterSession payload, and nested CPF payloads\",\n    \"State diversity across standalone discovery, session lifecycle, and session-bound runtime traffic\",\n    \"Expected outcomes intentionally allow ordinary encapsulation or CIP-level error responses when inner CIP semantics are implementation-specific\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-042\",\n      \"seed_id\": \"plan-042-001-rev1\",\n      \"title\": \"Discovery baseline with ListServices request\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"ListServices\",\n      \"purpose\": \"Provide a minimal, source-backed discovery seed with a valid 24-byte encapsulation header and zero payload to cover a non-session discovery parser entry point distinct from runtime CPF handling.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\",\n        \"protocol_format:opener:section-common-heade:540b84623d2f\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"ListServices request\",\n          \"hex\": \"040000000000000000000000000000000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"Parser should accept the encapsulation header and treat the packet as a ListServices request with empty payload; a normal service-list response or a benign implementation-specific reply is acceptable.\",\n      \"constraints_preserved\": [\n        \"Encapsulation command 0x0004 encoded little-endian as documented.\",\n        \"Encapsulation payload length is 0 and matches the absent payload bytes.\",\n        \"24-byte encapsulation header preserved exactly.\",\n        \"No unsupported inner CPF or CIP structure is claimed for this discovery command.\"\n      ],\n      \"issue_safety_notes\": \"Not issue-shaped; purely baseline discovery traffic with no malformed lengths, no concatenated frames, and no historical crash payload reuse.\"\n    },\n    {\n      \"plan_id\": \"plan-041\",\n      \"seed_id\": \"plan-041-001-rev1\",\n      \"title\": \"Stateful session lifecycle with RegisterSession and UnregisterSession\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"RegisterSession / UnregisterSession\",\n      \"purpose\": \"Cover reliable session setup and teardown using only source-backed encapsulation commands and the documented 4-byte RegisterSession payload, giving the corpus a trustworthy session-handle workflow anchor.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\",\n        \"protocol_format:opener:section-common-heade:540b84623d2f\",\n        \"issue:314:314-summary:3abfe4f839d0\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"RegisterSession request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"UnregisterSession request using negotiated session-handle placeholder 0x01000000\",\n          \"hex\": \"660000000100000000000000000000000000000000000000\"\n        }\n      ],\n      \"expected_behavior\": \"The first message should be parsed as RegisterSession with a 4-byte payload. If the server grants a session, the harness should substitute the returned session handle into the second message before transmission; otherwise the second message may receive an ordinary invalid-session response or be ignored.\",\n      \"constraints_preserved\": [\n        \"RegisterSession command 0x0065 encoded little-endian.\",\n        \"RegisterSession length field is 0x0004 and matches the 4-byte payload.\",\n        \"RegisterSession payload uses the common protocol-version/options layout 01 00 00 00 as a conservative prior and does not contradict supplied sources.\",\n        \"UnregisterSession command 0x0066 encoded little-endian with zero payload length.\",\n        \"Both messages use complete 24-byte encapsulation headers.\",\n        \"Session handle in the second message is an explicit runtime-substitution placeholder tied to the first response.\"\n      ],\n      \"issue_safety_notes\": \"Safe stateful seed. It reaches the valid-session precondition referenced by issue material without reproducing any malformed RRData or forged path-size payload.\"\n    },\n    {\n      \"plan_id\": \"plan-043\",\n      \"seed_id\": \"plan-043-001-rev1\",\n      \"title\": \"Bounded SendRRData unconnected explicit-message analogue\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"SendRRData\",\n      \"purpose\": \"Exercise the SendRRData and CPF unconnected-data parser path under a valid-session placeholder, preserving the issue-relevant outer structure while keeping inner CIP bytes bounded and internally length-consistent.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\",\n        \"issue:582:582-summary:a17fd2adbb9f\",\n        \"issue:314:314-summary:3abfe4f839d0\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"RegisterSession request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendRRData with Null Address Item and bounded Unconnected Data Item\",\n          \"hex\": \"6F0016000100000000000000000000000000000000000000000000000000020000000000B20006000E0220012401\"\n        }\n      ],\n      \"expected_behavior\": \"After session registration, the second message should enter SendRRData parsing with a valid encapsulation header, six command-specific zero bytes, CPF item count 2, a Null Address Item of length 0, and an Unconnected Data Item carrying 6 bytes of bounded CIP data. The target may answer with a normal CIP error, encapsulation error, or implementation-specific response, but it should not require malformed-length recovery.\",\n      \"constraints_preserved\": [\n        \"SendRRData command 0x006F encoded little-endian.\",\n        \"Encapsulation length 0x0016 matches the 22-byte command-specific plus CPF payload.\",\n        \"Six zero command-specific bytes are present before CPF, matching the issue path precondition receive_data->data_length >= 6.\",\n        \"CPF item count is 2.\",\n        \"First CPF item is Null Address Item type 0x0000 with length 0.\",\n        \"Second CPF item is Unconnected Data Item type 0x00B2 with length 6.\",\n        \"Inner CIP bytes are length-consistent: service 0x0E, path size 0x02 words, followed by exactly 4 path bytes.\",\n        \"Session handle 0x01000000 is a negotiated-handle placeholder to be replaced by the harness when replaying statefully.\"\n      ],\n      \"issue_safety_notes\": \"This is a safe structural analogue for the documented SendRRData/EPath issue path. It avoids the historical collision by not using a short declared CIP payload with oversized forged path_size, not appending excess trailing path bytes, and not using the published 240-word value.\"\n    },\n    {\n      \"plan_id\": \"plan-044\",\n      \"seed_id\": \"plan-044-001-rev1\",\n      \"title\": \"Connected-data CPF coverage with SendUnitData\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"SendUnitData\",\n      \"purpose\": \"Add a distinct connected-data parser entry point using the documented SendUnitData command and the documented CPF pair of Connected Address Item plus Connected Data Item, improving frame-shape diversity beyond discovery and unconnected explicit messaging.\",\n      \"evidence_ids\": [\n        \"function_code:function:function-text:515064cfcdad\",\n        \"function_code:function:function-text:0d83a9cb1819\",\n        \"protocol_format:opener:format-overview:8e03e5bb8ecf\",\n        \"protocol_format:opener:section-common-heade:540b84623d2f\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"RegisterSession request\",\n          \"hex\": \"65000400000000000000000000000000000000000000000001000000\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"SendUnitData with Connected Address Item and Connected Data Item\",\n          \"hex\": \"70001600010000000000000000000000000000000000000000000000000002000001040044332211B100060001000E022001\"\n        }\n      ],\n      \"expected_behavior\": \"After session registration, the second message should be parsed as SendUnitData with a valid connected-address/connected-data CPF layout. Because no prior ForwardOpen is established in the supplied evidence, ordinary connection-related rejection or other benign protocol error handling is acceptable after successful parsing.\",\n      \"constraints_preserved\": [\n        \"SendUnitData command 0x0070 encoded little-endian.\",\n        \"Encapsulation length 0x0016 matches the 22-byte payload after the 24-byte header.\",\n        \"Six zero command-specific bytes are present before CPF.\",\n        \"CPF item count is 2.\",\n        \"First CPF item is Connected Address Item type 0x0100 with length 4 and a 4-byte connection identifier placeholder.\",\n        \"Second CPF item is Connected Data Item type 0x00B1 with length 6.\",\n        \"Inner connected-data bytes are bounded and internally consistent rather than claiming application success.\",\n        \"Session handle 0x01000000 is a negotiated-handle placeholder to be replaced by the harness when replaying statefully.\"\n      ],\n      \"issue_safety_notes\": \"Safe connected-data coverage only. No attempt is made to fake a real ForwardOpen-created connection or to reproduce any historical malformed connected-data payload.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788717663,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2690,
+    "prompt_tokens": 8420,
+    "total_tokens": 11110,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 256,
+      "engine_ttlt_ms": 25860,
+      "pre_inference_ms": 137,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 593,
+      "service_ttlt_ms": 26193,
+      "user_visible_ttft_ms": 457
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "prompt_index": 0
+    }
+  ],
+  "quota": 39910,
+  "routing": {
+    "serving_pipereplica": "d20260817141218-be98d3e9-default-r0-dp0-default"
+  }
+}

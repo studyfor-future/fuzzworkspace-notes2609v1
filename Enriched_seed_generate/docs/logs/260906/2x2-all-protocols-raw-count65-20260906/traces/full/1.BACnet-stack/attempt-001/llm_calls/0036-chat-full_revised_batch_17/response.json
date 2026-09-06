@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-EL9kqs5ssMylzwgW482OttdPvdUqe",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"BACNET\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised to one distinct seed while preserving source-backed BACnet/IP layering and removing the prior malformed pseudo-abort framing. The retained seed uses a valid confirmed service from the supplied function catalog and a safe structural analogue to parser-depth and length-handling issue motifs without reproducing any historical crashing payload bytes. Conservative model-prior completion is limited to common BVLC original-unicast-npdu framing, a minimal NPDU control octet, and standard APDU field ordering consistent with the supplied layered-structure and function-code references.\",\n  \"coverage_summary\": [\n    \"Single confirmed-service BACnet/IP seed with canonical BVLC 4-byte total length\",\n    \"BVLC + NPDU + APDU layering preserved per supplied protocol-format sources\",\n    \"Confirmed service choice 0x1a ReadRange selected to improve operation diversity versus prior invalid-abort seed\",\n    \"Safe parser-depth analogue includes nested context tags and bounded application data\",\n    \"No malformed extended lengths, oversized tags, or exact historical issue payload collisions\",\n    \"Request-shaped client_to_server corpus seed suitable for mutation into adjacent confirmed services\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"plan-065\",\n      \"seed_id\": \"seed-065-001r\",\n      \"title\": \"Confirmed ReadRange request with bounded nested range parameters\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"ReadRange\",\n      \"purpose\": \"Exercise a real confirmed-service parser entry point with object/property/range context structure that is mutation-friendly and safer than the previous invalid abort-reason construct, while still probing nested tag decoding paths adjacent to documented BACnet parser-length issues.\",\n      \"evidence_ids\": [\n        \"protocol_format:bacnet-stack:format-overview:d904ae1e3d82\",\n        \"protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5\",\n        \"function_code:function:function-text:f1c980ef7dde\",\n        \"function_code:function:function-text:d3664eeda33b\",\n        \"issue:1270:1270-summary:f10b3cba62a1\",\n        \"issue:cve-2026-62973:cve-2026-62973-summa:046aed84ca32\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"BACnet/IP BVLC original-unicast-npdu + NPDU + Confirmed-Request-PDU ReadRange\",\n          \"hex\": \"810a001b01040005011a0c02000001191a3e291e19004f\"\n        }\n      ],\n      \"expected_behavior\": \"Frame is accepted as a syntactically valid BACnet/IP confirmed request and dispatched through BVLC, NPDU, and APDU parsing to the ReadRange service decoder; implementation should either process or reject semantics cleanly without crash or out-of-bounds read.\",\n      \"constraints_preserved\": [\n        \"BVLC header kept to four octets with total length 0x001b matching the full message size\",\n        \"Layering follows supplied structure: BVLC header, NPDU header, APDU payload\",\n        \"APDU first octet uses Confirmed-Request-PDU high nibble 0x00 from the supplied function-code table\",\n        \"Confirmed service choice 0x1a is ReadRange per supplied confirmed service catalog\",\n        \"NPDU included as a minimal common-header form using conservative model-prior completion only for undocumented octet values\",\n        \"Context-tag nesting is bounded and length-consistent; no oversized extended application length is used\",\n        \"Hex string has even length and represents one distinct non-duplicate seed\"\n      ],\n      \"issue_safety_notes\": \"This is a safe structural analogue only: it preserves nested tag-decoding pressure relevant to supplied parser issues but avoids malformed extended lengths, MAX_BVLC-sized padding, host-n-port crash bytes, and any exact historical payload collision.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788711092,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 858,
+    "prompt_tokens": 7333,
+    "total_tokens": 8191,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    }
+  }
+}

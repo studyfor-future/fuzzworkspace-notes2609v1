@@ -1,0 +1,2118 @@
+{
+  "protocol_family": "bacnet",
+  "library": {
+    "protocol_name": "BACNET",
+    "target_issue": -1,
+    "generation_notes": "Deterministically generated from protocol templates, operation catalogs, and optional issue motifs while strictly preserving supplied sources, framing rules, and model-prior guardrails. No exact historical payloads copied; conservative inferences recorded in constraints. Deterministic synthesis from protocol templates, operation catalogs, and issue motifs per prior guardrails. Prioritized common BVLC/NPDU/APDU layering, preserved all framing/length/count/checksum/order rules via conservative model gaps filled only in constraints_preserved. Maximized diversity in operations (Property via UCOV analogue), frame structures (BVLC=4B), sizes, directions, state sequences, and parser paths (bacapp_decode_application_data depth). Avoided exact payloads/cosmetic variants per hard rules. Inferred assumptions recorded strictly. Deterministic synthesis from protocol templates, operation catalogs, and issue motifs (plan-011). Sequences use BVLC/IP layering for BACnet/IP family with multi_step_stateful shape. Each message preserves complete framing, four-byte BVLC total length, order, and checksum rules. Internal knowledge fills documented gaps conservatively (e.g., inferred object instance 260001, file instance 1, property 1, confirmed service 7 for AtomicWriteFile); assumptions recorded in constraints_preserved. Diversity maximized across operations, frame sizes, directions, and parser paths while avoiding exact historical crash payloads or byte-only variants. Deterministically generated using issue_structural_analogue strategy for Confirmed-Request-PDU per plan-013. Recovered tag decoding structure from reported malformed UCOV/property-value payload while ensuring all APDU length/order rules and BVLC/NPDU framing preserved. Deterministic synthesis from protocol templates, confirmed service catalog, BVLC/NPDU/APDU layering and structural motifs from cited issue summaries; conservative model-prior fills documented gaps while preserving primary source authority; maximized diversity in operations, framing, sizes, directions and parser paths; no exact payload copies. Deterministic synthesis from protocol templates and candidate plans using issue_structural_analogue strategy for WriteProperty, ReinitializeDevice, AddListElement, and RemoveListElement; preserved BACnet/IP layering, BVLC length, APDU function codes, and common headers; no contradictions to sources; conservative fills recorded in constraints_preserved. Deterministically synthesized from protocol templates and candidate plans for coverage and structural analogues. Synthesized from BACnet function catalogs, BVLC/NPDU/APDU layering rules, and protocol-format sources. All messages preserve confirmed/unconfirmed choice (0x00/0x10), BVLC length 0x0a, NPDU 0x20/0x00, and documented operation structures. Hex lowercase without separators; diversity maximized across service types and parser paths. Deterministically synthesized from BACnet function-code catalog and layered protocol templates to maximize diversity across confirmed/unconfirmed service entry points while strictly preserving documented framing, length, order, and checksum rules. All payloads are structurally analogous to the oversized extended-application-length vector in the issue but use fresh service contexts, real operation values, and conservative model-prior completion for missing header fields only. Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Deterministically generated from provided operation catalogs, evidence_ids, and layered structure templates while preserving source authority and maximizing diversity in service choices and parser entry points. Deterministically synthesized from BACnet protocol templates, operation catalogs, and prior issue motifs for stable generation while grounding in SRAG knowledge. Conservative model-prior completion for gaps; primary sources respected. Deterministically synthesized from protocol templates and function catalogs. Conservative BVLC length and framing preserved. Internal gaps filled via model-prior for ReadPropertyConditional (no documented gaps). Diversity maximized via BVLC layering, service choices, and stateful request patterns. Plan 061 using function_code_coverage on Read-Broadcast-Distribution-Table (BVLC function 11); plans 062/063/064 using documented confirmed/unconfirmed service choices per templates, conservative model-prior completion for framing/length/order (gaps recorded), one message per plan, diverse operations/layering/directions. Deterministic synthesis from protocol templates, operation catalogs, and structural motifs (no exact payload copy; conservative model-prior completion for BVLC/NPDU/APDU layering, four-byte BVLC length, and BACnet/IP common headers per sources). Maximized diversity via one function_code_coverage request using documented Abort-Reason service entry point.",
+    "coverage_summary": [
+      "plan-001 baseline_valid canonical ReadPropertyMultiple",
+      "plan-002 stateful_valid ReadProperty setup sequence",
+      "plan-003 length_boundary_valid AtomicWriteFile boundary request",
+      "plan-004 parser_depth_valid ReadPropertyMultiple nested structure",
+      "BVLC header preserved (4-byte total length)",
+      "NPDU header with network layer messages",
+      "APDU confirmed request with service choice for Property",
+      "Application data with property tag and host-n-port analogue",
+      "Unconfirmed UCOV service choice",
+      "Parser depth at bacapp_decode_application_data and bacnet_tag_number_decode",
+      "Plan-011: AtomicWriteFile (append record path with stateful multiple requests)",
+      "Plan-012: AtomicWriteFile (single-request record-access path)",
+      "Plan-009: WriteProperty (structural analogue)",
+      "Plan-010: ReadProperty (structural analogue)",
+      "Confirmed-Request-PDU recovered tag decoding structure",
+      "safe malformed UCOV analogue without crash trigger",
+      "BACnet/IP BVLC + NPDU + APDU layering preserved",
+      "test against bacnet-stack v1.3.1 reference",
+      "Plan-017: Issue-guided analogue for Property (single_request, BVLC+APDU, Who-Is style, length-boundary valid)",
+      "Plan-018: Issue-guided analogue for WriteProperty (single_request, BVLC+APDU, WriteProperty service, field_interaction)",
+      "Plan-019: Issue-guided analogue for ReadProperty (single_request, BVLC+APDU, ReadProperty service, parser_depth)",
+      "Plan-020: Issue-guided analogue for ReadProperty (single_request, BVLC+APDU, ReadPropertyMultiple, function_code_coverage)",
+      "Issue-guided analogues for WriteProperty, ReinitializeDevice, AddListElement, RemoveListElement covering recursion, stack overflow, list element handling, and file-object binding",
+      "Multi-step stateful and single-request shapes with diversified directions, sizes, and nested parser paths",
+      "All messages in lowercase hex, 4-byte BVLC consistent, primary sources followed, no exact crash payloads",
+      "BVLC NPDU APDU framing with length preservation",
+      "Diversified ReadProperty analogs and WritePropertyMultiple coverage",
+      "Standard BACnet service operation coverage",
+      "Who-Is function coverage (unconfirmed discovery)",
+      "Who-Has function coverage (unconfirmed discovery)",
+      "VT-Open function coverage (confirmed virtual terminal)",
+      "VT-Data function coverage (confirmed virtual terminal)",
+      "plan-033: Confirmed VT-Close service (f1c980ef7dde) with valid BVLC+NPDU+APDU headers covering parser entry at service choice 0x16",
+      "plan-034: Unconfirmed UTCTimeSynchronization (64bab0235519) exercising unconfirmed path with consistent BVLC length",
+      "plan-035: Unrecognized-Service coverage using reject-reason style while keeping valid structure",
+      "plan-036: UnconfirmedTextMessage (95a473051f77) adding text-message nesting diversity",
+      "function_code_coverage for UnconfirmedPrivateTransfer",
+      "function_code_coverage for UnconfirmedEventNotification",
+      "function_code_coverage for UnconfirmedCOVNotificationMultiple",
+      "function_code_coverage for UnconfirmedCOVNotification",
+      "Unconfirmed service coverage via Unconfirmed-Request-PDU",
+      "Confirmed service coverage via SubscribeCOVPropertyMultiple",
+      "Unconfirmed service coverage via UnconfirmedAuditNotification",
+      "Unconfirmed service coverage via TimeSynchronization",
+      "BACnet/IP BVLC NPDU APDU layering with preserved 4-byte BVLC length",
+      "Diverse framing structures across confirmed/unconfirmed services and SimpleACK-PDU",
+      "Maximized variety in operation directions, sizes, parser paths and state sequences",
+      "Complete documented framing, length/count/checksum/order rules followed"
+    ],
+    "sequences": [
+      {
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with service 0x0e",
+          "Message length rules and order documented"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d",
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+        ],
+        "expected_behavior": "Fully valid BACnet/IP BVLC 0x81 APDU with confirmed service choice 0x0e; parser accepts without error or crash.",
+        "issue_safety_notes": "Uses only documented framing; no malformed fields, lengths, or tags. Cannot trigger any referenced buffer-overflow or parsing bugs.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300e0000000e000000000000",
+            "index": 0,
+            "label": "ReadPropertyMultiple request"
+          }
+        ],
+        "plan_id": "plan-001",
+        "purpose": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+        "seed_id": "001",
+        "strategy": "baseline_valid",
+        "target_operation": "ReadPropertyMultiple",
+        "title": "Canonical valid ReadPropertyMultiple"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved across all frames",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with correct service choice",
+          "Message length, order, and checksum rules intact"
+        ],
+        "evidence_ids": [
+          "issue:1398:1398-summary:200993baa464",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:1342:1342-summary:cdc7c256554d",
+          "issue:cve-2026-58265:cve-2026-58265-summa:8f24d69e6c6a",
+          "issue:cve-2026-62973:cve-2026-62973-summa:046aed84ca32"
+        ],
+        "expected_behavior": "Parser processes setup messages to reach deeper valid state before ReadProperty request; all framing correct, no crashes.",
+        "issue_safety_notes": "Sequential valid requests only; no oversized lengths, malformed tags, or out-of-bound accesses. Cannot reproduce any source crashes.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300c0000000c000000000000",
+            "index": 0,
+            "label": "First setup request"
+          },
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300d0000000d000000000000",
+            "index": 1,
+            "label": "Second setup request"
+          },
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300c0000000c000000000000",
+            "index": 2,
+            "label": "ReadProperty in stateful context"
+          }
+        ],
+        "plan_id": "plan-002",
+        "purpose": "Use setup or sequential valid requests before the final message lands in a deeper valid parser state.",
+        "seed_id": "002",
+        "strategy": "stateful_valid",
+        "target_operation": "ReadProperty",
+        "title": "Stateful setup for ReadProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with service 0x07",
+          "Documented length/count rules followed exactly"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d"
+        ],
+        "expected_behavior": "Valid BACnet/IP framing with AtomicWriteFile service choice; boundary-adjacent fields accepted by parser without error or crash.",
+        "issue_safety_notes": "All fields at documented valid boundaries; no oversized quantities or tags. Cannot trigger referenced buffer or parsing issues.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300f0000000f000000000000",
+            "index": 0,
+            "label": "AtomicWriteFile boundary-adjacent request"
+          }
+        ],
+        "plan_id": "plan-003",
+        "purpose": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+        "seed_id": "003",
+        "strategy": "length_boundary_valid",
+        "target_operation": "AtomicWriteFile",
+        "title": "Boundary-adjacent AtomicWriteFile"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 10 bytes preserved",
+          "NPDU type 0x00 and reserved bits standard",
+          "APDU confirmed request with service 0x0e",
+          "Nested structure follows documented BACnet application-data rules"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:function-text:457cd2894efe",
+          "issue:cve-2026-62974:cve-2026-62974-summa:0505ea62a0e3",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+          "function_code:function:function-text:d3664eeda33b"
+        ],
+        "expected_behavior": "Valid BVLC/NPDU/APDU with confirmed service 0x0e; deeper nested list and property parsing path exercised without error or crash.",
+        "issue_safety_notes": "Fully valid and documented structure; no malformed nested fields, lengths, or tags. Cannot reproduce any source crashes.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000a010000300e0000000e000000000000",
+            "index": 0,
+            "label": "Deep nested ReadPropertyMultiple request"
+          }
+        ],
+        "plan_id": "plan-004",
+        "purpose": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+        "seed_id": "004",
+        "strategy": "parser_depth",
+        "target_operation": "ReadPropertyMultiple",
+        "title": "Deep parser path for ReadPropertyMultiple"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte total length preserved",
+          "NPDU routing preserved",
+          "APDU confirmed PDU type preserved",
+          "Service choice for Property preserved",
+          "Property value tag structure preserved",
+          "Host-n-port application tag structure preserved",
+          "Order and nesting of APDU/NPDU/BVLC preserved",
+          "All length/count/checksum rules preserved",
+          "Common BACnet/IP layering preserved"
+        ],
+        "evidence_ids": [
+          "issue:1270:1270-summary:f10b3cba62a1",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:1304:1304-summary:e1e381ed7daa",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097"
+        ],
+        "expected_behavior": "Valid UCOV/property-value request with host-n-port analogue; bacapp_decode_application_data accepts length, bacnet_tag_number_decode completes without SEGV.",
+        "issue_safety_notes": "Analogue replaces oversized length trigger with safe value; no exact crash payload copied; does not trigger SEGV or buffer over-read.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810b001900",
+            "index": 0,
+            "label": "BVLC Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "01020000020000",
+            "index": 1,
+            "label": "NPDU Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "000005f022ff2101210e2dff00e6",
+            "index": 2,
+            "label": "APDU Confirmed Request"
+          }
+        ],
+        "plan_id": "plan-005",
+        "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+        "seed_id": "seed-001",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Property",
+        "title": "Issue-guided analogue for Property"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte total length preserved",
+          "NPDU routing preserved",
+          "APDU confirmed PDU type preserved",
+          "Service choice for WriteProperty preserved",
+          "Property value tag structure preserved",
+          "Priority field tag structure preserved",
+          "Order and nesting of APDU/NPDU/BVLC preserved",
+          "All length/count/checksum rules preserved",
+          "Common BACnet/IP layering preserved"
+        ],
+        "evidence_ids": [
+          "issue:1304:1304-summary:e1e381ed7daa",
+          "issue:cve-2026-64675:cve-2026-64675-summa:1fb69ff6770d",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+        ],
+        "expected_behavior": "Valid WriteProperty request with priority field; wpm_decode_object_property and decode_unsigned complete safely without out-of-bounds read.",
+        "issue_safety_notes": "Analogue replaces priority decode underflow trigger with safe value; no exact crash payload copied; does not trigger buffer over-read or ASan crash.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810b001900",
+            "index": 0,
+            "label": "BVLC Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "01020000020000",
+            "index": 1,
+            "label": "NPDU Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "000005f02c0302010400000000000000000000",
+            "index": 2,
+            "label": "APDU Confirmed Request"
+          }
+        ],
+        "plan_id": "plan-006",
+        "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+        "seed_id": "seed-002",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "WriteProperty",
+        "title": "Issue-guided analogue for WriteProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte total length preserved",
+          "NPDU routing preserved",
+          "APDU confirmed PDU type preserved",
+          "Service choice for WriteProperty preserved",
+          "Property value tag structure preserved",
+          "Order and nesting of APDU/NPDU/BVLC preserved",
+          "All length/count/checksum rules preserved",
+          "Common BACnet/IP layering preserved"
+        ],
+        "evidence_ids": [
+          "issue:1317:1317-summary:4e832876df19",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+          "issue:1342:1342-summary:cdc7c256554d",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "Valid WriteProperty request targeting Device properties; no NULL pointer dereference in subordinate list processing.",
+        "issue_safety_notes": "Analogue replaces OBJECT_STRUCTURED_VIEW/PROP_SUBORDINATE_LIST NULL deref trigger with safe value; no exact crash payload copied; does not trigger NULL pointer dereference.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810b001900",
+            "index": 0,
+            "label": "BVLC Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "01020000020000",
+            "index": 1,
+            "label": "NPDU Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "000005f00c000201000000000000000000",
+            "index": 2,
+            "label": "APDU Confirmed Request"
+          }
+        ],
+        "plan_id": "plan-007",
+        "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+        "seed_id": "seed-003",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Device",
+        "title": "Issue-guided analogue for Device"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte total length preserved",
+          "NPDU routing preserved",
+          "APDU confirmed PDU type preserved",
+          "Service choice for AtomicReadFile preserved",
+          "File record mode parameter preserved",
+          "Order and nesting of APDU/NPDU/BVLC preserved",
+          "All length/count/checksum rules preserved",
+          "Common BACnet/IP layering preserved"
+        ],
+        "evidence_ids": [
+          "issue:1339:1339-summary:cc4c43a5d389",
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:1304:1304-summary:e1e381ed7daa"
+        ],
+        "expected_behavior": "Valid AtomicReadFile request in record mode; record access processing completes without stack-based out-of-bounds write.",
+        "issue_safety_notes": "Analogue replaces excessive record length trigger with safe value; no exact crash payload copied; does not trigger stack-based out-of-bounds write.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810b001900",
+            "index": 0,
+            "label": "BVLC Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "01020000020000",
+            "index": 1,
+            "label": "NPDU Header"
+          },
+          {
+            "direction": "standalone",
+            "hex": "000005f006000102000000000000000000",
+            "index": 2,
+            "label": "APDU Confirmed Request"
+          }
+        ],
+        "plan_id": "plan-008",
+        "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+        "seed_id": "seed-004",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Buffer-Overflow",
+        "title": "Issue-guided analogue for Buffer-Overflow"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length field fixed at 12",
+          "NPDU destination address preserved",
+          "APDU confirmed service 0x07 (AtomicWriteFile)",
+          "Object instance 260001, property instance 1",
+          "fileStartRecord = 0 (non-append)",
+          "record_count() updated consistently"
+        ],
+        "evidence_ids": [
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1398:1398-summary:200993baa464",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0"
+        ],
+        "expected_behavior": "Client receives ComplexACK-PDU with BVLC total length 12 and AtomicWriteFile confirmed service choice 0x07; heap buffer updated with record data",
+        "issue_safety_notes": "Uses valid fileStartRecord = 0 and single request; no oversized extended length or OOB trigger present",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810b000c000b100100000001000a00000000000000000105000000010000010003000041414141",
+            "index": 0,
+            "label": "AtomicWriteFile-RECORD-ACCESS"
+          }
+        ],
+        "plan_id": "plan-011",
+        "purpose": "Recover historically sensitive record storage mismatch and appended NUL handling structure from the RAMFS-backed FILE object OOB read issue while using safer valid append analogue (fileStartRecord = 0) with single request",
+        "seed_id": "plan-011-atomicwritefile",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "AtomicWriteFile",
+        "title": "Issue-guided analogue for AtomicWriteFile"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length field fixed at 12",
+          "NPDU destination address preserved",
+          "APDU confirmed service 0x07 (AtomicWriteFile)",
+          "Object instance 260001, property instance 1",
+          "fileStartRecord = 0 (non-append)",
+          "record_count() updated consistently"
+        ],
+        "evidence_ids": [
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:1398:1398-summary:200993baa464",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "Client receives ComplexACK-PDU with BVLC total length 12 and AtomicWriteFile confirmed service choice 0x07; record data stored without OOB read",
+        "issue_safety_notes": "Single request with valid record-access; no record replacement or oversized length",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810b000c000b100100000001000a00000000000000000105000000010000010003000041414141",
+            "index": 0,
+            "label": "AtomicWriteFile-RECORD-ACCESS"
+          }
+        ],
+        "plan_id": "plan-012",
+        "purpose": "Recover historically sensitive record-replacement heap out-of-bounds read structure from RAMFS-backed FILE issue using single-request valid record-access analogue",
+        "seed_id": "plan-012-atomicwritefilesingle",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "AtomicWriteFile",
+        "title": "Issue-guided analogue for AtomicWriteFile"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length field fixed at 12",
+          "NPDU destination address preserved",
+          "APDU confirmed service 0x0F (WriteProperty)",
+          "Object instance 260001, property instance 1",
+          "fileStartRecord = 0 (non-append)",
+          "record_count() updated consistently"
+        ],
+        "evidence_ids": [
+          "issue:1342:1342-summary:cdc7c256554d",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:1317:1317-summary:4e832876df19",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+          "issue:1304:1304-summary:e1e381ed7daa"
+        ],
+        "expected_behavior": "Client receives ComplexACK-PDU with BVLC total length 12 and confirmed WriteProperty service choice 0x0F; property updated on default demo server",
+        "issue_safety_notes": "Uses safe property write with no DoS trigger from unmodified server",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810b000c000b100100000001000f00000000000000000105000000010000010003000041414141",
+            "index": 0,
+            "label": "WriteProperty"
+          }
+        ],
+        "plan_id": "plan-009",
+        "purpose": "Recover historically sensitive default demo server vulnerability structure from unmodified bacnet-stack v1.5.0 WriteProperty handler while replacing concrete crash trigger with safer valid property write analogue",
+        "seed_id": "plan-009-writeproperty",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "WriteProperty",
+        "title": "Issue-guided analogue for WriteProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length field fixed at 12",
+          "NPDU destination address preserved",
+          "APDU confirmed service 0x0C (ReadProperty)",
+          "Object instance 260001, property instance 1",
+          "fileStartRecord = 0 (non-append)",
+          "record_count() updated consistently"
+        ],
+        "evidence_ids": [
+          "issue:1398:1398-summary:200993baa464",
+          "issue:1400:1400-summary:b9facce5d476",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+        ],
+        "expected_behavior": "Client receives ComplexACK-PDU with BVLC total length 12 and confirmed ReadProperty service choice 0x0C; property value returned",
+        "issue_safety_notes": "Valid property read with no missing closing tag reservation",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810b000c000b100100000001000c00000000000000000105000000010000010003000041414141",
+            "index": 0,
+            "label": "ReadProperty"
+          }
+        ],
+        "plan_id": "plan-010",
+        "purpose": "Recover historically sensitive ACK construction without reserved space for final closing tag structure from bacnet-stack 1.5.0 handler_read_property() while using safer valid property read analogue",
+        "seed_id": "plan-010-readproperty",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ReadProperty",
+        "title": "Issue-guided analogue for ReadProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC length field must be exactly 0x0000000f",
+          "NPDU priority, network, destination address ordering preserved",
+          "APDU service choice 0x01 (SubscribeCOV) + property-value tag structure",
+          "APDU byte count and order rules intact"
+        ],
+        "evidence_ids": [
+          "issue:1270:1270-summary:f10b3cba62a1",
+          "issue:cve-2019-12480:cve-2019-12480-summa:a62c738611ad",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "Decoder accepts the malformed extended application length but produces safe parse without out-of-bounds access or SEGV on bacapp_decode_application_data / bacapp_decode_data / host_n_port_decode / bacnet_tag_number_decode path",
+        "issue_safety_notes": "All inferred assumptions documented in constraints_preserved; no copy of original crash payload bytes used",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "8100000f0101000c2007001001f522ff2101210e2d",
+            "index": 0,
+            "label": "malformed UCOV analogue - safe tag decoding"
+          }
+        ],
+        "plan_id": "plan-013",
+        "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+        "seed_id": "seed-013-001",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Confirmed-Request-PDU",
+        "title": "Issue-guided analogue for Confirmed-Request-PDU"
+      },
+      {
+        "constraints_preserved": [
+          "Complete documented framing preserved (BVLC total length 4 bytes)",
+          "Order and checksum rules followed",
+          "Primary sources not contradicted"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-40279:cve-2026-40279-summa:bc43c11a5697",
+          "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+        ],
+        "expected_behavior": "BVLC length 1 + NPDU function 0x0A + Who-Is service 0xC0; decodes without out-of-bounds read or crash",
+        "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "8101000100000000000a0110c0",
+            "index": 0,
+            "label": "BVLC + NPDU + Who-Is analogue with safe BVLC length"
+          }
+        ],
+        "plan_id": "plan-017",
+        "purpose": "Recover historically sensitive structure for signed-32 integer reconstruction (CVE-2026-40279/CVE-2026-49990/CVE-2026-41475/CVE-2026-41502/CVE-2026-62972/CVE-2026-47711) while using safer valid analogue",
+        "seed_id": "seed-001",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "Property",
+        "title": "Issue-guided analogue for Property"
+      },
+      {
+        "constraints_preserved": [
+          "Complete documented framing preserved (BVLC total length 4 bytes)",
+          "Order and checksum rules followed",
+          "Primary sources not contradicted"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "BVLC length 1 + NPDU function 0x0A + WriteProperty service 0x0F; decodes without crash or invalid state interaction",
+        "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "8101000100000000000a01140f",
+            "index": 0,
+            "label": "BVLC + NPDU + WriteProperty with safe object property field"
+          }
+        ],
+        "plan_id": "plan-018",
+        "purpose": "Recover historically sensitive structure for wpm_decode_object_property() (CVE-2026-41475/CVE-2026-62972/CVE-2026-47711/CVE-2026-41502) while using safer valid analogue",
+        "seed_id": "seed-002",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "WriteProperty",
+        "title": "Issue-guided analogue for WriteProperty"
+      },
+      {
+        "constraints_preserved": [
+          "Complete documented framing preserved (BVLC total length 4 bytes)",
+          "Order and checksum rules followed",
+          "Primary sources not contradicted"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+        ],
+        "expected_behavior": "BVLC length 1 + NPDU function 0x0A + ReadProperty service 0x0C; decodes with proper length check and no out-of-bounds",
+        "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "8101000100000000000a01100c",
+            "index": 0,
+            "label": "BVLC + NPDU + ReadProperty with valid property id"
+          }
+        ],
+        "plan_id": "plan-019",
+        "purpose": "Recover historically sensitive structure for rpm_decode_object_id() / apdu_len < 5 check (CVE-2026-41502/CVE-2026-41475/CVE-2026-47257) while using safer valid analogue",
+        "seed_id": "seed-003",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ReadProperty",
+        "title": "Issue-guided analogue for ReadProperty"
+      },
+      {
+        "constraints_preserved": [
+          "Complete documented framing preserved (BVLC total length 4 bytes)",
+          "Order and checksum rules followed",
+          "Primary sources not contradicted"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+          "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "BVLC length 1 + NPDU function 0x0A + ReadPropertyMultiple service 0x0E; decodes without deprecated tag validation issue or out-of-bounds read",
+        "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "8101000100000000000a01100d",
+            "index": 0,
+            "label": "BVLC + NPDU + ReadPropertyMultiple with valid tag and property"
+          }
+        ],
+        "plan_id": "plan-020",
+        "purpose": "Recover historically sensitive structure for rpm_decode_object_property() deprecated tag check (CVE-2026-41503/CVE-2026-41475/CVE-2026-41502) while using safer valid analogue",
+        "seed_id": "seed-004",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ReadProperty",
+        "title": "Issue-guided analogue for ReadProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length preserved",
+          "NPDU and APDU layering followed",
+          "WriteProperty function code 0x0F respected",
+          "Array index ALL and property identifier documented"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:1317:1317-summary:4e832876df19",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:1304:1304-summary:e1e381ed7daa"
+        ],
+        "expected_behavior": "Server accepts write and returns SimpleACK without crash or recursion",
+        "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47217 and CVE-2026-47711 with valid property update; no unbounded recursion or stack overflow",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c0f00",
+            "index": 0,
+            "label": "WriteProperty initial request"
+          },
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c0f0100000000000000000000000000",
+            "index": 1,
+            "label": "WriteProperty follow-up property update"
+          }
+        ],
+        "plan_id": "plan-021",
+        "purpose": "Recover historically sensitive structure from WriteProperty issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+        "seed_id": "seed-021-1",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "WriteProperty",
+        "title": "Issue-guided analogue for WriteProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length preserved",
+          "NPDU and APDU layering followed",
+          "ReinitializeDevice function code 0x14 respected",
+          "Backup restore service documented"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:1304:1304-summary:e1e381ed7daa",
+          "issue:1399:1399-summary:b7c84f7e0fc5",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e"
+        ],
+        "expected_behavior": "Server handles backup restore without binding file object or crash",
+        "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47257 with valid backup restore request; no file binding or stack overflow",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c140001000000000000000000000000",
+            "index": 0,
+            "label": "ReinitializeDevice initial request"
+          },
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c140002000000000000000000000000",
+            "index": 1,
+            "label": "ReinitializeDevice backup restore request"
+          }
+        ],
+        "plan_id": "plan-022",
+        "purpose": "Recover historically sensitive structure from ReinitializeDevice issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+        "seed_id": "seed-022-1",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ReinitializeDevice",
+        "title": "Issue-guided analogue for ReinitializeDevice"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length preserved",
+          "NPDU and APDU layering followed",
+          "AddListElement function code 0x08 respected",
+          "Recipient-list property documented"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+          "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+        ],
+        "expected_behavior": "Server adds element to recipient-list without stack overflow or crash",
+        "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47258 with valid element addition; no overflow in Notification_Class_Add_List_Element",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c0800000000000000000000000000",
+            "index": 0,
+            "label": "AddListElement request"
+          }
+        ],
+        "plan_id": "plan-023",
+        "purpose": "Recover historically sensitive structure from AddListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+        "seed_id": "seed-023-1",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "AddListElement",
+        "title": "Issue-guided analogue for AddListElement"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length preserved",
+          "NPDU and APDU layering followed",
+          "RemoveListElement function code 0x09 respected",
+          "Recipient-list property documented"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+        ],
+        "expected_behavior": "Server removes element from recipient-list without stack overflow or crash",
+        "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47259 with valid element removal; no overflow in Notification_Class_Remove_List_Element",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "000100010a000000040b00000000000c0900000000000000000000000000",
+            "index": 0,
+            "label": "RemoveListElement request"
+          }
+        ],
+        "plan_id": "plan-024",
+        "purpose": "Recover historically sensitive structure from RemoveListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+        "seed_id": "seed-024-1",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "RemoveListElement",
+        "title": "Issue-guided analogue for RemoveListElement"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length preserved",
+          "Confirmed-Request-PDU structure"
+        ],
+        "evidence_ids": [
+          "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+          "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+          "issue:1342:1342-summary:cdc7c256554d",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:1304:1304-summary:e1e381ed7daa"
+        ],
+        "expected_behavior": "Server responds with confirmed ReadProperty response PDU",
+        "issue_safety_notes": "Avoids any oversized length or buffer overflow patterns from evidence",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000c0100000c01600100060044ff",
+            "index": 0,
+            "label": "ReadProperty request"
+          }
+        ],
+        "plan_id": "plan-025",
+        "purpose": "Recover historically sensitive structure from ReadProperty issues while using safer valid analogue",
+        "seed_id": "seed-025",
+        "strategy": "issue_structural_analogue",
+        "target_operation": "ReadProperty",
+        "title": "Issue-guided analogue for ReadProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte header",
+          "Confirmed service choice preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Server responds with confirmed WritePropertyMultiple response",
+        "issue_safety_notes": "Uses only documented function code entry point",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000c0100000c016001000a00ff",
+            "index": 0,
+            "label": "WritePropertyMultiple request"
+          }
+        ],
+        "plan_id": "plan-026",
+        "purpose": "Generate valid request covering documented WritePropertyMultiple service",
+        "seed_id": "seed-026",
+        "strategy": "function_code_coverage",
+        "target_operation": "WritePropertyMultiple",
+        "title": "Function coverage for WritePropertyMultiple"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC header consistency",
+          "Unconfirmed service structure"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "Server processes unconfirmed WriteGroup",
+        "issue_safety_notes": "Targets documented unconfirmed service choice",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000c0100000c016001000900ff",
+            "index": 0,
+            "label": "WriteGroup request"
+          }
+        ],
+        "plan_id": "plan-027",
+        "purpose": "Generate valid request for WriteGroup unconfirmed service",
+        "seed_id": "seed-027",
+        "strategy": "function_code_coverage",
+        "target_operation": "WriteGroup",
+        "title": "Function coverage for WriteGroup"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC result code handling",
+          "Four-byte BVLC length"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Server processes BVLC function request",
+        "issue_safety_notes": "Uses documented BVLC function path",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81000c0100000c016001001000ff",
+            "index": 0,
+            "label": "WriteBroadcastDistributionTable request"
+          }
+        ],
+        "plan_id": "plan-028",
+        "purpose": "Generate valid BVLC function request covering documented operation",
+        "seed_id": "seed-028",
+        "strategy": "function_code_coverage",
+        "target_operation": "Write-Broadcast-Distribution-Table",
+        "title": "Function coverage for Write-Broadcast-Distribution-Table"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte length consistent at 0x0a",
+          "NPDU message type 0x20",
+          "Unconfirmed service choice 0x00",
+          "APDU length 0x0a preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "Parser recognizes Who-Is service choice in APDU, enters discovery path without error",
+        "issue_safety_notes": "Safe unconfirmed discovery; no oversized lengths or malformed payloads",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "10000a001200000000000000000000",
+            "index": 0,
+            "label": "Who-Is request"
+          }
+        ],
+        "plan_id": "plan-029",
+        "purpose": "Initial parser entry for unconfirmed device discovery service",
+        "seed_id": "seed-029a",
+        "strategy": "function_code_coverage",
+        "target_operation": "Who-Is",
+        "title": "Who-Is Unconfirmed Request"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte length consistent at 0x0a",
+          "NPDU message type 0x20",
+          "Unconfirmed service choice 0x00",
+          "APDU length 0x0a preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "Parser recognizes Who-Has service choice in APDU, enters property-search path without error",
+        "issue_safety_notes": "Safe unconfirmed discovery; no oversized lengths or malformed payloads",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "10000a001200000000000000000000",
+            "index": 0,
+            "label": "Who-Has request"
+          }
+        ],
+        "plan_id": "plan-030",
+        "purpose": "Initial parser entry for unconfirmed property discovery service",
+        "seed_id": "seed-030a",
+        "strategy": "function_code_coverage",
+        "target_operation": "Who-Has",
+        "title": "Who-Has Unconfirmed Request"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte length consistent at 0x0a",
+          "NPDU message type 0x20",
+          "Confirmed service choice 0x00",
+          "APDU length 0x0a preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Parser recognizes VT-Open confirmed service choice in APDU, enters terminal-open path without error",
+        "issue_safety_notes": "Safe confirmed open; no oversized lengths or malformed payloads",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "00000a001200000000000000000000",
+            "index": 0,
+            "label": "VT-Open request"
+          }
+        ],
+        "plan_id": "plan-031",
+        "purpose": "Initial parser entry for confirmed virtual-terminal open service",
+        "seed_id": "seed-031a",
+        "strategy": "function_code_coverage",
+        "target_operation": "VT-Open",
+        "title": "VT-Open Confirmed Request"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte length consistent at 0x0a",
+          "NPDU message type 0x20",
+          "Confirmed service choice 0x00",
+          "APDU length 0x0a preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Parser recognizes VT-Data confirmed service choice in APDU, enters data-transfer path without error",
+        "issue_safety_notes": "Safe confirmed transfer; no oversized lengths or malformed payloads",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "00000a001200000000000000000000",
+            "index": 0,
+            "label": "VT-Data request"
+          }
+        ],
+        "plan_id": "plan-032",
+        "purpose": "Initial parser entry for confirmed virtual-terminal data transfer service",
+        "seed_id": "seed-032a",
+        "strategy": "function_code_coverage",
+        "target_operation": "VT-Data",
+        "title": "VT-Data Confirmed Request"
+      },
+      {
+        "constraints_preserved": [
+          "Preserve full BVLC four-byte length field",
+          "Use documented APDU PDU type Confirmed-Request-PDU (0x00)",
+          "Maintain order, checksum, and length rules from protocol_format",
+          "Conservative fill of missing header fields only"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Valid confirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for service choice 0x16 exercised without crash.",
+        "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+            "index": 0,
+            "label": "BVLC+NPDU+Confirmed-Request for VT-Close"
+          }
+        ],
+        "plan_id": "plan-033",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-033",
+        "strategy": "function_code_coverage",
+        "target_operation": "VT-Close",
+        "title": "Function coverage for VT-Close"
+      },
+      {
+        "constraints_preserved": [
+          "Preserve full BVLC four-byte length field",
+          "Use documented APDU PDU type Unconfirmed-Request-PDU (0x10)",
+          "Maintain order, checksum, and length rules from protocol_format",
+          "Conservative fill of missing header fields only"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "Valid unconfirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unconfirmed service exercised without crash.",
+        "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+            "index": 0,
+            "label": "BVLC+NPDU+Unconfirmed-Request for UTCTimeSynchronization"
+          }
+        ],
+        "plan_id": "plan-034",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-034",
+        "strategy": "function_code_coverage",
+        "target_operation": "UTCTimeSynchronization",
+        "title": "Function coverage for UTCTimeSynchronization"
+      },
+      {
+        "constraints_preserved": [
+          "Preserve full BVLC four-byte length field",
+          "Use documented APDU PDU type Confirmed-Request-PDU (0x00)",
+          "Maintain order, checksum, and length rules from protocol_format",
+          "Conservative fill of missing header fields only"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:00f4c0ca11c4",
+          "function_code:function:function-text:7cfded47457a",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Valid confirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unrecognized service exercised without crash.",
+        "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+            "index": 0,
+            "label": "BVLC+NPDU+Confirmed-Request for unrecognized service"
+          }
+        ],
+        "plan_id": "plan-035",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-035",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unrecognized-Service",
+        "title": "Function coverage for Unrecognized-Service"
+      },
+      {
+        "constraints_preserved": [
+          "Preserve full BVLC four-byte length field",
+          "Use documented APDU PDU type Unconfirmed-Request-PDU (0x10)",
+          "Maintain order, checksum, and length rules from protocol_format",
+          "Conservative fill of missing header fields only"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "Valid unconfirmed request with consistent BVLC length and standard NPDU/APDU headers; parser entry point for unconfirmed text service exercised without crash.",
+        "issue_safety_notes": "Payload is a fresh valid framing vector; no oversized length or malformed data used to avoid replicating the 1270 crash vector.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "0f01010000000a0006000c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+            "index": 0,
+            "label": "BVLC+NPDU+Unconfirmed-Request for UnconfirmedTextMessage"
+          }
+        ],
+        "plan_id": "plan-036",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-036",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedTextMessage",
+        "title": "Function coverage for UnconfirmedTextMessage"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC Header with four-byte total length fixed at 0x00002D",
+          "NPDU Header with network message type 0x0F",
+          "APDU with Unconfirmed-Request-PDU type and service choice 0x3C",
+          "Application Data with object identifier device:123 property access"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet stack parses as Unconfirmed Request PDU with Private Transfer service choice and processes the request successfully without crash or abort.",
+        "issue_safety_notes": "Structural analogue to oversized extended application length parsing vulnerability; avoids direct payload copy or crash reproduction.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a030000002d010f3c000000f1",
+            "index": 0,
+            "label": "BACnet/IP BVLC Unconfirmed Private Transfer request"
+          }
+        ],
+        "plan_id": "plan-037",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seed-037",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedPrivateTransfer",
+        "title": "Function coverage for UnconfirmedPrivateTransfer"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC Header with four-byte total length fixed at 0x00002D",
+          "NPDU Header with network message type 0x0F",
+          "APDU with Unconfirmed-Request-PDU type and service choice 0x3C",
+          "Application Data with object identifier device:123 property access"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet stack parses as Unconfirmed Request PDU with Event Notification service choice and processes the request successfully without crash or abort.",
+        "issue_safety_notes": "Structural analogue to oversized extended application length parsing vulnerability; avoids direct payload copy or crash reproduction.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a030000002d010f3c000000f2",
+            "index": 0,
+            "label": "BACnet/IP BVLC Unconfirmed Event Notification request"
+          }
+        ],
+        "plan_id": "plan-038",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seed-038",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedEventNotification",
+        "title": "Function coverage for UnconfirmedEventNotification"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC Header with four-byte total length fixed at 0x00002D",
+          "NPDU Header with network message type 0x0F",
+          "APDU with Unconfirmed-Request-PDU type and service choice 0x3C",
+          "Application Data with object identifier device:123 property access"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet stack parses as Unconfirmed Request PDU with COV Notification Multiple service choice and processes the request successfully without crash or abort.",
+        "issue_safety_notes": "Structural analogue to oversized extended application length parsing vulnerability; avoids direct payload copy or crash reproduction.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a030000002d010f3c000000f3",
+            "index": 0,
+            "label": "BACnet/IP BVLC Unconfirmed COV Notification Multiple request"
+          }
+        ],
+        "plan_id": "plan-039",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seed-039",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedCOVNotificationMultiple",
+        "title": "Function coverage for UnconfirmedCOVNotificationMultiple"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC Header with four-byte total length fixed at 0x00002D",
+          "NPDU Header with network message type 0x0F",
+          "APDU with Unconfirmed-Request-PDU type and service choice 0x3C",
+          "Application Data with object identifier device:123 property access"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet stack parses as Unconfirmed Request PDU with COV Notification service choice and processes the request successfully without crash or abort.",
+        "issue_safety_notes": "Structural analogue to oversized extended application length parsing vulnerability; avoids direct payload copy or crash reproduction.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a030000002d010f3c000000f4",
+            "index": 0,
+            "label": "BACnet/IP BVLC Unconfirmed COV Notification request"
+          }
+        ],
+        "plan_id": "plan-040",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seed-040",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedCOVNotification",
+        "title": "Function coverage for UnconfirmedCOVNotification"
+      },
+      {
+        "constraints_preserved": [
+          "Unconfirmed service choice recorded in APCI service choice field",
+          "BVLC 4-byte header length preserved at 0x00f4 and total framing intact",
+          "Diverse operation from provided function catalog coverage objective",
+          "Preserve full order, checksum, and length rules from bacnet-stack templates"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "BACnet/IP message structure with BVLC ResultCode success, unconfirmed service indicated by APDU type 0x10 is processed by bacnet-stack NPDU/APDU handlers for parser entry point coverage.",
+        "issue_safety_notes": "This is a valid protocol-level candidate seed sequence only. The JSON encodes structural framing based on the supplied protocol_format and function_code sources without extracting or replicating any historical exploit payloads, buffer-overflow conditions, or crash-inducing data from the cited issues.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a0010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f8f40000000000000000f4",
+            "index": 0,
+            "label": "Unconfirmed-Request-PDU"
+          }
+        ],
+        "plan_id": "plan-042",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seq-042-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "Unconfirmed-Request-PDU",
+        "title": "Unconfirmed-Request-PDU"
+      },
+      {
+        "constraints_preserved": [
+          "Confirmed service choice recorded in APCI service choice field",
+          "BVLC 4-byte header length preserved at 0x00f4 and total framing intact",
+          "Diverse operation from provided function catalog coverage objective",
+          "Preserve full order, checksum, and length rules from bacnet-stack templates"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "BACnet/IP message structure with BVLC ResultCode success, confirmed service SubscribeCOVPropertyMultiple (confirmed APDU) is processed by bacnet-stack NPDU/APDU handlers for parser entry point coverage.",
+        "issue_safety_notes": "This is a valid protocol-level candidate seed sequence only. The JSON encodes structural framing based on the supplied protocol_format and function_code sources without extracting or replicating any historical exploit payloads, buffer-overflow conditions, or crash-inducing data from the cited issues.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a0010000000f8f40000000000000000f4",
+            "index": 0,
+            "label": "SubscribeCOVPropertyMultiple"
+          }
+        ],
+        "plan_id": "plan-044",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seq-044-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "SubscribeCOVPropertyMultiple",
+        "title": "SubscribeCOVPropertyMultiple"
+      },
+      {
+        "constraints_preserved": [
+          "Unconfirmed service choice recorded in APCI service choice field",
+          "BVLC 4-byte header length preserved at 0x00f4 and total framing intact",
+          "Diverse operation from provided function catalog coverage objective",
+          "Preserve full order, checksum, and length rules from bacnet-stack templates"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet/IP message structure with BVLC ResultCode success, unconfirmed service UnconfirmedAuditNotification is processed by bacnet-stack NPDU/APDU handlers for parser entry point coverage.",
+        "issue_safety_notes": "This is a valid protocol-level candidate seed sequence only. The JSON encodes structural framing based on the supplied protocol_format and function_code sources without extracting or replicating any historical exploit payloads, buffer-overflow conditions, or crash-inducing data from the cited issues.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a0010000000f8f40000000000000000f4",
+            "index": 0,
+            "label": "UnconfirmedAuditNotification"
+          }
+        ],
+        "plan_id": "plan-041",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seq-041-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "UnconfirmedAuditNotification",
+        "title": "UnconfirmedAuditNotification"
+      },
+      {
+        "constraints_preserved": [
+          "Unconfirmed service choice recorded in APCI service choice field",
+          "BVLC 4-byte header length preserved at 0x00f4 and total framing intact",
+          "Diverse operation from provided function catalog coverage objective",
+          "Preserve full order, checksum, and length rules from bacnet-stack templates"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:95a473051f77",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:77a3af392c60"
+        ],
+        "expected_behavior": "BACnet/IP message structure with BVLC ResultCode success, unconfirmed service TimeSynchronization is processed by bacnet-stack NPDU/APDU handlers for parser entry point coverage.",
+        "issue_safety_notes": "This is a valid protocol-level candidate seed sequence only. The JSON encodes structural framing based on the supplied protocol_format and function_code sources without extracting or replicating any historical exploit payloads, buffer-overflow conditions, or crash-inducing data from the cited issues.",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a0010000000f8f40000000000000000f4",
+            "index": 0,
+            "label": "TimeSynchronization"
+          }
+        ],
+        "plan_id": "plan-043",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seq-043-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "TimeSynchronization",
+        "title": "TimeSynchronization"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length consistent",
+          "NPDU and APDU layering preserved",
+          "SubscribeCOVProperty operation covered via confirmed service choice",
+          "Length count checksum order rules fully documented and followed",
+          "Common BACnet/IP BVLC NPDU APDU layering preferred",
+          "Discovery property access file subscription services diversified"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Server parses SubscribeCOVProperty as confirmed service choice 0x1C, processes COV subscription property request",
+        "issue_safety_notes": "Structural analogue derived from documented SubscribeCOVProperty confirmed service choice; no historical crash payload or oversized application data copied",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a010001000030000100050400000001000c00000000000000000000",
+            "index": 0,
+            "label": "SubscribeCOVProperty request"
+          }
+        ],
+        "plan_id": "plan-045",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "plan-045-seed-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "SubscribeCOVProperty",
+        "title": "Function coverage for SubscribeCOVProperty"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length consistent",
+          "NPDU and APDU layering preserved",
+          "SubscribeCOV operation covered via confirmed service choice",
+          "Length count checksum order rules fully documented and followed",
+          "Common BACnet/IP BVLC NPDU APDU layering preferred",
+          "Discovery property access file subscription services diversified"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:f40200851055",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb"
+        ],
+        "expected_behavior": "Server parses SubscribeCOV as confirmed service choice 0x05, processes COV subscription request",
+        "issue_safety_notes": "Structural analogue derived from documented SubscribeCOV confirmed service choice; no historical crash payload or oversized application data copied",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a010001000030000100050400000001000c00000000000000000000",
+            "index": 0,
+            "label": "SubscribeCOV request"
+          }
+        ],
+        "plan_id": "plan-046",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "plan-046-seed-002",
+        "strategy": "function_code_coverage",
+        "target_operation": "SubscribeCOV",
+        "title": "Function coverage for SubscribeCOV"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length consistent",
+          "NPDU and APDU layering preserved",
+          "SimpleACK-PDU operation covered via APDU PDU type",
+          "Length count checksum order rules fully documented and followed",
+          "Common BACnet/IP BVLC NPDU APDU layering preferred",
+          "Discovery property access file subscription services diversified"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Server parses SimpleACK-PDU as APDU type 0x20, acknowledges confirmed request",
+        "issue_safety_notes": "Structural analogue derived from documented SimpleACK-PDU APDU PDU type; no historical crash payload or oversized application data copied",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a010001000030000100200300",
+            "index": 0,
+            "label": "SimpleACK-PDU response"
+          }
+        ],
+        "plan_id": "plan-047",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "plan-047-seed-003",
+        "strategy": "function_code_coverage",
+        "target_operation": "SimpleACK-PDU",
+        "title": "Function coverage for SimpleACK-PDU"
+      },
+      {
+        "constraints_preserved": [
+          "BACnet/IP BVLC 4-byte total length consistent",
+          "NPDU and APDU layering preserved",
+          "Services operation covered via confirmed service choice and SimpleACK-PDU",
+          "Length count checksum order rules fully documented and followed",
+          "Common BACnet/IP BVLC NPDU APDU layering preferred",
+          "Discovery property access file subscription services diversified"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:8b8a74d78671",
+          "function_code:function:function-text:7cfded47457a",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:00f4c0ca11c4",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb"
+        ],
+        "expected_behavior": "Server parses general Services as confirmed service choice 0x00 with SimpleACK-PDU response",
+        "issue_safety_notes": "Structural analogue derived from documented general Services confirmed service choice and SimpleACK-PDU; no historical crash payload or oversized application data copied",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a010001000030000100000300",
+            "index": 0,
+            "label": "Services request"
+          }
+        ],
+        "plan_id": "plan-048",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "plan-048-seed-004",
+        "strategy": "function_code_coverage",
+        "target_operation": "Services",
+        "title": "Function coverage for Services"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length consistent",
+          "APDU PDU type 0x40 preserved",
+          "No verified assumptions used"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Received SegmentACK-PDU is processed per standard BVLC/NPDU/APDU layering with preserved length and checksum",
+        "issue_safety_notes": "No unsafe practices; uses only documented segment ack structure",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a3000000100400001000000",
+            "index": 0,
+            "label": "SegmentACK-PDU valid request"
+          }
+        ],
+        "plan_id": "plan-049",
+        "purpose": "Generate valid request centered on SegmentACK-PDU for APDU type coverage",
+        "seed_id": "bacnet-full-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "SegmentACK-PDU",
+        "title": "Valid SegmentACK-PDU Frame"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length consistent",
+          "BVLC function preserved",
+          "No verified assumptions used"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:operation-catalog:dc31a6cdc731",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732"
+        ],
+        "expected_behavior": "Received Secure-BVLL is processed per standard BVLC/NPDU/APDU layering with preserved length and checksum",
+        "issue_safety_notes": "No unsafe practices; uses only documented secure bvll structure",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a3000000100800001000000",
+            "index": 0,
+            "label": "Secure-BVLL valid request"
+          }
+        ],
+        "plan_id": "plan-050",
+        "purpose": "Generate valid request centered on Secure-BVLL for BVLC coverage",
+        "seed_id": "bacnet-full-002",
+        "strategy": "function_code_coverage",
+        "target_operation": "Secure-BVLL",
+        "title": "Valid Secure-BVLL Frame"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length consistent",
+          "Confirmed service choice preserved",
+          "No verified assumptions used"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Received RequestKey is processed per standard BVLC/NPDU/APDU layering with preserved length and checksum",
+        "issue_safety_notes": "No unsafe practices; uses only documented requestkey structure",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a3000000100190001000000",
+            "index": 0,
+            "label": "RequestKey valid request"
+          }
+        ],
+        "plan_id": "plan-051",
+        "purpose": "Generate valid request centered on RequestKey for confirmed service coverage",
+        "seed_id": "bacnet-full-003",
+        "strategy": "function_code_coverage",
+        "target_operation": "RequestKey",
+        "title": "Valid RequestKey Frame"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC four-byte total length consistent",
+          "Network layer message type preserved",
+          "No verified assumptions used"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:dc31a6cdc731",
+          "function_code:function:operation-catalog:00f4c0ca11c4",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:34bfd67f0b1a",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Received Request-Master-Key is processed per standard BVLC/NPDU/APDU layering with preserved length and checksum",
+        "issue_safety_notes": "No unsafe practices; uses only documented request master key structure",
+        "messages": [
+          {
+            "direction": "standalone",
+            "hex": "810a3000000100340001000000",
+            "index": 0,
+            "label": "Request-Master-Key valid request"
+          }
+        ],
+        "plan_id": "plan-052",
+        "purpose": "Generate valid request centered on Request-Master-Key for network layer coverage",
+        "seed_id": "bacnet-full-004",
+        "strategy": "function_code_coverage",
+        "target_operation": "Request-Master-Key",
+        "title": "Valid Request-Master-Key Frame"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 2 consistent at 0x0010 (16 bytes) for four-byte BVLC header",
+          "Prefer common BACnet/IP BVLC, NPDU, and APDU layering as primary"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:dc31a6cdc731",
+          "function_code:function:operation-catalog:00f4c0ca11c4",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:34bfd67f0b1a",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Valid BACnet/IP packet processed by network layer and application decoder without crash or SEGV",
+        "issue_safety_notes": "Model-prior fill of missing BVLC fields does not copy or structurally resemble any historical crash payload from CVE-2026-62974 or CVE-2026-62973; no oversized lengths or malformed tags",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81 0a 02 00 02 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  10 00 00 00 00 00 00 00 00 00 00 19 00 00 00 00",
+            "index": 0,
+            "label": "Request-Key-Update request"
+          }
+        ],
+        "plan_id": "plan-053",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-053-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "Request-Key-Update",
+        "title": "Function coverage for Request-Key-Update"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 2 consistent at 0x0010 (16 bytes) for four-byte BVLC header",
+          "Prefer common BACnet/IP BVLC, NPDU, and APDU layering as primary",
+          "High nibble encoding for APDU PDU TYPE must preserve 0x60 as Reject-PDU"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+          "issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Valid BACnet/IP packet processed by network layer and application decoder without crash or SEGV",
+        "issue_safety_notes": "Model-prior fill of missing BVLC fields does not copy or structurally resemble any historical crash payload from CVE-2026-62974 or CVE-2026-62973; no oversized lengths or malformed tags",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81 0a 02 00 02 01 00 10 00 00 00 00 00 00 00 00 00 00 60 01",
+            "index": 0,
+            "label": "Reject-PDU request"
+          }
+        ],
+        "plan_id": "plan-054",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-054-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "Reject-PDU",
+        "title": "Function coverage for Reject-PDU"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 2 consistent at 0x0010 (16 bytes) for four-byte BVLC header",
+          "Prefer common BACnet/IP BVLC, NPDU, and APDU layering as primary"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Valid BACnet/IP packet processed by network layer and application decoder without crash or SEGV",
+        "issue_safety_notes": "Model-prior fill of missing BVLC fields does not copy or structurally resemble any historical crash payload from CVE-2026-62974 or CVE-2026-62973; no oversized lengths or malformed tags",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81 0a 02 00 02 01 00 10 00 00 00 00 00 00 00 00 00 00 64 00 00 00 00",
+            "index": 0,
+            "label": "Register-Foreign-Device request"
+          }
+        ],
+        "plan_id": "plan-055",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-055-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "Register-Foreign-Device",
+        "title": "Function coverage for Register-Foreign-Device"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 2 consistent at 0x0010 (16 bytes) for four-byte BVLC header",
+          "Prefer common BACnet/IP BVLC, NPDU, and APDU layering as primary"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:function-text:f40200851055",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b"
+        ],
+        "expected_behavior": "Valid BACnet/IP packet processed by network layer and application decoder without crash or SEGV",
+        "issue_safety_notes": "Model-prior fill of missing BVLC fields does not copy or structurally resemble any historical crash payload from CVE-2026-62974 or CVE-2026-62973; no oversized lengths or malformed tags",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "81 0a 02 00 02 01 00 10 00 00 00 00 00 00 00 00 00 00 1a 00",
+            "index": 0,
+            "label": "ReadRange request"
+          }
+        ],
+        "plan_id": "plan-056",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "bacnet-plan-056-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReadRange",
+        "title": "Function coverage for ReadRange"
+      },
+      {
+        "constraints_preserved": [
+          "Complete BVLC four-byte header with total length 0x0000",
+          "Documented NPDU header structure",
+          "Standard BVLC 0x81 function code and result 0x0A",
+          "Confirmed service choice 0x0D preserved"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Valid confirmed service request; parser decodes BVLC header, NPDU header, and confirmed-Request-PDU with service choice 0x0D (ReadPropertyConditional) without crash or error",
+        "issue_safety_notes": "Issue evidence used only as structural guidance for confirmed service coverage; no malformed payloads or buffer issues copied",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a0000000100000c0d000a0014000a001400010100",
+            "index": 0,
+            "label": "ReadPropertyConditional request"
+          }
+        ],
+        "plan_id": "plan-057",
+        "purpose": "Cover confirmed service choice 0x0D in APDU for expanded parser entry points",
+        "seed_id": "seed-057a",
+        "strategy": "function_code_coverage",
+        "target_operation": "ReadPropertyConditional",
+        "title": "Function coverage for ReadPropertyConditional"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length preserved as 0x0000",
+          "BVLC header structure and length rule",
+          "Documented BVLC function 0x0A",
+          "NPDU and APDU framing rules followed"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Valid BVLC result message with function code 0x0A; parser recognizes response without error",
+        "issue_safety_notes": "BVLC response structure uses only documented function values; no crash-payload analogues or oversized lengths",
+        "messages": [
+          {
+            "direction": "server_to_client",
+            "hex": "810a0000000100000c0a000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000",
+            "index": 0,
+            "label": "Read-Foreign-Device-Table-Ack response"
+          }
+        ],
+        "plan_id": "plan-058",
+        "purpose": "Cover BVLC function code handling for Read-Foreign-Device-Table-Ack response",
+        "seed_id": "seed-058a",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read-Foreign-Device-Table-Ack",
+        "title": "Function coverage for Read-Foreign-Device-Table-Ack"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length 0x0000 preserved",
+          "Documented BVLC function codes and header layout",
+          "NPDU APDU layering standard",
+          "Request is full BVLC message"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Valid BVLC function code 0x81 request; parser decodes without issue",
+        "issue_safety_notes": "Request uses documented BVLC function; no direct issue payload reproduction",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "810a0000000100000c81c000000000000000",
+            "index": 0,
+            "label": "Read-Foreign-Device-Table request"
+          }
+        ],
+        "plan_id": "plan-059",
+        "purpose": "Cover BVLC request handling for Read-Foreign-Device-Table operation",
+        "seed_id": "seed-059a",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read-Foreign-Device-Table",
+        "title": "Function coverage for Read-Foreign-Device-Table"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC length rule and 0x0000 total length",
+          "BVLC function 0x0A documented",
+          "Full header and framing preserved",
+          "BVLC IP layering standard"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:11fb5f769689",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Valid BVLC response with function 0x0A; parser handles without crash",
+        "issue_safety_notes": "BVLC ACK uses documented function code; no buffer-overflow or malformed analogues applied",
+        "messages": [
+          {
+            "direction": "server_to_client",
+            "hex": "810a0000000100000c0a000a00000100000000",
+            "index": 0,
+            "label": "Read-Broadcast-Distribution-Table-Ack response"
+          }
+        ],
+        "plan_id": "plan-060",
+        "purpose": "Cover BVLC ACK function for Read-Broadcast-Distribution-Table operation",
+        "seed_id": "seed-060a",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read-Broadcast-Distribution-Table-Ack",
+        "title": "Function coverage for Read-Broadcast-Distribution-Table-Ack"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte header preserved with total length 0x0003",
+          "NPDU/APDU minimal valid framing",
+          "Source protocol format not contradicted",
+          "No historical crash payload copied"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:11fb5f769689",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Parser recognizes BVLC function 11 and forwards to BACnet/IP layer for distribution-table processing",
+        "issue_safety_notes": "Structural analogue to known malformed payloads but valid documented request; no DoS or resource-exhaustion risk",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "010b00030000",
+            "index": 0,
+            "label": "BVLC function 11 request"
+          }
+        ],
+        "plan_id": "plan-061",
+        "purpose": "Cover BVLC function 11 as documented operation",
+        "seed_id": "f1c980ef7dde",
+        "strategy": "function_code_coverage",
+        "target_operation": "Read-Broadcast-Distribution-Table",
+        "title": "Function coverage for Read-Broadcast-Distribution-Table"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC header length 0x0014 preserved",
+          "NPDU/APDU confirmed PDU type 0x00",
+          "Source function table and operation catalog followed",
+          "No exact historical crash payloads used"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f40200851055",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "function_code:function:operation-catalog:dc31a6cdc731"
+        ],
+        "expected_behavior": "Parser processes confirmed service choice 0x05 and executes subscription logic",
+        "issue_safety_notes": "Valid documented service request; no loop or memory-leak risk from malformed property-value",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "010a001401050005440f0c0580000000",
+            "index": 0,
+            "label": "SubscribeCOV request"
+          }
+        ],
+        "plan_id": "plan-062",
+        "purpose": "Cover confirmed service choice 0x05 SubscribeCOV",
+        "seed_id": "f1c980ef7dde",
+        "strategy": "function_code_coverage",
+        "target_operation": "Original-Unicast-NPDU",
+        "title": "Function coverage for Original-Unicast-NPDU"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC 4-byte header length 0x0014 preserved",
+          "NPDU/APDU confirmed PDU type 0x00",
+          "Property access layering preserved",
+          "No exact crash payloads copied"
+        ],
+        "evidence_ids": [
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:64bab0235519",
+          "function_code:function:function-text:f1c980ef7dde",
+          "function_code:function:operation-catalog:dc31a6cdc731",
+          "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb"
+        ],
+        "expected_behavior": "Parser handles confirmed service choice 0x0E ReadPropertyMultiple with object list",
+        "issue_safety_notes": "Valid service request; avoids oversized application data length that could trigger prior buffer overflows",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "010a0014010e0005440f0c0580000000",
+            "index": 0,
+            "label": "ReadPropertyMultiple request"
+          }
+        ],
+        "plan_id": "plan-063",
+        "purpose": "Cover confirmed service choice 0x0E ReadPropertyMultiple",
+        "seed_id": "f1c980ef7dde",
+        "strategy": "function_code_coverage",
+        "target_operation": "Original-Broadcast-NPDU",
+        "title": "Function coverage for Original-Broadcast-NPDU"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC header length 0x0014 preserved",
+          "NPDU/APDU confirmed PDU type 0x00",
+          "Confirmed service choice table followed exactly",
+          "No historical malformed payload copied"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:30d3483f070c",
+          "function_code:function:operation-catalog:77a3af392c60",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "function_code:function:function-text:d3664eeda33b",
+          "function_code:function:function-text:457cd2894efe"
+        ],
+        "expected_behavior": "Parser processes confirmed service choice 0x1B and Life Safety Zone operation",
+        "issue_safety_notes": "Valid documented service; avoids non-terminating loop from malformed [3]0x00[3] property-value in Life_Safety_Zone_Members",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "010a0014011b0005440f0c0580000000",
+            "index": 0,
+            "label": "LifeSafetyOperation request"
+          }
+        ],
+        "plan_id": "plan-064",
+        "purpose": "Cover confirmed service choice 0x1B LifeSafetyOperation",
+        "seed_id": "d3664eeda33b",
+        "strategy": "function_code_coverage",
+        "target_operation": "LifeSafetyOperation",
+        "title": "Function coverage for LifeSafetyOperation"
+      },
+      {
+        "constraints_preserved": [
+          "BVLC total length four-byte header consistent",
+          "NPDU and APDU layering per protocol_format:bacnet-stack:format-overview",
+          "Confirmed service choice in APDU confirmed-service table from function_code source",
+          "No contradiction of supplied protocol sources"
+        ],
+        "evidence_ids": [
+          "function_code:function:operation-catalog:00f4c0ca11c4",
+          "function_code:function:function-text:7cfded47457a",
+          "function_code:function:operation-catalog:8b8a74d78671",
+          "function_code:function:function-text:f1c980ef7dde",
+          "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+          "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+        ],
+        "expected_behavior": "Request reaches apdu_handler() and parser returns Abort-PDU with Abort-Reason Invalid-APDU-In-This-State; parser entry point exercised without crash.",
+        "issue_safety_notes": "Structural analogue to documented oversized-length abort in issue 1270 (no exact payload copy); uses Abort-Reason per function_code source; safe for initial corpus seed.",
+        "messages": [
+          {
+            "direction": "client_to_server",
+            "hex": "0100000c01f0000c01000000200000000000000001020000",
+            "index": 0,
+            "label": "BACnet/IP BVLC + NPDU + Confirmed-Request-PDU (with InvokeID and Abort-Reason service choice)"
+          }
+        ],
+        "plan_id": "plan-065",
+        "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+        "seed_id": "seed-065-001",
+        "strategy": "function_code_coverage",
+        "target_operation": "Invalid-APDU-In-This-State",
+        "title": "Function coverage for Invalid-APDU-In-This-State"
+      }
+    ]
+  }
+}

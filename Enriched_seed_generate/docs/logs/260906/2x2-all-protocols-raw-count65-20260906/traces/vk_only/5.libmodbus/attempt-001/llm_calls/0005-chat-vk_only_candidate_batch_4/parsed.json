@@ -1,0 +1,152 @@
+{
+  "coverage_summary": [
+    "issue_structural_analogue: single request with PLC-like function 03 and byte-count mismatch",
+    "field_interaction: pointer-related malformed length field",
+    "length_boundary_valid: crafted length field triggering double-free path",
+    "parser_depth: multi-step stateful with incorrect length values"
+  ],
+  "generation_notes": "Exactly 4 VK-only sequences generated via issue_structural_analogue, field_interaction, length_boundary_valid, parser_depth strategies per plan; each uses model internal prior for plausible ADU form, 7-byte MBAP, consistent lengths, target_operation preserved; no crash bytes copied.",
+  "protocol_name": "modbustcp",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol 0x0000",
+        "unit identifier 0xff",
+        "function code 0x01 for Read Coils",
+        "consistent message lengths",
+        "model internal prior for Read Coils"
+      ],
+      "evidence_ids": [
+        "issue:763:763-summary:e75d690140f2",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "expected_behavior": "Normal read response",
+      "issue_safety_notes": "After a specific message is sent to the `unit-test-server` and it runs for a while, AddressSanitizer reports `attempting free on address which was not malloc...`",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100000006ff0101",
+          "index": 0,
+          "label": "initial_request"
+        }
+      ],
+      "plan_id": "vk-plan-013",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "issue:738:738-summary:a2fd51730f5d",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Coils",
+      "title": "VK-only Read Coils: After a specific message is sent to the `unit-test-server` and it r..."
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol 0x0000",
+        "unit identifier 0xff",
+        "function code 0x02 for Read Discrete Inputs",
+        "consistent message lengths",
+        "model internal prior for Read Discrete Inputs"
+      ],
+      "evidence_ids": [
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:612:612-summary:7b008d4bca1d"
+      ],
+      "expected_behavior": "Invalid data error",
+      "issue_safety_notes": "In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server ...",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000cff1701600002000000000000",
+          "index": 0,
+          "label": "invalid_pointer_request"
+        }
+      ],
+      "plan_id": "vk-plan-014",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "issue:764:764-summary:f5885d05eb76",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "title": "VK-only Read Discrete Inputs: In libmodbus v3.1.6, an invalid pointer dereference is reported in ..."
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol 0x0000",
+        "unit identifier 0xff",
+        "function code 0x03 for Read Holding Registers",
+        "consistent message lengths",
+        "model internal prior for Read Holding Registers"
+      ],
+      "evidence_ids": [
+        "issue:803:803-summary:fea416ab8355",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "expected_behavior": "Double free or corruption crash",
+      "issue_safety_notes": "In libmodbus v3.1.6, sending a specific message to unit-test-server triggers a double-free bug. The observed result is a crash with \"double free or corruptio...\"",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "00000000000cff1701600002006b0001021234",
+          "index": 0,
+          "label": "boundary_length_request"
+        }
+      ],
+      "plan_id": "vk-plan-015",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "issue:750:750-summary:3dcb92ca7c5d",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Holding Registers",
+      "title": "VK-only Read Holding Registers: In libmodbus v3.1.6, sending a specific message to unit-test-server..."
+    },
+    {
+      "constraints_preserved": [
+        "7-byte MBAP header with protocol 0x0000",
+        "unit identifier 0xff",
+        "function code 0x04 for Read Input Registers",
+        "consistent message lengths",
+        "model internal prior for Read Input Registers",
+        "multi-step stateful sequence"
+      ],
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:743:743-summary:1fc7e97d059a"
+      ],
+      "expected_behavior": "Parser path with length mismatch error",
+      "issue_safety_notes": "In libmodbus/tests/unit-test-server, requests with incorrect length field values were accepted. In the reported test, a valid input and inputs with length fi...",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100000006ff0303",
+          "index": 0,
+          "label": "valid_request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "000100000006ff0303",
+          "index": 1,
+          "label": "incorrect_length_request"
+        }
+      ],
+      "plan_id": "vk-plan-016",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "issue:466:466-summary:691a17c4c14a",
+      "strategy": "parser_depth",
+      "target_operation": "Read Input Registers",
+      "title": "VK-only Read Input Registers: In libmodbus/tests/unit-test-server, requests with incorrect length..."
+    }
+  ],
+  "target_issue": 466
+}

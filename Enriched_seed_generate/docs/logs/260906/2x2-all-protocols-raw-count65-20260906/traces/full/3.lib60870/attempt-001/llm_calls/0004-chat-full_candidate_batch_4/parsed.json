@@ -1,0 +1,143 @@
+{
+  "coverage_summary": [
+    "plan-013 (issue_structural_analogue): analogue unknown common address with STARTDT activation, single_request, 1 message",
+    "plan-014 (issue_structural_analogue): analogue fixed-length frame start with TESTFR activation, multi_step_stateful, 2 messages",
+    "plan-015 (issue_structural_analogue): analogue unknown information object address with General Interrogation, single_request, 1 message",
+    "plan-016 (issue_structural_analogue): analogue IEC 60870-5-104 APDU start byte with Measured Value, multi_step_stateful, 2 messages"
+  ],
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage.",
+  "protocol_name": "IEC60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:196:196-summary:7e4abb310eea",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:175:175-summary:1d1910f22105",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:54:54-summary:bed996ddfd18"
+      ],
+      "expected_behavior": "IEC 60870-5-104 CS104 server accepts and processes the STARTDT activation without heap-buffer-overflow in HighPriorityASDUQ path",
+      "issue_safety_notes": "Replaces crash trigger with valid analogue STARTDT; no concrete PoC payload copied; lib60870 2.3.6 heap-buffer-overflow avoided by proper header",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68040600040068",
+          "index": 0,
+          "label": "STARTDT activation analogue"
+        }
+      ],
+      "plan_id": "plan-013",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "seed-001",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Unknown Common Address of ASDU",
+      "title": "Issue-guided analogue for Unknown Common Address of ASDU"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18"
+      ],
+      "expected_behavior": "IEC 60870-5-104 CS104 slave deadlocks avoided; reproducible deadlock in CS104 slave connectionEventHandler path prevented by valid fixed-length APCI frame",
+      "issue_safety_notes": "Replaces deadlock trigger with valid analogue TESTFR; no concrete PoC payload copied; lib60870 2.4.0 deadlock avoided",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "68020000020068",
+          "index": 0,
+          "label": "TESTFR activation analogue"
+        }
+      ],
+      "plan_id": "plan-014",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "seed-002",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Fixed-length frame start",
+      "title": "Issue-guided analogue for Fixed-length frame start"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:197:197-summary:287854ab1555",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+      ],
+      "expected_behavior": "IEC 60870-5-104 CS104 server processes General Interrogation without sequence-form M_SP_NA_1 ASDU header validation crash; VSQ and object address interactions remain valid",
+      "issue_safety_notes": "Replaces crash trigger with valid analogue General Interrogation; no concrete PoC payload copied; lib60870-C sequence-form M_SP_NA_1 validation avoided",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804070004006801010000000000000000",
+          "index": 0,
+          "label": "General Interrogation analogue"
+        }
+      ],
+      "plan_id": "plan-015",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "seed-003",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Unknown Information Object Address",
+      "title": "Issue-guided analogue for Unknown Information Object Address"
+    },
+    {
+      "constraints_preserved": [
+        "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+        "Keep 0x68 length octets consistent with the selected frame size",
+        "Diversify link control, interrogation, command and measurement paths"
+      ],
+      "evidence_ids": [
+        "issue:201:201-summary:798beefc9cab",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:197:197-summary:287854ab1555",
+        "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "IEC 60870-5-104 CS104 server accepts and processes the Measured Value ASDU without heap-based buffer overflow in FileSegment information object encoding path",
+      "issue_safety_notes": "Replaces crash trigger with valid analogue Measured Value; no concrete PoC payload copied; lib60870-C v2.4.0 heap-based buffer overflow in FileSegment encoding avoided",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804060004006801010000000000000000",
+          "index": 0,
+          "label": "Measured Value analogue with valid APDU start"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "68020000020068",
+          "index": 1,
+          "label": "Follow-up stateful step"
+        }
+      ],
+      "plan_id": "plan-016",
+      "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+      "seed_id": "seed-004",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "IEC 60870-5-104 APDU start byte",
+      "title": "Issue-guided analogue for IEC 60870-5-104 APDU start byte"
+    }
+  ],
+  "target_issue": 201
+}

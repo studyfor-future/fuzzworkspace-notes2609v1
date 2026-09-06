@@ -1,0 +1,41 @@
+{
+  "id": "resp_0cfc537ef85bf5b1016a9da404ac5487d0b18a7b683c66e252",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"modbustcp\",\"target_issue\":-1,\"generation_notes\":\"Four conservative Modbus/TCP candidate sequences generated from model-prior protocol knowledge and the supplied Base constraints only. MBAP protocol identifiers are zero, lengths are internally consistent, and message forms are plausible but not externally verified.\",\"coverage_summary\":[\"Diagnostics with a two-message setup-then-request sequence\",\"Read File Record with a compact boundary-adjacent single-subrequest frame\",\"Read/Write Multiple Registers with coupled read, write, byte-count, and payload fields\",\"Encapsulated Interface Transport using a nested Read Device Identification request\"],\"sequences\":[{\"plan_id\":\"base-plan-045\",\"seed_id\":\"base-seed-045\",\"title\":\"Base Diagnostics variant 4\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Diagnostics\",\"purpose\":\"Exercise diagnostics through a setup-then-target sequence using recognized diagnostic subfunctions and consistent MBAP transaction progression.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"Diagnostics Return Query Data setup\",\"hex\":\"0001000000060b0800001234\"},{\"index\":1,\"direction\":\"client_to_server\",\"label\":\"Diagnostics Restart Communications option request\",\"hex\":\"0002000000060b0800010000\"}],\"expected_behavior\":\"The server should parse both Diagnostics requests in order and return a normal response or a protocol-defined exception according to device support and diagnostic policy.\",\"constraints_preserved\":[\"7-byte MBAP header structure\",\"Protocol identifier is 0000\",\"MBAP length 0006 equals unit identifier plus 5-byte PDU\",\"Diagnostic function code 08 is used with two-byte subfunctions and two-byte data\",\"Transaction identifiers advance from 0001 to 0002\"],\"issue_safety_notes\":\"No external issue knowledge or vulnerability report was supplied or used; expected behavior is based only on model-prior plausibility and built-in Base constraints.\"},{\"plan_id\":\"base-plan-046\",\"seed_id\":\"base-seed-046\",\"title\":\"Base Read File Record variant 4\",\"strategy\":\"length_boundary_valid\",\"target_operation\":\"Read File Record\",\"purpose\":\"Exercise the compact single-subrequest Read File Record shape while retaining valid byte-count and MBAP length relationships.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"Read File Record single subrequest\",\"hex\":\"00100000000a071407060001000000000001\"}],\"expected_behavior\":\"The server should parse the Read File Record request as one subrequest for file 1, record 0, length 1, then return records or a protocol-defined exception depending on supported file data.\",\"constraints_preserved\":[\"7-byte MBAP header structure\",\"Protocol identifier is 0000\",\"MBAP length 000a equals unit identifier plus 9-byte PDU\",\"Read File Record function code 14 is used\",\"Subrequest byte count 07 matches the seven-byte file-record reference block\",\"Request contains exactly one subrequest\"],\"issue_safety_notes\":\"No external issue knowledge or vulnerability report was supplied or used; this is a conservative structural boundary candidate based on model-prior plausibility, not externally verified protocol evidence.\"},{\"plan_id\":\"base-plan-047\",\"seed_id\":\"base-seed-047\",\"title\":\"Base Read/Write Multiple Registers variant 4\",\"strategy\":\"field_interaction\",\"target_operation\":\"Read/Write Multiple Registers\",\"purpose\":\"Vary read and write address ranges together while preserving the relationship between write quantity, byte count, and register payload.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"Write Multiple Registers setup\",\"hex\":\"0020000000060c0600100001\"},{\"index\":1,\"direction\":\"client_to_server\",\"label\":\"Read/Write Multiple Registers request\",\"hex\":\"00210000000f0c17000000020010000204000a0014\"}],\"expected_behavior\":\"The server should process the setup write if supported, then parse the combined read/write request and return the selected read-register values or a protocol-defined exception.\",\"constraints_preserved\":[\"7-byte MBAP headers\",\"Protocol identifiers are 0000\",\"Setup MBAP length 0006 matches a five-byte FC06 PDU\",\"Target MBAP length 000f matches a fourteen-byte FC17 PDU\",\"Read quantity 0002 and write quantity 0002 are explicit\",\"Write byte count 04 equals two 16-bit register values\",\"Write payload contains exactly two register values\"],\"issue_safety_notes\":\"No external issue knowledge or vulnerability report was supplied or used; field choices and expected behavior reflect model-prior plausibility and the supplied Base constraints only.\"},{\"plan_id\":\"base-plan-048\",\"seed_id\":\"base-seed-048\",\"title\":\"Base Encapsulated Interface Transport variant 4\",\"strategy\":\"parser_depth\",\"target_operation\":\"Encapsulated Interface Transport\",\"purpose\":\"Reach nested MEI parsing through a Read Device Identification request with a recognized function and MEI type.\",\"evidence_ids\":[\"base_model_prior:constraints:0cd5de02ccdf\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"Read Device Identification request\",\"hex\":\"0030000000050d430e0100\"}],\"expected_behavior\":\"The server should parse function 43, MEI type 0e, read-code 01, and starting object identifier 00, returning device-identification data or a protocol-defined exception.\",\"constraints_preserved\":[\"7-byte MBAP header structure\",\"Protocol identifier is 0000\",\"MBAP length 0005 equals unit identifier plus four-byte PDU\",\"Encapsulated Interface Transport function code 43 is used\",\"Nested MEI type 0e and request fields are present\",\"Unit identifier differs from the other candidates\"],\"issue_safety_notes\":\"No external issue knowledge or vulnerability report was supplied or used; nested parser coverage is based on model-prior protocol plausibility and is not externally verified.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788716109,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1774,
+    "prompt_tokens": 7015,
+    "total_tokens": 8789,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 516,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

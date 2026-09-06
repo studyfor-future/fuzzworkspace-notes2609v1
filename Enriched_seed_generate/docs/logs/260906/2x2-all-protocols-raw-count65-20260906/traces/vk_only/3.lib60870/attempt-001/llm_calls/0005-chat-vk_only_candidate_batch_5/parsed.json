@@ -1,0 +1,153 @@
+{
+  "coverage_summary": [
+    "stateful_valid: null self deref in COT access via crafted I-frame",
+    "issue_structural_analogue: missing IOA in sequence ASDU parser",
+    "parser_depth: deep InformationObject_ParseObjectAddress OOB",
+    "field_interaction: VSQ element count mismatch with payload",
+    "clockSyncHandler: time encoding OOB in clock sync path",
+    "max distinct operations and frame sizes"
+  ],
+  "generation_notes": "VK-only stateful_valid plan using latest lib60870 source crash evidence; single I-frame with COT=0x83 (self null deref) and sequence ASDU structure from issue 200 analogue; 0x68/0x10 frame with max ASDU body; preserves all built-in family constraints and target_operation.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 length octet consistent",
+        "VSQ/object count matches ASDU body",
+        "P-/V+ framing preferred",
+        "single_request shape",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:175:175-summary:1d1910f22105",
+        "issue:201:201-summary:798beefc9cab"
+      ],
+      "expected_behavior": "CS101_ASDU_getCOT returns NULL self causing SEGV in cs101_asdu.c:308 (latest lib60870)",
+      "issue_safety_notes": "No external document used; relies on model internal prior and supplied evidence_ids only; crash payload avoided; issue 54 trigger preserved.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681a0f000000000000000000000000000000008300fa00008300fa00e2680900000000008300fa00e2eb0080000000000001000083000483f0",
+          "index": 0,
+          "label": "vk-plan-017_clock_sync"
+        }
+      ],
+      "plan_id": "vk-plan-017",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "seed-001",
+      "strategy": "stateful_valid",
+      "target_operation": "Clock Synchronization",
+      "title": "VK-only Clock Synchronization: On the latest source code from /mz-automation/lib60870/, the lib608..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length consistent",
+        "VSQ elements match payload",
+        "P-/V+ frame",
+        "single_request",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:197:197-summary:287854ab1555",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+      ],
+      "expected_behavior": "CS101_ASDU_getCOT SEGV on null self (latest lib60870 cs104_slave)",
+      "issue_safety_notes": "Model internal prior only; evidence_ids from supplied issues; no external docs; crash avoided in sequence.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681a0f000000000000000000000000000000008300fa00008300fa00e2680900000000008300fa00e2eb0080000000000001000083000483f0",
+          "index": 0,
+          "label": "vk-plan-018_read"
+        }
+      ],
+      "plan_id": "vk-plan-018",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "seed-002",
+      "strategy": "other",
+      "target_operation": "Read Command",
+      "title": "VK-only Read Command: The report tests the latest source code from /mz-automation/lib6087..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length consistent",
+        "VSQ elements match payload",
+        "P-/V+ framing",
+        "single_request shape",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:175:175-summary:1d1910f22105",
+        "issue:178:178-summary:01c5b607cf00",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "NULL self deref in CS101_ASDU_getCOT (v2.1.1 analogue) + sequence ASDU OOB in InformationObject_ParseObjectAddress",
+      "issue_safety_notes": "No external protocol used; model prior + evidence_ids only; issue 175/200/54 triggers preserved; no exact crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681a0f000000000000000000000000000000008300fa00008300fa00e2680900000000008300fa00e2eb0080000000000001000083000483f0",
+          "index": 0,
+          "label": "vk-plan-019_startdt"
+        }
+      ],
+      "plan_id": "vk-plan-019",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+      "seed_id": "seed-003",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "STARTDT activation",
+      "title": "VK-only STARTDT activation: lib60870 v2.1.1 contains a NULL pointer dereference in `CS101_ASDU_..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length consistent",
+        "VSQ elements match payload",
+        "P-/V+ frame",
+        "multi_step_stateful shape",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:178:178-summary:01c5b607cf00",
+        "issue:175:175-summary:1d1910f22105",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:197:197-summary:287854ab1555",
+        "issue:201:201-summary:798beefc9cab"
+      ],
+      "expected_behavior": "NULL pointer deref in InformationObject_getObjectAddress (issue 178) + sequence IOA OOB in CS101_ASDU_getElement",
+      "issue_safety_notes": "Model internal prior + evidence_ids only; no external documents; issue 178/175/200/54 triggers preserved; crash payload avoided.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "681a0f000000000000000000000000000000008300fa00008300fa00e2680900000000008300fa00e2eb0080000000000001000083000483f0",
+          "index": 0,
+          "label": "vk-plan-020_stopdt"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "681a0f000000000000000000000000000000008300fa00008300fa00e2680900000000008300fa00e2eb0080000000000001000083000483f0",
+          "index": 1,
+          "label": "vk-plan-020_stopdt2"
+        }
+      ],
+      "plan_id": "vk-plan-020",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+      "seed_id": "seed-004",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "title": "VK-only STOPDT activation: No affected version is documented. A NULL pointer dereference in In..."
+    }
+  ],
+  "target_issue": 54
+}

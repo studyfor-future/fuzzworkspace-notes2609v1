@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELBLaNed2YZ9iqJpCWAZclaUD3yoY",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"OpENer\",\"target_issue\":567,\"generation_notes\":\"Revised VK-only batch with exactly 4 distinct model-prior EtherNet/IP message sequences for OpENer. Built-in opener constraints are preserved by using recognizable 24-byte encapsulation headers with little-endian payload lengths, diversified discovery/session/explicit-message paths, lowercase even-length hex, and internally consistent visible lengths. Sequences avoid exact historical crash payloads and instead use conservative structural analogues around CPF item_count, unconnected explicit routing, connected explicit SendUnitData state, and session lifecycle interactions.\",\"coverage_summary\":[\"Discovery coverage with full 24-byte ListIdentity request and plausible response frame\",\"Session lifecycle coverage with RegisterSession and UnregisterSession on distinct handles\",\"Unconnected explicit messaging via SendRRData carrying GetAttributeSingle and SetAttributeSingle style CIP requests\",\"Connected explicit messaging via SendUnitData with CPF address/data item diversity\",\"Issue-analogue coverage for malformed-adjacent CPF item_count and bounded length interactions related to issue 567\",\"Issue-analogue coverage for long-but-bounded EPATH/path-size interactions related to issues 569 and 572\",\"Parser-depth variation across discovery, session, unconnected explicit, and connected explicit sequences\",\"Mutation utility improved with varied commands, session values, CPF layouts, and multi-step state\"],\"sequences\":[{\"plan_id\":\"vk-plan-041-rev\",\"seed_id\":\"vk11-seed-041a\",\"title\":\"ListIdentity full header with paired response analogue\",\"strategy\":\"baseline_valid\",\"target_operation\":\"ListIdentity\",\"purpose\":\"Provide a clean discovery seed with a full encapsulation header and a plausible response frame for harnesses that benefit from request/response concatenation diversity before deeper explicit-message mutations.\",\"evidence_ids\":[\"issue:566:566-summary:204619312f9d\",\"issue:567:567-summary:1255c28909d7\",\"issue:571:571-summary:fe57e1bf0770\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"ListIdentity request\",\"hex\":\"630000000000000000000000000000000000000000000000\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"ListIdentity response analogue\",\"hex\":\"63002000000000000000000000000000000000000000000001000c0036312e3236342e312d76780100\"}],\"expected_behavior\":\"A real target would typically accept the discovery request and emit a discovery reply; this seed should remain parseable and serve as a stable mutation baseline.\",\"constraints_preserved\":[\"24-byte encapsulation header used\",\"little-endian payload length fields\",\"distinct discovery path retained\",\"all hex is lowercase and even-length\",\"no exact issue payload copied\"],\"issue_safety_notes\":\"This is a safe baseline analogue only; it does not embed the reported crashing SendRRData structures and avoids exact bytes from any PoC.\"},{\"plan_id\":\"vk-plan-042-rev\",\"seed_id\":\"vk11-seed-042b\",\"title\":\"RegisterSession then SendRRData GetAttributeSingle with bounded CPF\",\"strategy\":\"stateful_valid\",\"target_operation\":\"SendRRData\",\"purpose\":\"Exercise the explicit TCP unconnected path through session setup and CPF parsing using a conservative GetAttributeSingle-style request that is mutation-friendly without reproducing known crash payloads.\",\"evidence_ids\":[\"issue:567:567-summary:1255c28909d7\",\"issue:569:569-summary:84e873f1b910\",\"issue:575:575-summary:e8df4ac3993c\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"RegisterSession request\",\"hex\":\"65000400000000000000000000000000000000000000000001000000\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"RegisterSession response analogue with session handle 0x11223344\",\"hex\":\"65000400443322110000000000000000000000000000000001000000\"},{\"index\":2,\"direction\":\"client_to_server\",\"label\":\"SendRRData with null address and unconnected data item carrying GetAttributeSingle-style CIP\",\"hex\":\"6f00180044332211000000000000000000000000000000000000000000000000020000000000b20008000e03200124013001\"}],\"expected_behavior\":\"The server should treat the session as registered, parse the CPF container, and route a small unconnected explicit request rather than failing on framing.\",\"constraints_preserved\":[\"24-byte encapsulation headers on all messages\",\"little-endian payload lengths kept visible-consistent\",\"stateful sequence with session setup before explicit message\",\"CPF uses conservative item_count 2 with null address and data item\",\"target operation diversified from discovery\"],\"issue_safety_notes\":\"Uses a short bounded CPF and CIP payload as an issue-guided analogue for issue 567 rather than an oversized attribute-list response trigger; exact PoC bytes are not reused.\"},{\"plan_id\":\"vk-plan-043-rev\",\"seed_id\":\"vk11-seed-043c\",\"title\":\"RegisterSession then SendRRData SetAttributeSingle-style long-path analogue\",\"strategy\":\"field_interaction\",\"target_operation\":\"SetAttributeSingle\",\"purpose\":\"Explore path-size and request-data interactions on the unconnected explicit path with a longer but bounded Message Router request that remains mutation-friendly and distinct from known PoCs.\",\"evidence_ids\":[\"issue:569:569-summary:84e873f1b910\",\"issue:572:572-summary:4cac5b77f97f\",\"issue:567:567-summary:1255c28909d7\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"RegisterSession request alternate options\",\"hex\":\"65000400000000000000000000000000000000000000000001000100\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"RegisterSession response analogue with session handle 0x55667788\",\"hex\":\"65000400887766550000000000000000000000000000000001000100\"},{\"index\":2,\"direction\":\"client_to_server\",\"label\":\"SendRRData with SetAttributeSingle-style CIP and extended path words\",\"hex\":\"6f00200088776655000000000000000000000000000000000000000000000000020000000000b20010001006200124013001030034120000\"}],\"expected_behavior\":\"A robust implementation should parse the session and CPF, then either process or reject the attribute write request cleanly based on object support and length checks.\",\"constraints_preserved\":[\"24-byte encapsulation headers used consistently\",\"little-endian visible lengths retained\",\"multi-step stateful flow preserved\",\"CPF and CIP remain bounded and mutation-friendly\",\"distinct target operation and field interactions from other seeds\"],\"issue_safety_notes\":\"The request is only a structural analogue for SetAttributeSingle and path-length issues; it avoids the very large padded paths and missing trailing bytes described in historical reports.\"},{\"plan_id\":\"vk-plan-044-rev\",\"seed_id\":\"vk11-seed-044d\",\"title\":\"Cross-state session lifecycle with SendUnitData and UnregisterSession analogue\",\"strategy\":\"issue_structural_analogue\",\"target_operation\":\"SendUnitData\",\"purpose\":\"Increase frame and state diversity by combining session setup, a connected-explicit style SendUnitData CPF, and a later UnregisterSession, covering issue-related state reuse and session handling without reproducing exact vulnerable traffic.\",\"evidence_ids\":[\"issue:575:575-summary:e8df4ac3993c\",\"issue:565:565-summary:9f823d95b613\",\"issue:567:567-summary:1255c28909d7\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"RegisterSession request for connected path seed\",\"hex\":\"65000400000000000000000000000000000000000000000001000000\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"RegisterSession response analogue with session handle 0xa1b2c3d4\",\"hex\":\"65000400d4c3b2a10000000000000000000000000000000001000000\"},{\"index\":2,\"direction\":\"client_to_server\",\"label\":\"SendUnitData with connection address item and small connected data item\",\"hex\":\"70001400d4c3b2a10000000000000000000000000000000000000000010000a100040044332211b100040052022001\"},{\"index\":3,\"direction\":\"client_to_server\",\"label\":\"UnregisterSession using same handle\",\"hex\":\"66000000d4c3b2a100000000000000000000000000000000\"}],\"expected_behavior\":\"The target should parse a small connected CPF frame and then allow orderly session teardown; any rejection should be graceful and state-aware rather than memory-unsafe.\",\"constraints_preserved\":[\"24-byte encapsulation headers used\",\"little-endian lengths and handles visible\",\"explicit connected path included for coverage diversity\",\"session lifecycle includes register and unregister\",\"no duplicate payloads across sequences\"],\"issue_safety_notes\":\"This sequence safely analogizes CPF state reuse and session-handle handling. It does not depend on stale-pointer reuse, cross-socket hijacking, or copied historical crash payloads.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788717214,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1909,
+    "prompt_tokens": 9098,
+    "total_tokens": 11007,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 11,
+      "engine_ttft_ms": 287,
+      "engine_ttlt_ms": 22181,
+      "pre_inference_ms": 550,
+      "service_tbt_ms": 11,
+      "service_ttft_ms": 1254,
+      "service_ttlt_ms": 23119,
+      "user_visible_ttft_ms": 704
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260827132004-42834f68-default-r0-dp0-default"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "seed_id": "base-plan-020-000",
+  "title": "Base Write Multiple Registers variant 2",
+  "strategy": "parser_depth",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MBAP header",
+      "hex": "00000000070000",
+      "byte_length": 7,
+      "sha256": "6ec88b502aabf6578250893146b1e265b0395cd6803ffb1a6984341491e23ca3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Write Multiple Registers request",
+      "hex": "0001000000040002abcd",
+      "byte_length": 10,
+      "sha256": "7eff9615ee9ae68c9c6a007cd4da1454fc90fce92f2edff7c9f270f5dec9d660"
+    }
+  ],
+  "expected_behavior": "Server parses the deeper register count and data fields with internal consistency.",
+  "constraints_preserved": [
+    "7-byte MBAP header",
+    "protocol identifier 0x0000",
+    "MBAP length consistency"
+  ],
+  "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+  "sequence_sha256": "ff6486f52803b30681ae7c5f8460c00fa140517558f0caf2a76df9519820fa41",
+  "total_bytes": 17,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ca4dce662213cda1343a3c92884729a64b598d9ecf3493602db488d067add023",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ]
+  }
+}

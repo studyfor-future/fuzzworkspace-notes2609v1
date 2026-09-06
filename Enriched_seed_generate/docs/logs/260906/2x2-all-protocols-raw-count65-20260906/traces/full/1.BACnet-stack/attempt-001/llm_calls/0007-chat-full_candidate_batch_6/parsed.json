@@ -1,0 +1,152 @@
+{
+  "coverage_summary": [
+    "Issue-guided analogues for WriteProperty, ReinitializeDevice, AddListElement, RemoveListElement covering recursion, stack overflow, list element handling, and file-object binding",
+    "Multi-step stateful and single-request shapes with diversified directions, sizes, and nested parser paths",
+    "All messages in lowercase hex, 4-byte BVLC consistent, primary sources followed, no exact crash payloads"
+  ],
+  "generation_notes": "Deterministic synthesis from protocol templates and candidate plans using issue_structural_analogue strategy for WriteProperty, ReinitializeDevice, AddListElement, and RemoveListElement; preserved BACnet/IP layering, BVLC length, APDU function codes, and common headers; no contradictions to sources; conservative fills recorded in constraints_preserved.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BACnet/IP BVLC 4-byte total length preserved",
+        "NPDU and APDU layering followed",
+        "WriteProperty function code 0x0F respected",
+        "Array index ALL and property identifier documented"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+        "issue:1317:1317-summary:4e832876df19",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+        "issue:1304:1304-summary:e1e381ed7daa"
+      ],
+      "expected_behavior": "Server accepts write and returns SimpleACK without crash or recursion",
+      "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47217 and CVE-2026-47711 with valid property update; no unbounded recursion or stack overflow",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c0f00",
+          "index": 0,
+          "label": "WriteProperty initial request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c0f0100000000000000000000000000",
+          "index": 1,
+          "label": "WriteProperty follow-up property update"
+        }
+      ],
+      "plan_id": "plan-021",
+      "purpose": "Recover historically sensitive structure from WriteProperty issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+      "seed_id": "seed-021-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "WriteProperty",
+      "title": "Issue-guided analogue for WriteProperty"
+    },
+    {
+      "constraints_preserved": [
+        "BACnet/IP BVLC 4-byte total length preserved",
+        "NPDU and APDU layering followed",
+        "ReinitializeDevice function code 0x14 respected",
+        "Backup restore service documented"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+        "issue:1304:1304-summary:e1e381ed7daa",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e"
+      ],
+      "expected_behavior": "Server handles backup restore without binding file object or crash",
+      "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47257 with valid backup restore request; no file binding or stack overflow",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c140001000000000000000000000000",
+          "index": 0,
+          "label": "ReinitializeDevice initial request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c140002000000000000000000000000",
+          "index": 1,
+          "label": "ReinitializeDevice backup restore request"
+        }
+      ],
+      "plan_id": "plan-022",
+      "purpose": "Recover historically sensitive structure from ReinitializeDevice issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+      "seed_id": "seed-022-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ReinitializeDevice",
+      "title": "Issue-guided analogue for ReinitializeDevice"
+    },
+    {
+      "constraints_preserved": [
+        "BACnet/IP BVLC 4-byte total length preserved",
+        "NPDU and APDU layering followed",
+        "AddListElement function code 0x08 respected",
+        "Recipient-list property documented"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+        "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+      ],
+      "expected_behavior": "Server adds element to recipient-list without stack overflow or crash",
+      "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47258 with valid element addition; no overflow in Notification_Class_Add_List_Element",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c0800000000000000000000000000",
+          "index": 0,
+          "label": "AddListElement request"
+        }
+      ],
+      "plan_id": "plan-023",
+      "purpose": "Recover historically sensitive structure from AddListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+      "seed_id": "seed-023-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "AddListElement",
+      "title": "Issue-guided analogue for AddListElement"
+    },
+    {
+      "constraints_preserved": [
+        "BACnet/IP BVLC 4-byte total length preserved",
+        "NPDU and APDU layering followed",
+        "RemoveListElement function code 0x09 respected",
+        "Recipient-list property documented"
+      ],
+      "evidence_ids": [
+        "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+      ],
+      "expected_behavior": "Server removes element from recipient-list without stack overflow or crash",
+      "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47259 with valid element removal; no overflow in Notification_Class_Remove_List_Element",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000100010a000000040b00000000000c0900000000000000000000000000",
+          "index": 0,
+          "label": "RemoveListElement request"
+        }
+      ],
+      "plan_id": "plan-024",
+      "purpose": "Recover historically sensitive structure from RemoveListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+      "seed_id": "seed-024-1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "RemoveListElement",
+      "title": "Issue-guided analogue for RemoveListElement"
+    }
+  ],
+  "target_issue": 2026
+}

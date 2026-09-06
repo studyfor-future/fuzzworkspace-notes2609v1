@@ -1,0 +1,41 @@
+{
+  "id": "resp_0fcb190bf712eafd016a9d9fe8b8fc87d0b3216bb66d147118",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"IEC60870\",\"target_issue\":-1,\"generation_notes\":\"Revised to exactly four distinct IEC 60870-5-104 APCI-oriented seeds. The supplied sources establish the IEC 60870 profile and TypeID mappings; conservative model-prior completion supplies standard APCI control bytes, ASDU field ordering, common-address and information-object layouts, cause values, and payload lengths. No exact historical vulnerability payloads or unsupported vulnerability claims are included.\",\"coverage_summary\":[\"Stateful STARTDT activation followed by a General Interrogation request using TypeID 100 and qualifier 20\",\"Single Command coverage using TypeID 45 with an explicit select/execute qualifier\",\"Double Command coverage using TypeID 46 and a distinct command state\",\"Server-to-client normalized measured-value coverage using TypeID 9 with a quality descriptor\"],\"sequences\":[{\"plan_id\":\"plan-revised-001\",\"seed_id\":\"pk-rev-001\",\"title\":\"STARTDT activation followed by General Interrogation\",\"strategy\":\"stateful_valid\",\"target_operation\":\"C_IC_NA_1\",\"purpose\":\"Exercise IEC 60870-5-104 session activation and a subsequent station interrogation ASDU with a standard interrogation qualifier.\",\"evidence_ids\":[\"protocol_format:iec60870:format-overview:6fc14a471f76\",\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:9662ce251be3\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"STARTDT activation request\",\"hex\":\"680407000000\"},{\"index\":1,\"direction\":\"client_to_server\",\"label\":\"General Interrogation activation request\",\"hex\":\"680e0000000064010600010000000014\"}],\"expected_behavior\":\"The peer processes the STARTDT activation U-format and can then parse the following I-format C_IC_NA_1 request; the interrogation qualifier identifies station interrogation.\",\"constraints_preserved\":[\"0x68 APCI start byte is used\",\"The U-format frame has length 0x04 for its four control bytes\",\"The I-format length 0x0e equals four APCI control bytes plus the 10-byte ASDU\",\"TypeID 100 is C_IC_NA_1 and qualifier 20 is used for station interrogation\",\"All multibyte sequence, cause, common-address, and information-object fields use consistent fixed widths\"],\"issue_safety_notes\":\"Valid structural analogue only; no historical issue payload, malformed length, or exploit behavior is asserted.\"},{\"plan_id\":\"plan-revised-002\",\"seed_id\":\"pk-rev-002\",\"title\":\"Selected single command\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"C_SC_NA_1\",\"purpose\":\"Cover the canonical single-command parser path with an explicit ON state and select qualifier.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:9662ce251be3\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"C_SC_NA_1 select ON command\",\"hex\":\"680e0000000045010600010001000081\"}],\"expected_behavior\":\"The peer parses a TypeID 45 single command addressed to information-object address 1, with ON state and the select bit set.\",\"constraints_preserved\":[\"TypeID 45 is C_SC_NA_1\",\"The command qualifier combines ON state 1 with select bit 1\",\"The I-format length 0x0e equals four APCI control bytes plus the 10-byte ASDU\",\"The information-object address is three bytes and the common address is two bytes\"],\"issue_safety_notes\":\"Uses ordinary bounded command fields and a source-listed TypeID; it is not an exact historical payload collision.\"},{\"plan_id\":\"plan-revised-003\",\"seed_id\":\"pk-rev-003\",\"title\":\"Executed double command\",\"strategy\":\"field_interaction\",\"target_operation\":\"C_DC_NA_1\",\"purpose\":\"Exercise the double-command path with a different TypeID, address, common address, and command qualifier from the single-command seed.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:9662ce251be3\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"C_DC_NA_1 execute ON command\",\"hex\":\"680e0000000046010600020002000002\"}],\"expected_behavior\":\"The peer parses a TypeID 46 double command addressed to information-object address 2, with ON state and execute mode.\",\"constraints_preserved\":[\"TypeID 46 is C_DC_NA_1\",\"The double-command state is ON and the select/execute bit is execute\",\"The I-format length 0x0e equals four APCI control bytes plus the 10-byte ASDU\",\"Common address 2 and information-object address 2 remain internally consistent\"],\"issue_safety_notes\":\"Safe valid structural coverage with bounded values; no malformed framing or historical exploit bytes are included.\"},{\"plan_id\":\"plan-revised-004\",\"seed_id\":\"pk-rev-004\",\"title\":\"Normalized measured value report\",\"strategy\":\"baseline_valid\",\"target_operation\":\"M_ME_NA_1\",\"purpose\":\"Cover a server-to-client monitoring ASDU with a normalized measured value and quality descriptor.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"function_code:function:function-text:9662ce251be3\",\"protocol_format:iec60870:format-overview:6fc14a471f76\"],\"messages\":[{\"index\":0,\"direction\":\"server_to_client\",\"label\":\"M_ME_NA_1 normalized measurement\",\"hex\":\"681000000000090103000100030000640000\"}],\"expected_behavior\":\"The peer parses a TypeID 9 normalized measured-value report for information-object address 3, including a normalized value and quality byte.\",\"constraints_preserved\":[\"TypeID 9 is M_ME_NA_1\",\"The I-format length 0x10 equals four APCI control bytes plus the 12-byte ASDU\",\"The normalized value uses two bytes followed by one quality descriptor byte\",\"The server-to-client direction matches monitoring/report semantics\",\"The information-object address is three bytes and the common address is two bytes\"],\"issue_safety_notes\":\"Ordinary valid monitoring structure only; no vulnerability claim, oversized field, or historical payload reuse is intended.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788715062,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2098,
+    "prompt_tokens": 12807,
+    "total_tokens": 14905,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 772,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

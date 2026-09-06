@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-040",
+  "title": "Base Read Input Registers variant 4",
+  "strategy": "field_interaction",
+  "target_operation": "Read Input Registers",
+  "purpose": "Vary unit identifier, starting address, and quantity across a request to exercise interactions among address selection and read span fields.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Input Registers request, unit 14, address 0x01f0, quantity 8",
+      "hex": "0004000000060e0401f00008",
+      "byte_length": 12,
+      "sha256": "5ee260ba13b908a9b4b811d7af434b517180f6f37b3c84cdc546b72f0969277d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Input Registers response (register data bytes)",
+      "hex": "0004000000060e0401010100",
+      "byte_length": 12,
+      "sha256": "fe6a0f9deff6a9fec236744d9339b61752876297ba07ec84f9f902d045a851c3"
+    }
+  ],
+  "expected_behavior": "The server should parse both requests as Read Input Registers operations and return the corresponding input-register values when available, or normal Modbus exception responses for unsupported or out-of-range addresses.",
+  "constraints_preserved": [
+    "Each frame has a 7-byte MBAP header.",
+    "Protocol identifier is 0000.",
+    "Each length field 0006 accounts for the unit identifier and five-byte request PDU.",
+    "Function code 04 and its 16-bit address and quantity fields are structurally consistent.",
+    "The target address and quantity form a positive, moderate read span.",
+    "Unit identifier and transaction identifier values are valid-width and distinct from other seeds."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This is a conservative field-interaction seed based on model-prior protocol plausibility and is not externally verified.",
+  "sequence_sha256": "fde5d70f89dbf92504e592fc90b4ad5e52411497f4f1a1a804a84031dd91684b",
+  "total_bytes": 24,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "207e05f2dd5cb5680cf36605cd40826764e7925016440917669e8269da2a2c18",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

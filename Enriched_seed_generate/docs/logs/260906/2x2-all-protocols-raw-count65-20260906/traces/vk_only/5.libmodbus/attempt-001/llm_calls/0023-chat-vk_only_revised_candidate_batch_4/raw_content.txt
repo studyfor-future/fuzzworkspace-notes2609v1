@@ -1,0 +1,161 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": -1,
+  "generation_notes": "Revised VK-only Modbus/TCP batch with exactly four distinct sequences. Each sequence uses a conservative 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP length values derived from fallible model-prior protocol knowledge rather than external documentation. Historical issue evidence is used only to preserve safe structural analogues such as repeated processing, field interaction, valid boundary sizing, and minimal-function parser reachability. Exact historical payload collisions and duplicate shapes were removed, titles were shortened, and operation/frame/state diversity was increased with both single-request and repeated-stateful sequences.",
+  "coverage_summary": [
+    "Read Coils request with conventional address and small quantity for baseline issue-analogue coverage",
+    "Read Discrete Inputs repeated-stateful pair varying transaction identifier, unit identifier, address, and quantity interaction",
+    "Read Holding Registers request at a high but internally consistent quantity boundary",
+    "Minimal Diagnostics-style function request to reach short-parser paths with a function lacking address fields",
+    "All sequences preserve Modbus/TCP MBAP framing with protocol identifier 0000 and consistent visible length fields",
+    "Set includes single-message and multi-message sequences to improve state and repeated-processing coverage",
+    "No sequence reproduces the documented exact historical crash payloads or removed duplicate/collision bytes"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-013",
+      "seed_id": "issue-763-issue-analogue-read-coils-01",
+      "title": "Read Coils analogue with small range",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Read Coils",
+      "purpose": "Exercise a recognizable read-bits request shape related to issue-reported repeated processing paths while avoiding minimal malformed or historically colliding bytes.",
+      "evidence_ids": [
+        "issue:763:763-summary:e75d690140f2",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_coils_request",
+          "hex": "110100000006010100130009"
+        }
+      ],
+      "expected_behavior": "Server should either return a normal read-coils response or a handled exception without desynchronizing parser state.",
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length set consistently to 0x0006",
+        "recognizable Read Coils function code 0x01",
+        "address and quantity fields present in a conservative fixed-size read request"
+      ],
+      "issue_safety_notes": "Uses only a safe structural analogue of issue-related repeated read handling and avoids exact historical issue bytes, truncated minimal forms, and malformed length tricks."
+    },
+    {
+      "plan_id": "vk-plan-014",
+      "seed_id": "issue-764-field-interaction-discrete-inputs-02",
+      "title": "Repeated Read Discrete Inputs interaction",
+      "strategy": "field_interaction",
+      "target_operation": "Read Discrete Inputs",
+      "purpose": "Probe field interactions across two valid requests by varying unit identifier, address, and quantity in a repeated sequence that can expose state-sensitive handling without copying any known crash packet.",
+      "evidence_ids": [
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:749:749-summary:29b9071582b0",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:612:612-summary:7b008d4bca1d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "discrete_inputs_probe_a",
+          "hex": "220100000006110200200001"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "discrete_inputs_probe_b",
+          "hex": "2202000000067C0200210003"
+        }
+      ],
+      "expected_behavior": "Server should process both read-discrete-input requests independently, returning valid data or bounded exceptions with stable connection behavior across the repeated transaction pair.",
+      "constraints_preserved": [
+        "7-byte MBAP header in each message",
+        "protocol identifier 0x0000 in each message",
+        "MBAP length set consistently to 0x0006 for each fixed-size read request",
+        "recognizable Read Discrete Inputs function code 0x02",
+        "stateful repeated-request shape with valid framing"
+      ],
+      "issue_safety_notes": "The sequence borrows only safe field-interaction themes and repeated-processing coverage; it does not reuse the documented issue 764 function code, payload body, or exact transaction layout."
+    },
+    {
+      "plan_id": "vk-plan-015",
+      "seed_id": "issue-803-boundary-holding-registers-03",
+      "title": "Read Holding Registers quantity boundary",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Explore a conservative high-quantity register-read boundary with a standard fixed-size request to cover issue-related size handling while preserving fully consistent framing.",
+      "evidence_ids": [
+        "issue:803:803-summary:fea416ab8355",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:738:738-summary:a2fd51730f5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "holding_registers_boundary_request",
+          "hex": "330100000006FF030010007D"
+        }
+      ],
+      "expected_behavior": "Server should either return a large but normal holding-register response or reject the quantity in a controlled way without memory-management anomalies.",
+      "constraints_preserved": [
+        "7-byte MBAP header",
+        "protocol identifier 0x0000",
+        "MBAP length set consistently to 0x0006",
+        "recognizable Read Holding Registers function code 0x03",
+        "high but internally coherent quantity boundary"
+      ],
+      "issue_safety_notes": "Uses a valid boundary-oriented analogue rather than any historically reported crashing payload, mismatched count field, or duplicated prior-library sequence."
+    },
+    {
+      "plan_id": "vk-plan-016",
+      "seed_id": "issue-837-parser-depth-diagnostics-04",
+      "title": "Minimal diagnostics parser-depth request",
+      "strategy": "parser_depth",
+      "target_operation": "Diagnostics",
+      "purpose": "Reach a short parser path with a compact function form that differs from the read-register family, increasing operation diversity while remaining within conservative MBAP constraints.",
+      "evidence_ids": [
+        "issue:810:810-summary:da5167fd5137",
+        "issue:867:867-summary:58115ace3a65",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:738:738-summary:a2fd51730f5d",
+        "vk_task_context:task-contract:950d6d207e6c",
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:837:837-summary:c4fb6d28cc16"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "minimal_function_request",
+          "hex": "4401000000020107"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "followup_minimal_function_request",
+          "hex": "4402000000021111"
+        }
+      ],
+      "expected_behavior": "Server-side parser should safely handle each minimal request as an independent transaction, producing either a valid short reply or a bounded exception rather than reading beyond request bounds.",
+      "constraints_preserved": [
+        "7-byte MBAP header in each message",
+        "protocol identifier 0x0000 in each message",
+        "MBAP length set consistently to 0x0002 for unit-id plus single function-code requests",
+        "short parser-depth sequence with repeated transactions",
+        "diverse minimal function codes from the allowed family context"
+      ],
+      "issue_safety_notes": "This is a safe minimal-parser analogue informed by short-request issue themes; it avoids exact historical reproduction claims and does not copy any removed collision payload."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "seed_id": "base-seed-064",
+  "title": "Base Read Input Registers variant 6",
+  "strategy": "baseline_valid",
+  "target_operation": "Read Input Registers",
+  "purpose": "Produce a canonical minimal Read Input Registers exchange using a single requested register and a matching two-byte response.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Input-register transaction setup request, unit 20, start address 32, quantity 1",
+      "hex": "000400000006140400200001",
+      "byte_length": 12,
+      "sha256": "e6886129857293de9c57c97cad4ffd6498b5621e8629fe6dd073822b985315c6"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Input Registers response, unit 20, one register",
+      "hex": "0004000000051404021234",
+      "byte_length": 11,
+      "sha256": "6740cea50fd62f740047b3ffb4283de3e9e56463503cd023769deed5257d4de7"
+    }
+  ],
+  "expected_behavior": "The server should parse function code 04 for one input register and return a normal response with byte count 02 and one two-byte register value, or a standard protocol exception if the address is unsupported.",
+  "constraints_preserved": [
+    "Both frames use 7-byte MBAP headers.",
+    "Protocol identifier is 0000 in both directions.",
+    "Request MBAP length 0006 is correct.",
+    "Response MBAP length 0005 equals the unit, function, byte-count, and two data bytes.",
+    "Transaction identifier 0004 and unit identifier 14 are preserved across the exchange.",
+    "Function code 04, start address 0020, quantity 0001, and response byte count 02 are consistent.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "Issue knowledge is unavailable and no external verification is claimed; this is a conservative baseline seed generated from model-prior Modbus/TCP knowledge and the supplied Base constraints.",
+  "sequence_sha256": "f8c25828119f8576d5917029f80c0405edf9dd4e328aa6909f3e2adda186c1af",
+  "total_bytes": 23,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c743762dd51aa5358c00a780f1e8c01d2eb76e7d7bf45e52f83a4abf5e3a8d50",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

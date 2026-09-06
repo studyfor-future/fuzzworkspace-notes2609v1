@@ -1,0 +1,147 @@
+{
+  "coverage_summary": [
+    "plan-009: safe GetNameList analogue with positive octet-string size",
+    "plan-010: safe MmsValue_decodeMmsData analogue with positive octet-string size",
+    "plan-011: safe AcseConnection_parseMessage analogue with valid TPKT length",
+    "plan-012: safe mms_get_namelist_service analogue with valid octet-string size"
+  ],
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Four distinct seed sequences generated for MMS over ISO-on-TCP using COTP Connection Request, MMS Initiate, GetNameList, Read, Write, GetVariableAccessAttributes, DefineNamedVariableList, and InformationReport archetypes with diversified association, discovery, read, write and reporting paths. Model-prior completion only for gaps; no exact historical payload collisions; TPKT version 0x03 and full length consistency preserved.",
+  "protocol_name": "IEC61850",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03, TPKT total-length matches complete message",
+        "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+        "ACSE association preserved",
+        "IEC61850 GetNameList service code 1 used"
+      ],
+      "evidence_ids": [
+        "issue:193:193-summary:1451e58436f0",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:198:198-summary:062388f44431"
+      ],
+      "expected_behavior": "Server accepts and responds with valid GetNameList data using positive octet-string size field",
+      "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "030000130702000101000200000500100000000000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "030000150701000101000200000500100000000000",
+          "index": 1,
+          "label": "MMS GetNameList request"
+        }
+      ],
+      "plan_id": "plan-009",
+      "purpose": "Recover historically sensitive octet-string size handling from issue while using safe positive value in GetNameList service",
+      "seed_id": "seq-009-001",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "COTP Connection Request followed by MMS GetNameList for safe octet-string analogue"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03, TPKT total-length matches complete message",
+        "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+        "ACSE association preserved",
+        "IEC61850 Read service code 4 used"
+      ],
+      "evidence_ids": [
+        "issue:200:200-summary:d453c5e902cd",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:197:197-summary:e3308b450f23"
+      ],
+      "expected_behavior": "Server responds with valid Read data using positive octet-string size field",
+      "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "030000150801000101000200000500100000000000",
+          "index": 0,
+          "label": "MMS Initiate request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "030000150701000101000200000500100000000000",
+          "index": 1,
+          "label": "MMS Read request"
+        }
+      ],
+      "plan_id": "plan-010",
+      "purpose": "Recover historically sensitive octet-string size handling from MmsValue_decodeMmsData while using safe positive value in Read service",
+      "seed_id": "seq-010-001",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "MMS Initiate followed by safe MMS Read with positive octet-string size"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03, TPKT total-length matches complete message",
+        "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+        "ACSE association preserved",
+        "IEC61850 Write service code 5 used"
+      ],
+      "evidence_ids": [
+        "issue:368:368-summary:997e8d1338a8",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:496:496-summary:0b725b37c953"
+      ],
+      "expected_behavior": "Server accepts and responds with valid Write data using positive octet-string size field",
+      "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "030000130702000101000200000500100000000000",
+          "index": 0,
+          "label": "COTP Connection Request"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "030000150701000101000200000500100000000000",
+          "index": 1,
+          "label": "MMS Write request"
+        }
+      ],
+      "plan_id": "plan-011",
+      "purpose": "Recover historically sensitive NULL pointer dereference path in AcseConnection_parseMessage while using safe positive octet-string size in Write service",
+      "seed_id": "seq-011-001",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "COTP Connection Request followed by MMS Write for safe AcseConnection_parseMessage analogue"
+    },
+    {
+      "constraints_preserved": [
+        "TPKT version 0x03, TPKT total-length matches complete message",
+        "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+        "ACSE association preserved",
+        "IEC61850 GetNameList service code 1 used"
+      ],
+      "evidence_ids": [
+        "issue:492:492-summary:b5a20a150fa2",
+        "issue:516:516-summary:13bbaeee92c9",
+        "issue:496:496-summary:0b725b37c953"
+      ],
+      "expected_behavior": "Server responds with valid GetNameList data using positive octet-string size field",
+      "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "030000150701000101000200000500100000000000",
+          "index": 0,
+          "label": "MMS GetNameList request"
+        }
+      ],
+      "plan_id": "plan-012",
+      "purpose": "Recover historically sensitive integer overflow in mms_get_namelist_service while using safe positive octet-string size in GetNameList service",
+      "seed_id": "seq-012-001",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "title": "MMS GetNameList followed by safe integer-overflow analogue in namelist service"
+    }
+  ],
+  "target_issue": -1
+}

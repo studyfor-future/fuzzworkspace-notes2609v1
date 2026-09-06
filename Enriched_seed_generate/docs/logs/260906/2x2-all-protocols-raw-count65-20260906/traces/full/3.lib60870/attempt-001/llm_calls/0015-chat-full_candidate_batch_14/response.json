@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELAT7t79zrwdqRfj4f9hjdc4PfLxW",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"IEC60870\",\"target_issue\":3,\"generation_notes\":\"Constructed 4 mutation-friendly IEC 60870-5-104 APCI/APDU seeds using supplied function catalogs and issue evidence as structural guidance. To satisfy the plans while preserving valid framing, each seed uses complete 0x68 APCI length accounting, balanced control fields, and ASDU layouts that are conservative model-prior encodings of common IEC 60870-5-104 application messages. Because the provided protocol source primarily identifies IEC 60870 family elements and selected type IDs rather than full byte templates, several field placements are inferred from standard IEC 60870-5-104 practice and are explicitly recorded as assumptions.\",\"coverage_summary\":[\"Uses IEC 60870-5-104 style 0x68 APCI framing with consistent length octets.\",\"Covers U-format control path via TESTFR activation.\",\"Covers I-format parser entry with TypeID 104 test command analogue tied to the supplied out-of-bounds issue.\",\"Exercises cause-of-transmission space including test, unknown/unsupported, and private/unused-style values as structurally valid parser inputs.\",\"Diversifies target operations across control-only, command/test ASDU, and error/unknown handling paths.\",\"Avoids exact historical crash payloads while retaining issue-relevant structure such as TypeID 104 and object-count-sensitive layouts.\"],\"sequences\":[{\"plan_id\":\"plan-053\",\"seed_id\":\"iec60870-full-053\",\"title\":\"End-delimiter coverage via balanced TESTFR U-format control frame\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"End delimiter\",\"purpose\":\"Exercise a minimal but valid IEC 60870-5-104 control-frame parser path centered on a frame that terminates cleanly after APCI, giving a compact seed for delimiters and control-only handling.\",\"evidence_ids\":[\"function_code:function:operation-catalog:b0db75237939\",\"function_code:function:function-text:187ce180236e\",\"function_code:function:function-text:3cbe16bf065a\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"function_code:function:function-text:14a1385d5f57\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"u-format-testfr-act\",\"hex\":\"680443000000\"}],\"expected_behavior\":\"Peer should recognize a valid U-format TESTFR activation request and either answer with TESTFR confirmation or ignore per implementation policy; parser should consume the frame without entering ASDU parsing.\",\"constraints_preserved\":[\"APCI start byte 0x68 used with length 0x04 for U-format frame and exactly 4 following control octets.\",\"Frame is complete and self-contained; no truncated body or extra tail bytes are present.\",\"U-format function selection is inferred from common IEC 60870-5-104 encoding because the supplied sources enumerate APCI/U-format categories but do not provide exact octet templates.\",\"No historical crash payload bytes are reused.\"],\"issue_safety_notes\":\"This seed intentionally stays in the control-only path, avoiding malformed lengths and avoiding the issue pattern of an object count exceeding available ASDU bytes.\"},{\"plan_id\":\"plan-054\",\"seed_id\":\"iec60870-full-054\",\"title\":\"Unused-cause style I-frame with private cause value on single command\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"Unused\",\"purpose\":\"Drive an ASDU parser through a complete I-format application message that uses a rarely handled cause-of-transmission value outside common operational causes while keeping the rest of the frame structurally consistent.\",\"evidence_ids\":[\"function_code:function:operation-catalog:c32f2366ef50\",\"function_code:function:operation-catalog:224e76862422\",\"function_code:function:operation-catalog:b0db75237939\",\"function_code:function:function-text:83986922f28d\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"i-format-single-command-private-cot\",\"hex\":\"680e000000002d011f00010001000081\"}],\"expected_behavior\":\"Parser should accept the APCI and ASDU structure, then route or reject the command based on unsupported or implementation-specific cause-of-transmission handling without overrunning buffers.\",\"constraints_preserved\":[\"APCI length 0x0e matches 4 control bytes plus 10-byte ASDU body.\",\"TypeID 45 (C_SC_NA_1) is taken from supplied function text.\",\"VSQ is 0x01, matching one information object and one command element.\",\"Common address is encoded in two octets and information object address in three octets using conservative IEC 60870-5-104 prior assumptions.\",\"Cause value 0x1f is used as a structurally valid but unusual/private-style cause; exact semantic label is inferred rather than verified from supplied sources.\"],\"issue_safety_notes\":\"The object count is kept at one and the ASDU body fully contains one object, specifically avoiding the issue motif where VSQ/count exceeds the available payload.\"},{\"plan_id\":\"plan-055\",\"seed_id\":\"iec60870-full-055\",\"title\":\"Unknown-cause handling on valid TypeID 104 test command\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"Unknown Cause of Transmission\",\"purpose\":\"Target the same general parser family implicated by the supplied issue using a valid TypeID 104 I-frame, but keep object count and body length consistent while setting an unusual cause to cover unsupported-cause branches safely.\",\"evidence_ids\":[\"function_code:function:operation-catalog:b0db75237939\",\"function_code:function:operation-catalog:224e76862422\",\"function_code:function:operation-catalog:c32f2366ef50\",\"function_code:function:function-text:83986922f28d\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"i-format-type104-unknown-cot\",\"hex\":\"680e0200000068012c00010001000000\"}],\"expected_behavior\":\"Implementation should parse a complete Test Command ASDU for TypeID 104, then reject, log, or classify it as unknown/unsupported because of the nonstandard cause value, without reading past the end of the message.\",\"constraints_preserved\":[\"TypeID 104 is selected directly from the supplied GHSA issue description.\",\"APCI length 0x0e is consistent with a single-object TypeID 104 ASDU of 10 bytes after the control field.\",\"VSQ/object count is 1 and the message includes one full 3-octet information object address plus one command octet, maintaining internal size consistency.\",\"Control field uses a simple I-frame sequence pattern with N(S)=1 and N(R)=0 encoded conservatively from IEC 60870-5-104 prior knowledge.\",\"Cause value 0x2c is used as an unusual/unknown-style code by conservative assumption; the supplied sources indicate unknown-cause handling as a target concept but do not define this exact byte mapping.\"],\"issue_safety_notes\":\"This is a structural analogue to the documented bug path because it uses TypeID 104, but it deliberately avoids the vulnerable shape: no inflated VSQ, no body truncation, and no copied PoC bytes.\"},{\"plan_id\":\"plan-056\",\"seed_id\":\"iec60870-full-056\",\"title\":\"Test operation with standard test cause on TypeID 104\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"Test operation\",\"purpose\":\"Provide a well-formed baseline TypeID 104 test-command I-frame that reaches the intended application parser through the most plausible operational cause value, serving as a stable seed for later length and count mutations.\",\"evidence_ids\":[\"function_code:function:operation-catalog:b0db75237939\",\"function_code:function:function-text:83986922f28d\",\"function_code:function:operation-catalog:c32f2366ef50\",\"function_code:function:operation-catalog:224e76862422\",\"issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc\",\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"i-format-type104-test-cot\",\"hex\":\"680e0400000068014000010001000080\"}],\"expected_behavior\":\"Parser should accept the frame as a complete I-format APDU carrying a single TypeID 104 test command and either process it as a test operation or reject it cleanly according to role/configuration.\",\"constraints_preserved\":[\"Complete IEC 60870-5-104 I-frame with 0x68 start and consistent 0x0e length.\",\"ASDU uses TypeID 104 with VSQ 1 and one object payload, matching the issue-relevant command family while remaining well-formed.\",\"Cause value 0x40 is chosen as a conservative test-operation analogue based on common IEC 60870 conventions; this exact octet mapping is an inferred assumption, not explicitly verified by the supplied snippets.\",\"Message differs materially from the GHSA PoC in control bytes, cause, object bytes, and overall layout while preserving valid structure.\"],\"issue_safety_notes\":\"Safe baseline near the issue surface: TypeID 104 is exercised, but lengths are internally consistent and the single-object declaration exactly matches the available bytes to avoid out-of-bounds reads.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788713837,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2158,
+    "prompt_tokens": 5441,
+    "total_tokens": 7599,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 13,
+      "engine_ttft_ms": 257,
+      "engine_ttlt_ms": 28575,
+      "pre_inference_ms": 102,
+      "service_tbt_ms": 13,
+      "service_ttft_ms": 386,
+      "service_ttlt_ms": 28699,
+      "user_visible_ttft_ms": 285
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260826104332-81920462-default-r1-dp0-default"
+  }
+}

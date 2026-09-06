@@ -1,0 +1,44 @@
+{
+  "coverage_summary": [
+    "covers additional parser entry points for Invalid-APDU-In-This-State via confirmed-service abort reasons",
+    "preserves BVLC four-byte length, NPDU/APDU order, and checksum rules",
+    "applies to BACnet/IP profile per protocol_format source"
+  ],
+  "generation_notes": "Deterministic synthesis from protocol templates, operation catalogs, and structural motifs (no exact payload copy; conservative model-prior completion for BVLC/NPDU/APDU layering, four-byte BVLC length, and BACnet/IP common headers per sources). Maximized diversity via one function_code_coverage request using documented Abort-Reason service entry point.",
+  "protocol_name": "BACNET",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC total length four-byte header consistent",
+        "NPDU and APDU layering per protocol_format:bacnet-stack:format-overview",
+        "Confirmed service choice in APDU confirmed-service table from function_code source",
+        "No contradiction of supplied protocol sources"
+      ],
+      "evidence_ids": [
+        "function_code:function:operation-catalog:00f4c0ca11c4",
+        "function_code:function:function-text:7cfded47457a",
+        "function_code:function:operation-catalog:8b8a74d78671",
+        "function_code:function:function-text:f1c980ef7dde",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+      ],
+      "expected_behavior": "Request reaches apdu_handler() and parser returns Abort-PDU with Abort-Reason Invalid-APDU-In-This-State; parser entry point exercised without crash.",
+      "issue_safety_notes": "Structural analogue to documented oversized-length abort in issue 1270 (no exact payload copy); uses Abort-Reason per function_code source; safe for initial corpus seed.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0100000c01f0000c01000000200000000000000001020000",
+          "index": 0,
+          "label": "BACnet/IP BVLC + NPDU + Confirmed-Request-PDU (with InvokeID and Abort-Reason service choice)"
+        }
+      ],
+      "plan_id": "plan-065",
+      "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+      "seed_id": "seed-065-001",
+      "strategy": "function_code_coverage",
+      "target_operation": "Invalid-APDU-In-This-State",
+      "title": "Function coverage for Invalid-APDU-In-This-State"
+    }
+  ],
+  "target_issue": 1270
+}

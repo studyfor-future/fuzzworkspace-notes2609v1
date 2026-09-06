@@ -1,0 +1,145 @@
+{
+  "protocol_name": "modbustcp",
+  "target_issue": 743,
+  "generation_notes": "Constructed four VK-only Modbus/TCP candidate sequences from the supplied plans using conservative internal prior only. Each sequence preserves the requested target_operation, uses a 7-byte MBAP header with protocol identifier 0000, keeps visible length/count fields internally consistent, and aims at issue-relevant parser or state relations without copying historical crash payloads verbatim.",
+  "coverage_summary": [
+    "Covers four distinct target operations: Diagnostics, Read File Record, Read/Write Multiple Registers, and Encapsulated Interface Transport.",
+    "Varies function classes across simple fixed-format, nested subrequest, mixed read/write, and MEI-style encapsulated frames.",
+    "Exercises issue-related relations including short-but-valid request shapes, deeper parser structures, mixed-length subfields, and state-sensitive write/read combinations.",
+    "Diversifies transaction identifiers, unit identifiers, addresses, counts, record metadata, and payload sizes while preserving internal framing consistency."
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-045",
+      "seed_id": "vk12-modbustcp-045-01",
+      "title": "VK-only Diagnostics boundary probe with minimal data field",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Diagnostics",
+      "purpose": "Explore a short valid Diagnostics request that stays internally consistent while stressing dispatch and length handling paths adjacent to issue reports involving malformed or undersized request processing.",
+      "evidence_ids": [
+        "issue:743:743-summary:1fc7e97d059a",
+        "issue:837:837-summary:c4fb6d28cc16",
+        "issue:466:466-summary:691a17c4c14a",
+        "issue:499:499-summary:6268f95751ad",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:683:683-summary:fbe9b8a5a160"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics-subfunction-echo-minimal",
+          "hex": "120100000006f50800000000"
+        }
+      ],
+      "expected_behavior": "A parser that supports this operation should accept or cleanly reject the request without desynchronization, and any reply path should remain bounded on the fixed-size PDU.",
+      "constraints_preserved": [
+        "MBAP header is 7 bytes",
+        "Protocol identifier set to 0000",
+        "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+        "Single-request sequence preserved per plan",
+        "Target operation remains Diagnostics"
+      ],
+      "issue_safety_notes": "This is an issue analogue only: it keeps a valid fixed-format Diagnostics layout and avoids reproducing any historical crashing byte stream while still probing short-length request handling."
+    },
+    {
+      "plan_id": "vk-plan-046",
+      "seed_id": "vk12-modbustcp-046-01",
+      "title": "VK-only Read File Record nested single-subrequest parser walk",
+      "strategy": "parser_depth",
+      "target_operation": "Read File Record",
+      "purpose": "Reach a deeper parser structure with one coherent file-record subrequest, using conservative nested lengths to exercise record parsing paths related to prior crash reports involving mixed multi-message and complex request structures.",
+      "evidence_ids": [
+        "issue:748:748-summary:90052b7dfbe9",
+        "issue:763:763-summary:e75d690140f2",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:612:612-summary:7b008d4bca1d",
+        "issue:279:279-summary:f8623682ccd7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read-file-record-one-subrequest",
+          "hex": "12020000000a2a140706000200030002"
+        }
+      ],
+      "expected_behavior": "A compliant implementation should parse the nested byte-count and subrequest descriptor consistently, then either service or reject the file/record access without overrunning internal buffers.",
+      "constraints_preserved": [
+        "MBAP header is 7 bytes",
+        "Protocol identifier set to 0000",
+        "MBAP length 000a matches unit identifier plus 9-byte PDU",
+        "Read File Record function preserved",
+        "Nested request byte count 07 matches one 7-byte subrequest"
+      ],
+      "issue_safety_notes": "The frame is a conservative structural analogue and not a copy of any reported PoC; it intentionally uses a single coherent subrequest to focus on parser depth rather than overt corruption."
+    },
+    {
+      "plan_id": "vk-plan-047",
+      "seed_id": "vk12-modbustcp-047-01",
+      "title": "VK-only Read/Write Multiple Registers mixed-count valid state probe",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Exercise the combined read/write register path with a plausible state-sensitive request that writes two registers while reading back one nearby register, targeting issue themes around repeated or mixed operations without requiring an external setup script.",
+      "evidence_ids": [
+        "issue:749:749-summary:29b9071582b0",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:738:738-summary:a2fd51730f5d",
+        "issue:763:763-summary:e75d690140f2",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:750:750-summary:3dcb92ca7c5d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "readwrite-registers-write2-read1",
+          "hex": "12030000000f7f1701200001013000020411112222"
+        }
+      ],
+      "expected_behavior": "The target should parse the mixed read/write layout, consume exactly the declared write byte count, and either perform the operation or return an exception without corrupting state.",
+      "constraints_preserved": [
+        "MBAP header is 7 bytes",
+        "Protocol identifier set to 0000",
+        "MBAP length 000f matches unit identifier plus 14-byte PDU",
+        "Target operation remains Read/Write Multiple Registers",
+        "Write quantity 0002 is consistent with byte count 04 and four data bytes"
+      ],
+      "issue_safety_notes": "Although inspired by state-sensitive issue reports, this sequence is a single internally consistent combined-operation request and avoids reproducing historical multi-frame crash material."
+    },
+    {
+      "plan_id": "vk-plan-048",
+      "seed_id": "vk12-modbustcp-048-01",
+      "title": "VK-only Encapsulated Interface Transport conservative MEI analogue",
+      "strategy": "other",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Create a distinct mutation-friendly encapsulated transport request with a compact MEI-style body so the receiver traverses less-common dispatch and payload handling code adjacent to prior crafted-message crashes.",
+      "evidence_ids": [
+        "issue:750:750-summary:3dcb92ca7c5d",
+        "issue:764:764-summary:f5885d05eb76",
+        "issue:763:763-summary:e75d690140f2",
+        "issue:614:614-summary:e89105d3aaf7",
+        "issue:803:803-summary:fea416ab8355",
+        "issue:499:499-summary:6268f95751ad"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "encapsulated-interface-basic-mei",
+          "hex": "12040000000533430e0100"
+        }
+      ],
+      "expected_behavior": "An implementation with Encapsulated Interface Transport support should either process the MEI selector path or reject it as unsupported while keeping framing synchronized and bounded.",
+      "constraints_preserved": [
+        "MBAP header is 7 bytes",
+        "Protocol identifier set to 0000",
+        "MBAP length 0005 matches unit identifier plus 4-byte PDU",
+        "Single-request sequence preserved per plan",
+        "Target operation remains Encapsulated Interface Transport"
+      ],
+      "issue_safety_notes": "This request deliberately uses conservative framing and a short encapsulated payload as an analogue for crafted-message receive-path testing, not as a reproduction of any published crashing bytes."
+    }
+  ]
+}

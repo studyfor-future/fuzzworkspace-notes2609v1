@@ -1,0 +1,41 @@
+{
+  "id": "resp_0bb8e04c4ed54c60016a9d9550827887d0befe64d03cd30fcc",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"IEC61850\",\"target_issue\":-1,\"generation_notes\":\"Exactly four distinct PK-only P+/V- seed sequences were retained and revised for operation, frame, and state diversity. MMS seeds use TPKT version 0x03 with complete length fields and conservative COTP data framing; MMS service-choice tags follow the supplied operation catalog. The GOOSE seed uses the supplied EtherType, APDU tag, and field-tag relationships. Full ACSE and Presentation encodings are not specified by the supplied excerpts, so minimal structurally consistent envelopes are used and no inferred details are presented as source-verified. No historical vulnerability evidence is supplied; exact issue payload collisions are therefore absent.\",\"coverage_summary\":[\"GetNameList confirmed request using MMS service tag 1\",\"Stateful Initiate-Request followed by Read confirmed request using service tag 4\",\"Write confirmed request exercising related value fields and service tag 5\",\"Standalone GOOSE APDU using EtherType 0x88B8, outer tag 0x61, gocbRef, stNum, and ndsCom fields\",\"All MMS TPKT headers use version 0x03 and lengths equal complete message sizes\",\"All message hex strings have even length and preserve declared BER-style field lengths\"],\"sequences\":[{\"plan_id\":\"plan-revised-001\",\"seed_id\":\"seed-revised-001\",\"title\":\"Confirmed GetNameList baseline\",\"strategy\":\"baseline_valid\",\"target_operation\":\"GetNameList\",\"purpose\":\"Exercise the canonical confirmed-request path with a minimal invoke identifier and the documented GetNameList service-choice tag.\",\"evidence_ids\":[\"function_code:function:function-text:d319479344be\",\"function_code:function:function-text:2e18df2c8f6c\",\"protocol_format:iec61850:message-templates-ac: c3531731edbe\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"TPKT/COTP MMS Confirmed-Request-PDU for GetNameList\",\"hex\":\"0300001102f080a008020101a103020101\"}],\"expected_behavior\":\"The receiver should process the message as a structurally consistent MMS Confirmed-Request-PDU carrying invoke identifier 1 and GetNameList service choice 1.\",\"constraints_preserved\":[\"TPKT version is 0x03.\",\"TPKT total length is 0x0011, matching the complete 17-byte message.\",\"COTP data framing precedes the MMS payload.\",\"MMS Confirmed-Request-PDU uses outer tag 0xA0.\",\"GetNameList is service index 1 in the supplied confirmed-service catalog.\",\"Nested length fields match their encoded contents.\"],\"issue_safety_notes\":\"No issue evidence is supplied and no historical payload is reproduced; this is a conservative baseline analogue.\"},{\"plan_id\":\"plan-revised-002\",\"seed_id\":\"seed-revised-002\",\"title\":\"Initiate then Read state transition\",\"strategy\":\"stateful_valid\",\"target_operation\":\"Initiate-Request-PDU followed by Read\",\"purpose\":\"Cover association setup followed by a distinct confirmed Read operation, preserving request ordering and changing the invoke identifier between states.\",\"evidence_ids\":[\"function_code:function:function-text:d319479344be\",\"function_code:function:function-text:2e18df2c8f6c\",\"protocol_format:iec61850:section-message-temp:35b5427fecca\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"TPKT/COTP MMS Initiate-Request-PDU\",\"hex\":\"0300000e02f080a8050201010200\"},{\"index\":1,\"direction\":\"client_to_server\",\"label\":\"TPKT/COTP MMS Confirmed-Request-PDU for Read\",\"hex\":\"0300001102f080a008020102a403020104\"}],\"expected_behavior\":\"The first message establishes the MMS initiation path; the second presents a subsequent confirmed Read request with invoke identifier 2 and service choice 4.\",\"constraints_preserved\":[\"Both TPKT headers use version 0x03.\",\"The first TPKT length is 0x000e and the second is 0x0011; each matches its complete message.\",\"MMS Initiate-Request-PDU uses outer tag 0xA8.\",\"Read is service index 4 in the supplied confirmed-service catalog.\",\"The second request follows the initiation message and uses a distinct invoke identifier.\",\"Nested length fields match their encoded contents.\"],\"issue_safety_notes\":\"No issue evidence is supplied and no historical payload is reproduced; stateful sequencing is a safe structural analogue.\"},{\"plan_id\":\"plan-revised-003\",\"seed_id\":\"seed-revised-003\",\"title\":\"Write with related value fields\",\"strategy\":\"field_interaction\",\"target_operation\":\"Write\",\"purpose\":\"Exercise the confirmed Write path with a service-choice tag of 5 and two related context-tagged fields to improve field-interaction coverage.\",\"evidence_ids\":[\"function_code:function:function-text:d319479344be\",\"function_code:function:function-text:2e18df2c8f6c\",\"protocol_format:iec61850:section-message-temp:35b5427fecca\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"TPKT/COTP MMS Confirmed-Request-PDU for Write\",\"hex\":\"0300001502f080a00c020103a50780020102810100\"}],\"expected_behavior\":\"The receiver should decode a structurally consistent confirmed Write request with invoke identifier 3, service choice 5, and two length-consistent value-related fields.\",\"constraints_preserved\":[\"TPKT version is 0x03.\",\"TPKT total length is 0x0015, matching the complete 21-byte message.\",\"MMS Confirmed-Request-PDU uses outer tag 0xA0.\",\"Write is service index 5 in the supplied confirmed-service catalog.\",\"The service payload contains context tags 0x80 and 0x81 with declared lengths matching their values.\",\"Nested length fields match their encoded contents.\"],\"issue_safety_notes\":\"No issue evidence is supplied and no historical payload is reproduced; field values are conservative structural analogues rather than vulnerability payloads.\"},{\"plan_id\":\"plan-revised-004\",\"seed_id\":\"seed-revised-004\",\"title\":\"GOOSE state and control fields\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"GOOSE PDU\",\"purpose\":\"Exercise the standalone GOOSE parser path with the documented EtherType, APDU wrapper, control-block reference, state number, and ndsCom field.\",\"evidence_ids\":[\"function_code:function:function-text:1a3220f52e74\",\"function_code:function:function-text:d319479344be\",\"protocol_format:iec61850:format-overview:c508483411ac\"],\"messages\":[{\"index\":0,\"direction\":\"standalone\",\"label\":\"IEC 61850 GOOSE APDU with gocbRef, stNum, and ndsCom\",\"hex\":\"88b8610a80024743850101890100\"}],\"expected_behavior\":\"The receiver should identify EtherType 0x88B8 and decode the GOOSE APDU outer tag 0x61 with gocbRef, stNum, and ndsCom fields whose lengths match their contents.\",\"constraints_preserved\":[\"GOOSE EtherType is 0x88B8.\",\"GOOSE APDU outer tag is 0x61.\",\"Field tag 0x80 is used for gocbRef.\",\"Field tag 0x85 is used for stNum.\",\"Field tag 0x89 is used for ndsCom.\",\"The APDU length is 0x0a and matches the ten bytes following the outer tag.\",\"Each nested field length matches its encoded value.\"],\"issue_safety_notes\":\"No issue evidence is supplied and no historical payload is reproduced; this is a distinct standalone frame analogue.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788712328,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2872,
+    "prompt_tokens": 13254,
+    "total_tokens": 16126,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 1263,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 3840
+    }
+  }
+}

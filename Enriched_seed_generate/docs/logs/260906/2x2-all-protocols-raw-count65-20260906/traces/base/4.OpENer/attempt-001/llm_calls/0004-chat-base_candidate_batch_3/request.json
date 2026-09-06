@@ -1,0 +1,155 @@
+{
+  "call_index": 4,
+  "api_mode": "chat",
+  "model": "gpt-5.4",
+  "schema_name": "base_candidate_batch_3",
+  "max_output_tokens": 4500,
+  "system_prompt": "You are a protocol fuzzing corpus engineer operating without external protocol\ndocuments and without vulnerability issue reports.\n\nUse protocol knowledge learned during model training as a fallible internal\nprior. The supplied <base_constraints> are trusted experiment guardrails, not\nretrieved protocol evidence. Generate diverse, mutation-friendly protocol\nmessages and sequences. Prefer conservative, widely recognized message forms.\nNever claim that model-prior knowledge is externally verified. Return JSON only\nand follow the requested schema exactly.",
+  "user_prompt": "Generate exactly 4 Base (P-/V-) candidate seed sequences, one\nper plan_id.\n\nProtocol: OpENer\nProtocol family: opener\nAllowed strategies: baseline_valid, stateful_valid, issue_structural_analogue, function_code_coverage, length_boundary_valid, field_interaction, parser_depth, other\n\nHard Base rules:\n1. Use protocol knowledge learned during model training; no external protocol\n   documents or vulnerability issues are supplied.\n2. Follow every plan once and preserve its target_operation.\n3. Prefer complete, conservative and widely recognized protocol message forms.\n4. Keep visible length/count/checksum/order relationships internally consistent.\n5. Diversify actual operations, frame shapes, message sizes, directions and\n   stateful sequences; do not create cosmetic byte-only variants.\n6. Cite the supplied Base constraint source id in evidence_ids.\n7. Keep issue_safety_notes explicit that issue knowledge is unavailable.\n8. Message hex must be lowercase hexadecimal without separators.\n9. Treat protocol validity as model-prior plausibility, not external verification.\n\n<plans>\n{\n  \"protocol_name\": \"OpENer\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-009\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base ForwardOpen variant 1\",\n      \"target_operation\": \"ForwardOpen\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-010\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base UnconnectedSend variant 1\",\n      \"target_operation\": \"UnconnectedSend\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-011\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base ListIdentity variant 2\",\n      \"target_operation\": \"ListIdentity\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-012\",\n      \"strategy\": \"field_interaction\",\n      \"title\": \"Base ListServices variant 2\",\n      \"target_operation\": \"ListServices\",\n      \"objective\": \"Vary a meaningful pair of fields while preserving likely structural relationships.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:5ce96f2b96d1\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:5ce96f2b96d1 kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: OpENer\nProtocol family selected for built-in constraints: opener\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer EtherNet/IP encapsulation headers with little-endian payload length.\n- Use a 24-byte encapsulation header when that form is selected.\n- Diversify discovery, session and explicit-message paths.\n[/SOURCE]\n</base_constraints>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "protocol_name",
+      "target_issue",
+      "generation_notes",
+      "coverage_summary",
+      "sequences"
+    ],
+    "properties": {
+      "protocol_name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "target_issue": {
+        "type": "integer"
+      },
+      "generation_notes": {
+        "type": "string",
+        "minLength": 1
+      },
+      "coverage_summary": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "sequences": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plan_id",
+            "seed_id",
+            "title",
+            "strategy",
+            "target_operation",
+            "purpose",
+            "evidence_ids",
+            "messages",
+            "expected_behavior",
+            "constraints_preserved",
+            "issue_safety_notes"
+          ],
+          "properties": {
+            "plan_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seed_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "baseline_valid",
+                "stateful_valid",
+                "issue_structural_analogue",
+                "function_code_coverage",
+                "length_boundary_valid",
+                "field_interaction",
+                "parser_depth",
+                "other"
+              ]
+            },
+            "target_operation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "messages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "index",
+                  "direction",
+                  "label",
+                  "hex"
+                ],
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "client_to_server",
+                      "server_to_client",
+                      "standalone"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hex": {
+                    "type": "string",
+                    "minLength": 2
+                  }
+                }
+              }
+            },
+            "expected_behavior": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints_preserved": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "issue_safety_notes": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "chatcmpl-EL8xe0POZIKg79KLAgbuD3LXuitoQ",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"bacnet-stack\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated exactly four BACnet/IP seed sequences from model-internal prior only, preserving each supplied plan and target operation once. Messages use plausible BVLC+NPDU+APDU layering with internally consistent visible BVLC lengths. Validity is heuristic and not externally verified.\",\n  \"coverage_summary\": [\n    \"AtomicWriteFile confirmed-service single request with application-layer payload\",\n    \"DeviceCommunicationControl confirmed-service single request covering a different service family\",\n    \"Who-Is two-message stateful-style discovery exchange with request then plausible I-Am response\",\n    \"I-Am single-message unconfirmed advertisement with slightly larger payload to exercise conservative boundary-adjacent length\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-029\",\n      \"seed_id\": \"bacnet-base-029-01\",\n      \"title\": \"Base AtomicWriteFile variant 3\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"AtomicWriteFile\",\n      \"purpose\": \"Provide a conservative BACnet/IP confirmed request for AtomicWriteFile using a compact file object reference and short record-style payload.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"atomic_write_file_request\",\n          \"hex\": \"810a00130104000501070a19430421002a\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP stack may parse this as a confirmed service request targeting AtomicWriteFile and either process or reject it based on object existence, permissions, or exact field encoding.\",\n      \"constraints_preserved\": [\n        \"Used BACnet/IP-style BVLC, NPDU and APDU layering\",\n        \"BVLC total length is internally consistent at 0x0013\",\n        \"Single-request shape preserved for the plan\",\n        \"Operation kept as AtomicWriteFile\",\n        \"Hex is lowercase without separators\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issue information is available. This seed is a model-prior conservative structural candidate, not derived from verified issue details.\"\n    },\n    {\n      \"plan_id\": \"base-plan-030\",\n      \"seed_id\": \"bacnet-base-030-01\",\n      \"title\": \"Base DeviceCommunicationControl variant 3\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"DeviceCommunicationControl\",\n      \"purpose\": \"Cover a distinct confirmed service family with a plausible DeviceCommunicationControl request containing a short duration/control/password-style payload.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"device_communication_control_request\",\n          \"hex\": \"810a0012010400051109210000019131\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP stack may parse this as a confirmed DeviceCommunicationControl request and return an acknowledgement, error, or reject depending on implementation state and field acceptance.\",\n      \"constraints_preserved\": [\n        \"Used BACnet/IP-style BVLC, NPDU and APDU layering\",\n        \"BVLC total length is internally consistent at 0x0012\",\n        \"Single-request shape preserved for the plan\",\n        \"Operation kept as DeviceCommunicationControl\",\n        \"Hex is lowercase without separators\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issue information is available. This candidate only aims at structural service coverage based on fallible model prior.\"\n    },\n    {\n      \"plan_id\": \"base-plan-031\",\n      \"seed_id\": \"bacnet-base-031-01\",\n      \"title\": \"Base Who-Is variant 4\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Who-Is\",\n      \"purpose\": \"Exercise a simple discovery sequence with a Who-Is broadcast-style request followed by a plausible I-Am response to encourage stateful parser and dispatch coverage.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"who_is_request\",\n          \"hex\": \"810b000c0120ffff1008\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"server_to_client\",\n          \"label\": \"i_am_response\",\n          \"hex\": \"810a00120120001000c40200000122040091\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP implementation may treat the first frame as a Who-Is query and the second as a plausible I-Am advertisement carrying a device identifier and capability-style data.\",\n      \"constraints_preserved\": [\n        \"Used BACnet/IP-style BVLC, NPDU and APDU layering\",\n        \"BVLC total lengths are internally consistent at 0x000c and 0x0012\",\n        \"Setup-then-request style two-message sequence preserved for the plan\",\n        \"Operation kept as Who-Is\",\n        \"Discovery traffic diversified relative to confirmed-service requests\",\n        \"Hex is lowercase without separators\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issue information is available. The response pairing is only a plausible model-prior discovery analogue and not externally verified protocol evidence.\"\n    },\n    {\n      \"plan_id\": \"base-plan-032\",\n      \"seed_id\": \"bacnet-base-032-01\",\n      \"title\": \"Base I-Am variant 4\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"I-Am\",\n      \"purpose\": \"Provide a standalone unconfirmed I-Am advertisement with a slightly larger-than-minimal payload to exercise conservative boundary-adjacent length handling while keeping visible lengths consistent.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:aceb70a59893\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"i_am_announcement\",\n          \"hex\": \"810a00140120001000c4020000642204009105210a\"\n        }\n      ],\n      \"expected_behavior\": \"A BACnet/IP stack may parse this as an unconfirmed I-Am announcement and update discovery state, ignore it, or reject it if exact field encoding differs from implementation expectations.\",\n      \"constraints_preserved\": [\n        \"Used BACnet/IP-style BVLC, NPDU and APDU layering\",\n        \"BVLC total length is internally consistent at 0x0014\",\n        \"Single-request shape preserved for the plan\",\n        \"Operation kept as I-Am\",\n        \"Boundary-adjacent payload is larger than the paired discovery response while remaining compact\",\n        \"Hex is lowercase without separators\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability issue information is available. This is a conservative size-variation seed based on model prior rather than verified issue knowledge.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788708042,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1512,
+    "prompt_tokens": 2608,
+    "total_tokens": 4120,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 14,
+      "engine_ttft_ms": 159,
+      "engine_ttlt_ms": 21823,
+      "pre_inference_ms": 179,
+      "service_tbt_ms": 14,
+      "service_ttft_ms": 590,
+      "service_ttlt_ms": 22229,
+      "user_visible_ttft_ms": 411
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "indirect_attack": {
+          "detected": false,
+          "filtered": false
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260817143045-68a5b6f7-default-r0-dp0-default"
+  }
+}

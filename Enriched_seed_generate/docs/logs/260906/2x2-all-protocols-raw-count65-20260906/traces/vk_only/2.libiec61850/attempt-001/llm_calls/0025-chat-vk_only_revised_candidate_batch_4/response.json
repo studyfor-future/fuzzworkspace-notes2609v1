@@ -1,0 +1,111 @@
+{
+  "id": "chatcmpl-ELA60zIwA73i2eXsdqUYuNhViTe6K",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"iec61850\",\n  \"target_issue\": 599,\n  \"generation_notes\": \"Revised VK-only batch with exactly 4 distinct message-sequence seeds for the iec61850 family. Used only supplied issue evidence plus fallible model prior, not external protocol documents. Preserved built-in family constraints by preferring TPKT version 0x03 and keeping each per-message TPKT total length internally consistent. Removed prior malformed multi-message splitting that broke framing realism, avoided exact historical payload collisions, kept all hex even-length lowercase, and increased operation/state diversity across association, discovery, write/define-list, and server-to-client response handling analogues. Safe issue analogues are retained without reproducing published crash bytes exactly.\",\n  \"coverage_summary\": [\n    \"association-only ACSE/AARE analogue with 0xbe user-information boundary\",\n    \"discovery path via GetVariableAccessAttributes request\",\n    \"server-side dynamic dataset creation via DefineNamedVariableList\",\n    \"client-side dataset directory style response analogue for GetNamedVariableListAttributesResponse\",\n    \"single-frame TPKT+COTP encapsulation for all seeds\",\n    \"issue-guided coverage spanning issues 513, 516, 542, 599 and access-control NVL creation analogue\",\n    \"strategy diversity: issue_structural_analogue, field_interaction, length_boundary_valid, parser_depth\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-013-rev\",\n      \"seed_id\": \"vk-plan-013-rev-01\",\n      \"title\": \"Association response analogue with bounded 0xbe user-information tail\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"MMS Initiate\",\n      \"purpose\": \"Exercise the association parser path using an AARE-like ACSE structure that conservatively mirrors the reported 0xbe user-information boundary condition without copying the historical trigger bytes.\",\n      \"evidence_ids\": [\n        \"issue:513:513-summary:4a07060941e2\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"tpkt_cotp_acse_aare_like\",\n          \"hex\": \"0300001302f080610c800101a103020100be020001\"\n        }\n      ],\n      \"expected_behavior\": \"Parser should either reject or safely consume the association response analogue without reading past the provided user-information region.\",\n      \"constraints_preserved\": [\n        \"tpkt header begins with 03\",\n        \"tpkt total-length field is consistent with the complete message\",\n        \"single complete framed message suitable for stdin byte-sequence concatenation\",\n        \"association path covered with conservative acse-like structure\",\n        \"no exact historical crash payload copied\"\n      ],\n      \"issue_safety_notes\": \"Uses a shortened structural analogue for the 0xbe parsing condition from issue 513, but avoids the published exact ending sequence and keeps the framing recognizable.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-014-rev\",\n      \"seed_id\": \"vk-plan-014-rev-01\",\n      \"title\": \"Discovery request with bit-string leaning attribute query fields\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"GetVariableAccessAttributes\",\n      \"purpose\": \"Probe attribute-query handling with a compact confirmed-request style payload whose nested fields are chosen to be mutation-friendly for later bit-string and length interactions.\",\n      \"evidence_ids\": [\n        \"issue:516:516-summary:13bbaeee92c9\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"tpkt_cotp_mms_getvaa_req_like\",\n          \"hex\": \"0300001702f080a010020101a10b1a036c64311a04646f2431\"\n        }\n      ],\n      \"expected_behavior\": \"Endpoint should parse or reject the request cleanly; subsequent mutational growth of the value-specifier area may help reach encoding and field-interaction logic related to issue-guided bit-string handling.\",\n      \"constraints_preserved\": [\n        \"tpkt header begins with 03\",\n        \"tpkt total-length field is consistent with the complete message\",\n        \"discovery path diversity via getvariableaccessattributes-style request\",\n        \"single-message sequence\",\n        \"hex is lowercase and even-length\"\n      ],\n      \"issue_safety_notes\": \"This is a safe protocol-level analogue only; it does not embed the standalone fuzz-harness payload reported for issue 516.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-015-rev\",\n      \"seed_id\": \"vk-plan-015-rev-01\",\n      \"title\": \"DefineNamedVariableList boundary with association-specific style name\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"DefineNamedVariableList\",\n      \"purpose\": \"Exercise server-side named-variable-list creation using a short list name and minimal variable-list content to explore null-or-empty list handling and access-control adjacent paths.\",\n      \"evidence_ids\": [\n        \"issue:542:542-summary:a6cc05667747\",\n        \"issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"tpkt_cotp_mms_define_nvl_req_like\",\n          \"hex\": \"0300001d02f080a016020103a4111a04626f6f6da1091a036c64311a026c6e\"\n        }\n      ],\n      \"expected_behavior\": \"Server should validate the named-variable-list request and either accept or reject it without dereferencing absent list structures or corrupting stack-backed dataset name buffers.\",\n      \"constraints_preserved\": [\n        \"tpkt header begins with 03\",\n        \"tpkt total-length field is consistent with the complete message\",\n        \"write/list-management diversity via definenamedvariablelist-style request\",\n        \"message remains mutation-friendly with short names and nested list fields\",\n        \"not an exact replay of published poc.bin\"\n      ],\n      \"issue_safety_notes\": \"Combines safe analogues of empty-or-short list handling and dynamic dataset creation concerns while intentionally avoiding the exact historical request bytes.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-016-rev\",\n      \"seed_id\": \"vk-plan-016-rev-01\",\n      \"title\": \"Server-to-client dataset attribute response analogue with reduced first item identifier\",\n      \"strategy\": \"parser_depth\",\n      \"target_operation\": \"GetNameList\",\n      \"purpose\": \"Cover the client-side response parsing state implicated by reduced domain-specific item identifiers, using a concise response-like frame that is easy to mutate around the first itemId field.\",\n      \"evidence_ids\": [\n        \"issue:599:599-summary:806eef562ec3\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"server_to_client\",\n          \"label\": \"tpkt_cotp_mms_dataset_attr_res_like\",\n          \"hex\": \"0300001902f080a112020101a20d1a036c64311a01241a03616263\"\n        }\n      ],\n      \"expected_behavior\": \"Client should reject or safely process the response analogue; mutations that shrink the first identifier further should not lead to fixed-offset reads beyond the short string.\",\n      \"constraints_preserved\": [\n        \"tpkt header begins with 03\",\n        \"tpkt total-length field is consistent with the complete message\",\n        \"server-to-client response direction used for real state diversity\",\n        \"response-like discovery/dataset path covered\",\n        \"no exact MITM-rewritten historical payload copied\"\n      ],\n      \"issue_safety_notes\": \"Targets the issue 599 pattern through a reduced-itemId structural analogue only; it is intentionally not the published patched response and uses a different compact layout.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788712404,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1703,
+    "prompt_tokens": 11518,
+    "total_tokens": 13221,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 12,
+      "engine_ttft_ms": 307,
+      "engine_ttlt_ms": 20045,
+      "pre_inference_ms": 157,
+      "service_tbt_ms": 12,
+      "service_ttft_ms": 720,
+      "service_ttlt_ms": 20438,
+      "user_visible_ttft_ms": 563
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "indirect_attack": {
+          "detected": false,
+          "filtered": false
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260814185533-e4fe15c9-default-r2-dp0-default"
+  }
+}

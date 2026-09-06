@@ -1,0 +1,54 @@
+{
+  "id": "chatcmpl-ELBGhSm11vAw9lq0Uavt0tVXrGkaC",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Revised VK-only batch with exactly 4 distinct Modbus/TCP message-sequence seeds. All ADUs use conservative 7-byte MBAP headers, protocol identifier 0000, and internally consistent visible length fields. Historical issue material is used only as fallible guidance for repetition, high-address field interaction, minimal-function parser depth, and MBAP-length-versus-stream handling analogues. Exact historical issue payload collisions were removed, operation diversity increased beyond only read-register forms, and one repeated stateful sequence was added to improve multi-transaction coverage without copying prior crash bytes.\",\n  \"coverage_summary\": [\n    \"Repeated stateful Read Coils sequence to exercise multi-transaction consistency and repeated-operation handling\",\n    \"High-address Read Discrete Inputs request with quantity-one interaction as a conservative field analogue\",\n    \"Minimal Diagnostics request using function code 08 with subfunction fields to expand function-class coverage\",\n    \"Write Multiple Registers request with internally consistent byte count and declared MBAP length to probe length-handling versus stream processing\",\n    \"All messages preserve Modbus/TCP MBAP framing with protocol identifier 0000 and recognizable function-specific layouts\",\n    \"Operation diversity spans bit-read, discrete-input read, diagnostics, and multi-register write classes\",\n    \"State diversity includes both repeated multi-message sequencing and single-request seeds\",\n    \"No exact historical crash or collision payload bytes are reused\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-001\",\n      \"seed_id\": \"modbustcp-read-coils-repeat-002\",\n      \"title\": \"Repeated Read Coils with transaction, unit, and address drift\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Read Coils\",\n      \"purpose\": \"Exercise repeated request handling across three valid Read Coils transactions so a harness can compare first-versus-later processing behavior under stable framing but changing transaction identifiers, unit identifiers, addresses, and quantities.\",\n      \"evidence_ids\": [\n        \"issue:279:279-summary:f8623682ccd7\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:867:867-summary:58115ace3a65\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"initial read coils request\",\n          \"hex\": \"110100000006010100020006\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"second read coils request at nearby address\",\n          \"hex\": \"110200000006010100030006\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"third read coils request with alternate unit and larger quantity\",\n          \"hex\": \"11030000000602010020000C\"\n        }\n      ],\n      \"expected_behavior\": \"Each message should parse as an independent valid Read Coils request. A stateful target may service them normally or return bounded protocol exceptions depending on mapping, while the harness observes any inconsistent behavior across repeated transactions.\",\n      \"constraints_preserved\": [\n        \"Every message uses a 7-byte MBAP header\",\n        \"Protocol identifier is 0000\",\n        \"Each MBAP length is 0006 for unit identifier plus 5-byte PDU\",\n        \"Function code 01 requests use two-byte address and two-byte quantity fields\",\n        \"Messages form a repeated client-to-server sequence with valid framing\"\n      ],\n      \"issue_safety_notes\": \"This is a safe repeated-operation analogue only. It does not copy any reported write-related payload, does not introduce malformed lengths, and does not claim a crash condition.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-002\",\n      \"seed_id\": \"modbustcp-read-discrete-inputs-high-address-002\",\n      \"title\": \"Read Discrete Inputs at a high address with quantity one\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"Read Discrete Inputs\",\n      \"purpose\": \"Preserve the issue-guided high-address plus quantity-one relationship in a different but recognizable read operation to explore address interpretation and narrow-quantity handling without reproducing historical bytes.\",\n      \"evidence_ids\": [\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:867:867-summary:58115ace3a65\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"high-address discrete input read\",\n          \"hex\": \"2201000000060302FCCA0001\"\n        }\n      ],\n      \"expected_behavior\": \"The target should parse a valid Read Discrete Inputs request for one item at a high address and then either produce normal data or a protocol-level exception according to available mapping.\",\n      \"constraints_preserved\": [\n        \"Message uses a 7-byte MBAP header\",\n        \"Protocol identifier is 0000\",\n        \"MBAP length 0006 matches unit identifier plus 5-byte PDU\",\n        \"Function code 02 request layout is address plus quantity\",\n        \"Quantity is positive and conservative\"\n      ],\n      \"issue_safety_notes\": \"This keeps only the high-address interaction as a structural analogue. It avoids the historical function/transaction combination and makes no claim about externally verified device semantics.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-003\",\n      \"seed_id\": \"modbustcp-diagnostics-echo-001\",\n      \"title\": \"Minimal Diagnostics request with compact subfunction body\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Diagnostics\",\n      \"purpose\": \"Increase real function coverage with a compact Diagnostics-style request that reaches a different parser path than the read operations while remaining fully framed and mutation-friendly.\",\n      \"evidence_ids\": [\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:499:499-summary:6268f95751ad\",\n        \"issue:614:614-summary:e89105d3aaf7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"diagnostics request with subfunction and data\",\n          \"hex\": \"330100000006010800000001\"\n        }\n      ],\n      \"expected_behavior\": \"The target should parse one valid Diagnostics request and either return a function-specific response or a bounded exception if unsupported.\",\n      \"constraints_preserved\": [\n        \"Message uses a 7-byte MBAP header\",\n        \"Protocol identifier is 0000\",\n        \"MBAP length 0006 matches unit identifier plus 5-byte PDU\",\n        \"Function code 08 is accompanied by two-byte subfunction and two-byte data fields\",\n        \"No undeclared trailing bytes are present\"\n      ],\n      \"issue_safety_notes\": \"This seed broadens parser coverage using a conservative minimal body. It is not derived from an exact issue PoC and does not attempt to reproduce any out-of-bounds condition.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-004\",\n      \"seed_id\": \"modbustcp-write-multiple-registers-stream-analogue-001\",\n      \"title\": \"Write Multiple Registers with compact payload and length-sensitive shape\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"Write Multiple Registers\",\n      \"purpose\": \"Explore a conservative FC16 request whose declared MBAP length and internal byte count are self-consistent, targeting stream and length-processing logic with a recognizable multi-register write rather than reproducing a documented collision payload.\",\n      \"evidence_ids\": [\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:743:743-summary:1fc7e97d059a\",\n        \"issue:498:498-summary:43dc6fe7600e\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write multiple registers quantity two\",\n          \"hex\": \"44010000000B0110000400020411223344\"\n        }\n      ],\n      \"expected_behavior\": \"The target should parse a valid Write Multiple Registers request for two registers and either acknowledge the write range or return a protocol-level exception if the address is unavailable.\",\n      \"constraints_preserved\": [\n        \"Message uses a 7-byte MBAP header\",\n        \"Protocol identifier is 0000\",\n        \"MBAP length 000B matches unit identifier plus 10-byte FC16 PDU\",\n        \"Function code 10 includes address, quantity, byte count, and payload fields\",\n        \"Quantity two matches byte count 04 and provided register data length\"\n      ],\n      \"issue_safety_notes\": \"This is a safe length-handling analogue only. It intentionally avoids the exact documented FC16 bytes associated with historical stream-length behavior and introduces no trailing surplus bytes.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788716911,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1936,
+    "prompt_tokens": 9706,
+    "total_tokens": 11642,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 10,
+      "engine_ttft_ms": 323,
+      "engine_ttlt_ms": 20104,
+      "pre_inference_ms": 91,
+      "service_tbt_ms": 10,
+      "service_ttft_ms": 654,
+      "service_ttlt_ms": 20431,
+      "user_visible_ttft_ms": 564
+    }
+  },
+  "routing": {
+    "serving_pipereplica": "d20260827132004-42834f68-default-r0-dp0-default"
+  }
+}

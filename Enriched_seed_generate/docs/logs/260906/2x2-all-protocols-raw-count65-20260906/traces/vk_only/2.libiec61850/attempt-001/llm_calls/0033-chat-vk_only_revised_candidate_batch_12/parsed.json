@@ -1,0 +1,137 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": 573,
+  "generation_notes": "Revised VK-only batch with exactly 4 distinct message-sequence candidates for the iec61850 family. Used only supplied issue evidence plus fallible internal model prior; no external protocol documents assumed. Enforced recognizable family constraints by preferring TPKT version 0x03 and keeping visible TPKT total lengths consistent per complete message. Removed prior invalid/unknown-evidence cases, avoided exact historical payload collisions, and increased operation, frame, and state diversity across association, discovery, write, and reporting-related paths. Safe issue analogues are preserved rather than reproducing exact crash inputs.",
+  "coverage_summary": [
+    "association-only path via COTP Connection Request boundary analogue",
+    "deep BER/ACSE parser path analogue for association setup",
+    "write path with long object-name style analogue for fixed-buffer child lookup risk",
+    "reporting/data-set interaction path analogue for dynamic dataset lifetime mismatch",
+    "single-message and multi-message state diversity",
+    "TPKT 0x03 framing with consistent total lengths",
+    "distinct target operations: COTP Connection Request, MMS Initiate, Write, InformationReport"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-r12-001",
+      "seed_id": "seed-r12-cotp-01",
+      "title": "COTP CR boundary option analogue",
+      "strategy": "length_boundary_valid",
+      "target_operation": "COTP Connection Request",
+      "purpose": "Exercise a pure association-only parser path with a conservative COTP Connection Request carrying a TPDU-size style parameter boundary analogue, keeping outer framing valid and mutation-friendly.",
+      "evidence_ids": [
+        "vk_task_context:task-contract:56f3666108cf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_cr_boundary",
+          "hex": "0300001611e00000000100c1020001c0010aa00100"
+        }
+      ],
+      "expected_behavior": "A parser that accepts RFC1006-style traffic should recognize a plausible connection request and either continue association handling or reject the option values cleanly without over-read or undefined shift behavior.",
+      "constraints_preserved": [
+        "tpkt version byte is 0x03",
+        "tpkt total length matches complete message",
+        "single standalone association message",
+        "lowercase hex without separators",
+        "recognizable iec61850 family framing"
+      ],
+      "issue_safety_notes": "This is a safe structural analogue only. It does not copy any exact historical crash bytes or assert externally verified field semantics."
+    },
+    {
+      "plan_id": "vk-plan-r12-002",
+      "seed_id": "seed-r12-acse-02",
+      "title": "Deep AARQ-style initiate parser analogue",
+      "strategy": "parser_depth",
+      "target_operation": "MMS Initiate",
+      "purpose": "Drive deeper BER-like association parsing using a compact AARQ-style payload with nested tags and a short constructed tail, inspired by unchecked length/tag advancement issues while remaining distinct from known examples.",
+      "evidence_ids": [
+        "issue:512:512-summary:b25e9a524acd",
+        "vk_task_context:task-contract:56f3666108cf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_acse_aarq_deep",
+          "hex": "03000017226015020101300630043002a602a700be00"
+        }
+      ],
+      "expected_behavior": "An implementation should parse or reject the nested association request safely, especially around zero-length or short constructed elements, without reading beyond the provided buffer.",
+      "constraints_preserved": [
+        "tpkt version byte is 0x03",
+        "tpkt total length matches complete message",
+        "association/discovery coverage expanded",
+        "message remains mutation-friendly with visible nesting",
+        "lowercase hex without separators"
+      ],
+      "issue_safety_notes": "The bytes are a non-colliding parser-depth analogue and intentionally differ from issue-reported reproducer content."
+    },
+    {
+      "plan_id": "vk-plan-r12-003",
+      "seed_id": "seed-r12-write-03",
+      "title": "Write with elongated object-name analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Write",
+      "purpose": "Approximate the long malformed logical-node or child-name trigger relation using a plausible write-style MMS payload carrying an oversized visible name component, useful for mutation toward fixed-buffer child lookup paths.",
+      "evidence_ids": [
+        "issue:573:573-summary:b7b57e9f1653",
+        "vk_task_context:task-contract:56f3666108cf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_mms_write_long_name",
+          "hex": "0300003522f080a02eb02ca12a1a2841414141414141414141414141414141414141414141414141414141414141414141414141412829"
+        }
+      ],
+      "expected_behavior": "A robust server should either reject the request as semantically invalid or normalize the long name safely, without overflowing fixed local buffers during object-name parsing or child lookup.",
+      "constraints_preserved": [
+        "tpkt version byte is 0x03",
+        "tpkt total length matches complete message",
+        "write path diversity preserved",
+        "long visible name retained for mutation utility",
+        "no exact historical payload reuse"
+      ],
+      "issue_safety_notes": "This sequence preserves only the safe analogue of an overly long name ending with parentheses. It avoids reproducing any exact issue testcase bytes or claiming protocol-field verification beyond model prior."
+    },
+    {
+      "plan_id": "vk-plan-r12-004",
+      "seed_id": "seed-r12-report-04",
+      "title": "Dataset/reporting rebind state analogue",
+      "strategy": "field_interaction",
+      "target_operation": "InformationReport",
+      "purpose": "Cover the reporting-related lifetime interaction by using a small stateful sequence: first establish a lightweight association-like setup, then send a report-style payload with repeated dataset/report identifiers that can be mutated toward stale-binding and re-enable scenarios.",
+      "evidence_ids": [
+        "issue:596:596-summary:baa99ae7e6b9",
+        "vk_task_context:task-contract:56f3666108cf"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_cr_setup",
+          "hex": "0300001611e00000000200c1020001c0010aa00100"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "tpkt_information_report_like",
+          "hex": "0300002222f080a117a0151a066473657441311a067263623031830101"
+        }
+      ],
+      "expected_behavior": "A target that supports reporting should either reject the simplified sequence or process it without dereferencing stale dataset state; a harness may still gain valuable coverage over report/dataset handling and state transitions.",
+      "constraints_preserved": [
+        "tpkt version byte is 0x03 in all messages",
+        "tpkt total lengths match complete messages",
+        "state diversity increased with multi-message sequence",
+        "reporting path included per family constraints",
+        "lowercase hex without separators"
+      ],
+      "issue_safety_notes": "This is a conservative stateful analogue for report/dataset lifetime interaction, not a reproduction of any PoC and not an externally verified protocol transcript."
+    }
+  ]
+}

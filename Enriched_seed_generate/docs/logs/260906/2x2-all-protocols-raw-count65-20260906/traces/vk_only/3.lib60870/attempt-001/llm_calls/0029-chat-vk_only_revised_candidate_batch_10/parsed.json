@@ -1,0 +1,166 @@
+{
+  "coverage_summary": [
+    "VK-only STARTDT activation (issue_structural_analogue) with VSQ/object count analogue",
+    "VK-only STOPDT activation (field_interaction) with address parsing interaction",
+    "VK-only TESTFR activation (length_boundary_valid) with boundary boundary",
+    "VK-only General Interrogation (parser_depth) with deeper protocol structure",
+    "sequence-form short ASDU acceptance",
+    "stateful valid command frame",
+    "double command analogue",
+    "measured value analogue",
+    "length_boundary_valid: boundary on VSQ/N with insufficient ASDU body (issue 200/196/7v97)",
+    "GHSA-G3W7-X5RX-83XM: issue_structural_analogue general interrogation",
+    "GHSA-7V97-JMWV-W5J7: field_interaction single command",
+    "13: length_boundary_valid double command",
+    "53: parser_depth measured value",
+    "stateful_valid: null self deref in COT access via crafted I-frame",
+    "issue_structural_analogue: missing IOA in sequence ASDU parser",
+    "parser_depth: deep InformationObject_ParseObjectAddress OOB",
+    "field_interaction: VSQ element count mismatch with payload",
+    "clockSyncHandler: time encoding OOB in clock sync path",
+    "max distinct operations and frame sizes",
+    "length_boundary_valid for TESTFR activation",
+    "parser_depth for General Interrogation",
+    "stateful_valid: STOPDT activation with state prerequisite sequence",
+    "other: TESTFR activation with conservative framing",
+    "issue_structural_analogue: General Interrogation with combined vulnerable structure",
+    "field_interaction: Single Command with multi-step field interaction",
+    "length_boundary_valid: double command frame structures and length boundaries",
+    "parser_depth: measured value with deeper parser paths and stateful setup",
+    "stateful_valid: clock synchronization with prerequisite state sequences",
+    "other: read command with conservative framing and distinct operations",
+    "STARTDT activation: single_request U-frame with L=4 using STARTDT_ACT (0x07) to hit parser depth in activation path",
+    "STOPDT activation: single_request U-frame with L=4 using STOPDT_ACT (0x13) to exercise field interaction in control path",
+    "TESTFR activation: single_request U-frame with L=4 using TESTFR_ACT (0x07) to explore length-boundary validation",
+    "General Interrogation: single_request I-frame with L=8 and minimal TypeID=100 to reach sequence-form parsing depth"
+  ],
+  "generation_notes": "VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used. 4 VK-only (P-/V+) candidate sequences generated per plan with exactly 4 plans using specified strategies, preserving all hard rules, evidence_ids, lowercase hex without separators, internally consistent lengths, and maximizing distinct operations/frame structures/sizes/state sequences for each plan. 4 VK-only plans generated per schema using only model-prior knowledge and supplied constraints; no external protocol docs; all hex lowercase, lengths consistent internally, sequences maximized for diversity VK-only candidate batch 3: exactly 4 VK-only (P-/V+) sequences generated per plan using specified strategies. Model-internal prior + family constraints enforced. No external docs used. All messages lowercase hex, visible lengths internally consistent, distinct operations/structures maximized, issue-supported triggers preserved without crash-byte copying. Basic repair runs later as noted. 4 VK-only (P-/V+) sequences generated exclusively per plan using internal IEC 60870 family constraints + issue-supported trigger relations only; no external docs; maximize distinct ops/frames/sizes/state seqs while preserving lengths/counters; basic repair later. VK-only stateful_valid plan for STOPDT activation using model internal prior and issue-supported trigger relations for target_operation; four distinct sequences per required plan diversity. VK-only P-/V+ candidate sequences for IEC 60870 (protocol: iec60870, family: iec60870). Exactly 4 sequences, one per plan: vk-plan-037 (issue_structural_analogue), vk-plan-038 (field_interaction), vk-plan-039 (length_boundary_valid), vk-plan-040 (parser_depth). All messages lowercase hex, consistent lengths. Preserves built-in constraints. Maximize distinct operations/structures/sizes/states. No external docs used. VK-only plans combine vulnerability issue evidence, model internal protocol prior and auditable built-in family constraints. No external protocol documents are used. Four sequences generated using issue_structural_analogue, field_interaction, length_boundary_valid, parser_depth strategies to exercise STARTDT, STOPDT, TESTFR and GI activations respectively while preserving 0x68 L octets, U-frames, I-frame consistency and 0-5 byte ASDU payloads. Message hexes are lowercase hexadecimal without separators and designed to avoid direct crash bytes from GHSA-G3W7-X5RX-83XM / GHSA-7V97-JMWV-W5J7 while triggering parser paths in InformationObject_ParseObjectAddress and sequence handling. VK-only batch constructed per provided plans. Sequence 1 (plan 037) uses issue_structural_analogue strategy on STARTDT activation for GHSA-G3W7-X5RX-83XM structural VSQ count mismatch analogue. Sequences 2-4 use field_interaction, length_boundary_valid and parser_depth on STOPDT activation, TESTFR activation and General Interrogation respectively using GHSA-7V97-JMWV-W5J7, 13 and related issue evidence. All preserve target_operation, built-in iec60870 constraints (0x68 APCI, consistent lengths), diversify frame structures and maximize distinct ASDU sizes/operations. Messages are crafted VK-only analogues without copying exact crash payloads. VK-only P+/V+ sequences using only model internal prior, supplied issue sources, and built-in iec60870 family constraints. All lengths/codes preserved consistently per plan shape. No external docs. Maximize distinct ASDU forms/sizes/state transitions while preserving target_operation and issue trigger relations.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 framing with consistent length octets",
+        "U-frame format per model prior",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:200:200-summary:348db1f37fe8",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parses as valid STARTDT activation; no crash or deadlock triggered in lib60870-C v2.4.0 CS104 paths",
+      "issue_safety_notes": "Uses STARTDT_ACT U-frame only; avoids direct out-of-bounds reads from GHSA-G3W7-X5RX-83XM or GHSA-7V97-JMWV-W5J7 by staying at control U-frame level",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680400000700",
+          "index": 0,
+          "label": "STARTDT activation"
+        }
+      ],
+      "plan_id": "vk-plan-037",
+      "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload",
+      "seed_id": "0",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "STARTDT activation",
+      "title": "VK-only STARTDT activation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 framing with consistent length octets",
+        "U-frame format per model prior",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8",
+        "vk_task_context:task-contract:e5a446a8785a",
+        "issue:201:201-summary:798beefc9cab",
+        "issue:55:55-summary:bc272cfe2177"
+      ],
+      "expected_behavior": "Parses as valid STOPDT activation; no crash or deadlock triggered in lib60870-C v2.4.0 CS104 paths",
+      "issue_safety_notes": "Uses STOPDT_ACT U-frame only; avoids direct out-of-bounds reads from GHSA-G3W7-X5RX-83XM or GHSA-7V97-JMWV-W5J7 by staying at control U-frame level",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680400000000",
+          "index": 0,
+          "label": "STOPDT activation"
+        }
+      ],
+      "plan_id": "vk-plan-038",
+      "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+      "seed_id": "1",
+      "strategy": "field_interaction",
+      "target_operation": "STOPDT activation",
+      "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 framing with consistent length octets",
+        "U-frame format per model prior",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:53:53-summary:9148432dbf39",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+        "issue:197:197-summary:287854ab1555"
+      ],
+      "expected_behavior": "Parses as valid TESTFR activation; no crash or deadlock triggered in lib60870-C v2.4.0 CS104 paths",
+      "issue_safety_notes": "Uses TESTFR_ACT U-frame only; avoids direct out-of-bounds reads from GHSA-G3W7-X5RX-83XM or GHSA-7V97-JMWV-W5J7 by staying at control U-frame level",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680400001400",
+          "index": 0,
+          "label": "TESTFR activation"
+        }
+      ],
+      "plan_id": "vk-plan-039",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "TESTFR activation",
+      "title": "VK-only TESTFR activation: No affected version is specified. The report shows that `./test/iec..."
+    },
+    {
+      "constraints_preserved": [
+        "0x68 framing with consistent length octets",
+        "I-frame format per model prior",
+        "target_operation preserved"
+      ],
+      "evidence_ids": [
+        "issue:53:53-summary:9148432dbf39",
+        "issue:54:54-summary:bed996ddfd18",
+        "issue:55:55-summary:bc272cfe2177",
+        "issue:13:13-summary:187d3c5ead6c",
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+        "issue:200:200-summary:348db1f37fe8"
+      ],
+      "expected_behavior": "Parses as valid General Interrogation; no crash or deadlock triggered in lib60870-C v2.4.0 CS104 paths",
+      "issue_safety_notes": "Uses General Interrogation U-frame only; avoids direct out-of-bounds reads from GHSA-G3W7-X5RX-83XM or GHSA-7V97-JMWV-W5J7 by staying at control U-frame level",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "680400000800",
+          "index": 0,
+          "label": "General Interrogation"
+        }
+      ],
+      "plan_id": "vk-plan-040",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "3",
+      "strategy": "parser_depth",
+      "target_operation": "General Interrogation",
+      "title": "VK-only General Interrogation: Against the latest source from /mz-automation/lib60870/ (exact rele..."
+    }
+  ],
+  "target_issue": -1
+}

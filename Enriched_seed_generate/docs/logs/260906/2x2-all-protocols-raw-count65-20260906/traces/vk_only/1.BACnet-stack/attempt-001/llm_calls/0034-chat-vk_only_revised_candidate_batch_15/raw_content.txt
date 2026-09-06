@@ -1,0 +1,142 @@
+{
+  "protocol_name": "bacnet-stack",
+  "target_issue": -1,
+  "generation_notes": "VK-only revised batch with exactly 4 distinct issue-guided BACnet/IP message sequences using conservative internal prior only. Revised to avoid deterministic duplicate ids, remove invalid/unknown evidence usage, avoid exact historical payload collisions, keep lowercase even-length hex, and increase operation/frame/state diversity across ReadRange, AtomicReadFile, AtomicWriteFile, and DeviceCommunicationControl. BVLC four-byte lengths are internally consistent in every message and only supplied issue evidence ids are cited.",
+  "coverage_summary": [
+    "ReadRange single-request boundary-style probe with conservative confirmed-service framing",
+    "AtomicReadFile stream-access analogue exercising signed or oversized offset handling in one request",
+    "AtomicWriteFile stateful sequence with discovery/setup and two record-access writes to model append then replace style backend transitions",
+    "DeviceCommunicationControl standalone confirmed request to diversify service family and APDU structure",
+    "BACnet/IP BVLC plus NPDU plus APDU layering preserved throughout",
+    "Distinct single-request and multi-step stateful shapes included",
+    "Issue analogues emphasize length, signed offset, record-count, and state-transition interactions without copying exact crash bytes"
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-057-rev-a",
+      "seed_id": "vk-seed-057r1",
+      "title": "ReadRange compact boundary analogue with non-empty range selector",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ReadRange",
+      "purpose": "Probe a compact ReadRange decode path with a visible range-selector tail and boundary-like count values while keeping framing coherent and mutation-friendly.",
+      "evidence_ids": [
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:cve-2026-62974:cve-2026-62974-summa:0505ea62a0e3"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "readrange-boundary-request",
+          "hex": "810b001b0120ffff00ff0f01c4020001111905c40280000129009f0001"
+        }
+      ],
+      "expected_behavior": "Target should either reject the request cleanly or exercise ReadRange boundary parsing without desynchronizing the frame decoder.",
+      "constraints_preserved": [
+        "common BACnet/IP BVLC NPDU APDU layering",
+        "four-byte BVLC total length consistent",
+        "single request shape preserved",
+        "lowercase even-length hexadecimal",
+        "target operation retained as ReadRange"
+      ],
+      "issue_safety_notes": "Uses a safe structural analogue for boundary-sensitive range parsing and does not reproduce any exact historical crash datagram."
+    },
+    {
+      "plan_id": "vk-plan-058-rev-a",
+      "seed_id": "vk-seed-058r1",
+      "title": "AtomicReadFile stream-access signed-offset analogue",
+      "strategy": "parser_depth",
+      "target_operation": "AtomicReadFile",
+      "purpose": "Exercise deeper file-service parsing with a stream-style request carrying a visibly unusual signed offset and modest requested length to support mutations around negative and oversized positions.",
+      "evidence_ids": [
+        "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "atomicreadfile-stream-offset-probe",
+          "hex": "810b00190120ffff00ff0602c4028000013f7ffffff00010"
+        }
+      ],
+      "expected_behavior": "A robust target should validate the stream offset and requested byte count, returning an error or no data rather than performing unsafe pointer or size arithmetic.",
+      "constraints_preserved": [
+        "common BACnet/IP BVLC NPDU APDU layering",
+        "four-byte BVLC total length consistent",
+        "single request shape preserved",
+        "lowercase even-length hexadecimal",
+        "target operation retained as AtomicReadFile"
+      ],
+      "issue_safety_notes": "Focuses on the signed fileStartPosition analogue from issue evidence while avoiding verbatim backend-only reproduction details."
+    },
+    {
+      "plan_id": "vk-plan-059-rev-a",
+      "seed_id": "vk-seed-059r1",
+      "title": "AtomicWriteFile stateful record-access append then short replace analogue",
+      "strategy": "stateful_valid",
+      "target_operation": "AtomicWriteFile",
+      "purpose": "Model a plausible state prerequisite with discovery followed by two distinct AtomicWriteFile record-access operations so mutators can explore append-style and shorter-replacement transitions linked to RAMFS record handling bugs.",
+      "evidence_ids": [
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1400:1400-summary:b9facce5d476"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "who-is-setup",
+          "hex": "810b000c0120ffff00100800"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "atomicwritefile-record-append-analogue",
+          "hex": "810b001b0120ffff00ff0703c4028000011f7fffffff0101414141"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "atomicwritefile-short-replace-analogue",
+          "hex": "810b00190120ffff00ff0704c4028000011f00000000010142"
+        }
+      ],
+      "expected_behavior": "If a writable FILE object is present, the target may process the sequence and expose stateful backend transitions; otherwise it should fail gracefully without decoder desync. The pair is intended to reach append then shorter-replacement style paths conservatively.",
+      "constraints_preserved": [
+        "common BACnet/IP BVLC NPDU APDU layering",
+        "four-byte BVLC total length consistent",
+        "multi-step stateful sequence increases state diversity",
+        "lowercase even-length hexadecimal",
+        "target operation retained as AtomicWriteFile"
+      ],
+      "issue_safety_notes": "This is a safe analogue of the documented append and replacement record paths and does not copy the published packet sequence or exact bytes."
+    },
+    {
+      "plan_id": "vk-plan-060-rev-a",
+      "seed_id": "vk-seed-060r1",
+      "title": "DeviceCommunicationControl confirmed request with compact parameter interaction",
+      "strategy": "other",
+      "target_operation": "DeviceCommunicationControl",
+      "purpose": "Add non-file confirmed-service diversity with a compact control request whose small parameter set is easy to mutate around timeout and state-control fields while preserving family framing.",
+      "evidence_ids": [
+        "issue:1304:1304-summary:e1e381ed7daa"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "dcc-compact-control-request",
+          "hex": "810b00120120ffff00ff11050a01001900"
+        }
+      ],
+      "expected_behavior": "Target should parse the control service request and either reject unsupported or unauthorized values cleanly or apply a benign state change without affecting message framing.",
+      "constraints_preserved": [
+        "common BACnet/IP BVLC NPDU APDU layering",
+        "four-byte BVLC total length consistent",
+        "service diversity expanded beyond property and file operations",
+        "lowercase even-length hexadecimal",
+        "target operation retained as DeviceCommunicationControl"
+      ],
+      "issue_safety_notes": "Used as a conservative issue-guided diversity sequence only; it preserves protocol-family structure and avoids exact payload reuse from unrelated reports."
+    }
+  ]
+}

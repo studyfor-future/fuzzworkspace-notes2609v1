@@ -1,0 +1,63 @@
+{
+  "seed_id": "base-seed-028-v4",
+  "title": "Base Read Input Registers with exception-shaped response",
+  "strategy": "other",
+  "target_operation": "Read Input Registers",
+  "purpose": "Provide a complete Read Input Registers request followed by a structurally distinct protocol exception response, covering normal request parsing and cautious error-frame handling.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Input Registers request, unit 4, start 48, quantity 6",
+      "hex": "020000000006040400300006",
+      "byte_length": 12,
+      "sha256": "756f89e206c268ffd249078e980df06b1ed779decec3b6d1c46bc9ea808959ce"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Read Input Registers exception response, illegal-data-address form",
+      "hex": "020000000003048002",
+      "byte_length": 9,
+      "sha256": "816a6aca38218011840d169cb6bf7915b187aecf4560d012a9838ed452f7717e"
+    }
+  ],
+  "expected_behavior": "The server should parse the request as Read Input Registers for unit 4. The response is an exception-shaped frame carrying the matching transaction and unit identifiers; a conforming implementation may emit such a protocol-level exception when the requested range is unsupported or invalid.",
+  "constraints_preserved": [
+    "Both frames use 7-byte MBAP headers and protocol identifier 0000.",
+    "The request MBAP length is 0006 for the unit identifier plus the 5-byte request PDU.",
+    "The exception response MBAP length is 0003 for the unit identifier plus the two-byte exception PDU.",
+    "The exception function byte is 84, corresponding structurally to function 04 with its high bit set, and the exception code is 02.",
+    "The response transaction identifier 0200 and unit identifier 04 match the request.",
+    "The request contains complete starting-address 0030 and quantity 0006 fields."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. The exception-shaped response is included for cautious protocol-error coverage and does not assert a defect, exploitability, or security consequence.",
+  "sequence_sha256": "bdde1c6e6060c232a6a9857a79b4e398cd341c259c778edc382b4b51c1e48c44",
+  "total_bytes": 21,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "99b87d4275b38a1dcf96e822a0ff067bd9d4496c482336a7fa9430998cab0d0a",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "coverage_summary": [
+    "length_boundary_valid",
+    "parser_depth",
+    "stateful_valid",
+    "other"
+  ],
+  "generation_notes": "VK-only sequences use supplied issues 445/557/582/565/582/577 as evidence_ids and model-prior archetypes (RegisterSession/UnregisterSession/SendRRData/SendUnitData/GetAttributeSingle/SetAttributeSingle). All respect target_operation, use EtherNet/IP little-endian encapsulation headers, and produce internally consistent visible lengths/counts for later repair runs. No external protocol documents used.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths",
+        "Model-prior message archetypes"
+      ],
+      "evidence_ids": [
+        "issue:445:445-summary:c1784b774e94",
+        "issue:374:374-summary:3d44e552a6bc",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:568:568-summary:6fa072929d36"
+      ],
+      "expected_behavior": "Encapsulation header + command 0x65 succeeds with valid ENIP status 0x0064 and returns a session ID.",
+      "issue_safety_notes": "Low crash risk; only length boundary explored. Used with RegisterSession (evidence_ids 445/577/582/565) which does not reach DecodePaddedEPath.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "650000000000000000000000000000000000000000000001000000",
+          "index": 0,
+          "label": "RegisterSession"
+        }
+      ],
+      "plan_id": "vk-plan-033",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vkplan033",
+      "strategy": "length_boundary_valid",
+      "target_operation": "RegisterSession",
+      "title": "VK-only RegisterSession: No affected version is identified in the report. The report states that UDP ListServices request handling on port 44818 can hit a stack overflow when it rece..."
+    },
+    {
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths",
+        "Model-prior message archetypes"
+      ],
+      "evidence_ids": [
+        "issue:532:532-summary:1a523aa7a5f5",
+        "issue:563:563-summary:46d0a567a1d5",
+        "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+        "issue:563:563-summary:b783074fb0e0",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+      ],
+      "expected_behavior": "Valid RegisterSession followed by UnregisterSession that triggers parser-depth error with no crash.",
+      "issue_safety_notes": "Low crash risk; parser_depth path used. Avoids direct PaddedEPath/CPF read that triggers issue 557/569.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "650000000000000000000000000000000000000000000001000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "660000000000000000000000000000000000000000000001000000",
+          "index": 1,
+          "label": "UnregisterSession"
+        }
+      ],
+      "plan_id": "vk-plan-034",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vkplan034",
+      "strategy": "parser_depth",
+      "target_operation": "UnregisterSession",
+      "title": "VK-only UnregisterSession: During Peach fuzzing of the OpENer protocol implementation, the end..."
+    },
+    {
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths",
+        "Model-prior message archetypes"
+      ],
+      "evidence_ids": [
+        "issue:557:557-summary:f58da6326195",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:569:569-summary:84e873f1b910",
+        "issue:575:575-summary:e8df4ac3993c"
+      ],
+      "expected_behavior": "Valid RegisterSession followed by SendRRData that reaches the out-of-bounds read in DecodePaddedEPath.",
+      "issue_safety_notes": "Crashes the server (intended). Session setup ensures explicit-messaging path for issue 557 out-of-bounds read in DecodePaddedEPath.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "650000000000000000000000000000000000000000000001000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6f0000000000000000000000000000000000000000000001000000",
+          "index": 1,
+          "label": "SendRRData"
+        }
+      ],
+      "plan_id": "vk-plan-035",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vkplan035",
+      "strategy": "stateful_valid",
+      "target_operation": "SendRRData",
+      "title": "VK-only SendRRData: OpENer’s explicit messaging path has a remotely reachable out-of-bo..."
+    },
+    {
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths",
+        "Model-prior message archetypes"
+      ],
+      "evidence_ids": [
+        "issue:558:558-summary:3490b100b0a5",
+        "issue:558:558-summary:4ff047be0913",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:567:567-summary:1255c28909d7",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:564:564-summary:6b535e1b37b6"
+      ],
+      "expected_behavior": "Standalone SendUnitData packet that triggers CPF parser out-of-bounds read.",
+      "issue_safety_notes": "Low crash risk; other strategy avoids session and direct SendRRData path. Uses CPF parser OOB (issue 558) without triggering 557/569.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "000000000000000000000000000000000000000000000001000000",
+          "index": 0,
+          "label": "SendUnitData"
+        }
+      ],
+      "plan_id": "vk-plan-036",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vkplan036",
+      "strategy": "other",
+      "target_operation": "SendUnitData",
+      "title": "VK-only SendUnitData: At OpENer `v2.3-558-g1e99582` (commit `1e99582`), the report docume..."
+    }
+  ],
+  "target_issue": 557
+}

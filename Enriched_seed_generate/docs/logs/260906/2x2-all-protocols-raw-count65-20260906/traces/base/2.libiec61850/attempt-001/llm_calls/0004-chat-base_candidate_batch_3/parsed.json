@@ -1,0 +1,143 @@
+{
+  "protocol_name": "iec61850",
+  "target_issue": -1,
+  "generation_notes": "Using only model-prior plausibility for IEC 61850 MMS over RFC1006. Seeds favor conservative TPKT/COTP framing with internally consistent visible lengths and diversified operations across association setup, MMS initiate, discovery, and read. These forms are not externally verified.",
+  "coverage_summary": [
+    "Covers RFC1006 TPKT framing with version 0x03 and consistent total lengths.",
+    "Covers COTP connection setup using a distinct CR frame shape.",
+    "Covers MMS association/initiate style request in a stateful setup-then-request sequence.",
+    "Covers discovery-style GetNameList request as a single standalone MMS PDU.",
+    "Covers read-style MMS request with different object/value related field interaction.",
+    "Diversifies message counts, directions, and payload sizes across four plans."
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-009",
+      "seed_id": "iec61850-base-009-seed-1",
+      "title": "Base COTP Connection Request variant 2",
+      "strategy": "function_code_coverage",
+      "target_operation": "COTP Connection Request",
+      "purpose": "Exercise a conservative RFC1006 plus COTP CR association setup frame with common parameter blocks and a minimal paired response to support later stateful flows.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_cr",
+          "hex": "0300001611e00000000100c1020100c2020101c0010a"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "tpkt_cotp_cc",
+          "hex": "0300001611d00001000000c1020100c2020101c0010a"
+        }
+      ],
+      "expected_behavior": "A server that accepts RFC1006/COTP association setup may treat the first frame as a plausible connection request and reply with a connection confirm or a clean reject if parameters differ from implementation expectations.",
+      "constraints_preserved": [
+        "Used the specified target operation exactly once.",
+        "Kept TPKT version byte at 0x03.",
+        "Kept TPKT total length fields consistent with complete messages.",
+        "Used lowercase hexadecimal without separators.",
+        "Used a two-message setup_then_request style sequence within budget.",
+        "Cited the supplied base constraint source id."
+      ],
+      "issue_safety_notes": "No external issue knowledge or protocol documents were used. This is a conservative model-prior structural seed, not a reproduction of any known vulnerability condition."
+    },
+    {
+      "plan_id": "base-plan-010",
+      "seed_id": "iec61850-base-010-seed-1",
+      "title": "Base MMS Initiate variant 2",
+      "strategy": "stateful_valid",
+      "target_operation": "MMS Initiate",
+      "purpose": "Provide a plausible stateful association sequence with COTP data transfer followed by an MMS initiate-style confirmed request APDU carried over RFC1006.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_dt_x224_session_data",
+          "hex": "0300000702f080"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_dt_mms_initiate_req",
+          "hex": "0300001f02f080610f8002000181010082020000a407800100810101"
+        }
+      ],
+      "expected_behavior": "A peer already prepared for data transfer may accept the DT framing and parse the second frame as an initiate-style MMS request, or reject it cleanly if additional presentation/session wrapping is required by that stack.",
+      "constraints_preserved": [
+        "Used the specified target operation exactly once.",
+        "Kept TPKT version byte at 0x03.",
+        "Kept TPKT total length fields consistent with complete messages.",
+        "Used lowercase hexadecimal without separators.",
+        "Used a two-message setup_then_request style sequence within budget.",
+        "Cited the supplied base constraint source id."
+      ],
+      "issue_safety_notes": "No external issue knowledge or external validation was available. The MMS initiate encoding is based on fallible model prior and is intended as a conservative structural seed only."
+    },
+    {
+      "plan_id": "base-plan-011",
+      "seed_id": "iec61850-base-011-seed-1",
+      "title": "Base GetNameList variant 2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Exercise a compact but slightly boundary-adjacent standalone MMS discovery request with visible nested lengths kept self-consistent for mutation around list and object-scope fields.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "tpkt_cotp_dt_mms_getnamelist_req",
+          "hex": "0300002302f080a019020101a114a112800101a10d1a0b564d442d5350454349464943"
+        }
+      ],
+      "expected_behavior": "A server that recognizes the carried MMS request may attempt name-list discovery in the indicated scope, or reject the request with a parse or service error while still exercising discovery-path parsing.",
+      "constraints_preserved": [
+        "Used the specified target operation exactly once.",
+        "Kept TPKT version byte at 0x03.",
+        "Kept TPKT total length fields consistent with complete messages.",
+        "Used lowercase hexadecimal without separators.",
+        "Used a single_request sequence within budget.",
+        "Cited the supplied base constraint source id."
+      ],
+      "issue_safety_notes": "No external issue reports or protocol references were used. This discovery request is only model-prior plausible and intended to remain conservative rather than issue-specific."
+    },
+    {
+      "plan_id": "base-plan-012",
+      "seed_id": "iec61850-base-012-seed-1",
+      "title": "Base Read variant 2",
+      "strategy": "field_interaction",
+      "target_operation": "Read",
+      "purpose": "Exercise a plausible MMS read request where object naming and item selection fields interact, giving a useful seed for mutating variable access specification content.",
+      "evidence_ids": [
+        "base_model_prior:constraints:39ec8f040df1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "tpkt_cotp_dt_mms_read_req",
+          "hex": "0300002602f080a11c020102a417a015a013a0111a0f4c44302f4c4c4e302e5374506f73"
+        }
+      ],
+      "expected_behavior": "A peer may parse this as a read-style request targeting a named variable or structured item, then either return data, a service error, or a clean reject depending on object model and wrapper expectations.",
+      "constraints_preserved": [
+        "Used the specified target operation exactly once.",
+        "Kept TPKT version byte at 0x03.",
+        "Kept TPKT total length fields consistent with complete messages.",
+        "Used lowercase hexadecimal without separators.",
+        "Used a single_request sequence within budget.",
+        "Cited the supplied base constraint source id."
+      ],
+      "issue_safety_notes": "No external vulnerability knowledge is available. This seed varies interacting fields conservatively using model prior only and is not based on any known defect pattern."
+    }
+  ]
+}

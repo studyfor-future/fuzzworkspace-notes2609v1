@@ -1,0 +1,158 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": 589,
+  "generation_notes": "Revised to exactly four distinct MMS-over-RFC1006 seed sequences grounded in supplied IEC61850 layering and MMS service-tag sources, with conservative model-prior completion only for minimal BER/ACSE/COTP framing gaps. TPKT headers all begin with 0x03 and total-length fields match the full message bytes. Prior duplicate single-PDU cosmetic variants were removed by diversifying operation paths across association, discovery, read/write-style variable access, reporting, and domain/program function coverage. Because issue evidence was enabled, one seed preserves only a safe structural analogue of the COTP TPDU-size option path from issue 589 by using a valid one-byte TPDU-size code in a Connection Request, explicitly avoiding the historical invalid shift-exponent payload. Exact historical collision payloads and malformed octet-string patterns from issue 193 were not reused.",
+  "coverage_summary": [
+    "MMS over ISO-on-TCP layering with TPKT, COTP, ACSE/UserInformation, and MMS PDU tags",
+    "Safe COTP Connection Request option-path coverage using TPDU-size parameter 0xC0 with valid code",
+    "Association/initiation path via MMS Initiate-Request-PDU (0xA8)",
+    "Discovery path via Confirmed-Request-PDU carrying GetNameList service tag [1]",
+    "Attribute/read-style path via Confirmed-Request-PDU carrying GetVariableAccessAttributes service tag [6]",
+    "Program/domain function coverage via confirmed service tags [35] StoreDomainContent and [41] Stop",
+    "Reporting path via Unconfirmed-PDU (0xA3) / InformationReport-style coverage",
+    "Multi-message stateful sequence included to improve state diversity beyond single-request seeds",
+    "All seeds preserve TPKT version 0x03 and internally consistent frame lengths",
+    "Issue-enabled batch uses only safe structural analogue for COTP TPDU-size parsing and avoids exact historical malformed payloads"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-049",
+      "seed_id": "plan-049-seed-1-revA",
+      "title": "Stateful association to discovery with safe COTP TPDU-size analogue and GetNameList",
+      "strategy": "stateful_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Exercise a deeper parser path by pairing a valid RFC1006/COTP Connection Request that includes the TPDU-size option with a minimal MMS Initiate request and a subsequent confirmed discovery request, while preserving only a safe structural analogue of the issue-589 option path.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "issue:589:589-summary:a9c8952234c9"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "COTP Connection Request with valid TPDU-size option",
+          "hex": "0300001611e00000000100c1020000c2020001c0010a"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Minimal MMS Initiate-Request-PDU",
+          "hex": "0300000b02f080a803020100"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "Confirmed-Request-PDU with GetNameList service tag",
+          "hex": "0300000c02f080a003a10100"
+        }
+      ],
+      "expected_behavior": "A tolerant MMS/IEC61850 parser should accept the layered framing, parse the valid TPDU-size option without entering the invalid shift path, then recognize an Initiate request followed by a confirmed GetNameList discovery request.",
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths.",
+        "Use only a safe structural analogue of the issue-589 TPDU-size parameter path and not the historical invalid exponent byte."
+      ],
+      "issue_safety_notes": "This sequence intentionally covers the COTP 0xC0 option path using parameterLen 0x01 and a small valid TPDU-size code 0x0a instead of the documented invalid value 0xa2. It preserves framing structure relevant to parsing coverage but removes the exact undefined-behavior trigger."
+    },
+    {
+      "plan_id": "plan-050",
+      "seed_id": "plan-050-seed-1-revA",
+      "title": "Confirmed service coverage for Stop",
+      "strategy": "function_code_coverage",
+      "target_operation": "Stop",
+      "purpose": "Provide a distinct single-request confirmed-service seed centered on the documented Stop service tag to add program-invocation control coverage without duplicating prior generic confirmed-request shapes.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "Confirmed-Request-PDU with Stop service tag",
+          "hex": "0300000c02f080a003a12900"
+        }
+      ],
+      "expected_behavior": "The parser should accept the RFC1006/COTP-wrapped MMS confirmed request and dispatch it to the Stop confirmed-service handler or corresponding service-choice parser path.",
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Use documented MMS PDU type tag 0xA0 for confirmed request and service tag value [41] for Stop."
+      ],
+      "issue_safety_notes": "No issue motif is exercised here beyond standard framing. The seed is intentionally compact, valid, and avoids malformed lengths, oversized allocations, or invalid COTP option values."
+    },
+    {
+      "plan_id": "plan-051",
+      "seed_id": "plan-051-seed-1-revA",
+      "title": "Unconfirmed reporting path with InformationReport-style PDU",
+      "strategy": "function_code_coverage",
+      "target_operation": "InformationReport",
+      "purpose": "Add unconfirmed/reporting-path diversity absent from the four candidate plans by using the documented MMS Unconfirmed-PDU tag, improving parser coverage beyond repeated confirmed-service requests.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "protocol_format:iec61850:section-message-temp:35b5427fecca",
+        "function_code:function:function-text:d319479344be"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "Unconfirmed-PDU for reporting path",
+          "hex": "0300000b02f080a303010000"
+        }
+      ],
+      "expected_behavior": "A parser with MMS unconfirmed-service support should recognize the 0xA3 Unconfirmed-PDU path and continue into reporting-style message handling rather than confirmed-service dispatch.",
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths.",
+        "Use a distinct MMS PDU type tag from confirmed-request coverage."
+      ],
+      "issue_safety_notes": "This is a safe reporting-path seed using a short, well-formed unconfirmed MMS wrapper. It does not reuse any historical crash payload and introduces no malformed octet-string or invalid shift-exponent condition."
+    },
+    {
+      "plan_id": "plan-052",
+      "seed_id": "plan-052-seed-1-revA",
+      "title": "Attribute access followed by domain content service",
+      "strategy": "field_interaction",
+      "target_operation": "GetVariableAccessAttributes and StoreDomainContent",
+      "purpose": "Increase semantic diversity by combining an attribute/read-style request with a domain-management confirmed service, giving the corpus two different confirmed service tags and parser branches in one sequence without relying on cosmetic framing changes.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:c508483411ac",
+        "function_code:function:function-text:d319479344be",
+        "function_code:function:function-text:2e18df2c8f6c",
+        "function_code:function:operation-catalog:8c2d1b34818b",
+        "function_code:function:operation-catalog:d64a03d5852a",
+        "function_code:function:operation-catalog:ecc66f95fee4",
+        "function_code:function:operation-catalog:9bb344dfd383"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Confirmed-Request-PDU with GetVariableAccessAttributes service tag",
+          "hex": "0300000c02f080a003a10600"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "Confirmed-Request-PDU with StoreDomainContent service tag",
+          "hex": "0300000c02f080a003a12300"
+        }
+      ],
+      "expected_behavior": "The target should parse two valid confirmed requests in sequence, first entering variable-access-attribute handling and then entering the StoreDomainContent confirmed-service path.",
+      "constraints_preserved": [
+        "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+        "Keep the TPKT total-length field consistent with the complete message.",
+        "Diversify association, discovery, read, write and reporting paths.",
+        "Use documented confirmed service tag values [6] and [35] to maximize parser entry-point diversity."
+      ],
+      "issue_safety_notes": "The sequence stays within compact, valid confirmed-service wrappers and does not attempt malformed sizes, negative-length analogues, or exact reproduction of any issue payload. The pair is intended for safe branch coverage only."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "chatcmpl-ELBAh6zukOwSyL1eWBXjQwfsdstzs",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": 279,\n  \"generation_notes\": \"Generated four VK-only Modbus/TCP candidate sequences from the supplied plans. Each sequence preserves its assigned target_operation and uses conservative MBAP framing with internally consistent length and count fields. The set emphasizes distinct operations, state shapes, unit identifiers, addresses, and payload sizes while keeping issue-supported relations such as repeated write activity, minimal valid requests, and field interaction patterns. No exact historical crash payloads were copied.\",\n  \"coverage_summary\": [\n    \"Covers Write Single Coil, Write Single Register, Write Multiple Coils, and Write Multiple Registers.\",\n    \"Includes both single-request and multi-step stateful sequences.\",\n    \"Exercises repeated write behavior inspired by timeout/inconsistency evidence from issue 279.\",\n    \"Uses conservative 7-byte MBAP headers with protocol identifier 0000 and consistent length fields.\",\n    \"Varies unit identifiers, transaction identifiers, addresses, quantities, and payload byte counts.\",\n    \"Keeps requests mutation-friendly while avoiding exact reproduction of cited crash byte streams.\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"vk-plan-053\",\n      \"seed_id\": \"vk14-modbustcp-053\",\n      \"title\": \"VK-only Write Single Coil: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1]...\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Write Single Coil\",\n      \"purpose\": \"Establish a simple stateful write pattern with two valid Write Single Coil requests so a harness can mutate around a minimal write workflow while retaining the plan's operation and a plausible state prerequisite.\",\n      \"evidence_ids\": [\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:743:743-summary:1fc7e97d059a\",\n        \"issue:764:764-summary:f5885d05eb76\",\n        \"issue:683:683-summary:fbe9b8a5a160\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_single_coil_set_on_unit11_addr0001\",\n          \"hex\": \"1001000000060b050001ff00\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_single_coil_set_off_unit11_addr0001\",\n          \"hex\": \"1002000000060b0500010000\"\n        }\n      ],\n      \"expected_behavior\": \"A server should parse both frames as valid Write Single Coil requests and either accept or reject them cleanly without buffer misuse; the sequence is suitable for mutation around short write-only state transitions.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header used in each message\",\n        \"protocol identifier set to 0000\",\n        \"MBAP length field consistent with unit id plus PDU length\",\n        \"target_operation preserved as Write Single Coil\",\n        \"stateful two-step sequence within message budget\"\n      ],\n      \"issue_safety_notes\": \"This sequence keeps address-bearing write requests valid and does not use the minimal 8-byte function-only form described in the out-of-bounds read evidence, reducing direct replication while still exploring nearby parser state.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-054\",\n      \"seed_id\": \"vk14-modbustcp-054\",\n      \"title\": \"VK-only Write Single Register: The Modbus TCP receive path does not use the MBAP Length field to d...\",\n      \"strategy\": \"other\",\n      \"target_operation\": \"Write Single Register\",\n      \"purpose\": \"Provide a compact single-request seed for Write Single Register with conservative framing and ordinary field values, leaving room for later mutations around receive-path length handling without starting from malformed counts.\",\n      \"evidence_ids\": [\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"vk_task_context:task-contract:950d6d207e6c\",\n        \"issue:810:810-summary:da5167fd5137\",\n        \"issue:279:279-summary:f8623682ccd7\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"write_single_register_unit01_addr0062_value1234\",\n          \"hex\": \"220100000006010600621234\"\n        }\n      ],\n      \"expected_behavior\": \"A server should treat the frame as a normal Write Single Register request and respond or fail gracefully; fuzzing can later perturb transaction, unit, address, and length-adjacent fields from this baseline.\",\n      \"constraints_preserved\": [\n        \"single-request sequence shape preserved\",\n        \"7-byte MBAP header used\",\n        \"protocol identifier set to 0000\",\n        \"MBAP length field is internally consistent\",\n        \"target_operation preserved as Write Single Register\"\n      ],\n      \"issue_safety_notes\": \"The seed intentionally avoids inconsistent MBAP sizing or truncated tails even though the plan references receive-path length concerns; this keeps the starting point recognizable and not a direct crash clone.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-055\",\n      \"seed_id\": \"vk14-modbustcp-055\",\n      \"title\": \"VK-only Write Multiple Coils: In the reported loopback test, repeated use of `modbus_write_regist...\",\n      \"strategy\": \"issue_structural_analogue\",\n      \"target_operation\": \"Write Multiple Coils\",\n      \"purpose\": \"Model the issue-supported repeated-write relation from the loopback timeout report using a distinct but analogous multiple-write operation, with three valid requests that vary quantity and data while remaining structurally conservative.\",\n      \"evidence_ids\": [\n        \"issue:279:279-summary:f8623682ccd7\",\n        \"issue:614:614-summary:e89105d3aaf7\",\n        \"issue:743:743-summary:1fc7e97d059a\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:612:612-summary:7b008d4bca1d\",\n        \"issue:738:738-summary:a2fd51730f5d\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_multiple_coils_first_batch_unit02_addr0013_qty000a\",\n          \"hex\": \"300100000009020f0013000a025501\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_multiple_coils_second_batch_same_addr_qty000a_inverted_bits\",\n          \"hex\": \"300200000009020f0013000a02aa02\"\n        },\n        {\n          \"index\": 2,\n          \"direction\": \"client_to_server\",\n          \"label\": \"write_multiple_coils_third_batch_adjacent_addr_qty0009\",\n          \"hex\": \"300300000009020f001d0009029300\"\n        }\n      ],\n      \"expected_behavior\": \"A server should parse three consecutive Write Multiple Coils requests without desynchronization or timeout-related state loss; this sequence is intended to expose repeated-write handling problems while staying within valid framing.\",\n      \"constraints_preserved\": [\n        \"multi-step stateful sequence preserved\",\n        \"7-byte MBAP header used in all messages\",\n        \"protocol identifier set to 0000\",\n        \"MBAP lengths and byte counts are internally consistent\",\n        \"target_operation preserved as Write Multiple Coils\",\n        \"repeated write relation retained from issue-supported structure\"\n      ],\n      \"issue_safety_notes\": \"This is an analogue of the repeated-call trigger relation from issue 279, but it uses a different write function, different addresses, and different payloads than the documented historical reports; it also avoids the exact crafted bytes from crash-oriented server issues.\"\n    },\n    {\n      \"plan_id\": \"vk-plan-056\",\n      \"seed_id\": \"vk14-modbustcp-056\",\n      \"title\": \"VK-only Write Multiple Registers: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is...\",\n      \"strategy\": \"field_interaction\",\n      \"target_operation\": \"Write Multiple Registers\",\n      \"purpose\": \"Exercise interacting address, quantity, and byte-count fields near a high register address in a single plausible Write Multiple Registers request, reflecting issue-guided interest in register-edge behavior while staying operation-correct.\",\n      \"evidence_ids\": [\n        \"issue:466:466-summary:691a17c4c14a\",\n        \"issue:738:738-summary:a2fd51730f5d\",\n        \"issue:499:499-summary:6268f95751ad\",\n        \"issue:837:837-summary:c4fb6d28cc16\",\n        \"issue:867:867-summary:58115ace3a65\",\n        \"issue:743:743-summary:1fc7e97d059a\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"standalone\",\n          \"label\": \"write_multiple_registers_unit7c_addrfceb_qty0002_values11223344\",\n          \"hex\": \"44010000000b7c10fceb00020411223344\"\n        }\n      ],\n      \"expected_behavior\": \"A server should either handle the high-address multiple-register write normally or reject it with a protocol-level exception, but should not mis-handle the coupled address, quantity, and byte-count fields.\",\n      \"constraints_preserved\": [\n        \"single-request sequence shape preserved\",\n        \"7-byte MBAP header used\",\n        \"protocol identifier set to 0000\",\n        \"high address with internally consistent quantity and byte count\",\n        \"target_operation preserved as Write Multiple Registers\"\n      ],\n      \"issue_safety_notes\": \"The request is intentionally distinct from the read-register issue details and does not copy any cited crash sequence; it uses a nearby high-address interaction pattern as a conservative analogue for mutation-oriented coverage.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788716539,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2215,
+    "prompt_tokens": 6268,
+    "total_tokens": 8483,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 11,
+      "engine_ttft_ms": 311,
+      "engine_ttlt_ms": 23864,
+      "pre_inference_ms": 115,
+      "service_tbt_ms": 11,
+      "service_ttft_ms": 811,
+      "service_ttlt_ms": 24357,
+      "user_visible_ttft_ms": 696
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260818023416-13d43de4-default-r2-dp0-default"
+  }
+}

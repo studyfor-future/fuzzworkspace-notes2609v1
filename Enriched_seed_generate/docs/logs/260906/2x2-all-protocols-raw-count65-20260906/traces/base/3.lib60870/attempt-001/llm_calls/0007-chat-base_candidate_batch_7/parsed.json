@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "length_boundary_valid: conservative size boundary adjacent to standard APCI frame",
+    "field_interaction: varied meaningful fields in Clock Sync message",
+    "parser_depth: deeper nested command form for Read Command",
+    "other: structurally distinct STARTDT activation sequence"
+  ],
+  "generation_notes": "Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Generated per supplied plans using IEC 60870-5-104 APCI framing and FT1.2 elements with consistent 0x68 lengths and checksums.",
+  "protocol_name": "iec60870",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "internal length and checksum consistent",
+        "widely recognized FT1.2 or IEC 60870-5-104 APCI framing preferred"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Parser processes frame with boundary-adjacent length octet without structural deviation.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804040000026801040000060700c35c",
+          "index": 0,
+          "label": "Measured Value Request"
+        }
+      ],
+      "plan_id": "base-plan-025",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "length_boundary_valid",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Measured Value",
+      "title": "Base Measured Value variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "internal length and checksum consistent",
+        "widely recognized FT1.2 or IEC 60870-5-104 APCI framing preferred"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Frame parsed with varied synchronization fields retaining structure.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804030000026801040000060700c35b",
+          "index": 0,
+          "label": "Clock Synchronization Request"
+        }
+      ],
+      "plan_id": "base-plan-026",
+      "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships.",
+      "seed_id": "field_interaction",
+      "strategy": "field_interaction",
+      "target_operation": "Clock Synchronization",
+      "title": "Base Clock Synchronization variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "internal length and checksum consistent",
+        "widely recognized FT1.2 or IEC 60870-5-104 APCI framing preferred"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Deeper nested command form exercises additional parser depth.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804020000026801040000060700c35a",
+          "index": 0,
+          "label": "Read Command Request"
+        }
+      ],
+      "plan_id": "base-plan-027",
+      "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+      "seed_id": "parser_depth",
+      "strategy": "parser_depth",
+      "target_operation": "Read Command",
+      "title": "Base Read Command variant 3"
+    },
+    {
+      "constraints_preserved": [
+        "0x68 length octets consistent with frame size",
+        "internal length and checksum consistent",
+        "widely recognized FT1.2 or IEC 60870-5-104 APCI framing preferred"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:623b2f3a6db7"
+      ],
+      "expected_behavior": "Setup_then_request sequence activates STARTDT with distinct structure.",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "6804050000026801040000060700c35d",
+          "index": 0,
+          "label": "STARTDT Activation Request"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "6804050000026801040000060700c35e",
+          "index": 1,
+          "label": "STARTDT Activation Confirmation"
+        }
+      ],
+      "plan_id": "base-plan-028",
+      "purpose": "Add a structurally distinct model-prior seed rather than a cosmetic byte variant.",
+      "seed_id": "other",
+      "strategy": "other",
+      "target_operation": "STARTDT activation",
+      "title": "Base STARTDT activation variant 4"
+    }
+  ],
+  "target_issue": -1
+}

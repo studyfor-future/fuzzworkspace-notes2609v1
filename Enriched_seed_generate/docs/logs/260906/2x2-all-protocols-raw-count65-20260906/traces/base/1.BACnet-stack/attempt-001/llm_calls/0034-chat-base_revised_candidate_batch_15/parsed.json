@@ -1,0 +1,123 @@
+{
+  "coverage_summary": [
+    "base-plan-057: ReadRange single request (baseline_valid)",
+    "base-plan-058: AtomicReadFile single request (function_code_coverage)",
+    "base-plan-059: AtomicWriteFile setup-then-request (stateful_valid)",
+    "base-plan-060: DeviceCommunicationControl single request (length_boundary_valid)"
+  ],
+  "generation_notes": "Generation uses only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Revised 4 Base (P-/V-) candidate seed sequences from the provided previous_library using the plans (base-plan-057 to base-plan-060), review (coverage_gaps empty, diversity_score 90, global_feedback confirming preserved BVLC four-byte length consistency, NPDU/APDU layering, lowercase hex, no duplicates or odd-length hex, deterministic_errors resolved), and base_constraints (prefer common BACnet/IP BVLC NPDU APDU layering, BVLC 4-byte length consistent, diversify services). All sequences use model-prior conservative forms with internally consistent lengths, orders, and checksums; frame-shape diversity improved while keeping exact counts and basic lengths; no external citations or issues introduced.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preferred",
+        "common property access forms"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "server responds with ReadRange response data",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0c010000",
+          "index": 0,
+          "label": "ReadRange request"
+        }
+      ],
+      "plan_id": "base-plan-057",
+      "purpose": "Produce a conservative canonical message using model internal protocol knowledge.",
+      "seed_id": "bacnet-readrange-revised",
+      "strategy": "baseline_valid",
+      "target_operation": "ReadRange",
+      "title": "Base ReadRange variant 6 (revised)"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preferred",
+        "diversified file service forms"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "server responds with AtomicReadFile response data",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0d020000",
+          "index": 0,
+          "label": "AtomicReadFile request"
+        }
+      ],
+      "plan_id": "base-plan-058",
+      "purpose": "Cover a distinct likely operation or service family.",
+      "seed_id": "bacnet-atomicreadfile-revised",
+      "strategy": "function_code_coverage",
+      "target_operation": "AtomicReadFile",
+      "title": "Base AtomicReadFile variant 6 (revised)"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preferred",
+        "stateful file operation forms"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "server processes write request with state transition",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0d030000",
+          "index": 0,
+          "label": "AtomicWriteFile setup"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "0d040000",
+          "index": 1,
+          "label": "AtomicWriteFile request"
+        }
+      ],
+      "plan_id": "base-plan-059",
+      "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+      "seed_id": "bacnet-atomicwritefile-revised",
+      "strategy": "stateful_valid",
+      "target_operation": "AtomicWriteFile",
+      "title": "Base AtomicWriteFile variant 6 (revised)"
+    },
+    {
+      "constraints_preserved": [
+        "BVLC 4-byte length consistent",
+        "NPDU/APDU layering preferred",
+        "conservative boundary size forms"
+      ],
+      "evidence_ids": [
+        "base_model_prior:constraints:aceb70a59893"
+      ],
+      "expected_behavior": "server responds with DeviceCommunicationControl response",
+      "issue_safety_notes": "issue knowledge is unavailable",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "0e050000",
+          "index": 0,
+          "label": "DeviceCommunicationControl request"
+        }
+      ],
+      "plan_id": "base-plan-060",
+      "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+      "seed_id": "bacnet-devicecomm-revised",
+      "strategy": "length_boundary_valid",
+      "target_operation": "DeviceCommunicationControl",
+      "title": "Base DeviceCommunicationControl variant 6 (revised)"
+    }
+  ],
+  "target_issue": 1
+}

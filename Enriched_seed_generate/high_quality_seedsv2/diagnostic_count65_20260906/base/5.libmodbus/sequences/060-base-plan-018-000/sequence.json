@@ -1,0 +1,60 @@
+{
+  "seed_id": "base-plan-018-000",
+  "title": "Base Write Single Register variant 2",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Write Single Register",
+  "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MBAP header",
+      "hex": "00000000070000",
+      "byte_length": 7,
+      "sha256": "6ec88b502aabf6578250893146b1e265b0395cd6803ffb1a6984341491e23ca3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Write Single Register request",
+      "hex": "000100050000",
+      "byte_length": 6,
+      "sha256": "971cec9eb2833997c3d74bcf58242014075acb0abbbab7fb3009d209f7968276"
+    }
+  ],
+  "expected_behavior": "Server applies the register write to the boundary-adjacent address and value with internal length consistency.",
+  "constraints_preserved": [
+    "7-byte MBAP header",
+    "protocol identifier 0x0000",
+    "MBAP length consistency"
+  ],
+  "issue_safety_notes": "No external protocol documents or vulnerability issues are supplied.",
+  "sequence_sha256": "c441303435b9f05300687ddf05da871f51554bca6e3b97873a87d3b197fafeac",
+  "total_bytes": 13,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "787f04300eda5b35abbb633fd83407dbf0ce793bc9ec68753d59da30681f63f4",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ]
+  }
+}

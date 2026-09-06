@@ -1,0 +1,38 @@
+{
+  "id": "resp_0fac365a93fca3e3016a9d90e5e81887d081ad14bb5307304c",
+  "choices": [
+    {
+      "finish_reason": "length",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": null,
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null,
+        "reasoning_content": "**Evaluating message structure**\n\nI need to ensure that I create one message per plan. It looks like using standalone messages or the client_to_server/server_to_client format might be beneficial. I'll use client_to_server for requests and server_to_client for responses to help establish a stateful sequence. Since the target operation is Initiate-Request-PDU, I'm considering that the sequence could be CR, CC, AARQ — this suggests I'll need to prepare three messages.**Considering candidate seed sequences**\n\nI need to think about the \"PK-only (P+/V-)\" candidate seed sequences, focusing on positive seeds. It seems important that the messages are at least structurally valid, given that we want to avoid claims related to vulnerabilities. The idea is to use known valid AARQ and confirmed requests constructed from memory with the appropriate ASN.1 wrapper. Ensuring consistent lengths for evidence_ids seems crucial, as each sequence should align with the planned evidence_ids. I'll also need to manage the message budget carefully, ensuring it fits within specified limits.**Evaluating sequence requirements**\n\nThe user wants exactly four sequences, one for each plan, but the number of messages per sequence isn't specified. The message budget is set at 2, and the shape could accommodate a single request. I need to maximize diversity across different directions and nested parser paths, which is interesting. I might consider using two messages for parser depth: perhaps an association request followed by a deep GetNameList. This way, I can ensure both diversity and depth in the sequences.**Inspecting PDU tags**\n\nI’m trying to figure out if above 61 is the BER universal application class. I wonder if the real MMS PDU tags are 0xA0-0xAD when encoded as context-specific constructed. Yet, my memory leans towards 0x61. I really need to inspect this further. In my source, the message type lists PDU tags like 0xA0 for Confirmed-Request-PDU and 0xA8 for Initiate-Request-PDU. I’m trying to determine which is actually correct!"
+      }
+    }
+  ],
+  "created": 1788711181,
+  "model": "gpt-5.4-xhigh",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 4500,
+    "prompt_tokens": 4541,
+    "total_tokens": 9041,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 4500,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": null
+  }
+}

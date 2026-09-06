@@ -1,0 +1,144 @@
+{
+  "protocol_name": "BACNET",
+  "target_issue": 1399,
+  "generation_notes": "Revised to exactly four distinct BACnet/IP seeds using source-backed BVLC/NPDU/APDU layering and conservative model-prior completion only where the supplied sources do not enumerate field bytes. All BVLC messages keep a consistent four-byte total-length field. Diversity was increased across discovery, property access, file read, and file write operations while preserving safe structural analogues for the cited issues and avoiding exact historical payload collisions or malformed length/tag patterns.",
+  "coverage_summary": [
+    "BACnet/IP layering preserved with BVLC header, NPDU header, and APDU/service payload",
+    "Discovery coverage via unconfirmed Who-Is broadcast analogue",
+    "Confirmed property access coverage via ReadProperty request",
+    "Confirmed file read coverage via AtomicReadFile record-access style analogue",
+    "Confirmed file write coverage via stateful AtomicWriteFile safe analogue",
+    "Issue-guided structural analogue retained for RAMFS FILE record-path behavior without append-trigger collision",
+    "Operation diversity improved beyond prior batch by adding discovery and read-file services",
+    "All hex payloads are even-length, lowercase, and use consistent BVLC total lengths"
+  ],
+  "sequences": [
+    {
+      "plan_id": "plan-013",
+      "seed_id": "plan-013-whois-discovery",
+      "title": "Baseline BACnet/IP Who-Is discovery",
+      "strategy": "baseline_valid",
+      "target_operation": "Who-Is",
+      "purpose": "Provide a compact unconfirmed discovery seed that exercises BACnet/IP BVLC plus NPDU plus APDU parsing before any confirmed service interaction.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Who-Is-unconfirmed",
+          "hex": "810b000a00101008"
+        }
+      ],
+      "expected_behavior": "Target accepts an unconfirmed discovery request and may respond separately with an I-Am message if configured to do so.",
+      "constraints_preserved": [
+        "BVLC function 0x0b used with four-byte total length 0x000a",
+        "NPDU retained as a minimal routed-free control form",
+        "APDU high nibble 0x10 preserved for Unconfirmed-Request-PDU",
+        "Service payload kept minimal to avoid undocumented field speculation"
+      ],
+      "issue_safety_notes": "No oversized lengths, nested tags, or issue-triggering property-value payloads are used."
+    },
+    {
+      "plan_id": "plan-010",
+      "seed_id": "plan-010-readproperty-safe",
+      "title": "Issue-guided safe ReadProperty analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ReadProperty",
+      "purpose": "Exercise confirmed property-read handling and ACK construction paths related to the reported closing-tag reservation issue while requesting a simple property in a compact valid form.",
+      "evidence_ids": [
+        "issue:1398:1398-summary:200993baa464",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "function_code:function:function-text:d3664eeda33b",
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ReadProperty-confirmed",
+          "hex": "810b0011000005040c020000000119"
+        }
+      ],
+      "expected_behavior": "Target parses a Confirmed-Request-PDU for ReadProperty and returns either a valid ComplexACK-PDU with the property value or a protocol-level error for an unsupported object/property combination.",
+      "constraints_preserved": [
+        "BVLC total length 0x0011 matches message size",
+        "APDU uses confirmed service choice 0x0c for ReadProperty",
+        "Object identifier and property identifier fields kept short and internally consistent",
+        "No malformed closing-tag construction is injected in the request"
+      ],
+      "issue_safety_notes": "This is a safe structural analogue only; it does not reproduce any exact crash payload or malformed ACK-size trigger."
+    },
+    {
+      "plan_id": "plan-014",
+      "seed_id": "plan-014-atomicreadfile-record",
+      "title": "AtomicReadFile record-mode coverage seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "AtomicReadFile",
+      "purpose": "Exercise confirmed FILE object read parsing on the record-access path to complement the write-focused issue seeds and broaden file-service coverage.",
+      "evidence_ids": [
+        "function_code:function:function-text:d3664eeda33b",
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "AtomicReadFile-record-access",
+          "hex": "810b001300000504060a00000001010000000001"
+        }
+      ],
+      "expected_behavior": "Target parses an AtomicReadFile confirmed request and returns file data, EOF indication, or an application error if the addressed FILE object is absent or not readable.",
+      "constraints_preserved": [
+        "BVLC total length 0x0013 matches message size",
+        "Confirmed service choice 0x06 preserved for AtomicReadFile",
+        "Request framed as BACnet/IP with NPDU followed by APDU",
+        "Record-oriented style kept simple and boundary-adjacent without oversized counts"
+      ],
+      "issue_safety_notes": "Read-only analogue avoids the append and replacement hazards described in the RAMFS write issues."
+    },
+    {
+      "plan_id": "plan-011",
+      "seed_id": "plan-011-atomicwritefile-stateful-safe",
+      "title": "Stateful safe AtomicWriteFile non-append analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "AtomicWriteFile",
+      "purpose": "Retain the issue-relevant FILE record-service structure and statefulness while replacing the historical append trigger with a safe non-append write sequence to the same file object.",
+      "evidence_ids": [
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+        "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "AtomicWriteFile-record-write-0",
+          "hex": "810b001900000504070a000000010100000000010441414141"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "AtomicWriteFile-record-write-1",
+          "hex": "810b001900000504070a000000010100000001010442424242"
+        }
+      ],
+      "expected_behavior": "Target accepts two sequential confirmed AtomicWriteFile requests as ordinary record writes to explicit start records, replying with acknowledgments or application errors according to FILE object support and permissions.",
+      "constraints_preserved": [
+        "Each BVLC total length 0x0019 matches the corresponding message size",
+        "Confirmed service choice 0x07 preserved for AtomicWriteFile",
+        "Two-step stateful sequence targets the same FILE object instance",
+        "Explicit start records 0 and 1 are used instead of append sentinel semantics",
+        "Payload records are short fixed-length ASCII data for mutation-friendly fuzzing"
+      ],
+      "issue_safety_notes": "Exact append-collision semantics from the historical issue are removed: no fileStartRecord=-1, no repeated append path, and no intentionally malformed record-count interactions."
+    }
+  ]
+}

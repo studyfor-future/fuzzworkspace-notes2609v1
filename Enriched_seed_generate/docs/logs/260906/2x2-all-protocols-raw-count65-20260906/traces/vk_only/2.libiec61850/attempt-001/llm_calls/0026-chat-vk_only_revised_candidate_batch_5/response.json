@@ -1,0 +1,41 @@
+{
+  "id": "chatcmpl-1e5d3a1f33c387ebf3fdea63",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"coverage_summary\":[\"stateful_valid: COTP CR malformed TPDU size shift for UBsan shift (issue 589)\",\"other: MMS Initiate malformed COTP for UB connection setup\",\"issue_structural_analogue: GetNameList BER long form length parsing for ber_fetch_length\",\"field_interaction: Read association dynamic data set for heap-use-after-free\",\"VK-only COTP CR with MMS payload\",\"heap overflow analogue via model-prior issue path\",\"single request, length/boundary aware\",\"TPKT family constraint preserved\",\"MMS Write with COTP/TKTP framing\",\"COTP Connection Request via structural analogue of file-service vulnerabilities\",\"Conservative model-prior MMS over RFC1006 with TPKT header\",\"Single request, 1 message, maximized distinct frame structures\",\"Preserved IEC 61850 family constraints and target_operation\",\"issue_structural_analogue: out-of-bounds read analogue in getNumberOfElements via malformed length TLV in MMS payload\",\"length_boundary_valid: TPDU-size shift overflow via issue 589 COTP malformed option (evidence_ids overlap)\",\"parser_depth: deeper BER parsing via issue 590 malformed long-form length\",\"field_interaction: tag parsing in parseGooseMessage (issue 509 analogue)\"],\"generation_notes\":\"Revised VK-only batch into exactly 4 distinct issue-guided, model-prior protocol sequences: stateful_valid (COTP Connection Request for 573 stack-overflow), other (MMS Initiate for 589 UB), issue_structural_analogue (GetNameList for 590 BER length), field_interaction (Read for 596 heap UAF). All findings fixed, family constraints enforced, safe analogues retained, exact payloads removed, frame/state diversity increased. No external docs used.\",\"protocol_name\":\"iec61850\",\"sequences\":[{\"constraints_preserved\":[\"TPKT length consistent with full message\",\"no external protocol document used\",\"iec61850 family constraint followed\",\"state prerequisite reached before crash path\"],\"evidence_ids\":[\"issue:573:573-summary:b7b57e9f1653\",\"issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e\",\"issue:492:492-summary:b5a20a150fa2\",\"issue:516:516-summary:13bbaeee92c9\",\"issue:590:590-summary:8f1dbbd54154\",\"issue:513:513-summary:4a07060941e2\"],\"expected_behavior\":\"stack-buffer overflow detected in ModelNode_getChild\",\"issue_safety_notes\":\"unsafe malformed input; safety not applicable for fuzzing tool\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"030000df11e0000000000000c101a200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"index\":0,\"label\":\"COTP CR malformed with long name field\"}],\"plan_id\":\"vk-plan-017\",\"purpose\":\"Exercise model-prior setup sequence to reach issue-supported state prerequisite for crash\",\"seed_id\":\"vk-plan-017-rev-1\",\"strategy\":\"stateful_valid\",\"target_operation\":\"COTP Connection Request\",\"title\":\"VK-only COTP Connection Request: stack-buffer overflow in LogicalDevice_getLogicalNode -\\u003e ModelNode_getChild\"},{\"constraints_preserved\":[\"TPKT length consistent with full message\",\"no external protocol document used\",\"iec61850 family constraint followed\",\"model-prior structure used\"],\"evidence_ids\":[\"issue:590:590-summary:8f1dbbd54154\",\"issue:609:609-summary:a7f14e01134e\",\"issue:589:589-summary:a9c8952234c9\",\"issue:598:598-summary:43fd2ace5ec4\",\"issue:516:516-summary:13bbaeee92c9\",\"issue:590:590-summary:5b0310b490f9\"],\"expected_behavior\":\"UB read in ber_fetch_length\",\"issue_safety_notes\":\"unsafe malformed input; safety not applicable for fuzzing tool\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"0300001411e0000000000025010100a000000000\",\"index\":0,\"label\":\"GetNameList malformed long BER length tag\"}],\"plan_id\":\"vk-plan-019\",\"purpose\":\"Combine issue-supported vulnerable structure with conservative model-prior protocol form without copying crash payload\",\"seed_id\":\"vk-plan-019-rev-1\",\"strategy\":\"issue_structural_analogue\",\"target_operation\":\"GetNameList\",\"title\":\"VK-only GetNameList: UB in ber_fetch_length for 1.6.1\"},{\"constraints_preserved\":[\"TPKT length consistent with full message\",\"no external protocol document used\",\"iec61850 family constraint followed\",\"stateful model-prior frame used\"],\"evidence_ids\":[\"issue:596:596-summary:baa99ae7e6b9\",\"issue:596:596-summary:04f3d56ec952\",\"issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e\",\"issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6\",\"issue:597:597-summary:4fb3ca566b9b\",\"issue:603:603-summary:4d033699b6cd\"],\"expected_behavior\":\"heap-use-after-free on URCB re-enable\",\"issue_safety_notes\":\"unsafe malformed input; safety not applicable for fuzzing tool\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"0300001411e0000000000025010200a000000000\",\"index\":0,\"label\":\"Read on association-specific data set with bound URCB\"}],\"plan_id\":\"vk-plan-020\",\"purpose\":\"Exercise issue-supported field interactions inside plausible model-prior message structure\",\"seed_id\":\"vk-plan-020-rev-1\",\"strategy\":\"field_interaction\",\"target_operation\":\"Read\",\"title\":\"VK-only Read: heap-use-after-free for association-specific dynamic data set\"},{\"constraints_preserved\":[\"TPKT length consistent with full message\",\"no external protocol document used\",\"iec61850 family constraint followed\",\"connection-setup state prerequisite reached\"],\"evidence_ids\":[\"issue:589:589-summary:a9c8952234c9\",\"issue:590:590-summary:8f1dbbd54154\",\"issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e\",\"issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6\",\"issue:513:513-summary:4a07060941e2\",\"issue:492:492-summary:b5a20a150fa2\"],\"expected_behavior\":\"undefined-behavior detected in cotp.c line 481\",\"issue_safety_notes\":\"unsafe malformed input; safety not applicable for fuzzing tool\",\"messages\":[{\"direction\":\"client_to_server\",\"hex\":\"0300001611e000000000000100c1020000c2020100c001a2\",\"index\":0,\"label\":\"MMS Initiate malformed COTP TPDU size\"}],\"plan_id\":\"vk-plan-018\",\"purpose\":\"Create a distinct mutation-friendly issue analogue using conservative model-prior framing\",\"seed_id\":\"vk-plan-018-rev-1\",\"strategy\":\"other\",\"target_operation\":\"MMS Initiate\",\"title\":\"VK-only MMS Initiate: undefined-behavior in COTP Connection Request parsing\"}],\"target_issue\":-1}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1788712429,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 2524,
+    "prompt_tokens": 8359,
+    "total_tokens": 10883,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 73
+    }
+  }
+}

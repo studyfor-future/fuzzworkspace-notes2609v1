@@ -1,0 +1,53 @@
+{
+  "coverage_summary": [
+    "maximized distinct operations: RegisterSession + ForwardOpen",
+    "frame structures: 24-byte encap + CPF item 2 + CIP path 6+",
+    "sizes: consistent visible lengths 12-28 bytes",
+    "state sequences: multi-step stateful (2 msgs)",
+    "parser_depth: controlled via path word count",
+    "length_boundary_valid: truncated path to avoid underflow"
+  ],
+  "generation_notes": "VK-only batch combining issue structural analogue from ForwardOpen path misparse (ParseConnectionPath() pointer underflow + GetPathSegmentType OOB) with model-prior stateful multi-step sequences preserving 24-byte Encapsulation Header little-endian payload lengths and diversified EtherNet/IP paths. No external docs; internal prior + built-in family constraints enforced.",
+  "protocol_name": "OpENer",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "24-byte Encapsulation Header",
+        "little-endian payload length",
+        "model-prior etherencap paths",
+        "multi-step stateful"
+      ],
+      "evidence_ids": [
+        "574",
+        "570",
+        "574",
+        "574",
+        "574",
+        "574"
+      ],
+      "expected_behavior": "Connection established; next OOB read if path misparsed as 32-bit segments",
+      "issue_safety_notes": "use valid padding in CIP ForwardOpen instance 1 path to avoid actual overflow",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "65650000000c00000000000000000000",
+          "index": 0,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6f0000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000062401249700500600",
+          "index": 1,
+          "label": "SendRRData ForwardOpen"
+        }
+      ],
+      "plan_id": "vk-plan-049",
+      "purpose": "Combine issue-supported vulnerable structure with conservative model-prior form without copying crash bytes",
+      "seed_id": "vk_plan_049_1",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ForwardOpen",
+      "title": "VK-only ForwardOpen: OpENer v2.3 / master branch up to commit 76b95cf misparses ForwardOpen connection paths in ParseConnectionPath()"
+    }
+  ],
+  "target_issue": 574
+}

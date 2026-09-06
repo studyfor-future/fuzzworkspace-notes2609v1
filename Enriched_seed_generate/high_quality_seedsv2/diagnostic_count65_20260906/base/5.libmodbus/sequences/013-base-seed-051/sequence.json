@@ -1,0 +1,79 @@
+{
+  "seed_id": "base-seed-051",
+  "title": "Base Read Holding Registers variant 5",
+  "strategy": "function_code_coverage",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Exercise function code 0x03 after a harmless preliminary read, using register-oriented addressing and a response size distinct from bit-read seeds; include a coherent exception-shaped response frame for response diversity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Preliminary Read Coils request, unit 0x01, start 0x0000, quantity 1",
+      "hex": "010000000006010100000001",
+      "byte_length": 12,
+      "sha256": "ab30fa5e94acb5609af438af4fa50ff16a61686b192021d262cbbb85ef3bb657"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read Holding Registers request, unit 0x03, start 0x006b, quantity 3",
+      "hex": "0101000000060303006b0003",
+      "byte_length": 12,
+      "sha256": "458fbc600da2cc97099bb541a0aeb92e62688573b599900aff7e72f5c736d242"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "Read Holding Registers exception response, unit 0x03, exception 0x83",
+      "hex": "010100000003030183",
+      "byte_length": 9,
+      "sha256": "91c2b817a3f04beec68e93b64a2aa24bb1746797555bad4faf003163b675b5bb"
+    }
+  ],
+  "expected_behavior": "The server may process the preliminary read and then return six data bytes for the three requested holding registers, with normal exception responses possible for unsupported units or ranges.",
+  "constraints_preserved": [
+    "Both messages use 7-byte MBAP headers and protocol identifier 0x0000.",
+    "Each MBAP length is 0x0006 and matches its unit identifier plus request PDU.",
+    "Transaction identifiers differ between the two requests.",
+    "Function code 0x03 uses a two-byte starting register address and quantity.",
+    "The requested register quantity of 3 corresponds to six response data bytes."
+  ],
+  "issue_safety_notes": "No external vulnerability or issue information is available, and no issue-specific behavior is asserted; the setup message is a conservative valid read used for sequence diversity.",
+  "sequence_sha256": "d0e7b27cb8bb35a9256f3095777b79cd67a1d55b7436ff0d46e05c848823e5c1",
+  "total_bytes": 33,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "567ca29a092951f413c087efea90b1bee31b8fefe2735199254474a5b78e30f7",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "protocol_name": "OpENer",
+  "target_issue": -1,
+  "generation_notes": "Revised exactly 4 distinct model-prior seed sequences from the supplied plans using only built-in base constraints and fallible internal protocol prior. Deterministic problems were avoided by using unique seed_ids, even-length lowercase hex, separator-free encoding, and internally consistent EtherNet/IP-style 24-byte encapsulation headers with little-endian length fields. Diversity was improved across discovery and explicit messaging paths, with one stateful setup sequence and varied CPF/CIP payload shapes. No external protocol documents, issue reports, or vulnerability claims were used.",
+  "coverage_summary": [
+    "function_code_coverage: ForwardOpen explicit messaging request carried in SendRRData with non-trivial CPF and CIP path",
+    "stateful_valid: RegisterSession setup followed by UnconnectedSend-style explicit request in SendRRData",
+    "length_boundary_valid: minimal canonical ListIdentity discovery request with zero-length payload",
+    "field_interaction: ListServices discovery request with non-zero status/options interaction while preserving header shape"
+  ],
+  "sequences": [
+    {
+      "plan_id": "base-plan-009",
+      "seed_id": "seq-009-r1",
+      "title": "Base ForwardOpen variant 1",
+      "strategy": "function_code_coverage",
+      "target_operation": "ForwardOpen",
+      "purpose": "Cover a distinct explicit messaging service family using a conservative SendRRData carrier and a non-trivial ForwardOpen-like CIP body with varied path fields.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "SendRRData_ForwardOpen_Request",
+          "hex": "6f00300000000000000000000000000000000000000000000000000000000000000000020000000000b2002000540220062401062c0100000000000000000102030405000000200001003400120038"
+        }
+      ],
+      "expected_behavior": "Parser accepts a complete encapsulated explicit request, traverses SendRRData and CPF item parsing, then reaches a ForwardOpen-like CIP service and path structure without basic framing inconsistencies.",
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths"
+      ],
+      "issue_safety_notes": "Constructed from model-internal prior only. Framing and field relationships were kept conservative and internally consistent, but no external verification or issue knowledge was used."
+    },
+    {
+      "plan_id": "base-plan-010",
+      "seed_id": "seq-010-r1",
+      "title": "Base UnconnectedSend variant 1",
+      "strategy": "stateful_valid",
+      "target_operation": "UnconnectedSend",
+      "purpose": "Use a plausible setup-then-target sequence with session establishment followed by an explicit SendRRData request carrying an UnconnectedSend-like nested CIP payload.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "RegisterSession_Request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "SendRRData_UnconnectedSend_Request",
+          "hex": "6f00280001000000000000000000000000000000000000000000000000000000000000020000000000b2001800520220062401062c016603200124013001"
+        }
+      ],
+      "expected_behavior": "Parser handles a stateful-looking sequence by first processing session registration and then parsing a nested explicit request with CPF and UnconnectedSend-like CIP service content.",
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths"
+      ],
+      "issue_safety_notes": "Sequence is conservative and mutation-friendly, with only client-originated messages and no assumed server response semantics. Knowledge is model-prior and not externally verified."
+    },
+    {
+      "plan_id": "base-plan-011",
+      "seed_id": "seq-011-r1",
+      "title": "Base ListIdentity variant 2",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ListIdentity",
+      "purpose": "Exercise a conservative boundary-adjacent discovery form by using the minimal zero-length encapsulated request while preserving canonical header layout.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListIdentity_Request",
+          "hex": "630000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "Parser recognizes a minimal discovery command and safely processes a zero-payload request with a valid 24-byte encapsulation header.",
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths"
+      ],
+      "issue_safety_notes": "This seed keeps the smallest conservative form for discovery and is intended as a stable mutation base. It relies only on internal prior, not external confirmation."
+    },
+    {
+      "plan_id": "base-plan-012",
+      "seed_id": "seq-012-r1",
+      "title": "Base ListServices variant 2",
+      "strategy": "field_interaction",
+      "target_operation": "ListServices",
+      "purpose": "Vary a meaningful pair of encapsulation header fields in a discovery request while preserving the standard zero-length request shape and operation diversity.",
+      "evidence_ids": [
+        "base_model_prior:constraints:5ce96f2b96d1"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "ListServices_Request",
+          "hex": "040000000000000001000000785634120000000000000000"
+        }
+      ],
+      "expected_behavior": "Parser handles a discovery request with a canonical header form while still traversing status/options field handling paths distinct from the default all-zero header.",
+      "constraints_preserved": [
+        "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header when that form is selected",
+        "Diversify discovery, session and explicit-message paths"
+      ],
+      "issue_safety_notes": "Header field variation is conservative and intended for parser interaction coverage rather than claiming normative semantics. Model-prior only, with no external issue or protocol source."
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "seed_id": "base-seed-025-v4",
+  "title": "Base Read Coils near-maximum quantity",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Coils",
+  "purpose": "Exercise a recognized Read Coils request at a conservative near-maximum quantity while preserving the fixed request shape and MBAP length relationship.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Coils request, unit 1, start 0, quantity 125",
+      "hex": "00010000000601010000007d",
+      "byte_length": 12,
+      "sha256": "eb6a82dac9784b16546802e69d219b70a65b6a877568db03c5882bcda131bf33"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the frame as a Read Coils request for unit 1 and return packed coil-status data for 125 coils, or return a protocol-level exception if the addressed range is unsupported.",
+  "constraints_preserved": [
+    "The frame contains a 7-byte MBAP header.",
+    "The protocol identifier is 0000.",
+    "The MBAP length is 0006, matching the unit identifier and 5-byte request PDU.",
+    "Function code 01 is followed by a two-byte starting address and a two-byte quantity.",
+    "The quantity is encoded as 007d and the hex representation is lowercase without separators."
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability report is available. This is a conservative boundary-oriented parser seed and does not imply security impact.",
+  "sequence_sha256": "06bf7e0bdea86b788d40244d37680225093331f5592d79625358f206d5ff3e6f",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "eb6a82dac9784b16546802e69d219b70a65b6a877568db03c5882bcda131bf33",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

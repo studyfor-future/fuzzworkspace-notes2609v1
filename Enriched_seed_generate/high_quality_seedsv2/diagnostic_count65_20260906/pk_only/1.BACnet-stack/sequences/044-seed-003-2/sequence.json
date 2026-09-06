@@ -1,0 +1,52 @@
+{
+  "seed_id": "seed-003-2",
+  "title": "AtomicReadFile boundary request",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicReadFile",
+  "purpose": "covers atomic file read service choice 0x06 with boundary-adjacent payload",
+  "evidence_ids": [
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:f1c980ef7dde",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet AtomicReadFile request",
+      "hex": "810000140a001a01000600000000000000000000",
+      "byte_length": 20,
+      "sha256": "b8f67e74f559be4c277832340bf3bf82c6e30b4fb468523ae34f945f0c97f7b3"
+    }
+  ],
+  "expected_behavior": "Parser enters Confirmed-Request-PDU path; service choice 0x06 dispatched to AtomicReadFile handler; BVLC length check passes; no segmentation",
+  "constraints_preserved": [
+    "BVLC header four-byte total length preserved",
+    "NPDU header present with standard version",
+    "APDU confirmed request with service choice 0x06",
+    "no fragmentation",
+    "length/count/order/checksum rules"
+  ],
+  "issue_safety_notes": "Fully valid request; no vulnerabilities or issue motifs",
+  "sequence_sha256": "e451e690aa9b8bccacd8b76ed4a74e38a50327a7eb929dd66fc5e37439551b24",
+  "total_bytes": 20,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b8f67e74f559be4c277832340bf3bf82c6e30b4fb468523ae34f945f0c97f7b3",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

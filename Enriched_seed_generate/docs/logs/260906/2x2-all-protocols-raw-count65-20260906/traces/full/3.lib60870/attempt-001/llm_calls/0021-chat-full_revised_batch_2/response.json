@@ -1,0 +1,111 @@
+{
+  "id": "chatcmpl-ELAVwb8fdsQO3UTcJeeF6glmahdgr",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"protocol_name\":\"IEC60870\",\"target_issue\":7,\"generation_notes\":\"Revised to exactly 4 distinct IEC 60870-5-104 APCI/APDU seed sequences with consistent 0x68 length octets and diversified operations across U-format setup, interrogation, command, and monitoring paths. Source-backed facts used directly include IEC 60870 family identification, TypeIDs such as 13/45/46, U-format/APCI existence, and the issue motif that unsafe parsing was triggered by an I-frame whose VSQ overdeclared object count. Conservative model-prior completion was used only for common 104 field layout details not fully enumerated in supplied sources: 4-byte APCI control field, little-endian I-frame send/receive counters, ASDU ordering as TypeID/VSQ/COT/CA/IOA, and common command/interrogation qualifier placement. Exact historical crash payloads were avoided; issue analogues keep valid object counts and body sizes aligned.\",\"coverage_summary\":[\"IEC 60870-5-104 APCI framing with consistent 0x68 length octets\",\"U-format activation path via STARTDT act and confirmation\",\"Stateful setup followed by General Interrogation I-frame\",\"Control direction coverage with C_SC_NA_1 single command\",\"Monitoring direction coverage with M_ME_NC_1 measured short float\",\"Issue-structural analogue coverage for VSQ/object-count-sensitive I-frame parsing without reproducing historical malformed payload\",\"Diverse directions and parser paths across client_to_server and server_to_client traffic\",\"Field relationship preservation for TypeID, VSQ, COT, common address, IOA, and payload sizing\"],\"sequences\":[{\"plan_id\":\"plan-005\",\"seed_id\":\"P-0001\",\"title\":\"STARTDT activation handshake\",\"strategy\":\"stateful_valid\",\"target_operation\":\"STARTDT activation\",\"purpose\":\"Exercise minimal valid IEC 60870-5-104 U-format session startup before any ASDU parsing, giving a mutation-friendly baseline for transport and state handling.\",\"evidence_ids\":[\"function_code:function:function-text:3cbe16bf065a\",\"protocol_format:iec60870:format-overview:6fc14a471f76\",\"protocol_format:iec60870:section-message-temp:82928a8cc718\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"STARTDT act\",\"hex\":\"680407000000\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"STARTDT con\",\"hex\":\"68040b000000\"}],\"expected_behavior\":\"Server accepts STARTDT activation and returns the corresponding confirmation without error.\",\"constraints_preserved\":[\"Uses IEC 60870-5-104 U-format APCI with start byte 0x68\",\"Length octet 0x04 matches 4-byte APCI control field and no ASDU\",\"Distinct activation and confirmation control codes preserved\",\"No malformed ASDU or overdeclared object count present\"],\"issue_safety_notes\":\"This seed avoids the historical I-frame overread condition entirely and serves as a safe state-establishing baseline.\"},{\"plan_id\":\"plan-006\",\"seed_id\":\"P-0002\",\"title\":\"General Interrogation after STARTDT\",\"strategy\":\"issue_structural_analogue\",\"target_operation\":\"General Interrogation\",\"purpose\":\"Preserve the issue-relevant I-frame/APDU parsing shape while using a standard, body-consistent interrogation ASDU so VSQ and ASDU size remain aligned.\",\"evidence_ids\":[\"issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020\",\"function_code:function:function-text:3cbe16bf065a\",\"protocol_format:iec60870:format-overview:6fc14a471f76\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"STARTDT act\",\"hex\":\"680407000000\"},{\"index\":1,\"direction\":\"server_to_client\",\"label\":\"STARTDT con\",\"hex\":\"68040b000000\"},{\"index\":2,\"direction\":\"client_to_server\",\"label\":\"C_IC_NA_1 general interrogation request\",\"hex\":\"680e00000000640106000100000014\"}],\"expected_behavior\":\"After session startup, server accepts the interrogation request and may respond with activation confirmation and interrogated data; parser should consume the I-frame cleanly.\",\"constraints_preserved\":[\"APCI start byte 0x68 and length 0x0e are consistent with 4 control bytes plus 10-byte ASDU\",\"I-frame control field used instead of malformed hybrid framing\",\"ASDU layout conservatively follows common 104 ordering: TypeID 0x64, VSQ 0x01, COT 0x0006, CA 0x0001, IOA 0x000000, QOI 0x14\",\"Single-object VSQ matches available ASDU body and avoids the issue's overdeclared count\"],\"issue_safety_notes\":\"Structurally analogous to the issue because it is a valid IEC 104 I-frame with ASDU parsing, but it removes the exact malformed VSQ/body mismatch and does not reuse the reported payload.\"},{\"plan_id\":\"plan-007\",\"seed_id\":\"P-0003\",\"title\":\"Single command execute to one information object\",\"strategy\":\"function_code_coverage\",\"target_operation\":\"Single Command\",\"purpose\":\"Cover a control-direction command path using C_SC_NA_1 with a single IOA and a compact command qualifier, distinct from interrogation and setup traffic.\",\"evidence_ids\":[\"function_code:function:function-text:d8995aeae15b\",\"function_code:function:function-text:3cbe16bf065a\",\"protocol_format:iec60870:section-message-temp:82928a8cc718\"],\"messages\":[{\"index\":0,\"direction\":\"client_to_server\",\"label\":\"C_SC_NA_1 single command execute\",\"hex\":\"680e020000002d0106000100010001\"}],\"expected_behavior\":\"Server parses the single-command ASDU and either acknowledges or routes it to command handling logic without transport or parser failure.\",\"constraints_preserved\":[\"APCI I-frame length 0x0e matches 4-byte control field plus 10-byte ASDU\",\"TypeID 45 matches C_SC_NA_1 from supplied function-code source\",\"VSQ declares one object and exactly one IOA/payload is present\",\"Common address and IOA fields are kept fixed-width under conservative 104 assumptions\"],\"issue_safety_notes\":\"Safe valid control-path seed; no oversized VSQ, truncated IOA, or copied issue bytes.\"},{\"plan_id\":\"plan-008\",\"seed_id\":\"P-0004\",\"title\":\"Measured short-float indication from server\",\"strategy\":\"field_interaction\",\"target_operation\":\"Measured Value\",\"purpose\":\"Exercise monitoring-direction parsing with M_ME_NC_1 and one short-floating-point value, providing a server-to-client analogue for ASDU field interaction distinct from command traffic.\",\"evidence_ids\":[\"function_code:function:function-text:d8995aeae15b\",\"function_code:function:function-text:3cbe16bf065a\",\"issue:13:13-summary:187d3c5ead6c\"],\"messages\":[{\"index\":0,\"direction\":\"server_to_client\",\"label\":\"M_ME_NC_1 measured value short float\",\"hex\":\"6812020000000d010300010002000000803f00\"}],\"expected_behavior\":\"Client or parser accepts a single measured-value indication and processes the monitoring ASDU without read-overrun or null-dereference behavior.\",\"constraints_preserved\":[\"APCI I-frame length 0x12 matches 4-byte control field plus 14-byte ASDU\",\"TypeID 13 matches M_ME_NC_1 from supplied function-code source\",\"VSQ is one object and body includes one IOA, 4-byte float value, and quality byte\",\"Monitoring-direction message is directionally distinct from prior client-issued control ASDUs\"],\"issue_safety_notes\":\"This is a safe monitoring-path seed that keeps object sizing internally consistent and avoids the oversized-count patterns implicated by the supplied issue evidence.\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": [],
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "created": 1788714012,
+  "model": "gpt-5.4",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": "default",
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 1670,
+    "prompt_tokens": 9822,
+    "total_tokens": 11492,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 16,
+      "engine_ttft_ms": 444,
+      "engine_ttlt_ms": 26567,
+      "pre_inference_ms": 152,
+      "service_tbt_ms": 16,
+      "service_ttft_ms": 917,
+      "service_ttlt_ms": 26994,
+      "user_visible_ttft_ms": 765
+    }
+  },
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "indirect_attack": {
+          "detected": false,
+          "filtered": false
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20260826144344-1a2ea419-default-r2-dp0-default"
+  }
+}

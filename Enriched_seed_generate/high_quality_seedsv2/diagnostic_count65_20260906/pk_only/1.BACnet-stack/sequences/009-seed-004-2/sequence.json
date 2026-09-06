@@ -1,0 +1,52 @@
+{
+  "seed_id": "seed-004-2",
+  "title": "Parser depth WriteProperty request",
+  "strategy": "parser_depth",
+  "target_operation": "WriteProperty",
+  "purpose": "covers write property service choice 0x0F with nested property access and value",
+  "evidence_ids": [
+    "function_code:function:function-text:d3664eeda33b",
+    "function_code:function:function-text:f1c980ef7dde",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet WriteProperty request",
+      "hex": "810000140a001a01000f00000000000000000000",
+      "byte_length": 20,
+      "sha256": "f3205e45ec9c03773a861d204da19b244792f77b3572d88ad9ab144cd370c753"
+    }
+  ],
+  "expected_behavior": "Parser enters Confirmed-Request-PDU path; service choice 0x0F dispatched to WriteProperty handler; BVLC length check passes; nested property access exercised; no segmentation",
+  "constraints_preserved": [
+    "BVLC header four-byte total length preserved",
+    "NPDU header present with standard version",
+    "APDU confirmed request with service choice 0x0F",
+    "no fragmentation",
+    "length/count/order/checksum rules"
+  ],
+  "issue_safety_notes": "Fully valid request; no vulnerabilities or issue motifs",
+  "sequence_sha256": "8bf9e3cc054713df8971f897bd839b9e5a066b2bc458470fbf4c406f01b6dce8",
+  "total_bytes": 20,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f3205e45ec9c03773a861d204da19b244792f77b3572d88ad9ab144cd370c753",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

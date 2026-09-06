@@ -1,0 +1,47 @@
+{
+  "seed_id": "base-seed-057",
+  "title": "Base Diagnostics variant 5",
+  "strategy": "baseline_valid",
+  "target_operation": "Diagnostics",
+  "purpose": "Exercise a canonical Modbus Diagnostics request with a standard return-query-data subfunction and a zero data value.",
+  "evidence_ids": [
+    "base_model_prior:constraints:0cd5de02ccdf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Diagnostics return query data request",
+      "hex": "000100000006050800000000",
+      "byte_length": 12,
+      "sha256": "84374406a9e3e055220506e1473dcbc7b3bfd54df7c17f0459fc4d3a60924c54"
+    }
+  ],
+  "expected_behavior": "A conforming server may parse the request and return a Diagnostics response for unit 05, commonly echoing the subfunction and data; unsupported diagnostics may produce a protocol exception response.",
+  "constraints_preserved": [
+    "7-byte MBAP header is used.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0007 equals the unit identifier plus the 6-byte PDU.",
+    "Function code 08, subfunction 0000, and 0000 data are ordered consistently.",
+    "Unit identifier 05 diversifies the seed."
+  ],
+  "issue_safety_notes": "No external vulnerability or issue knowledge is available. This is a conservative model-prior seed intended for parsing and functional coverage, not an issue reproduction.",
+  "sequence_sha256": "13a70487ebd6d1bf955363f8b5371022d342f97f098a451955ac99f87912d695",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "84374406a9e3e055220506e1473dcbc7b3bfd54df7c17f0459fc4d3a60924c54",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

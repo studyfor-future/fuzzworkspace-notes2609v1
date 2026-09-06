@@ -1,0 +1,207 @@
+{
+  "coverage_summary": [
+    "Single ReadProperty packet exercising AtomicReadFile boundary",
+    "ReadPropertyMultiple packets with deeper parser path",
+    "WriteProperty stateful sequence requiring prior ReadProperty-ACK",
+    "SubscribeCOV mutation sequence for RAMFS analogue"
+  ],
+  "generation_notes": "All sequences use BACnet/IP layering with consistent BVLC4 NPDU 0x01 00 and APDU min length 3. Messages employ model-internal BACnet types. Issue 1339 evidence used for length boundary. Internal prior enforced; no external docs consulted. Visible sizes internally consistent.",
+  "protocol_name": "bacnet-stack",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "BVLC total length 4-byte consistent",
+        "NPDU function code BVLC consistent",
+        "APDU min length 3 preserved",
+        "Visible buffer lengths internally consistent"
+      ],
+      "evidence_ids": [
+        "issue:1339:1339-summary:cc4c43a5d389",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1398:1398-summary:200993baa464",
+        "issue:1399:1399-summary:0436f55c6893",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+      ],
+      "expected_behavior": "Server triggers stack-based out-of-bounds write in record access mode due to excessively large RecordCount on AtomicReadFile request during atomic-ReadFile processing.",
+      "issue_safety_notes": "Issue 1339 crash bytes from oversized RecordCount; no copy of crash bytes used.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a300101000100000300000000000c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000e0057e100300000",
+          "index": 0,
+          "label": "ReadProperty-AtomicReadFile-RP"
+        }
+      ],
+      "plan_id": "vk-plan-033",
+      "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+      "seed_id": "vk-plan-033",
+      "strategy": "length_boundary_valid",
+      "target_operation": "ReadProperty",
+      "title": "VK-only ReadProperty: bacnet-stack 1.5.0 has a reproducible server-side stack-based out-o..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC total length 4-byte consistent",
+        "NPDU function code BVLC consistent",
+        "APDU min length 3 preserved",
+        "Visible buffer lengths internally consistent"
+      ],
+      "evidence_ids": [
+        "issue:1342:1342-summary:cdc7c256554d",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+        "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+        "issue:1317:1317-summary:4e832876df19",
+        "issue:1398:1398-summary:200993baa464",
+        "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e"
+      ],
+      "expected_behavior": "Triggers remotely reachable denial-of-service on default demo server via deeper protocol structure in ReadPropertyMultiple.",
+      "issue_safety_notes": "Issue 1342 crash via parser depth; no copy of crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a300101000100000300010000a001000100e000000000000c000101000e0057e100300101",
+          "index": 0,
+          "label": "ReadPropertyMultiple"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a30020101000100000000000100000000",
+          "index": 0,
+          "label": "ReadPropertyMultiple-ACK"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a3001010001000003000200000000000000000000000c000101000e0057e100300201",
+          "index": 1,
+          "label": "ReadPropertyMultiple-NULL"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a30020101000100000000000100000000",
+          "index": 1,
+          "label": "ReadPropertyMultiple-ACK"
+        }
+      ],
+      "plan_id": "vk-plan-034",
+      "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+      "seed_id": "vk-plan-034",
+      "strategy": "parser_depth",
+      "target_operation": "ReadPropertyMultiple",
+      "title": "VK-only ReadPropertyMultiple: A reported remotely reachable denial-of-service in bacnet-stack v1...."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC total length 4-byte consistent",
+        "NPDU function code BVLC consistent",
+        "APDU min length 3 preserved",
+        "Visible buffer lengths internally consistent"
+      ],
+      "evidence_ids": [
+        "issue:1398:1398-summary:200993baa464",
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+        "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+      ],
+      "expected_behavior": "WriteProperty issues out-of-bounds read in decode path after prior ReadProperty state setup.",
+      "issue_safety_notes": "Issue 1398 handler state; no copy of crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0000000003000000",
+          "index": 0,
+          "label": "Who-Is"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a000000010100000001000000000000000c000101000e0057e100300000",
+          "index": 0,
+          "label": "I-Am"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a3001010001000003000400000000000c000101000e0057e100300001",
+          "index": 1,
+          "label": "ReadProperty"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a30020101000100000000000400000000",
+          "index": 1,
+          "label": "ReadProperty-ACK"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a3001010001000003000500000000000c000101000e0057e100300002",
+          "index": 2,
+          "label": "WriteProperty"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a30020101000100000000000500000000",
+          "index": 2,
+          "label": "WriteProperty-ACK"
+        }
+      ],
+      "plan_id": "vk-plan-035",
+      "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+      "seed_id": "vk-plan-035",
+      "strategy": "stateful_valid",
+      "target_operation": "WriteProperty",
+      "title": "VK-only WriteProperty: In bacnet-stack 1.5.0 (master branch commit 932e347), handler_read_..."
+    },
+    {
+      "constraints_preserved": [
+        "BVLC total length 4-byte consistent",
+        "NPDU function code BVLC consistent",
+        "APDU min length 3 preserved",
+        "Visible buffer lengths internally consistent"
+      ],
+      "evidence_ids": [
+        "issue:1399:1399-summary:b7c84f7e0fc5",
+        "issue:1400:1400-summary:b9facce5d476",
+        "issue:1399:1399-summary:0436f55c6893",
+        "issue:1398:1398-summary:200993baa464",
+        "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+        "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+      ],
+      "expected_behavior": "SubscribeCOV triggers mutation-friendly stack-based out-of-bounds write analogue in RAMFS-backed FILE record mismatch path.",
+      "issue_safety_notes": "Issue 1399 RAMFS mismatch; no copy of crash bytes.",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "810a0000000003000000",
+          "index": 0,
+          "label": "Who-Is"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a000000010100000001000000000000000c000101000e0057e100300000",
+          "index": 0,
+          "label": "I-Am"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "810a3001010001000003000600000000000c000101000e0057e100300003",
+          "index": 1,
+          "label": "SubscribeCOV"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "810a30020101000100000000000600000000",
+          "index": 1,
+          "label": "SubscribeCOV-ACK"
+        }
+      ],
+      "plan_id": "vk-plan-036",
+      "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+      "seed_id": "vk-plan-036",
+      "strategy": "other",
+      "target_operation": "SubscribeCOV",
+      "title": "VK-only SubscribeCOV: In bacnet-stack 1.5.0 (master branch commit 932e347), the RAMFS-bac..."
+    }
+  ],
+  "target_issue": 1339
+}

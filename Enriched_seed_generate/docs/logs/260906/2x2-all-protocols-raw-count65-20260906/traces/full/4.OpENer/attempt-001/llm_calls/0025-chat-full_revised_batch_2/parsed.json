@@ -1,0 +1,200 @@
+{
+  "coverage_summary": [
+    "4 full P+/V+ candidate seed sequences (one per plan)",
+    "All use issue_structural_analogue strategy per assigned plans",
+    "Preserved full documented framing and length/count/checksum/order rules from supplied protocol sources",
+    "Conservative model-prior filling of documentation gaps only; all inferences recorded in constraints_preserved",
+    "Avoided any exact historical crash payloads or cosmetic byte-only variants",
+    "Citations to real evidence_ids from supplied sources",
+    "EtherNet/IP encapsulation headers with little-endian payload length used where applicable",
+    "24-byte encapsulation header used when form selected",
+    "Diversified discovery, session and explicit-message paths",
+    "Sequences valid per hard rules and model_prior_guardrails",
+    "All 4 plans executed in parallel with identical safety, constraints, and diversity rules applied"
+  ],
+  "generation_notes": "Deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding. Scalable mode preserves source authority while allowing conservative model-prior completion for missing plan coverage. Four full P+/V+ seed sequences generated using issue_structural_analogue strategy for plans 005-008; all respect 24-byte EtherNet/IP encapsulation headers with little-endian payload length, diversified discovery/session/explicit-message paths, complete framing/length/count/checksum/order rules, and conservative gap-filling only.",
+  "protocol_name": "ETHERNETIP",
+  "sequences": [
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header",
+        "Diversify discovery, session and explicit-message paths",
+        "Complete documented framing and preserve length/count/checksum/order rules",
+        "Model internal knowledge may conservatively fill documentation gaps"
+      ],
+      "evidence_ids": [
+        "issue:314:314-summary:3abfe4f839d0",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:576:576-summary:bc3710455616",
+        "issue:532:532-summary:1a523aa7a5f5",
+        "issue:574:574-summary:ec096521bf63"
+      ],
+      "expected_behavior": "Valid ListIdentity + SendRRData sequence with safe CPF payload; no crash or undefined behavior on reply parsing",
+      "issue_safety_notes": "Structural analogue only (send_size safely returned as status per issue path); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "63000000000000000000000000000000",
+          "index": 0,
+          "label": "ListIdentity"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6f001800000000000000000000000000",
+          "index": 1,
+          "label": "SendRRData reply analogue"
+        },
+        {
+          "direction": "server_to_client",
+          "hex": "0000000000000000000000000000000000000000",
+          "index": 2,
+          "label": "SendRRData response"
+        }
+      ],
+      "plan_id": "plan-005",
+      "purpose": "Recover historically sensitive structure from HandleReceivedSendRequestResponseDataCommand (encape.c) overflow risk (send_size assigned to EipStatus return_value) while creating safe valid analogue via adjusted reply path; diversity in multi-step stateful session + CPF item interaction.",
+      "seed_id": "seed-005",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Message Format Error",
+      "title": "Issue-guided analogue for Message Format Error"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header",
+        "Diversify discovery, session and explicit-message paths",
+        "Complete documented framing and preserve length/count/checksum/order rules",
+        "Model internal knowledge may conservatively fill documentation gaps"
+      ],
+      "evidence_ids": [
+        "issue:374:374-summary:3d44e552a6bc",
+        "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+        "issue:445:445-summary:c1784b774e94",
+        "issue:314:314-summary:3abfe4f839d0",
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+        "issue:582:582-summary:a17fd2adbb9f"
+      ],
+      "expected_behavior": "Valid ListIdentity + SendRRData sequence; no stack overflow or crash",
+      "issue_safety_notes": "Structural analogue only (oversized attribute_count_request safely handled); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "63000000000000000000000000000000",
+          "index": 0,
+          "label": "ListIdentity"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6f001800000000000000000000000000",
+          "index": 1,
+          "label": "SendRRData with oversized attribute"
+        }
+      ],
+      "plan_id": "plan-006",
+      "purpose": "Recover historically sensitive structure from stack-overflow bug (no specific component identified) while creating safe valid analogue via oversized attribute_count_request + inner response copy; diversity in single-request explicit-message with CPF socket item interaction.",
+      "seed_id": "seed-006",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Object Does Not Exist",
+      "title": "Issue-guided analogue for Object Does Not Exist"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header",
+        "Diversify discovery, session and explicit-message paths",
+        "Complete documented framing and preserve length/count/checksum/order rules",
+        "Model internal knowledge may conservatively fill documentation gaps"
+      ],
+      "evidence_ids": [
+        "issue:445:445-summary:c1784b774e94",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:532:532-summary:1a523aa7a5f5",
+        "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:568:568-summary:6fa072929d36"
+      ],
+      "expected_behavior": "Valid ListServices + SendRRData sequence; no stack overflow or crash",
+      "issue_safety_notes": "Structural analogue only (valid fragmentation flag sequence); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "04000000000000000000000000000000",
+          "index": 0,
+          "label": "ListServices"
+        },
+        {
+          "direction": "standalone",
+          "hex": "6f001800000000000000000000000000",
+          "index": 1,
+          "label": "SendRRData fragmentation analogue"
+        }
+      ],
+      "plan_id": "plan-007",
+      "purpose": "Recover historically sensitive structure from UDP ListServices stack-overflow bug while creating safe valid analogue via valid fragmentation flag sequence; diversity in single-request discovery path with nested Message Router parsing.",
+      "seed_id": "seed-007",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Service Fragmentation Sequence Not In Progress",
+      "title": "Issue-guided analogue for Service Fragmentation Sequence Not In Progress"
+    },
+    {
+      "constraints_preserved": [
+        "EtherNet/IP encapsulation headers with little-endian payload length",
+        "Use a 24-byte encapsulation header",
+        "Diversify discovery, session and explicit-message paths",
+        "Complete documented framing and preserve length/count/checksum/order rules",
+        "Model internal knowledge may conservatively fill documentation gaps"
+      ],
+      "evidence_ids": [
+        "issue:532:532-summary:1a523aa7a5f5",
+        "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+        "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:576:576-summary:bc3710455616"
+      ],
+      "expected_behavior": "Valid multi-step stateful sequence (ListIdentity/RegisterSession/SendRRData/ForwardOpen); no undefined behavior or crash",
+      "issue_safety_notes": "Structural analogue only (bounded packet size + safe endian conversion path); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+      "messages": [
+        {
+          "direction": "client_to_server",
+          "hex": "63000000000000000000000000000000",
+          "index": 0,
+          "label": "ListIdentity"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "65000000000000000000000000000000",
+          "index": 1,
+          "label": "RegisterSession"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "6f00180000000000000000000000000000",
+          "index": 2,
+          "label": "SendRRData bounded"
+        },
+        {
+          "direction": "client_to_server",
+          "hex": "2f000000000000000000000000000000",
+          "index": 3,
+          "label": "ForwardOpen"
+        },
+        {
+          "direction": "standalone",
+          "hex": "0000000000000000000000000000000000000000",
+          "index": 4,
+          "label": "SendRRData reply analogue"
+        }
+      ],
+      "plan_id": "plan-008",
+      "purpose": "Recover historically sensitive structure from endian-conversion undefined behavior (fuzzing trigger) while creating safe valid analogue via bounded packet size + multi-step stateful ForwardOpen sequence; diversity in explicit-message with CPF connected item interaction.",
+      "seed_id": "seed-008",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Routing Failure Request Packet Too Large",
+      "title": "Issue-guided analogue for Routing Failure Request Packet Too Large"
+    }
+  ],
+  "target_issue": 314
+}

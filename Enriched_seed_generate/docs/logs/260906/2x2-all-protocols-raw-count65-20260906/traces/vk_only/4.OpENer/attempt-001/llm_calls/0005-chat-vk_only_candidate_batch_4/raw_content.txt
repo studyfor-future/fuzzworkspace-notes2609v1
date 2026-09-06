@@ -1,0 +1,187 @@
+{
+  "protocol_name": "OpENer",
+  "target_issue": 573,
+  "generation_notes": "Four VK-only candidate sequences were generated from the supplied plans only, using conservative EtherNet/IP encapsulation and CIP structures as fallible model prior. Each plan preserves its target_operation and emphasizes a different state or parser interaction relevant to the cited issues while avoiding exact historical crash bytes. Lengths and item counts are kept internally consistent and the sequences are mutation-friendly raw concatenation samples for stdin-driven harnessing.",
+  "coverage_summary": [
+    "Session lifecycle coverage across RegisterSession and UnregisterSession with conservative 24-byte encapsulation headers.",
+    "Unconnected explicit messaging via SendRRData with CPF item-count variation and bounded CIP path growth.",
+    "Connected explicit messaging via SendUnitData with plausible connected-address and connected-data items.",
+    "Issue-related structures exercised include CPF optional/extra item interactions, long padded EPath forms, short request-data tails, and cross-step state use."
+  ],
+  "sequences": [
+    {
+      "plan_id": "vk-plan-013",
+      "seed_id": "opener-vk-013",
+      "title": "RegisterSession followed by conservative explicit-message analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "RegisterSession",
+      "purpose": "Establish a valid session first, then follow with a compact SendRRData carrying a small explicit request so mutators can later explore the session-to-explicit transition implicated by session and parser issues without starting from malformed bytes.",
+      "evidence_ids": [
+        "issue:568:568-summary:6fa072929d36",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:563:563-summary:b783074fb0e0",
+        "issue:582:582-summary:a17fd2adbb9f",
+        "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+        "issue:571:571-summary:fe57e1bf0770",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "register_session_response_placeholder",
+          "hex": "65000400111111110000000000000000000000000000000001000000"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "sendrrdata_small_unconnected_request",
+          "hex": "6f001c0011111111000000000000000000000000000000000000000000000000020000000000b20008000e032001240130"
+        }
+      ],
+      "expected_behavior": "A tolerant implementation should accept the RegisterSession request and then parse the follow-on SendRRData as a small unconnected explicit request, producing either a normal explicit-message response or a clean error without destabilization.",
+      "constraints_preserved": [
+        "24-byte EtherNet/IP encapsulation header used",
+        "little-endian encapsulation payload lengths used",
+        "stateful sequence begins with RegisterSession before session-bound command",
+        "visible CPF item count and item lengths are internally consistent",
+        "target_operation preserved as RegisterSession"
+      ],
+      "issue_safety_notes": "This sequence uses a short bounded CPF and CIP body as a structural analogue only; it avoids reproducing known underflow or oversized path trigger bytes while still exercising the same session-to-explicit transition."
+    },
+    {
+      "plan_id": "vk-plan-014",
+      "seed_id": "opener-vk-014",
+      "title": "Own-session unregister after benign request",
+      "strategy": "field_interaction",
+      "target_operation": "UnregisterSession",
+      "purpose": "Exercise interaction between registered-session state, a benign explicit request, and a same-handle UnregisterSession teardown to cover session validation and cleanup behavior relevant to session-handling issues.",
+      "evidence_ids": [
+        "issue:569:569-summary:84e873f1b910",
+        "issue:572:572-summary:4cac5b77f97f",
+        "issue:566:566-summary:204619312f9d",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:576:576-summary:bc3710455616",
+        "issue:565:565-summary:9f823d95b613",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_benign_get_attribute_style_request",
+          "hex": "6f001e0022222222000000000000000000000000000000000000000000000000020000000000b2000a000103200124013001"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "unregister_session_same_handle",
+          "hex": "660000002222222200000000000000000000000000000000"
+        }
+      ],
+      "expected_behavior": "A correct implementation should permit the explicit request on the active session and then cleanly tear down that same session on UnregisterSession, ideally with no cross-connection side effects.",
+      "constraints_preserved": [
+        "24-byte encapsulation headers retained",
+        "little-endian payload lengths retained",
+        "multi-step stateful order preserved",
+        "session handle reused consistently within the same sequence",
+        "target_operation preserved as UnregisterSession"
+      ],
+      "issue_safety_notes": "The sequence intentionally avoids any cross-socket or foreign-session impersonation pattern and uses only same-sequence handle reuse, keeping focus on benign state interaction rather than reproducing session-hijack behavior."
+    },
+    {
+      "plan_id": "vk-plan-015",
+      "seed_id": "opener-vk-015",
+      "title": "SendRRData with long but bounded connection-manager style path",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SendRRData",
+      "purpose": "Probe length-sensitive SendRRData parsing with a longer unconnected explicit payload aimed at connection-manager style services while keeping CPF lengths and path-size fields self-consistent and below known extreme values.",
+      "evidence_ids": [
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:573:573-summary:f08f497b1daa",
+        "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2",
+        "issue:564:564-summary:6b535e1b37b6",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_forwardclose_style_long_path",
+          "hex": "6f00340033333333000000000000000000000000000000000000000000000000020000000000b20020044e06200624012800280028002800280028002800280028002800"
+        }
+      ],
+      "expected_behavior": "The target should parse the CPF and long padded path, then either route the request to a connection-manager handler or reject it cleanly if unsupported or semantically invalid.",
+      "constraints_preserved": [
+        "24-byte encapsulation header used",
+        "little-endian payload length matches body size",
+        "CPF item count set to two with lengths matching visible data",
+        "path and request remain bounded and mutation-friendly",
+        "target_operation preserved as SendRRData"
+      ],
+      "issue_safety_notes": "This is a boundary-valid sample, not a replica of the reported zero-body or oversized-path trigger. It keeps a modest remaining body and a shorter repeated path pattern to encourage safe exploration around the issue surface."
+    },
+    {
+      "plan_id": "vk-plan-016",
+      "seed_id": "opener-vk-016",
+      "title": "SendUnitData connected-path depth probe with minimal connected body",
+      "strategy": "parser_depth",
+      "target_operation": "SendUnitData",
+      "purpose": "Reach the connected explicit-message parser through a plausible connected-address item and a minimally sized connected-data item that remains valid enough for mutation around the connected-path length handling described in the issues.",
+      "evidence_ids": [
+        "issue:571:571-summary:fe57e1bf0770",
+        "issue:574:574-summary:ec096521bf63",
+        "issue:570:570-summary:0b4cbe808107",
+        "issue:575:575-summary:e8df4ac3993c",
+        "issue:577:577-summary:f41c11d4b1b8",
+        "issue:568:568-summary:6fa072929d36",
+        "vk_task_context:task-contract:23749a9ec3e7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_request",
+          "hex": "65000400000000000000000000000000000000000000000001000000"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendunitdata_connected_explicit_probe",
+          "hex": "70002c00444444440000000000000000000000000000000000000000000000000200a10004007856341200b10012000152062006240128002800280028000100"
+        }
+      ],
+      "expected_behavior": "A target with connected explicit-message support should parse the connected CPF items and then either reject the embedded request semantically or continue into deeper CIP handling without crashing.",
+      "constraints_preserved": [
+        "24-byte encapsulation header used",
+        "little-endian payload lengths retained",
+        "CPF connected address and data item lengths are internally consistent",
+        "single-session state retained across the sequence",
+        "target_operation preserved as SendUnitData"
+      ],
+      "issue_safety_notes": "The connected data length is kept comfortably above the specific underflow threshold discussed in the issue report, so this sample explores the same parser region without duplicating the known dangerous minimal-length trigger."
+    }
+  ]
+}

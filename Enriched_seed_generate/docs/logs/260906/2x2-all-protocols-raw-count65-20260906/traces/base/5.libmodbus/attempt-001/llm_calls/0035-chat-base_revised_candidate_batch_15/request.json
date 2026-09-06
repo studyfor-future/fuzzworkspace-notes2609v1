@@ -1,0 +1,155 @@
+{
+  "call_index": 35,
+  "api_mode": "chat",
+  "model": "gpt-5.4",
+  "schema_name": "base_revised_candidate_batch_15",
+  "max_output_tokens": 5600,
+  "system_prompt": "You are a protocol fuzzing corpus engineer operating without external protocol\ndocuments and without vulnerability issue reports.\n\nUse protocol knowledge learned during model training as a fallible internal\nprior. The supplied <base_constraints> are trusted experiment guardrails, not\nretrieved protocol evidence. Generate diverse, mutation-friendly protocol\nmessages and sequences. Prefer conservative, widely recognized message forms.\nNever claim that model-prior knowledge is externally verified. Return JSON only\nand follow the requested schema exactly.",
+  "user_prompt": "Revise this Base (P-/V-) batch into exactly 4 distinct,\nmodel-prior protocol seed sequences.\n\nProtocol: modbustcp\nFamily: modbus\n\nFix all review and deterministic findings. Enforce built-in constraints, keep\nbasic lengths/counts internally consistent, improve operation and frame-shape\ndiversity, and avoid cosmetic variants. Do not introduce external citations,\nissue references or vulnerability claims.\n\n<plans>\n{\n  \"protocol_name\": \"modbustcp\",\n  \"planning_notes\": \"Plans use only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used.\",\n  \"candidate_plans\": [\n    {\n      \"plan_id\": \"base-plan-057\",\n      \"strategy\": \"baseline_valid\",\n      \"title\": \"Base Diagnostics variant 5\",\n      \"target_operation\": \"Diagnostics\",\n      \"objective\": \"Produce a conservative canonical message using model internal protocol knowledge.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-058\",\n      \"strategy\": \"function_code_coverage\",\n      \"title\": \"Base Read File Record variant 5\",\n      \"target_operation\": \"Read File Record\",\n      \"objective\": \"Cover a distinct likely operation or service family.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-059\",\n      \"strategy\": \"stateful_valid\",\n      \"title\": \"Base Read/Write Multiple Registers variant 5\",\n      \"target_operation\": \"Read/Write Multiple Registers\",\n      \"objective\": \"Use a plausible setup-then-target sequence when protocol state is likely required.\",\n      \"sequence_shape\": \"setup_then_request\",\n      \"message_budget\": 2,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    },\n    {\n      \"plan_id\": \"base-plan-060\",\n      \"strategy\": \"length_boundary_valid\",\n      \"title\": \"Base Encapsulated Interface Transport variant 5\",\n      \"target_operation\": \"Encapsulated Interface Transport\",\n      \"objective\": \"Exercise a conservative boundary-adjacent size while retaining internal length consistency.\",\n      \"sequence_shape\": \"single_request\",\n      \"message_budget\": 1,\n      \"risk_style\": \"model-prior conservative diversity\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"issue_refs\": []\n    }\n  ]\n}\n</plans>\n<review>\n{\n  \"overall_score\": 34,\n  \"needs_revision\": true,\n  \"protocol_validity_score\": 39,\n  \"seed_utility_score\": 36,\n  \"diversity_score\": 62,\n  \"issue_enhancement_score\": 0,\n  \"global_feedback\": [\n    \"The library contains 64 sequences rather than the requested 65: base-plan-012 is absent.\",\n    \"Several early candidates are truncated and omit required address, quantity, or complete PDU fields, despite claiming internally consistent Modbus/TCP framing.\",\n    \"Many sequences use artificial setup requests even though Modbus/TCP request processing is generally stateless at the application level; these add repetition without establishing meaningful protocol state.\",\n    \"Operation coverage is broad, but many variants are cosmetic repetitions of the same short request shape. Mutation utility would improve with more complete request/response pairs, valid variable-length payloads, boundary quantities, exception-shaped frames, and varied transaction and unit identifiers.\",\n    \"The deterministic duplicate-removal notice is not reflected by a replacement candidate for the missing plan, leaving the final library under target.\",\n    \"No issue evidence was supplied, so issue enhancement is correctly scored as zero; expected behavior should remain cautious and should not imply vulnerability relevance.\"\n  ],\n  \"sequence_feedback\": [\n    {\n      \"seed_id\": \"base-seed-057\",\n      \"score\": 87,\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as a complete diagnostics baseline.\"\n    },\n    {\n      \"seed_id\": \"base-seed-058\",\n      \"score\": 89,\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as a complete single-subrequest FC14 candidate.\"\n    },\n    {\n      \"seed_id\": \"base-seed-059\",\n      \"score\": 90,\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as a complete FC16-to-FC17 sequence with consistent lengths and payload counts.\"\n    },\n    {\n      \"seed_id\": \"base-seed-060\",\n      \"score\": 88,\n      \"keep\": true,\n      \"problems\": [],\n      \"recommended_action\": \"Keep as a compact nested device-identification candidate.\"\n    }\n  ],\n  \"coverage_gaps\": [\n    \"A replacement for missing base-plan-012 is required to reach 65 final seeds.\",\n    \"Complete valid baseline requests are missing for several early planned operations because their candidates are truncated or use the wrong function code.\",\n    \"There is limited valid response diversity; most usable candidates are requests only, while a smaller subset contains coherent request/response pairs.\",\n    \"Exception-shaped responses and transaction matching are not systematically covered.\",\n    \"Unit identifiers are varied in later candidates but the early malformed candidates do not reliably preserve or diversify them.\",\n    \"The library lacks a clean, systematic set of boundary cases for zero, minimum, maximum, and near-maximum quantities with correctly recomputed lengths.\",\n    \"Stateful sequence coverage is overrepresented by unrelated repeated requests and underrepresented by meaningful request/response ordering.\",\n    \"The candidate set should include more structurally distinct valid payloads rather than repeated single-operation variants with only address, unit, or transaction changes.\"\n  ]\n}\n</review>\n<deterministic_errors>\n[\n  \"eit-001: duplicate sequence removed\"\n]\n</deterministic_errors>\n<previous_library>\n{\n  \"protocol_name\": \"modbustcp\",\n  \"target_issue\": -1,\n  \"generation_notes\": \"Generated exactly 4 Base (P-/V-) candidate seed sequences, one per plan_id using only model internal prior and built-in Base constraints. No external protocol documents or vulnerability issues are used. Model-prior conservative diversity generation for base_candidate_batch_2 using internal Modbus/TCP ADU knowledge only. Four seed sequences produced exactly once per plan_id with diversified operations, frames and sizes while preserving 7-byte MBAP structure, 0x0000 identifier and consistent length/checksum/order relationships. Generated using model internal prior only. No external protocol documents or vulnerability issues are used. 4 base seed sequences for modbustcp generated per plan using model internal prior knowledge and base constraints; no external protocol docs or issues used. Generated using only internal Modbus/TCP prior and base constraints. No external documents or issues applied. Exactly 4 Base (P-/V-) candidate seed sequences generated for modbustcp using only internal model-prior knowledge. No external protocol docs or vulnerability data used. Diversified target operations (Diagnostics, Read File Record, Read/Write Multiple Registers, Encapsulated Interface Transport) with consistent MBAP headers and conservative message forms. One plan per plan_id. Generated four conservative Modbus/TCP seed sequences using model-prior plausibility and the supplied Base constraints only. Each ADU uses a 7-byte MBAP header, protocol identifier 0000, internally consistent length fields, and recognized read function forms. Protocol validity is not externally verified; issue knowledge is unavailable. Generated from model internal protocol prior and the supplied Base constraints only. MBAP protocol identifiers are 0000, transaction fields are distinct within each sequence, and all declared lengths, unit identifiers, function payloads, counts, and byte counts are internally consistent. Protocol validity is model-prior plausibility and is not externally verified. Generating four conservative Modbus/TCP seeds from model-prior knowledge only. Each ADU uses a 7-byte MBAP header with protocol identifier 0000 and an internally consistent length field; issue knowledge is unavailable and validity is not externally verified. Generated from model-prior Modbus/TCP knowledge and the supplied Base constraints only. The messages use plausible 7-byte MBAP headers, protocol identifier 0000, internally consistent length fields, conservative function codes, and varied unit identifiers, addresses, counts, and sequence shapes. Protocol validity is model-prior plausibility and is not externally verified. Generated exactly 4 conservative, model-prior Base (P-/V-) candidate seed sequences using only internal protocol knowledge per plan. All messages are complete, widely recognized Modbus/TCP ADU forms with 7-byte MBAP header (protocol 0x0000, consistent length). Diversified operations, frame shapes, sizes, directions, and stateful setups while preserving all hard base constraints. Message hex are lowercase without separators. Four conservative Modbus/TCP candidate sequences generated from model-prior protocol knowledge and the supplied Base constraints only. MBAP protocol identifiers are zero, lengths are internally consistent, and message forms are plausible but not externally verified. Generated four mutation-friendly Modbus/TCP seed sequences using conservative model-prior protocol forms. MBAP protocol identifiers are zero, length fields match the following unit identifier and PDU bytes, and validity is treated as model-prior plausibility rather than external verification. Generated four conservative Modbus/TCP seed sequences from model-prior plausibility and the supplied Base constraints only. Each ADU uses a 7-byte MBAP header with protocol identifier 0000 and an internally consistent length field. No external protocol documents or vulnerability issue knowledge were supplied or used. Generated from model-prior Modbus/TCP knowledge and the supplied Base constraints only. Protocol validity is plausible but not externally verified; no external issue knowledge was available. Generated from model-internal Modbus/TCP knowledge and the supplied Base constraints only. Messages are conservative plausibility seeds, not externally verified, and use consistent MBAP length fields and request/response structure where responses are included. Generated one conservative Modbus/TCP base seed from model-prior knowledge only. The sequence follows the requested plan and uses a single plausible Write Single Coil request ADU with a 7-byte MBAP header, protocol identifier 0x0000, and internally consistent MBAP length. Validity is treated as plausible from training prior and not externally verified.\",\n  \"coverage_summary\": [\n    \"Conservative canonical ADU for Read Coils (baseline_valid, single_request)\",\n    \"Conservative canonical ADU for Read Discrete Inputs (function_code_coverage, single_request)\",\n    \"Setup-then-target sequence for Read Holding Registers (stateful_valid, setup_then_request)\",\n    \"Setup-then-request sequence for Read Input Registers (length_boundary_valid, setup_then_request)\",\n    \"Write Single Coil field interaction\",\n    \"Write Single Register parser depth\",\n    \"Write Multiple Coils structural distinctness\",\n    \"Write Multiple Registers baseline validity\",\n    \"Base Diagnostics variant 1\",\n    \"Base Read File Record variant 1\",\n    \"Base Read/Write Multiple Registers variant 1\",\n    \"Base Encapsulated Interface Transport variant 1\",\n    \"parser_depth: deeper nested frame for Read Coils\",\n    \"other: structurally distinct single-request seed for Read Discrete Inputs\",\n    \"baseline_valid: conservative canonical setup-then-request for Read Holding Registers\",\n    \"function_code_coverage: distinct operation family coverage for Read Input Registers\",\n    \"stateful_valid Write Single Coil variant 2\",\n    \"length_boundary_valid Write Single Register variant 2\",\n    \"field_interaction Write Multiple Coils variant 2\",\n    \"parser_depth Write Multiple Registers variant 2\",\n    \"Diversified operation coverage\",\n    \"Conservative canonical messages\",\n    \"MBAP header consistency\",\n    \"Setup-then-request for stateful plans\",\n    \"Read Coils function 01 with a boundary-adjacent quantity and unit identifier variation.\",\n    \"Read Discrete Inputs function 02 with varied start address and quantity fields.\",\n    \"Read Holding Registers function 03 in a two-request setup-then-target sequence.\",\n    \"Read Input Registers function 04 in a distinct two-request setup-then-target sequence.\",\n    \"MBAP transaction identifiers, unit identifiers, addresses, quantities, frame sizes, and request ordering are diversified while preserving structural consistency.\",\n    \"Write Single Coil using a canonical FC05 request with a non-default unit identifier and coil address.\",\n    \"Write Single Register using a read setup followed by a canonical FC06 request.\",\n    \"Write Multiple Coils using a read-coils setup followed by a two-byte packed coil payload.\",\n    \"Write Multiple Registers using a four-register FC10 payload with consistent byte and MBAP lengths.\",\n    \"Diagnostics request with paired subfunction and diagnostic data fields\",\n    \"Read File Record request with one nested file-record reference\",\n    \"Two-message setup-then-request sequence covering write multiple and read/write multiple registers\",\n    \"Encapsulated Interface Transport request with a canonical device-identification subfunction\",\n    \"Read Coils function code 01 with a single-request frame.\",\n    \"Read Discrete Inputs function code 02 in a setup-then-request sequence.\",\n    \"Read Holding Registers function code 03 with a conservative maximum quantity of 125 registers.\",\n    \"Read Input Registers function code 04 with varied unit, address, and quantity fields.\",\n    \"All MBAP protocol identifiers are 0000 and all length fields account for the unit identifier and PDU.\",\n    \"parser_depth - deeper/nested coil write for additional parser logic\",\n    \"other - setup_then_request for distinct write single register\",\n    \"baseline_valid - canonical write multiple coils\",\n    \"function_code_coverage - setup_then_request for write multiple registers\",\n    \"Diagnostics with a two-message setup-then-request sequence\",\n    \"Read File Record with a compact boundary-adjacent single-subrequest frame\"\n  ],\n  \"sequences\": [\n    {\n      \"plan_id\": \"base-plan-057\",\n      \"seed_id\": \"base-seed-057\",\n      \"title\": \"Base Diagnostics variant 5\",\n      \"strategy\": \"baseline_valid\",\n      \"target_operation\": \"Diagnostics\",\n      \"purpose\": \"Exercise a canonical Modbus Diagnostics request with a standard return-query-data subfunction and a zero data value.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Diagnostics return query data request\",\n          \"hex\": \"000100000006050800000000\"\n        }\n      ],\n      \"expected_behavior\": \"A conforming server may parse the request and return a Diagnostics response for unit 05, commonly echoing the subfunction and data; unsupported diagnostics may produce a protocol exception response.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header is used.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP length 0007 equals the unit identifier plus the 6-byte PDU.\",\n        \"Function code 08, subfunction 0000, and 0000 data are ordered consistently.\",\n        \"Unit identifier 05 diversifies the seed.\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability or issue knowledge is available. This is a conservative model-prior seed intended for parsing and functional coverage, not an issue reproduction.\"\n    },\n    {\n      \"plan_id\": \"base-plan-058\",\n      \"seed_id\": \"base-seed-058\",\n      \"title\": \"Base Read File Record variant 5\",\n      \"strategy\": \"function_code_coverage\",\n      \"target_operation\": \"Read File Record\",\n      \"purpose\": \"Cover the file-record service with one compact subrequest for file 1, record 0, and a two-register record length.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read File Record request with one subrequest\",\n          \"hex\": \"00020000000a02140706000100000002\"\n        }\n      ],\n      \"expected_behavior\": \"A conforming server may parse the single file-record subrequest and return the requested record data, or return a standard exception if the addressed file or record is unsupported.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header is used.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP length 000a equals the unit identifier plus the 9-byte function-14 PDU.\",\n        \"The function-14 byte count 07 matches the one 7-byte subrequest.\",\n        \"Reference type 06, file number 0001, record number 0000, and record length 0002 are consistently encoded.\",\n        \"Unit identifier 02 diversifies the seed.\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability or issue knowledge is available. The message is a conservative function-coverage candidate based on model-prior protocol plausibility.\"\n    },\n    {\n      \"plan_id\": \"base-plan-059\",\n      \"seed_id\": \"base-seed-059\",\n      \"title\": \"Base Read/Write Multiple Registers variant 5\",\n      \"strategy\": \"stateful_valid\",\n      \"target_operation\": \"Read/Write Multiple Registers\",\n      \"purpose\": \"Use a write-register setup followed by a distinct read/write-multiple-registers request to exercise stateful sequencing and both write and combined access paths.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Write Multiple Registers setup\",\n          \"hex\": \"00050000000b0116003000020400010002\"\n        },\n        {\n          \"index\": 1,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read/Write Multiple Registers request\",\n          \"hex\": \"00060000000f011700100002002000020411112222\"\n        }\n      ],\n      \"expected_behavior\": \"The first request may write two registers at address 0030. The second may read two registers at 0010 and write two registers at 0020 with values 1111 and 2222; a server may instead return standard exceptions for unsupported or inaccessible addresses.\",\n      \"constraints_preserved\": [\n        \"Both messages use 7-byte MBAP headers and protocol identifier 0000.\",\n        \"First MBAP length 000b matches unit plus the 10-byte function-16 PDU.\",\n        \"Function-16 quantity 0002 and byte count 04 match the two 16-bit values.\",\n        \"Second MBAP length 000f matches unit plus the 14-byte function-17 PDU.\",\n        \"Function-17 read and write quantities are both 0002, and write byte count 04 matches the two values.\",\n        \"Transaction identifiers differ and message order is preserved.\",\n        \"Unit identifier 01 is consistent across the sequence.\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability or issue knowledge is available. Modbus/TCP commonly does not require application state between these operations, so the setup relationship is an intentional sequence-coverage heuristic rather than a claimed protocol requirement.\"\n    },\n    {\n      \"plan_id\": \"base-plan-060\",\n      \"seed_id\": \"base-seed-060\",\n      \"title\": \"Base Encapsulated Interface Transport variant 5\",\n      \"strategy\": \"length_boundary_valid\",\n      \"target_operation\": \"Encapsulated Interface Transport\",\n      \"purpose\": \"Exercise a minimal, boundary-adjacent Modbus/TCP ADU for the device-identification form of Encapsulated Interface Transport.\",\n      \"evidence_ids\": [\n        \"base_model_prior:constraints:0cd5de02ccdf\"\n      ],\n      \"messages\": [\n        {\n          \"index\": 0,\n          \"direction\": \"client_to_server\",\n          \"label\": \"Read Device Identification basic request\",\n          \"hex\": \"0004000000057f2b0e0100\"\n        }\n      ],\n      \"expected_behavior\": \"A conforming server may parse the function-43 MEI type-0e request and return basic device-identification objects, or return a standard exception if the MEI service is unsupported.\",\n      \"constraints_preserved\": [\n        \"7-byte MBAP header is used.\",\n        \"Protocol identifier is 0000.\",\n        \"MBAP length 0005 equals the unit identifier plus the 4-byte PDU.\",\n        \"Function code 2b, MEI type 0e, read-device-identification code 01, and initial object identifier 00 are ordered consistently.\",\n        \"The compact request retains a valid-looking minimum payload shape.\",\n        \"Unit identifier 7f diversifies the seed.\"\n      ],\n      \"issue_safety_notes\": \"No external vulnerability or issue knowledge is available. This is a boundary-adjacent length candidate based on model-prior plausibility and should be treated as unverified.\"\n    }\n  ]\n}\n</previous_library>\n<base_constraints>\n[SOURCE id=base_model_prior:constraints:0cd5de02ccdf kind=base_model_prior issue=-1 path=base-built-in-constraints]\nProtocol name: modbustcp\nProtocol family selected for built-in constraints: modbus\nExternal protocol knowledge: disabled.\nExternal vulnerability issues: disabled.\nKnowledge assumption: model internal prior, not externally verified.\nBuilt-in base constraints:\n- Prefer Modbus/TCP ADUs with a 7-byte MBAP header.\n- Use protocol identifier 0x0000 and keep MBAP length consistent.\n- Diversify unit identifiers, read/write/diagnostic and file-record functions.\n[/SOURCE]\n</base_constraints>",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "protocol_name",
+      "target_issue",
+      "generation_notes",
+      "coverage_summary",
+      "sequences"
+    ],
+    "properties": {
+      "protocol_name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "target_issue": {
+        "type": "integer"
+      },
+      "generation_notes": {
+        "type": "string",
+        "minLength": 1
+      },
+      "coverage_summary": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "sequences": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plan_id",
+            "seed_id",
+            "title",
+            "strategy",
+            "target_operation",
+            "purpose",
+            "evidence_ids",
+            "messages",
+            "expected_behavior",
+            "constraints_preserved",
+            "issue_safety_notes"
+          ],
+          "properties": {
+            "plan_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seed_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "baseline_valid",
+                "stateful_valid",
+                "issue_structural_analogue",
+                "function_code_coverage",
+                "length_boundary_valid",
+                "field_interaction",
+                "parser_depth",
+                "other"
+              ]
+            },
+            "target_operation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "messages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "index",
+                  "direction",
+                  "label",
+                  "hex"
+                ],
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "client_to_server",
+                      "server_to_client",
+                      "standalone"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hex": {
+                    "type": "string",
+                    "minLength": 2
+                  }
+                }
+              }
+            },
+            "expected_behavior": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints_preserved": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "issue_safety_notes": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "protocol_name": "BACNET",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly four PK-only BACnet/IP seeds with stronger source-backed framing and service diversity. All sequences use a single complete BACnet/IP message per frame, preserve common BVLC+NPDU+APDU layering from supplied format sources, and keep the 16-bit BVLC total length consistent with the actual byte count. Because the supplied documentation strongly supports APDU PDU types, confirmed service choices, and common header layering but does not provide full field-level ASN.1 encodings for each selected service, service parameter bodies are conservative mutation-friendly constructions using standard BACnet request shapes as model-prior fillers for missing grammar only. Response-only PDUs and weakly grounded network-layer request variants from the prior batch were removed.",
+  "coverage_summary": [
+    "Discovery coverage via unconfirmed Who-Is request with BACnet/IP Original-Broadcast-NPDU framing",
+    "Confirmed property access coverage via ReadProperty request",
+    "Confirmed file service coverage via AtomicReadFile request",
+    "Confirmed subscription/control coverage via SubscribeCOV request",
+    "All four seeds use explicit BVLC type 0x81 and consistent four-byte BVLC header lengths",
+    "All four seeds include explicit NPDU version/control bytes and one complete APDU per message",
+    "Operation diversity improved across unconfirmed discovery, object property read, file read, and subscription services",
+    "Removed unsupported standalone Reject-PDU and speculative fragmented constructions from the prior batch"
+  ],
+  "sequences": [
+    {
+      "plan_id": "rev-plan-001",
+      "seed_id": "pk9-001",
+      "title": "Canonical Who-Is broadcast discovery",
+      "strategy": "baseline_valid",
+      "target_operation": "Who-Is",
+      "purpose": "Provide a compact, mutation-friendly discovery seed that exercises BACnet/IP outer framing and unconfirmed request parsing without requiring prior state.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Original-Broadcast-NPDU carrying unconfirmed Who-Is",
+          "hex": "810b0006010010"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP listener should accept the BVLC and NPDU framing and parse the APDU as an unconfirmed discovery request; devices may respond with I-Am on the network.",
+      "constraints_preserved": [
+        "Single complete message rather than artificial fragments",
+        "BVLC header uses BACnet/IP style with total length matching actual byte count",
+        "NPDU version byte present and control byte set to a minimal no-routing form",
+        "APDU begins with unconfirmed-request PDU type high nibble 0x10 per supplied function code reference",
+        "Who-Is service-body details are omitted to keep the seed minimal and mutation-friendly where full source grammar is not provided"
+      ],
+      "issue_safety_notes": "PK-only valid discovery analogue with no issue payloads and no exact historical collision material."
+    },
+    {
+      "plan_id": "rev-plan-002",
+      "seed_id": "pk9-002",
+      "title": "Confirmed ReadProperty for device object identifier",
+      "strategy": "function_code_coverage",
+      "target_operation": "ReadProperty",
+      "purpose": "Exercise a common confirmed service path with object/property parameter structure while preserving credible BACnet/IP framing.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Original-Unicast-NPDU carrying confirmed ReadProperty",
+          "hex": "810a0011010000050c0c0200004b190c"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP target should parse the frame as a confirmed ReadProperty request for a device object and either return the property value or an application-level error if the object instance is absent.",
+      "constraints_preserved": [
+        "BVLC total length 0x0011 matches 17-byte message",
+        "NPDU version/control explicitly encoded as 01 00",
+        "Confirmed-request PDU type uses first APDU octet 0x00",
+        "Confirmed service choice 0x0C for ReadProperty is directly source-backed",
+        "Service body uses conservative standard BACnet tagged fields for object identifier and property identifier because full per-field grammar is not supplied in the excerpts"
+      ],
+      "issue_safety_notes": "Valid confirmed-service seed; uses ordinary object/property access structure and avoids malformed lengths or response-only PDUs."
+    },
+    {
+      "plan_id": "rev-plan-003",
+      "seed_id": "pk9-003",
+      "title": "Confirmed AtomicReadFile stream-access seed",
+      "strategy": "field_interaction",
+      "target_operation": "AtomicReadFile",
+      "purpose": "Cover file-service parsing with a longer confirmed request body that introduces additional tagged parameters and offset/count interactions.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Original-Unicast-NPDU carrying confirmed AtomicReadFile",
+          "hex": "810a001701000005061c000000012e09003f3100210000"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP implementation should accept the outer framing, recognize confirmed service choice 0x06, and attempt to parse a file-read request in a normal file-service code path.",
+      "constraints_preserved": [
+        "BVLC total length 0x0017 matches 23-byte message",
+        "NPDU version/control explicitly present",
+        "Confirmed service choice 0x06 for AtomicReadFile is directly source-backed",
+        "Body is a conservative BACnet-style tagged file object plus access method/count analogue to maximize mutation utility without overstating source verification",
+        "Single-message complete request preserves replay utility"
+      ],
+      "issue_safety_notes": "Safe parser-entry analogue for file operations; not derived from any vulnerability-triggering payload and intentionally avoids extreme sizes."
+    },
+    {
+      "plan_id": "rev-plan-004",
+      "seed_id": "pk9-004",
+      "title": "Confirmed SubscribeCOV monitored object request",
+      "strategy": "stateful_valid",
+      "target_operation": "SubscribeCOV",
+      "purpose": "Add subscription/state-oriented confirmed-service coverage with multiple interacting fields such as process identifier, monitored object, lifetime, and issue-confirmed flag.",
+      "evidence_ids": [
+        "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+        "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+        "function_code:function:function-text:f1c980ef7dde",
+        "function_code:function:function-text:d3664eeda33b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "Original-Unicast-NPDU carrying confirmed SubscribeCOV",
+          "hex": "810a0017010000050519011c0200004b29013a00000e10"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP target should parse the frame as a SubscribeCOV request and either establish, renew, reject, or error the subscription depending on local object support and policy.",
+      "constraints_preserved": [
+        "BVLC total length 0x0017 matches 23-byte message",
+        "NPDU and confirmed APDU layering preserved",
+        "Confirmed service choice 0x05 for SubscribeCOV is directly source-backed",
+        "Request body is a conservative standard-style tagged subscription analogue using process identifier, monitored object identifier, confirmed flag, and lifetime",
+        "Chosen as stateful coverage because it targets a service with persistent subscription semantics even though the seed itself is a single request"
+      ],
+      "issue_safety_notes": "Safe PK-only subscription seed with ordinary values and no issue-specific mutation or replay hazard."
+    }
+  ]
+}

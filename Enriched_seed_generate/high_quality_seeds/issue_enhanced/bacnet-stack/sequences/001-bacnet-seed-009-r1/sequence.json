@@ -1,0 +1,100 @@
+{
+  "seed_id": "bacnet-seed-009-r1",
+  "title": "Read then WriteProperty with plausible acknowledgements",
+  "strategy": "stateful_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Provide a more realistic multi-step exchange: ReadProperty request, ComplexACK example, WriteProperty request, then SimpleACK example.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "readproperty-probe",
+      "hex": "810a001201000005300c0c0200000101194b",
+      "byte_length": 18,
+      "sha256": "e38cdab3769678b94fcb3ff90af6388b8ad4b169cd2e35b743d62c69114de114"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "readproperty-complexack-probe",
+      "hex": "810a0010010030300c0c020000011921",
+      "byte_length": 16,
+      "sha256": "1d3848e6aca5b0d96af494b8a5d75d1af2a866f8c1893d9b2555a99f8b366f1c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "writeproperty-update",
+      "hex": "810a001301000005310f0c02000001194b3f00",
+      "byte_length": 19,
+      "sha256": "a376774c3e4a70f8d6d067997547552d3715e6c188fd457e0c4d458073abc531"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "writeproperty-simpleack",
+      "hex": "810a0009010020310f",
+      "byte_length": 9,
+      "sha256": "126c52f4a09af73c158ce093dd9bedc14f92d14be72ae2578834951494a59645"
+    }
+  ],
+  "expected_behavior": "The exchange should be acceptable as a corpus dialogue where ReadProperty uses ComplexACK semantics and WriteProperty uses SimpleACK semantics with matching invoke IDs.",
+  "constraints_preserved": [
+    "All frames use BACnet/IP BVLC type 0x81 and unicast function 0x0a.",
+    "Lengths are internally consistent across all four frames.",
+    "ReadProperty uses service choice 0x0c and WriteProperty uses 0x0f.",
+    "ComplexACK and SimpleACK PDU types follow the documented APDU type values."
+  ],
+  "issue_safety_notes": "This keeps the write-path issue focus without replaying the reported harmful multi-packet payloads.",
+  "sequence_sha256": "4746ea6bb12fe473937bafc6f0f22ec8b54c059dc0d006e99762c2c464fede25",
+  "total_bytes": 62,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8c2571c8087e228882ca11ad6c026070ecbfafb227a4317419c38efe41d0e7dd",
+    "encoded_bytes": 62,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 34,
+        "payload_offset": 34,
+        "payload_length": 19,
+        "frame_length": 19
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 53,
+        "payload_offset": 53,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

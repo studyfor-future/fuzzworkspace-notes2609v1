@@ -1,0 +1,53 @@
+{
+  "seed_id": "modbustcp-seed-013",
+  "title": "Function coverage for Write File Record",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write File Record",
+  "purpose": "Exercise grouped file-record write parsing with one conservative subrequest and corrected total length.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_file_record_request",
+      "hex": "00260000000e01150b0600010000000211112222",
+      "byte_length": 20,
+      "sha256": "53565ce783b0d45af807a88c0f7a33668ab73fa2cbedb6265c444c31dcfcecc9"
+    }
+  ],
+  "expected_behavior": "Server should parse a Write File Record request with one subrequest targeting file 1, record 0, length 2, and two 16-bit data words.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 000f for unit_id plus 14-byte PDU",
+    "function code is 15",
+    "byte count 0b matches one subrequest body of reference type, three 16-bit fields, and four data bytes",
+    "record length 0002 matches exactly two 16-bit data words",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Uses a small internally consistent grouped write rather than an aggressive malformed file-record payload.",
+  "sequence_sha256": "49dfc686e7babf9e1b94823f592fb7469cbf4f1a43a4ee5ba7c33ea93d040f49",
+  "total_bytes": 20,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "53565ce783b0d45af807a88c0f7a33668ab73fa2cbedb6265c444c31dcfcecc9",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+Number: 509
+
+Summarize:
+The report describes an out-of-bounds read in libiec61850 in `parseGooseMessage` and `parseGoosePayload` in `goose_receiver.c`. It is triggered by a 22-byte input. The report attributes the issue to insufficient boundary checks when `bufPos` reaches the end of the buffer. In the provided AddressSanitizer run, this appears as a `heap-buffer-overflow` with a `READ of size 1` in `parseGoosePayload` at `/src/libiec61850/src/goose/goose_receiver.c:665:9`, reached from `parseGooseMessage` at line 1002.
+
+Reproduce:
+Use the documented `fuzz_goose_parse` target with AddressSanitizer. 1) Create `poc-oobr-001.goose` containing these 22 bytes: `0000 0000 0000 0000 0000 0000 88b8 0000 0000 0000 0000`. 2) Run `./fuzz_goose_parse poc-oobr-001.goose`. Expected result: AddressSanitizer reports `heap-buffer-overflow` / `READ of size 1` in `parseGoosePayload` (`/src/libiec61850/src/goose/goose_receiver.c:665:9`), called from `parseGooseMessage` (`...:1002:9`), and the process aborts.
+
+Payload:
+00 00 00 00 00 00 00 00 00 00 00 00 88 b8 00 00 00 00 00 00 00 00

@@ -1,0 +1,51 @@
+{
+  "seed_id": "iec60870-rev-017",
+  "title": "System-command diversity with C_RD_NA_1 read command",
+  "strategy": "function_code_coverage",
+  "target_operation": "C_RD_NA_1",
+  "purpose": "Improve parser-entry diversity with a non-command-system type beyond C_SC_NA_1, using a valid read command structure with no extra object bytes beyond the IOA.",
+  "evidence_ids": [
+    "function_code:function:function-text:ff9a2bbfa022",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cs104_i_frame_c_rd_na_1_read_command",
+      "hex": "680d00000000660105000100030000",
+      "byte_length": 15,
+      "sha256": "eae314020b91f41f9b12624f51e8f172f1f572ed5b28646cc8d4da5877b16718"
+    }
+  ],
+  "expected_behavior": "The target should parse a valid read command APDU for TypeID 102 with one information object address and no additional object payload.",
+  "constraints_preserved": [
+    "TypeID 102 is documented as C_RD_NA_1",
+    "APDU length 0x0d matches 4 APCI bytes plus 9 ASDU bytes",
+    "ASDU header ordering and widths are preserved",
+    "VSQ is one-object non-sequence and exactly one IOA is present",
+    "No unsupported extra object bytes are appended"
+  ],
+  "issue_safety_notes": "Adds system-command diversity with a complete minimal body and avoids unsupported field relations.",
+  "sequence_sha256": "90f25405f36b3311969882727f48048e867b3ad8fae05ad7eb2988323173957d",
+  "total_bytes": 15,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "eae314020b91f41f9b12624f51e8f172f1f572ed5b28646cc8d4da5877b16718",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

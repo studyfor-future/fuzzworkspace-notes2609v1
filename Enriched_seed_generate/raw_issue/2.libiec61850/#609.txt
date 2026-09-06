@@ -1,0 +1,133 @@
+issue #609
+
+Undefined shift operations in MmsValue bit-string / binary-time accessors and BerInteger_toInt64 (two of them return wrong values)
+
+Summary
+Four shift operations in libIEC61850 are undefined behaviour, and two of them
+return silently wrong values on x86-64, not merely UB-that-happens-to-work.
+All four operate on data whose size or content comes off the wire.
+
+Details
+1. MmsValue_getBitStringAsInteger — returns a corrupted value
+uint32_t
+MmsValue_getBitStringAsInteger(const MmsValue* self)
+{
+    uint32_t value = 0;
+    int bitPos;
+
+    for (bitPos = 0; bitPos < self->value.bitString.size; bitPos++)
+    {
+        if (MmsValue_getBitStringBit(self, bitPos))
+        {
+            value += (1 << bitPos);          /* <-- mms_value.c:539 */
+        }
+    }
+
+    return value;
+}
+1 is an int, so bitPos == 31 is signed overflow and bitPos >= 32 is a
+shift count at or past the type's width. x86-64 implements the latter by
+masking the count mod 32, which folds bits 32.. straight back onto bits
+0.. — so the uint32_t returned is corrupted rather than truncated.
+
+bitString.size is not bounded by this function's return type, and in the
+GOOSE receive path it is taken entirely from the wire
+(src/goose/goose_receiver.c, parseAllData):
+
+case 0x84: /* BIT STRING */
+    if (elementLength > 1)
+    {
+        int padding = buffer[bufPos];
+        int rawBitLength = (elementLength - 1) * 8;
+        ...
+        value = MmsValue_newBitString(rawBitLength - padding);
+A six-byte BIT STRING element therefore produces a 40-bit MmsValue, and a
+publisher chooses that length freely. GOOSE is unauthenticated layer-2
+multicast, so any station on the process bus can send it.
+
+2. MmsValue_getBitStringAsIntegerBigEndian — same defect, same effect
+    for (bitPos = (self->value.bitString.size - 1); bitPos >= 0; bitPos--)
+    {
+        if (MmsValue_getBitStringBit(self, bitPos))
+        {
+            value += (1 << i);               /* <-- mms_value.c:575 */
+        }
+        i++;
+    }
+i runs to size - 1, so the same overflow and count-masking apply.
+
+3. MmsValue_getBinaryTimeAsUtcMs
+    msSinceMidnight = binaryTimeBuf[0] << 24;   /* <-- mms_value.c:1973 */
+binaryTimeBuf[0] is an unsigned char that promotes to int, so any first
+octet >= 0x80 — half of all inputs — shifts a bit into int's sign bit. The
+remaining three octets stay inside int's range. The resulting value is
+correct on every compiler we tested; only the operation is undefined.
+
+4. BerInteger_toInt64
+    if (buf[0] & 0x80) /* sign extension */
+        *nativeValue = 0xffffffffffffffff;
+    else
+        *nativeValue = 0;
+
+    for (i = 0; i < self->size; i++)
+        *nativeValue = (*nativeValue << 8) | buf[i];   /* <-- ber_integer.c:252 */
+*nativeValue is int64_t and the sign-extension seed makes it negative;
+left-shifting a negative signed integer is undefined outright. Reached
+whenever a decoded INTEGER's first content octet has the sign bit set.
+
+Reproducer
+Self-contained, no server and no sockets: every input is a BER-encoded MMS Data
+element of the kind that arrives in a GOOSE allData list, fed to the
+library's own public decoder and read back through the public accessors.
+
+#include <libiec61850/mms_value.h>
+#include <inttypes.h>
+#include <stdio.h>
+
+static MmsValue *decode(uint8_t *buf, int len)
+{
+    int end = 0;
+    return MmsValue_decodeMmsData(buf, 0, len, &end);
+}
+
+int main(void)
+{
+    /* 6-byte BIT STRING element -> 40-bit value, bits 0 and 32 set */
+    uint8_t bitstring[]  = { 0x84, 0x06, 0x00, 0x80, 0x00, 0x00, 0x00, 0x80 };
+    /* the same, only bit 0 set, for the big-endian accessor */
+    uint8_t be[]         = { 0x84, 0x06, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00 };
+    /* INTEGER whose first content octet has the sign bit set */
+    uint8_t integer[]    = { 0x85, 0x08, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 };
+    /* BINARY-TIME, 4-octet form, first octet >= 0x80 */
+    uint8_t binarytime[] = { 0x8c, 0x04, 0xa2, 0x00, 0x00, 0x00 };
+    /* control: an ordinary 13-bit (Quality width) BIT STRING */
+    uint8_t quality[]    = { 0x84, 0x03, 0x03, 0xa0, 0x00 };
+    MmsValue *v;
+
+    v = decode(quality, sizeof quality);
+    printf("(0) control 13-bit      : %u  (big-endian %u)\n",
+           MmsValue_getBitStringAsInteger(v),
+           MmsValue_getBitStringAsIntegerBigEndian(v));
+    MmsValue_delete(v);
+
+    v = decode(bitstring, sizeof bitstring);
+    printf("(1) 40-bit, bits 0+32   : %u   expected 1\n",
+           MmsValue_getBitStringAsInteger(v));
+    MmsValue_delete(v);
+
+    v = decode(be, sizeof be);
+    printf("(2) 40-bit big-endian   : %u   expected 0 (2^39 truncated)\n",
+           MmsValue_getBitStringAsIntegerBigEndian(v));
+    MmsValue_delete(v);
+
+    v = decode(binarytime, sizeof binarytime);
+    printf("(3) binary time         : %" PRIu64 "\n",
+           MmsValue_getBinaryTimeAsUtcMs(v));
+    MmsValue_delete(v);
+
+    v = decode(integer, sizeof integer);
+    printf("(4) negative INTEGER    : %" PRId64 "\n", MmsValue_toInt64(v));
+    MmsValue_delete(v);
+
+    return 0;
+}

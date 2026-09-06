@@ -1,0 +1,65 @@
+{
+  "seed_id": "iec61850-seed-007",
+  "title": "Request then wrapped Reject-PDU response",
+  "strategy": "stateful_valid",
+  "target_operation": "Reject-PDU",
+  "purpose": "Cover the reject branch with a paired sequence so the response-style MMS Reject-PDU appears after a small confirmed request rather than as an isolated raw tag.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "preceding_confirmed_request_identify",
+      "hex": "600f300da003020101be060404a002020101",
+      "byte_length": 18,
+      "sha256": "edfa96b0da82eb2e70ea187e750447a3f8ddf6fb46856c217cc5bb4a8812ed95"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "wrapped_reject_pdu_response",
+      "hex": "610f300da003020101be060404a402020101",
+      "byte_length": 18,
+      "sha256": "ff128f19d5bc3b76ec28d45541c9b5a8571b1eaedd0db047f1b7374f447c80be"
+    }
+  ],
+  "expected_behavior": "The target should first parse the confirmed request and then enter the MMS reject branch on the wrapped response carrying tag 0xa4.",
+  "constraints_preserved": [
+    "Request uses documented MMS Confirmed-Request-PDU tag 0xa0 and service [2].",
+    "Response uses documented ACSE type 0x61 and MMS tag 0xa4 for Reject-PDU.",
+    "Both messages preserve definite BER lengths.",
+    "Simple invoke-style integer bytes are kept consistent and mutation-friendly."
+  ],
+  "issue_safety_notes": "This is not an error-trigger replay; it is a conservative paired branch-coverage sequence.",
+  "sequence_sha256": "7f68da01f2e9f74ad187e34c98131509a8327d59081917dd4398fdbfdac3bebf",
+  "total_bytes": 36,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "85fa84a6fe75f5d3b1e214d6640add2c8a0c25a6b1a5fea2da1d16e48d64310d",
+    "encoded_bytes": 36,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

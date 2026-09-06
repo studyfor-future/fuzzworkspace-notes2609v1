@@ -1,0 +1,35 @@
+issue #55
+
+Hello, I found a SEGV inlib60870/lib60870-C/examples/cs104_server/simple_server.c.
+
+Below are steps followed to reproduce crash
+Download latest source code from: /mz-automation/lib60870/, compiled with clang and ASANexport CFLAGS="-g -fsanitize=address" LDFLAGS="-fsanitize=address"before make
+
+Input data
+681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 6809 0000 0000 0083 00fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0 
+
+ASAN Output
+
+ASAN:DEADLYSIGNAL
+=================================================================
+==23512==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000008 (pc 0x000000561b31 bp 0x7f3b2b2fbd70 sp 0x7f3b2b2fbb10 T4)                                                                                ==23512==The signal is caused by a READ memory access.                                                                                                                                                             ==23512==Hint: address points to the zero page.
+    #0 0x561b30 in CS101_ASDU_getCOT /root/temp/iec/lib60870/lib60870-C/src/iec60870/cs101/cs101_asdu.c:308:47
+    #1 0x58a963 in handleASDU /root/temp/iec/lib60870/lib60870-C/src/iec60870/cs104/cs104_slave.c:1708:19
+    #2 0x58a963 in handleMessage /root/temp/iec/lib60870/lib60870-C/src/iec60870/cs104/cs104_slave.c:2043
+    #3 0x5882b6 in connectionHandlingThread /root/temp/iec/lib60870/lib60870-C/src/iec60870/cs104/cs104_slave.c:2410:21
+    #4 0x5a0962 in destroyAutomaticThread /root/temp/iec/lib60870/lib60870-C/src/hal/thread/linux/thread_linux.c:87:2
+    #5 0x7f3b302ac6b9 in start_thread (/lib/x86_64-linux-gnu/libpthread.so.0+0x76b9)
+    #6 0x7f3b2f6b741c in clone /build/glibc-LK5gWL/glibc-2.23/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:109
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /root/temp/iec/lib60870/lib60870-C/src/iec60870/cs101/cs101_asdu.c:308:47 in CS101_ASDU_getCOT
+Thread T4 created by T1 here:
+    #0 0x431d2d in __interceptor_pthread_create (/root/temp/iec/lib60870/lib60870-C/examples/cs104_server/simple_server+0x431d2d)
+    #1 0x5a05eb in Thread_start /root/temp/iec/lib60870/lib60870-C/src/hal/thread/linux/thread_linux.c:98:3
+    #2 0x7f3b302ac6b9 in start_thread (/lib/x86_64-linux-gnu/libpthread.so.0+0x76b9)
+
+Thread T1 created by T0 here:
+    #0 0x431d2d in __interceptor_pthread_create (/root/temp/iec/lib60870/lib60870-C/examples/cs104_server/simple_server+0x431d2d)
+    #1 0x5a06bb in Thread_start /root/temp/iec/lib60870/lib60870-C/src/hal/thread/linux/thread_linux.c:102:3
+
+==23512==ABORTING

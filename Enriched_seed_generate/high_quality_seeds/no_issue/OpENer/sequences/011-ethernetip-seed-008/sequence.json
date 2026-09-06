@@ -1,0 +1,54 @@
+{
+  "seed_id": "ethernetip-seed-008",
+  "title": "Set_Attributes_All with small service data",
+  "strategy": "field_interaction",
+  "target_operation": "Set_Attributes_All",
+  "purpose": "Exercise the interaction of a valid Message Router service code, a class-instance path, and a small service-data payload inside a correct SendRRData transport.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:dac0edf7a66f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_set_attributes_all",
+      "hex": "6f0018000000000000000000000000000000000000000000000000000000020000000000b2000a000202200124013412",
+      "byte_length": 48,
+      "sha256": "3b9c6048979f2397cc760cbd40baff5afa455fb1ddb2fbe8fd0428e4574f3c99"
+    }
+  ],
+  "expected_behavior": "The implementation should accept the valid encapsulation and CPF framing and then deliver a Set_Attributes_All request with two bytes of service data to higher-level handling.",
+  "constraints_preserved": [
+    "Encapsulation length is 0x001a and matches 26 command-specific bytes.",
+    "SendRRData prefix includes interface handle and timeout.",
+    "CPF uses item_count 2, Null Address Item, and Unconnected Data Item.",
+    "Unconnected Data Item length is 10 and matches the CIP request size.",
+    "Service code 0x02 is the documented Set_Attributes_All service.",
+    "Path-size byte 0x02 matches the class-instance path."
+  ],
+  "issue_safety_notes": "The small service-data block is mutation-friendly but remains structurally conservative.",
+  "sequence_sha256": "8f1ad70ffe1962b627bea2ae7c4ca5bf22ad044fee663785d6e48aa2857af41f",
+  "total_bytes": 48,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3b9c6048979f2397cc760cbd40baff5afa455fb1ddb2fbe8fd0428e4574f3c99",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 48,
+        "frame_length": 48
+      }
+    ]
+  }
+}

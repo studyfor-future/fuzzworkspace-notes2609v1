@@ -1,0 +1,68 @@
+{
+  "seed_id": "ethernetip-rev-006",
+  "title": "Object resolution analogue with unknown class",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Object Does Not Exist",
+  "purpose": "Target object-resolution behavior more directly than discovery-only seeds by sending a valid explicit request to a likely unsupported class path.",
+  "evidence_ids": [
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:3a3c64e6d083",
+    "issue:582:582-summary:95e9bb0be3fe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_object_lookup_setup",
+      "hex": "65000400a1b2c3d40000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e80c38f55da93caa4f7c37788cfbc9b24c7f431a34245df97ce6a7da4c635179"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_get_attributes_all_unknown_class",
+      "hex": "6f001500a1b2c3d400000000000000000000000000000000000000000000020000000000b20006010220ff2401",
+      "byte_length": 45,
+      "sha256": "dcb181fbe13eb53314ba2dc323dcfaba3053af60bb1202a002b7425e9c9740c0"
+    }
+  ],
+  "expected_behavior": "A compliant implementation should parse the explicit request and likely return an object/path-level error such as Object Does Not Exist or Path Destination Unknown, without framing failure.",
+  "constraints_preserved": [
+    "Outer framing is complete and little-endian.",
+    "Session handle is nonzero due to prior RegisterSession.",
+    "SendRRData payload length is 20 bytes.",
+    "CPF item count and item lengths are exact.",
+    "CIP request path size is 2 words with exactly four EPATH bytes.",
+    "Only documented CIP service code 0x01 is used."
+  ],
+  "issue_safety_notes": "This is a safe structural analogue for object-resolution behavior and does not use malformed discovery payloads or any stack-overflow reproduction.",
+  "sequence_sha256": "affe452162af836e990b3ed1297aa2b39aa8b8cbb03bf6d623b96d52d34bcf1c",
+  "total_bytes": 73,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "dbc122b1029a953968ab0a1a324fd419b3d704b09b91fa394d072e2ccfa380a9",
+    "encoded_bytes": 73,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

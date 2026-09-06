@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-004",
+  "title": "Minimal Read Device Identification via Encapsulated Interface Transport",
+  "strategy": "parser_depth",
+  "target_operation": "Encapsulated Interface Transport",
+  "purpose": "Exercise function 0x2B with MEI type 0x0E Read Device Identification using a compact valid nested request.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "protocol_format:modbustcp:template-catalog:9387d801be8f",
+    "function_code:function:function-text:ba5533b39dfa",
+    "function_code:function:operation-catalog:2528c48db80b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "encapsulated_interface_transport_read_device_id_request",
+      "hex": "000500000005012b0e0100",
+      "byte_length": 11,
+      "sha256": "f329d5b04e1e7e91885adbd63fe8a966e5ca2c4cf3b7fe95ba5f8b0cf6c1e3f9"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid MBAP-framed function 0x2B request carrying MEI type 0x0E Read Device Identification, then respond with identification data or a standard exception if unsupported.",
+  "constraints_preserved": [
+    "Complete MBAP header present.",
+    "protocol_id is 0x0000.",
+    "length is 0x0005, matching unit_id plus 4-byte PDU.",
+    "Function code 0x2B is used for Encapsulated Interface Transport.",
+    "Nested fields are MEI type 0x0E, Read Device ID code 0x01, and object id 0x00."
+  ],
+  "issue_safety_notes": "No issue enhancement is used. This is a small, valid nested request chosen for parser-depth coverage.",
+  "sequence_sha256": "39a78f0213eacadf5eb120e4f3cb81d6b4530112d1c9e3b11955bd9059d49a7f",
+  "total_bytes": 11,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f329d5b04e1e7e91885adbd63fe8a966e5ca2c4cf3b7fe95ba5f8b0cf6c1e3f9",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

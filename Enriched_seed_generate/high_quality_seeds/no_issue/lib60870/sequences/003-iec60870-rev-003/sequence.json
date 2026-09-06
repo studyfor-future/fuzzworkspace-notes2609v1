@@ -1,0 +1,56 @@
+{
+  "seed_id": "iec60870-rev-003",
+  "title": "Reserved type 127 in valid 104 envelope",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Unknown Type Identification",
+  "purpose": "Exercise reserved-type dispatch near the documented type-id boundary while keeping framing and field widths valid and minimal.",
+  "evidence_ids": [
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:ff9a2bbfa022",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:bcdc884a69d7",
+    "function_code:function:operation-catalog:7130d97792f3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "iec104_i_format_reserved_type_127_request",
+      "hex": "680d000000007f0105000100000000",
+      "byte_length": 15,
+      "sha256": "09079eb02478ed111d9d43b5e8206c898b38245bad31dd0890d8d1ab9f63118b"
+    }
+  ],
+  "expected_behavior": "The receiver should accept the APDU envelope and route type_id 127 to reserved or unknown-type handling without frame desynchronization.",
+  "constraints_preserved": [
+    "Type_id 127 is within the documented 1..127 parse range and explicitly listed as reserved",
+    "APDU length 0x0e matches the 14 bytes following the length byte",
+    "VSQ is one-object non-sequence",
+    "Cause of transmission 5 request is encoded using two octets",
+    "Common address is two octets and information object address is three octets",
+    "No undocumented object payload is appended"
+  ],
+  "issue_safety_notes": "Uses a structurally valid boundary-adjacent reserved type instead of malformed length or truncation patterns.",
+  "sequence_sha256": "e8d2bbdd14f1550e8c6270dcc8671468af7db3b63b3c8024f8ae12cbf3893661",
+  "total_bytes": 15,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "09079eb02478ed111d9d43b5e8206c898b38245bad31dd0890d8d1ab9f63118b",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

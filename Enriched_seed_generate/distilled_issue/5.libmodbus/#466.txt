@@ -1,0 +1,10 @@
+Number: 466
+
+Summarize:
+libmodbus TCP v3.0.6 reports an error when modbus_read_registers is used to read a DWord-type high-speed counter (HC202) from a Delta AS228T PLC at address 64715 with quantity 1. The reporter states that Word and Bit device reads work, but this DWord read returns "Invalid data". In the provided trace, the PLC response carries function 0x03 with byte count 0x04 and four data bytes, after which libmodbus prints "Message length not corresponding to the computed length (13 != 11)" and returns -1, so the DWord value is not read.
+
+Reproduce:
+Use libmodbus TCP v3.0.6 against a Delta AS228T PLC and target a high-speed counter HC202 that is a DWord device. In client code, allocate a buffer such as uint16_t test_data[10]; then call modbus_read_registers(mb, 64715, 1, test_data). The report shows the request [00][01][00][00][00][06][FF][03][FC][CA][00][01] and the reply <00><01><00><00><00><07><FF><03><04><00><04><8F><5A>. The observed result is an "Invalid data" error, the diagnostic "Message length not corresponding to the computed length (13 != 11)", and a return value of -1. The same report says Word and Bit device reads work, while this DWord read fails.
+
+Payload:
+00 01 00 00 00 06 ff 03 fc ca 00 01

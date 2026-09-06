@@ -1,0 +1,55 @@
+{
+  "seed_id": "ethernetip-seed-003",
+  "title": "Minimal valid SendRRData with full command-specific prefix",
+  "strategy": "length_boundary_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Repair earlier malformed SendRRData ideas by using the documented interface handle and timeout prefix followed by the common Null Address Item and a minimally non-empty Unconnected Data Item.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:operation-catalog:b5c7ceede78d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_minimal",
+      "hex": "6f0012000000000000000000000000000000000000000000000000000000020000000000b20002001400",
+      "byte_length": 42,
+      "sha256": "204dfa2e12ef9eafd17b6573e1e7f71ef20d4d2fb6e2aa0c5e6587d973508ea2"
+    }
+  ],
+  "expected_behavior": "The parser should accept a valid SendRRData command-specific structure, consume the CPF item count and the documented Null Address Item plus Unconnected Data Item combination, and forward the small unconnected payload.",
+  "constraints_preserved": [
+    "Command 0x006f is encoded little-endian as 6f00.",
+    "Length field is 0x0012 and matches 18 command-specific bytes.",
+    "SendRRData prefix includes 4-byte interface handle and 2-byte timeout before CPF.",
+    "CPF item_count is 0x0002.",
+    "First item is Null Address Item 0x0000 with length 0.",
+    "Second item is Unconnected Data Item 0x00b2 with length 2.",
+    "All multibyte numeric fields are little-endian.",
+    "Command-specific data length is even."
+  ],
+  "issue_safety_notes": "This replaces malformed prior transport shapes with a valid low-size structure and does not attempt any issue replay.",
+  "sequence_sha256": "1c30344ee49f94655a5bc5e2d54f778a1106a9d2f59b2d41c755a4d994714937",
+  "total_bytes": 42,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "204dfa2e12ef9eafd17b6573e1e7f71ef20d4d2fb6e2aa0c5e6587d973508ea2",
+    "encoded_bytes": 42,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 42,
+        "frame_length": 42
+      }
+    ]
+  }
+}

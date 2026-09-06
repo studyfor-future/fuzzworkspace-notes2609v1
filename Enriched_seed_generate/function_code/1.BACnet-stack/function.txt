@@ -1,0 +1,425 @@
+BACnet Function Code and Service Choice Reference
+=================================================
+
+Scope
+-----
+This file contains standardized BACnet protocol operation identifiers:
+
+1. BACnet APDU PDU Type
+2. Confirmed Service Choice
+3. Unconfirmed Service Choice
+4. BACnet/IP BVLC Function
+5. BACnet/IP BVLC Result Code
+6. BACnet Network Layer Message Type
+7. Reject Reason
+8. Abort Reason
+9. Error Class
+
+The values marked RESERVED must not be interpreted as currently defined
+standard operations.
+
+================================================================
+1. BACnet APDU PDU TYPE
+================================================================
+
+The APDU type is stored in the high nibble of the first APDU octet.
+
+0x00 = Confirmed-Request-PDU
+0x10 = Unconfirmed-Request-PDU
+0x20 = SimpleACK-PDU
+0x30 = ComplexACK-PDU
+0x40 = SegmentACK-PDU
+0x50 = Error-PDU
+0x60 = Reject-PDU
+0x70 = Abort-PDU
+
+PDU type numeric value before shifting:
+
+0 = Confirmed-Request-PDU
+1 = Unconfirmed-Request-PDU
+2 = SimpleACK-PDU
+3 = ComplexACK-PDU
+4 = SegmentACK-PDU
+5 = Error-PDU
+6 = Reject-PDU
+7 = Abort-PDU
+
+================================================================
+2. BACnet CONFIRMED SERVICE CHOICE
+================================================================
+
+0x00 = AcknowledgeAlarm
+0x01 = ConfirmedCOVNotification
+0x02 = ConfirmedEventNotification
+0x03 = GetAlarmSummary
+0x04 = GetEnrollmentSummary
+0x05 = SubscribeCOV
+0x06 = AtomicReadFile
+0x07 = AtomicWriteFile
+0x08 = AddListElement
+0x09 = RemoveListElement
+0x0A = CreateObject
+0x0B = DeleteObject
+0x0C = ReadProperty
+0x0D = ReadPropertyConditional
+0x0E = ReadPropertyMultiple
+0x0F = WriteProperty
+0x10 = WritePropertyMultiple
+0x11 = DeviceCommunicationControl
+0x12 = ConfirmedPrivateTransfer
+0x13 = ConfirmedTextMessage
+0x14 = ReinitializeDevice
+0x15 = VT-Open
+0x16 = VT-Close
+0x17 = VT-Data
+0x18 = Authenticate
+0x19 = RequestKey
+0x1A = ReadRange
+0x1B = LifeSafetyOperation
+0x1C = SubscribeCOVProperty
+0x1D = GetEventInformation
+0x1E = SubscribeCOVPropertyMultiple
+0x1F = ConfirmedCOVNotificationMultiple
+0x20 = ConfirmedAuditNotification
+0x21 = AuditLogQuery
+
+0x22-0xFF = Reserved or future standard services
+
+Confirmed service summary:
+
+AcknowledgeAlarm
+    Acknowledge an alarm or event transition.
+
+ConfirmedCOVNotification
+    Confirmed change-of-value notification.
+
+ConfirmedEventNotification
+    Confirmed alarm or event notification.
+
+GetAlarmSummary
+    Retrieve summary information for active alarms.
+
+GetEnrollmentSummary
+    Retrieve enrollment summary information.
+
+SubscribeCOV
+    Create, renew, or cancel an object-level COV subscription.
+
+AtomicReadFile
+    Read a BACnet File object in stream or record mode.
+
+AtomicWriteFile
+    Write a BACnet File object in stream or record mode.
+
+AddListElement
+    Add one or more elements to a list property.
+
+RemoveListElement
+    Remove one or more elements from a list property.
+
+CreateObject
+    Create a BACnet object instance.
+
+DeleteObject
+    Delete a BACnet object instance.
+
+ReadProperty
+    Read one property of one object.
+
+ReadPropertyConditional
+    Conditionally read properties.
+
+ReadPropertyMultiple
+    Read multiple properties from one or more objects.
+
+WriteProperty
+    Write one property.
+
+WritePropertyMultiple
+    Write multiple properties.
+
+DeviceCommunicationControl
+    Enable, disable, or partially disable device communication.
+
+ConfirmedPrivateTransfer
+    Vendor-specific confirmed service.
+
+ConfirmedTextMessage
+    Confirmed text-message delivery.
+
+ReinitializeDevice
+    Request device warm start, cold start, or supported reinitialization.
+
+VT-Open
+    Open virtual-terminal connection.
+
+VT-Close
+    Close virtual-terminal connection.
+
+VT-Data
+    Transfer virtual-terminal data.
+
+Authenticate
+    Legacy BACnet authentication service.
+
+RequestKey
+    Legacy BACnet key request service.
+
+ReadRange
+    Read a range of list, array, log, or record data.
+
+LifeSafetyOperation
+    Perform a life-safety operation.
+
+SubscribeCOVProperty
+    Subscribe to change-of-value for one property.
+
+GetEventInformation
+    Retrieve active event information.
+
+SubscribeCOVPropertyMultiple
+    Subscribe to multiple COV properties.
+
+ConfirmedCOVNotificationMultiple
+    Confirmed notification containing multiple changed values.
+
+ConfirmedAuditNotification
+    Confirmed audit notification.
+
+AuditLogQuery
+    Query BACnet audit log information.
+
+================================================================
+3. BACnet UNCONFIRMED SERVICE CHOICE
+================================================================
+
+0x00 = I-Am
+0x01 = I-Have
+0x02 = UnconfirmedCOVNotification
+0x03 = UnconfirmedEventNotification
+0x04 = UnconfirmedPrivateTransfer
+0x05 = UnconfirmedTextMessage
+0x06 = TimeSynchronization
+0x07 = Who-Has
+0x08 = Who-Is
+0x09 = UTCTimeSynchronization
+0x0A = WriteGroup
+0x0B = UnconfirmedCOVNotificationMultiple
+0x0C = UnconfirmedAuditNotification
+
+0x0D-0xFF = Reserved or future standard services
+
+Unconfirmed service summary:
+
+I-Am
+    Device discovery response.
+
+I-Have
+    Object discovery response.
+
+UnconfirmedCOVNotification
+    Unconfirmed change-of-value notification.
+
+UnconfirmedEventNotification
+    Unconfirmed alarm or event notification.
+
+UnconfirmedPrivateTransfer
+    Vendor-specific unconfirmed service.
+
+UnconfirmedTextMessage
+    Unconfirmed text-message delivery.
+
+TimeSynchronization
+    Synchronize device local time.
+
+Who-Has
+    Search for an object by identifier or name.
+
+Who-Is
+    Search for BACnet devices.
+
+UTCTimeSynchronization
+    Synchronize device UTC time.
+
+WriteGroup
+    Write values to a group of channel or group members.
+
+UnconfirmedCOVNotificationMultiple
+    Unconfirmed notification containing multiple changed values.
+
+UnconfirmedAuditNotification
+    Unconfirmed audit notification.
+
+================================================================
+4. BACnet/IP BVLC FUNCTION
+================================================================
+
+BACnet/IP BVLC Type:
+
+0x81 = BACnet/IP BVLL
+
+BACnet/IP BVLC Function:
+
+0x00 = BVLC-Result
+0x01 = Write-Broadcast-Distribution-Table
+0x02 = Read-Broadcast-Distribution-Table
+0x03 = Read-Broadcast-Distribution-Table-Ack
+0x04 = Forwarded-NPDU
+0x05 = Register-Foreign-Device
+0x06 = Read-Foreign-Device-Table
+0x07 = Read-Foreign-Device-Table-Ack
+0x08 = Delete-Foreign-Device-Table-Entry
+0x09 = Distribute-Broadcast-To-Network
+0x0A = Original-Unicast-NPDU
+0x0B = Original-Broadcast-NPDU
+0x0C = Secure-BVLL
+
+0x0D-0xFF = Reserved
+
+BVLC operation summary:
+
+BVLC-Result
+    Indicates success or failure of a BVLC management operation.
+
+Write-Broadcast-Distribution-Table
+    Replace the BBMD Broadcast Distribution Table.
+
+Read-Broadcast-Distribution-Table
+    Request the current BDT.
+
+Read-Broadcast-Distribution-Table-Ack
+    Return the current BDT.
+
+Forwarded-NPDU
+    Forward a broadcast NPDU and preserve original source address.
+
+Register-Foreign-Device
+    Register a foreign device with a BBMD.
+
+Read-Foreign-Device-Table
+    Request the current FDT.
+
+Read-Foreign-Device-Table-Ack
+    Return the current FDT.
+
+Delete-Foreign-Device-Table-Entry
+    Remove one foreign-device entry.
+
+Distribute-Broadcast-To-Network
+    Ask a BBMD to distribute a broadcast.
+
+Original-Unicast-NPDU
+    Carry one unicast BACnet NPDU.
+
+Original-Broadcast-NPDU
+    Carry one local broadcast BACnet NPDU.
+
+Secure-BVLL
+    Legacy secure BVLL function defined in applicable BACnet revisions.
+    It is not the same as BACnet/SC.
+
+================================================================
+5. BACnet/IP BVLC RESULT CODE
+================================================================
+
+0x0000 = Successful-Completion
+0x0010 = Write-Broadcast-Distribution-Table-NAK
+0x0020 = Read-Broadcast-Distribution-Table-NAK
+0x0030 = Register-Foreign-Device-NAK
+0x0040 = Read-Foreign-Device-Table-NAK
+0x0050 = Delete-Foreign-Device-Table-Entry-NAK
+0x0060 = Distribute-Broadcast-To-Network-NAK
+
+Other values = Reserved
+
+================================================================
+6. BACnet NETWORK LAYER MESSAGE TYPE
+================================================================
+
+The following values are used when the NPDU Network Layer Message flag is set.
+
+0x00 = Who-Is-Router-To-Network
+0x01 = I-Am-Router-To-Network
+0x02 = I-Could-Be-Router-To-Network
+0x03 = Reject-Message-To-Network
+0x04 = Router-Busy-To-Network
+0x05 = Router-Available-To-Network
+0x06 = Initialize-Routing-Table
+0x07 = Initialize-Routing-Table-Ack
+0x08 = Establish-Connection-To-Network
+0x09 = Disconnect-Connection-To-Network
+0x0A = Challenge-Request
+0x0B = Security-Payload
+0x0C = Security-Response
+0x0D = Request-Key-Update
+0x0E = Update-Key-Set
+0x0F = Update-Distribution-Key
+0x10 = Request-Master-Key
+0x11 = Set-Master-Key
+0x12 = What-Is-Network-Number
+0x13 = Network-Number-Is
+
+0x14-0x7F = Reserved for standard BACnet network messages
+0x80-0xFF = Vendor-proprietary network messages
+
+================================================================
+7. BACnet REJECT REASON
+================================================================
+
+0x00 = Other
+0x01 = Buffer-Overflow
+0x02 = Inconsistent-Parameters
+0x03 = Invalid-Parameter-Data-Type
+0x04 = Invalid-Tag
+0x05 = Missing-Required-Parameter
+0x06 = Parameter-Out-Of-Range
+0x07 = Too-Many-Arguments
+0x08 = Undefined-Enumeration
+0x09 = Unrecognized-Service
+
+================================================================
+8. BACnet ABORT REASON
+================================================================
+
+0x00 = Other
+0x01 = Buffer-Overflow
+0x02 = Invalid-APDU-In-This-State
+0x03 = Preempted-By-Higher-Priority-Task
+0x04 = Segmentation-Not-Supported
+0x05 = Security-Error
+0x06 = Insufficient-Security
+0x07 = Window-Size-Out-Of-Range
+0x08 = Application-Exceeded-Reply-Time
+0x09 = Out-Of-Resources
+0x0A = TSM-Timeout
+0x0B = APDU-Too-Long
+
+================================================================
+9. BACnet ERROR CLASS
+================================================================
+
+0x00 = Device
+0x01 = Object
+0x02 = Property
+0x03 = Resources
+0x04 = Security
+0x05 = Services
+0x06 = VT
+0x07 = Communication
+
+================================================================
+10. BACnet INITIAL SEED RECOMMENDATIONS
+================================================================
+
+Recommended normal service choices for initial seed generation:
+
+0x08 Unconfirmed Who-Is
+0x00 Unconfirmed I-Am
+0x0C Confirmed ReadProperty
+0x0E Confirmed ReadPropertyMultiple
+0x0F Confirmed WriteProperty
+0x05 Confirmed SubscribeCOV
+0x1D Confirmed GetEventInformation
+0x1A Confirmed ReadRange
+0x0A BVLC Original-Unicast-NPDU
+0x0B BVLC Original-Broadcast-NPDU

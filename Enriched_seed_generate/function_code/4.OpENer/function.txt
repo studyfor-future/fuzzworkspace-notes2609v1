@@ -1,0 +1,463 @@
+EtherNet/IP and CIP Function Code Reference
+===========================================
+
+Scope
+-----
+This file contains:
+
+1. EtherNet/IP Encapsulation Commands
+2. Common Packet Format Item Type IDs
+3. CIP Common Service Codes
+4. CIP Connection Manager Service Codes
+5. CIP General Status Codes
+6. Common CIP Object Class IDs
+7. Response service-code rule
+
+================================================================
+1. ETHERNET/IP ENCAPSULATION COMMANDS
+================================================================
+
+0x0000 = NOP
+0x0004 = ListServices
+0x0063 = ListIdentity
+0x0064 = ListInterfaces
+0x0065 = RegisterSession
+0x0066 = UnregisterSession
+0x006F = SendRRData
+0x0070 = SendUnitData
+0x0072 = IndicateStatus
+0x0073 = Cancel
+
+Other values:
+    Reserved or future encapsulation commands.
+
+Command summary:
+
+0x0000 NOP
+    No-operation encapsulation command.
+
+0x0004 ListServices
+    Request supported encapsulation services.
+
+0x0063 ListIdentity
+    Discover EtherNet/IP device identity.
+
+0x0064 ListInterfaces
+    Request communication interfaces.
+
+0x0065 RegisterSession
+    Register an EtherNet/IP encapsulation session.
+
+0x0066 UnregisterSession
+    Unregister an active encapsulation session.
+
+0x006F SendRRData
+    Send unconnected request/response data.
+
+0x0070 SendUnitData
+    Send connected explicit or connected data.
+
+0x0072 IndicateStatus
+    Legacy encapsulation status indication.
+
+0x0073 Cancel
+    Cancel an outstanding request where supported.
+
+================================================================
+2. ENCAPSULATION HEADER FIELDS
+================================================================
+
+Command:
+    2 bytes, little-endian
+
+Length:
+    2 bytes, little-endian
+
+Session Handle:
+    4 bytes, little-endian
+
+Status:
+    4 bytes, little-endian
+
+Sender Context:
+    8 bytes
+
+Options:
+    4 bytes, little-endian
+
+Encapsulation header size:
+
+24 bytes
+
+Request status:
+
+0x00000000 = Success or no error in request
+
+Common encapsulation status values:
+
+0x00000000 = Success
+0x00000001 = Invalid or unsupported encapsulation command
+0x00000002 = Insufficient memory resources
+0x00000003 = Incorrect data in command
+0x00000064 = Invalid session handle
+0x00000065 = Invalid length
+0x00000069 = Unsupported encapsulation protocol revision
+
+================================================================
+3. COMMON PACKET FORMAT ITEM TYPE IDS
+================================================================
+
+0x0000 = Null Address Item
+0x000C = List Identity Response Item
+0x0100 = Connected Address Item
+0x8000 = Sequenced Address Item
+0x00B1 = Connected Data Item
+0x00B2 = Unconnected Data Item
+0x8002 = Socket Address Information O-to-T
+0x8003 = Socket Address Information T-to-O
+
+Item structure:
+
+Type ID:
+    2 bytes, little-endian
+
+Length:
+    2 bytes, little-endian
+
+Data:
+    Length bytes
+
+Common SendRRData item combination:
+
+Null Address Item
+Unconnected Data Item
+
+Common SendUnitData item combination:
+
+Connected Address Item
+Connected Data Item
+
+================================================================
+4. CIP COMMON SERVICE CODES
+================================================================
+
+0x01 = Get_Attributes_All
+0x02 = Set_Attributes_All
+0x03 = Get_Attribute_List
+0x04 = Set_Attribute_List
+0x05 = Reset
+0x06 = Start
+0x07 = Stop
+0x08 = Create
+0x09 = Delete
+0x0A = Multiple_Service_Packet
+0x0D = Apply_Attributes
+0x0E = Get_Attribute_Single
+0x10 = Set_Attribute_Single
+0x11 = Find_Next_Object_Instance
+0x12 = Restore
+0x13 = Save
+0x14 = No_Operation
+0x15 = Get_Member
+0x16 = Set_Member
+0x17 = Insert_Member
+0x18 = Remove_Member
+0x19 = GroupSync
+
+Service summary:
+
+0x01 Get_Attributes_All
+    Read all attributes supported by this service.
+
+0x02 Set_Attributes_All
+    Write all attributes supported by this service.
+
+0x03 Get_Attribute_List
+    Read selected attributes.
+
+0x04 Set_Attribute_List
+    Write selected attributes.
+
+0x05 Reset
+    Reset the target object or device.
+
+0x06 Start
+    Start object operation.
+
+0x07 Stop
+    Stop object operation.
+
+0x08 Create
+    Create an object instance.
+
+0x09 Delete
+    Delete an object instance.
+
+0x0A Multiple_Service_Packet
+    Carry multiple embedded CIP requests.
+
+0x0D Apply_Attributes
+    Apply previously configured attributes.
+
+0x0E Get_Attribute_Single
+    Read one attribute.
+
+0x10 Set_Attribute_Single
+    Write one attribute.
+
+0x11 Find_Next_Object_Instance
+    Find the next implemented object instance.
+
+0x12 Restore
+    Restore persistent values.
+
+0x13 Save
+    Save current values persistently.
+
+0x14 No_Operation
+    Perform no state-changing operation.
+
+0x15 Get_Member
+    Read one member of a composite attribute.
+
+0x16 Set_Member
+    Write one member of a composite attribute.
+
+0x17 Insert_Member
+    Insert a member.
+
+0x18 Remove_Member
+    Remove a member.
+
+0x19 GroupSync
+    Synchronize a group operation where supported.
+
+================================================================
+5. CIP RESPONSE SERVICE CODE RULE
+================================================================
+
+CIP Response Service Code:
+
+Response Service = Request Service OR 0x80
+
+Examples:
+
+Request:
+    0x01 Get_Attributes_All
+
+Response:
+    0x81 Get_Attributes_All Response
+
+Request:
+    0x0E Get_Attribute_Single
+
+Response:
+    0x8E Get_Attribute_Single Response
+
+Request:
+    0x10 Set_Attribute_Single
+
+Response:
+    0x90 Set_Attribute_Single Response
+
+Request:
+    0x54 Forward_Open
+
+Response:
+    0xD4 Forward_Open Response
+
+================================================================
+6. CIP CONNECTION MANAGER SERVICE CODES
+================================================================
+
+0x4E = Forward_Close
+0x52 = Unconnected_Send
+0x54 = Forward_Open
+0x5B = Large_Forward_Open
+
+Connection Manager Class ID:
+
+0x06 = Connection Manager Object
+
+Service summary:
+
+0x4E Forward_Close
+    Close an existing CIP connection.
+
+0x52 Unconnected_Send
+    Route one unconnected embedded CIP request.
+
+0x54 Forward_Open
+    Open a standard-size connected explicit or I/O connection.
+
+0x5B Large_Forward_Open
+    Open a connection using large connection-size fields.
+
+Forward Open commonly contains:
+
+Priority and Time Tick
+Timeout Ticks
+O-to-T Connection ID
+T-to-O Connection ID
+Connection Serial Number
+Originator Vendor ID
+Originator Serial Number
+Timeout Multiplier
+O-to-T Requested Packet Interval
+O-to-T Connection Parameters
+T-to-O Requested Packet Interval
+T-to-O Connection Parameters
+Transport Type and Trigger
+Connection Path Size
+Connection Path
+
+Forward Close commonly contains:
+
+Priority and Time Tick
+Timeout Ticks
+Connection Serial Number
+Originator Vendor ID
+Originator Serial Number
+Connection Path Size
+Connection Path
+
+================================================================
+7. CIP GENERAL STATUS CODES
+================================================================
+
+0x00 = Success
+0x01 = Connection Failure
+0x02 = Resource Unavailable
+0x03 = Invalid Parameter Value
+0x04 = Path Segment Error
+0x05 = Path Destination Unknown
+0x06 = Partial Transfer
+0x07 = Connection Lost
+0x08 = Service Not Supported
+0x09 = Invalid Attribute Value
+0x0A = Attribute List Error
+0x0B = Already In Requested Mode or State
+0x0C = Object State Conflict
+0x0D = Object Already Exists
+0x0E = Attribute Not Settable
+0x0F = Privilege Violation
+0x10 = Device State Conflict
+0x11 = Reply Data Too Large
+0x12 = Fragmentation Of A Primitive Value
+0x13 = Not Enough Data
+0x14 = Attribute Not Supported
+0x15 = Too Much Data
+0x16 = Object Does Not Exist
+0x17 = Service Fragmentation Sequence Not In Progress
+0x18 = No Stored Attribute Data
+0x19 = Store Operation Failure
+0x1A = Routing Failure Request Packet Too Large
+0x1B = Routing Failure Response Packet Too Large
+0x1C = Missing Attribute List Entry Data
+0x1D = Invalid Attribute Value List
+0x1E = Embedded Service Error
+0x1F = Vendor-Specific Error
+0x20 = Invalid Parameter
+0x21 = Write-Once Value Or Medium Already Written
+0x22 = Invalid Reply Received
+0x23 = Buffer Overflow
+0x24 = Message Format Error
+0x25 = Key Failure In Path
+0x26 = Path Size Invalid
+0x27 = Unexpected Attribute In List
+0x28 = Invalid Member ID
+0x29 = Member Not Settable
+0x2A = Group 2 Only Server General Failure
+0x2B = Unknown Modbus Error
+0x2C = Attribute Not Gettable
+
+================================================================
+8. COMMON CIP OBJECT CLASS IDS
+================================================================
+
+0x01 = Identity Object
+0x02 = Message Router Object
+0x03 = DeviceNet Object
+0x04 = Assembly Object
+0x05 = Connection Object
+0x06 = Connection Manager Object
+0x07 = Register Object
+0x08 = Discrete Input Point Object
+0x09 = Discrete Output Point Object
+0x0A = Analog Input Point Object
+0x0B = Analog Output Point Object
+0x0F = Parameter Object
+0x10 = Parameter Group Object
+0x37 = File Object
+0x43 = Time Sync Object
+0x47 = Device Level Ring Object
+0x48 = Quality of Service Object
+0xF4 = Port Object
+0xF5 = TCP/IP Interface Object
+0xF6 = Ethernet Link Object
+
+Class IDs not listed here may be:
+
+Standard optional object classes
+Device-profile object classes
+Vendor-specific object classes
+
+================================================================
+9. COMMON CIP PATH SEGMENT PURPOSES
+================================================================
+
+Class Segment:
+    Identifies an object class.
+
+Instance Segment:
+    Identifies one object instance.
+
+Attribute Segment:
+    Identifies one object attribute.
+
+Member Segment:
+    Identifies one member of a structured attribute.
+
+Connection Point Segment:
+    Identifies an assembly or connection endpoint.
+
+Port Segment:
+    Routes the request through a communication port.
+
+Symbolic Segment:
+    Identifies an object or tag using a symbolic name.
+
+Electronic Key Segment:
+    Validates vendor, device type, product code, and revision.
+
+================================================================
+10. NORMAL INITIAL SEED SERVICES
+================================================================
+
+Recommended encapsulation commands:
+
+0x0063 ListIdentity
+0x0065 RegisterSession
+0x0066 UnregisterSession
+0x006F SendRRData
+0x0070 SendUnitData
+
+Recommended CIP services:
+
+0x01 Get_Attributes_All
+0x03 Get_Attribute_List
+0x0A Multiple_Service_Packet
+0x0E Get_Attribute_Single
+0x10 Set_Attribute_Single
+0x4E Forward_Close
+0x52 Unconnected_Send
+0x54 Forward_Open
+0x5B Large_Forward_Open
+
+Recommended common object paths:
+
+Class 0x01 Identity Object
+Class 0x04 Assembly Object
+Class 0x06 Connection Manager Object
+Class 0xF5 TCP/IP Interface Object
+Class 0xF6 Ethernet Link Object

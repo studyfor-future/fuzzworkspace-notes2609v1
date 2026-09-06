@@ -1,0 +1,51 @@
+{
+  "seed_id": "iec61850-seed-003",
+  "title": "Boundary-valid GetVariableAccessAttributes with long-form BER length",
+  "strategy": "length_boundary_valid",
+  "target_operation": "GetVariableAccessAttributes",
+  "purpose": "Exercise a confirmed service with a valid long-form BER length and a short nested object-name-like payload so mutations can explore length handling without starting from malformed input.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:object-or-data-templ:cda370993ecd",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "confirmed_request_getvariableaccessattributes_longform",
+      "hex": "a08110020101a60b1a096c6c6e302f646f31",
+      "byte_length": 18,
+      "sha256": "4ad35383bccf1d4b8dda751df7ef31aa6568e326727e3d378a3fb2efb4f724b4"
+    }
+  ],
+  "expected_behavior": "A BER/MMS parser should accept the long-form outer length, decode invoke id 1, and dispatch confirmed service tag [6] GetVariableAccessAttributes with a visible-string argument body.",
+  "constraints_preserved": [
+    "Outer MMS PDU tag is 0xa0 Confirmed-Request-PDU.",
+    "Outer length uses valid BER long-form encoding 81 10 for 16 bytes of content.",
+    "Confirmed service tag [6] is encoded as 0xa6.",
+    "Inner visible string length matches the supplied content bytes.",
+    "All lengths are internally consistent."
+  ],
+  "issue_safety_notes": "This seed avoids malformed or oversized boundary lengths and instead uses a valid long-form BER encoding suitable for safe mutation.",
+  "sequence_sha256": "b4e2286b495e705472c2c3be48212133de0cec6a1e73367bb2890e3a58133803",
+  "total_bytes": 18,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4ad35383bccf1d4b8dda751df7ef31aa6568e326727e3d378a3fb2efb4f724b4",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

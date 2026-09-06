@@ -1,0 +1,24 @@
+issue #498
+A SEGV in stephane/libmodbus/unit-test-server.c.
+
+Below are Steps Followed to Reproduce Crash
+Download latest source code from: stephane/libmodbus/unit-test-server.c, compiled with clang and ASANexport CFLAGS="-g -fsanitize=address" LDFLAGS="-fsanitize=address"before make
+
+Input Data
+0000 0000 000d ff17 0160 0020 0000 0001 0212 34
+
+Crash Output
+
+The client connection from 0.0.0.0 is accepted
+Waiting for an indication...
+<00><00><00><00><00><0D><FF><17><01><60><00><20><00><00><00><01><02><12><34>
+ASAN:DEADLYSIGNAL
+=================================================================
+==6401==ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe20 (pc 0x7f8c9bc3e84e bp 0x7fff63479810 sp 0x7fff634795a0 T0)                                                                                 ==6401==The signal is caused by a WRITE memory access.                                                                                                                                                                 #0 0x7f8c9bc3e84d in modbus_reply /root/temp/iec/untest/libmodbus/src/modbus.c:981:44
+    #1 0x511ddd in main /root/temp/iec/untest/libmodbus/tests/unit-test-server.c:183:14
+    #2 0x7f8c9ad3d82f in __libc_start_main /build/glibc-LK5gWL/glibc-2.23/csu/../csu/libc-start.c:291
+    #3 0x41a168 in _start (/root/temp/iec/untest/libmodbus/tests/unit-test-server+0x41a168)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /root/temp/iec/untest/libmodbus/src/modbus.c:981:44 in modbus_reply
+==6401==ABORTING

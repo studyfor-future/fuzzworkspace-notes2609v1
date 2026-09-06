@@ -1,0 +1,10 @@
+Number: 198
+
+Summarize:
+In StringUtils_createStringFromBuffer, the second argument, size, is a signed integer. The report states that if a negative value such as -1 is supplied, the function attempts to allocate a very large buffer: 0xffffffff on 32-bit or 0xffffffffffffffff on 64-bit. When that allocation fails, a following memcpy can segfault. The provided PoC exercises the issue through MmsValue_decodeMmsData with crafted input <90><80>.
+
+Reproduce:
+Use the provided C PoC that includes libiec61850/mms_value.h, declares a 0x10000-byte global buffer, reads stdin into that buffer, and if any bytes were read calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0). Feed the program the two-byte input <90><80> on stdin. Expected result per the report: this triggers StringUtils_createStringFromBuffer with a negative size, causing an attempted allocation of 0xffffffff bytes on 32-bit or 0xffffffffffffffff bytes on 64-bit; when the allocation fails, memcpy segfaults.
+
+Payload:
+90 80

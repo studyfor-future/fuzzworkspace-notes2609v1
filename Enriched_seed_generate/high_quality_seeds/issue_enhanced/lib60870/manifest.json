@@ -1,0 +1,1845 @@
+{
+  "protocol_name": "IEC60870",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 18 candidate seed sequences and repaired prior review findings by using only evidence IDs present in the supplied sources, converting the corpus to consistent CS104-style APDUs where transport framing is needed, fixing deterministic length relations, correcting the local-command CoT mismatch, removing unsupported unknown-type 127 use as a primary boundary seed, and reducing near-duplicate minimal TypeID-1 CoT-only seeds by replacing several with structurally distinct TypeIDs and system-command variants. All framed messages preserve the documented IEC 60870-5-104 start byte 0x68, explicit APDU length, 4-byte APCI control field, then ASDU fields in documented order. Because the supplied protocol sources make ASDU field sizing configurable, the seeds intentionally follow one internally consistent and mutation-friendly profile assumption used repeatedly in the local documentation and issue material: 2-octet cause_of_transmission, 2-octet common_address, and 3-octet information_object_address in little-endian form when multi-octet. Issue-guided analogues stay close to the cited parser-sensitive paths, especially TypeID 104 C_TS_NA_1 and address-handling logic, while avoiding any exact published crash payloads, oversize VSQ claims, truncated IOA fields, or mismatched APDU lengths.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, issue_structural_analogue, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: Activation Termination, C_IC_NA_1, C_RD_NA_1, C_SC_NA_1, C_TS_NA_1, M_SP_NA_1 sequence form, Return Information Caused by Local Command, Return Information Caused by Remote Command, Select, Unknown Common Address of ASDU, Unknown Information Object Address",
+    "message_count_profile: 1msg=10, 2msg=1, 3msg=1",
+    "issue_guided_sequences: 5"
+  ],
+  "sequences": [
+    {
+      "seed_id": "iec60870-rev-001",
+      "title": "Canonical framed C_SC_NA_1 activation",
+      "strategy": "baseline_valid",
+      "target_operation": "C_SC_NA_1",
+      "purpose": "Provide a compact, fully framed baseline command seed using the documented ASDU field order and C_SC_NA_1 object-specific qualifier byte.",
+      "evidence_ids": [
+        "protocol_format:iec60870:format-overview:aa7f710118bf",
+        "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:1a7398f08c97",
+        "function_code:function:function-text:bcdc884a69d7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_sc_na_1_activation",
+          "hex": "680e000000002d010600010001000001",
+          "byte_length": 16,
+          "sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18"
+        }
+      ],
+      "expected_behavior": "A CS104 parser should accept the APDU framing, parse TypeID 45 as a valid single-command ASDU with VSQ=1, CoT=6, CA=1, IOA=1, and one command qualifier byte.",
+      "constraints_preserved": [
+        "APDU start byte is 0x68 and byte 1 gives the exact payload length 0x0e",
+        "Four APCI control bytes are present before the ASDU",
+        "ASDU field order is type_id, vsq, cause_of_transmission, common_address, information_object_address",
+        "TypeID 45 is documented as C_SC_NA_1",
+        "VSQ is non-sequence form with count 1",
+        "Cause of transmission is encoded as 2 octets",
+        "Common address is encoded as 2 octets little-endian",
+        "Information object address is encoded as 3 octets little-endian",
+        "Single command qualifier byte is present after IOA"
+      ],
+      "issue_safety_notes": "Uses a complete, conservative one-object command and avoids any truncated body, oversized VSQ, or exact issue payload collision.",
+      "sequence_sha256": "47bf8e1d95b518d5558c94c009edcdc34171dae1943ace40118a0b10f318f45b",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-002",
+      "title": "Stateful framed setup ending in C_IC_NA_1 station interrogation",
+      "strategy": "stateful_valid",
+      "target_operation": "C_IC_NA_1",
+      "purpose": "Exercise parser state across multiple complete CS104 I-frames, warming with a monitoring APDU and a command APDU before a valid station interrogation request using qualifier 20.",
+      "evidence_ids": [
+        "protocol_format:iec60870:format-overview:aa7f710118bf",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:48ab3e72d47c",
+        "function_code:function:function-text:1a7398f08c97",
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:ff9a2bbfa022"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "warmup_m_sp_na_1_request",
+          "hex": "680d00000000010105000100000000",
+          "byte_length": 15,
+          "sha256": "7d2268237ae3cc568eb72d871cce6524ebb7518b3a00aa87428e8ab1a56d4afd"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "warmup_c_sc_na_1_activation",
+          "hex": "680e020000002d010600010002000001",
+          "byte_length": 16,
+          "sha256": "f13df412586d44fe935b5579ba6837a6034e36c2b2f2acc8661f0a4e9593438f"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "target_c_ic_na_1_station_interrogation",
+          "hex": "680e0400000064010600010000000014",
+          "byte_length": 16,
+          "sha256": "451f04f969bd6ba295e0887645f3e0319e92b6e5b402a2792012f2056c40f731"
+        }
+      ],
+      "expected_behavior": "A CS104 endpoint should parse three successive valid I-frames and reach interrogation-command handling on the final frame with TypeID 100 and interrogation qualifier 20.",
+      "constraints_preserved": [
+        "Each message is a complete CS104 APDU with start byte 0x68 and correct L field",
+        "Each message includes 4 APCI control bytes before the ASDU",
+        "ASDU core field order is preserved in all frames",
+        "First frame uses documented TypeID 1 M_SP_NA_1",
+        "Second frame uses documented TypeID 45 C_SC_NA_1",
+        "Third frame uses documented TypeID 100 C_IC_NA_1",
+        "VSQ is one-object non-sequence in all three frames",
+        "Final qualifier byte 20 matches the documented station interrogation qualifier"
+      ],
+      "issue_safety_notes": "Uses valid framed traffic only and avoids deadlock or malformed-framing motifs from issue reports while still adding stateful depth.",
+      "sequence_sha256": "1bd1eaef7d8fa8961daeab9009bab12bff57fd6d40a478362400e211ca39048f",
+      "total_bytes": 47,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "b183699f52d98bd562c9fd1ec7b565fb75c66a9f139ebee50bdda3109cbe591d",
+        "encoded_bytes": 47,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 15,
+            "payload_offset": 15,
+            "payload_length": 16,
+            "frame_length": 16
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 31,
+            "payload_offset": 31,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-011",
+      "title": "Select-oriented C_SC_NA_1 qualifier coverage",
+      "strategy": "function_code_coverage",
+      "target_operation": "Select",
+      "purpose": "Cover common-command-qualifier handling by varying the trailing single-command qualifier byte while keeping the rest of the command shape stable.",
+      "evidence_ids": [
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_sc_na_1_select_variant",
+          "hex": "680e000000002d010600010001000181",
+          "byte_length": 16,
+          "sha256": "60284ec2f9ab82adec534361a0fa1a511d6ae4825b02c2ab1c393e8243f28496"
+        }
+      ],
+      "expected_behavior": "The target should parse a valid single-command APDU and reach qualifier interpretation logic with a nonzero high-bit command qualifier variant.",
+      "constraints_preserved": [
+        "TypeID 45 maps to C_SC_NA_1",
+        "Object-specific layout is IOA followed by one qualifier byte",
+        "APDU length remains correct",
+        "All core ASDU fields are complete and in order"
+      ],
+      "issue_safety_notes": "Focused on valid qualifier coverage only; no known crash bytes or unsupported field relations are reused.",
+      "sequence_sha256": "4fe18f99eff912fea296af20c0568b085efbf21c9a45417d779ddbf8ed9f83f6",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "60284ec2f9ab82adec534361a0fa1a511d6ae4825b02c2ab1c393e8243f28496",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-003",
+      "title": "Sequence-form known-type M_SP_NA_1 with two elements",
+      "strategy": "length_boundary_valid",
+      "target_operation": "M_SP_NA_1 sequence form",
+      "purpose": "Cover valid sequence-form VSQ parsing with a documented known TypeID and two data elements, using base IOA semantics consistent with sequence form.",
+      "evidence_ids": [
+        "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:48ab3e72d47c",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_m_sp_na_1_sequence_two_elements",
+          "hex": "680e0000000001820300010000000001",
+          "byte_length": 16,
+          "sha256": "20096ac50ab89bd69543a2a2ef56fd91c062de5ad4551022410af0eeb7a78463"
+        }
+      ],
+      "expected_behavior": "A robust implementation should parse a valid sequence-form ASDU for TypeID 1 with count 2, one base IOA, and two element bytes, then process or reject it semantically without boundary errors.",
+      "constraints_preserved": [
+        "TypeID 1 is a documented IEC 60870 monitoring type",
+        "VSQ 0x82 sets sequence flag and count 2",
+        "Sequence form still preserves documented ASDU header ordering",
+        "Only one base information object address is encoded for the sequence-form ASDU",
+        "Two element payload octets follow the base IOA",
+        "APDU length 0x0e exactly matches 4 APCI bytes plus 10 ASDU bytes"
+      ],
+      "issue_safety_notes": "Intentionally avoids the historical missing-base-IOA and oversized-count patterns by keeping count small and body length sufficient.",
+      "sequence_sha256": "eec8e326988c17709ebc53283c17cb5905a31dd071f89dd2fe13152e2d8667b0",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "20096ac50ab89bd69543a2a2ef56fd91c062de5ad4551022410af0eeb7a78463",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-005",
+      "title": "TypeID 104 C_TS_NA_1 safe single-object analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "C_TS_NA_1",
+      "purpose": "Stay close to the documented GHSA parser path by using a valid CS104 I-frame for TypeID 104 with VSQ count 1 and a complete object body.",
+      "evidence_ids": [
+        "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:operation-catalog:7130d97792f3",
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:bcdc884a69d7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_ts_na_1_single_object_safe",
+          "hex": "680e0000000068010600010000000080",
+          "byte_length": 16,
+          "sha256": "74cb5a28ffda7c942ff43d25e0b46a260e349240fc5f57e2e1c23612d0987f9a"
+        }
+      ],
+      "expected_behavior": "An implementation should parse a well-formed TypeID 104 test command APDU with one object and a complete body, reaching the same general parser family implicated by the issue without overrunning memory.",
+      "constraints_preserved": [
+        "Start byte 0x68 and explicit APDU length 0x0e are correct",
+        "Four APCI control bytes precede the ASDU",
+        "TypeID 104 is documented as C_TS_NA_1",
+        "VSQ is one-object non-sequence form, not oversized",
+        "ASDU includes 2-octet CoT, 2-octet CA, and 3-octet IOA",
+        "A trailing one-byte test-command payload is present to keep the object complete"
+      ],
+      "issue_safety_notes": "This is not the published GHSA payload and specifically avoids the dangerous oversized VSQ/body mismatch.",
+      "sequence_sha256": "6170d6423e5247e0688759c3c01e4b5af8f05f4cc6d165651403ff726f9232ae",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "74cb5a28ffda7c942ff43d25e0b46a260e349240fc5f57e2e1c23612d0987f9a",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-004",
+      "title": "Repeated C_SC_NA_1 parser-depth pair",
+      "strategy": "parser_depth",
+      "target_operation": "C_SC_NA_1",
+      "purpose": "Drive repeated valid decoding of the same command family with different IOA and qualifier bytes to increase field-interaction depth without malformed nesting.",
+      "evidence_ids": [
+        "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:1a7398f08c97",
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:bcdc884a69d7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "c_sc_na_1_ioa_1_execute",
+          "hex": "680e000000002d010600010001000001",
+          "byte_length": 16,
+          "sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "c_sc_na_1_ioa_257_selectish_variant",
+          "hex": "680e020000002d010600010001010081",
+          "byte_length": 16,
+          "sha256": "573bf01fb4985051483d29d7b607058c6a3b6d8f0242b49505547a3b52d4c6c9"
+        }
+      ],
+      "expected_behavior": "The target should parse two complete valid single-command APDUs in sequence, traversing the same object path twice with varied address and qualifier values.",
+      "constraints_preserved": [
+        "Both messages are complete CS104 I-format APDUs",
+        "Both use documented TypeID 45 for C_SC_NA_1",
+        "Both retain VSQ count 1 and non-sequence form",
+        "Both include a full 3-byte IOA and one qualifier byte",
+        "APDU lengths remain 0x0e for 14 bytes after the length byte",
+        "Only field values vary; widths and ordering remain fixed"
+      ],
+      "issue_safety_notes": "Stays strictly valid and mutation-friendly, avoiding malformed repetitions, missing bytes, or crash-oriented transport patterns.",
+      "sequence_sha256": "fc19292423142acc617e676662503c9b0ddb5efe1351ab5e92b76dc6aa16966d",
+      "total_bytes": 32,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "6848cb93ee6dc727e3b9bb2176c8ac3fb07704f64d2816a06807e4f08787ff85",
+        "encoded_bytes": 32,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 16,
+            "payload_offset": 16,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-009",
+      "title": "Unknown information object address analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Unknown Information Object Address",
+      "purpose": "Stress address-dependent handling by using a high fully encoded IOA inside a valid C_SC_NA_1 APDU.",
+      "evidence_ids": [
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:format-overview:aa7f710118bf",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_sc_na_1_high_ioa",
+          "hex": "680e000000002d0106000100ffff0001",
+          "byte_length": 16,
+          "sha256": "834df71ea49b42c719c7310d0382b03728f7aa368ffa5827174a9ebd6bd6845c"
+        }
+      ],
+      "expected_behavior": "A receiver should parse the message fully and then either process, reject, or classify the object address as unknown without memory-safety issues.",
+      "constraints_preserved": [
+        "APDU length 0x0e matches the following bytes exactly",
+        "TypeID 45 and one-object VSQ remain valid",
+        "IOA is fully encoded as 3 octets little-endian",
+        "No truncation or oversized count is introduced"
+      ],
+      "issue_safety_notes": "Targets the same semantic surface as unknown-IOA handling while avoiding any malformed body or exact crash replay.",
+      "sequence_sha256": "390bd8a121560da63e8c58bd3806eb9326fa362dace1b709cbbe6ede0ba13e63",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "834df71ea49b42c719c7310d0382b03728f7aa368ffa5827174a9ebd6bd6845c",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-010",
+      "title": "Unknown common address analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Unknown Common Address of ASDU",
+      "purpose": "Exercise common-address validation using a complete valid command APDU with uncommon CA=0xffff.",
+      "evidence_ids": [
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:format-overview:aa7f710118bf",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_sc_na_1_unknown_ca",
+          "hex": "680e000000002d010600ffff00000001",
+          "byte_length": 16,
+          "sha256": "2cc9cf15a9891dc660bdd82df7697857ab406c5b9c75a0873d40fcb86ccf3a67"
+        }
+      ],
+      "expected_behavior": "The parser should decode the full APDU and may classify the common address as unknown, but should not overrun buffers or reject on structural grounds.",
+      "constraints_preserved": [
+        "TypeID 45 remains documented",
+        "CoT, CA, and IOA widths remain consistent",
+        "CA is present as two full octets little-endian",
+        "APDU length and message body size match exactly"
+      ],
+      "issue_safety_notes": "Keeps the seed structurally valid and small, stressing address semantics rather than malformed length relationships.",
+      "sequence_sha256": "fab79dfe035d633c9893f628eb1bdefa6b0d96e6416dc09f1104d5adf65242ee",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "2cc9cf15a9891dc660bdd82df7697857ab406c5b9c75a0873d40fcb86ccf3a67",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-007",
+      "title": "Activation termination CoT on single command",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Activation Termination",
+      "purpose": "Cover cause-of-transmission 10 with a complete valid command APDU so the corpus reaches this response-oriented parser branch safely.",
+      "evidence_ids": [
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "cs104_i_frame_c_sc_na_1_activation_termination",
+          "hex": "680e000000002d010a00010001000001",
+          "byte_length": 16,
+          "sha256": "b67bc31079934e6583620e327ddcf4d06d174e44b4c9d23f1417430ad9a001cf"
+        }
+      ],
+      "expected_behavior": "A parser should accept the APDU as structurally valid and traverse the activation-termination CoT handling path for a complete one-object command ASDU.",
+      "constraints_preserved": [
+        "CoT value 10 matches Activation Termination",
+        "TypeID 45 remains documented C_SC_NA_1",
+        "VSQ count 1 matches exactly one encoded IOA",
+        "All address and qualifier bytes are present",
+        "APDU length remains correct at 0x0e"
+      ],
+      "issue_safety_notes": "Uses a valid response-style message and avoids any collision with the large malformed payload shown in historical issue material.",
+      "sequence_sha256": "09f56fce396f2287d70bdbadb0a4f5f935dec73f18af2e9e4700c0f446604d69",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "b67bc31079934e6583620e327ddcf4d06d174e44b4c9d23f1417430ad9a001cf",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-008",
+      "title": "Remote-command return CoT on single command",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Return Information Caused by Remote Command",
+      "purpose": "Exercise cause-of-transmission 11 on a complete, small C_SC_NA_1 APDU to cover remote-command return parsing without malformed framing.",
+      "evidence_ids": [
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "cs104_i_frame_c_sc_na_1_remote_command_return",
+          "hex": "680e000000002d010b00010002000001",
+          "byte_length": 16,
+          "sha256": "9e32dfa28af92492c7474105658393544152612b0a84bb2fc6a80a796106181a"
+        }
+      ],
+      "expected_behavior": "The endpoint should parse the frame successfully and expose CoT 11 handling for a valid single-command object.",
+      "constraints_preserved": [
+        "CoT 11 is documented as Return Information Caused by Remote Command",
+        "APDU framing is complete and length-consistent",
+        "ASDU field ordering and widths are preserved",
+        "Exactly one IOA and one qualifier byte are encoded"
+      ],
+      "issue_safety_notes": "Remains a safe structural analogue with full bytes present and no reliance on malformed semantics.",
+      "sequence_sha256": "d228fe83a90d6b75d212c838ac1117da3fb602e454a30e641ce7def6c85fc1bd",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "9e32dfa28af92492c7474105658393544152612b0a84bb2fc6a80a796106181a",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-012",
+      "title": "Local-command return CoT corrected to 12",
+      "strategy": "function_code_coverage",
+      "target_operation": "Return Information Caused by Local Command",
+      "purpose": "Correctly cover the local-command return CoT path using value 12 in a complete C_SC_NA_1 APDU.",
+      "evidence_ids": [
+        "function_code:function:function-text:bcdc884a69d7",
+        "function_code:function:function-text:1a7398f08c97",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "server_to_client",
+          "label": "cs104_i_frame_c_sc_na_1_local_command_return",
+          "hex": "680e000000002d010c00010002000001",
+          "byte_length": 16,
+          "sha256": "40061d87967f7a61a69d9175bc919527699f0dbe4b985a847ae126ccf4c29a8d"
+        }
+      ],
+      "expected_behavior": "A compliant parser should accept the APDU and traverse CoT 12 handling for a fully encoded one-object command ASDU.",
+      "constraints_preserved": [
+        "CoT 12 correctly matches Return Information Caused by Local Command",
+        "Message remains a complete CS104 APDU with proper L value",
+        "One-object non-sequence VSQ matches the single encoded IOA",
+        "All object-specific bytes are present"
+      ],
+      "issue_safety_notes": "Repairs the prior semantic mismatch and remains structurally conservative.",
+      "sequence_sha256": "906c005c37b70e576a5a9792162f4de312aabe0ff19f2a64ac4b605d52da4eb5",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "40061d87967f7a61a69d9175bc919527699f0dbe4b985a847ae126ccf4c29a8d",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec60870-rev-017",
+      "title": "System-command diversity with C_RD_NA_1 read command",
+      "strategy": "function_code_coverage",
+      "target_operation": "C_RD_NA_1",
+      "purpose": "Improve parser-entry diversity with a non-command-system type beyond C_SC_NA_1, using a valid read command structure with no extra object bytes beyond the IOA.",
+      "evidence_ids": [
+        "function_code:function:function-text:ff9a2bbfa022",
+        "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "function_code:function:function-text:b5d0e8baf37c",
+        "function_code:function:function-text:bcdc884a69d7"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cs104_i_frame_c_rd_na_1_read_command",
+          "hex": "680d00000000660105000100030000",
+          "byte_length": 15,
+          "sha256": "eae314020b91f41f9b12624f51e8f172f1f572ed5b28646cc8d4da5877b16718"
+        }
+      ],
+      "expected_behavior": "The target should parse a valid read command APDU for TypeID 102 with one information object address and no additional object payload.",
+      "constraints_preserved": [
+        "TypeID 102 is documented as C_RD_NA_1",
+        "APDU length 0x0d matches 4 APCI bytes plus 9 ASDU bytes",
+        "ASDU header ordering and widths are preserved",
+        "VSQ is one-object non-sequence and exactly one IOA is present",
+        "No unsupported extra object bytes are appended"
+      ],
+      "issue_safety_notes": "Adds system-command diversity with a complete minimal body and avoids unsupported field relations.",
+      "sequence_sha256": "90f25405f36b3311969882727f48048e867b3ad8fae05ad7eb2988323173957d",
+      "total_bytes": 15,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "eae314020b91f41f9b12624f51e8f172f1f572ed5b28646cc8d4da5877b16718",
+        "encoded_bytes": 15,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 8
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 8
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 12,
+    "candidate_plan_count": 18,
+    "candidate_pool_count": 18,
+    "returned_seed_count": 12,
+    "review_threshold": 86,
+    "protocol_family": "iec60870",
+    "planning": {
+      "protocol_name": "IEC60870",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid C_SC_NA_1",
+          "target_operation": "C_SC_NA_1",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "issue:201:201-summary:b3ae09d5cfe3",
+            "issue:200:200-summary:f3e6d652dd10",
+            "issue:197:197-summary:c5a792284ff4",
+            "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+            "protocol_format:iec60870:format-overview:aa7f710118bf",
+            "issue:13:13-summary:2d54f90f2079"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for C_IC_NA_1",
+          "target_operation": "C_IC_NA_1",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "issue:200:200-summary:f3e6d652dd10",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+            "issue:175:175-summary:7d91c4955d65",
+            "issue:201:201-summary:b3ae09d5cfe3"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent Unknown Type Identification",
+          "target_operation": "Unknown Type Identification",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:201:201-summary:b3ae09d5cfe3",
+            "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+            "function_code:function:operation-catalog:af34dceea55e"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for C_SC_NA_1",
+          "target_operation": "C_SC_NA_1",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+            "protocol_format:iec60870:format-overview:aa7f710118bf",
+            "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+            "protocol_format:iec60870:object-or-data-templ:0a5c054cf594",
+            "protocol_format:iec60870:service-or-function-:afedead71eb6",
+            "issue:197:197-summary:c5a792284ff4"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-005",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for IEC 60870-5-104 APDU start byte",
+          "target_operation": "IEC 60870-5-104 APDU start byte",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+          "evidence_ids": [
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+            "function_code:function:function-text:b5d0e8baf37c",
+            "function_code:function:function-text:48ab3e72d47c",
+            "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+            "issue:197:197-summary:c5a792284ff4"
+          ],
+          "issue_refs": [
+            "GHSA-G3W7-X5RX-83XM"
+          ]
+        },
+        {
+          "plan_id": "plan-006",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for IEC 60870-5-104 APDU start byte",
+          "target_operation": "IEC 60870-5-104 APDU start byte",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-5-104 I-frame can cause InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex)...",
+          "evidence_ids": [
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "function_code:function:function-text:b5d0e8baf37c",
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:function-text:48ab3e72d47c",
+            "issue:197:197-summary:c5a792284ff4"
+          ],
+          "issue_refs": [
+            "GHSA-7V97-JMWV-W5J7"
+          ]
+        },
+        {
+          "plan_id": "plan-007",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Activation Termination",
+          "target_operation": "Activation Termination",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Pr...",
+          "evidence_ids": [
+            "issue:13:13-summary:2d54f90f2079",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:55:55-summary:4c9b500bbb01",
+            "issue:54:54-summary:869d6d1122d1",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+            "issue:53:53-summary:5effbdd9f0a0"
+          ],
+          "issue_refs": [
+            "13"
+          ]
+        },
+        {
+          "plan_id": "plan-008",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Return Information Caused by Remote Command",
+          "target_operation": "Return Information Caused by Remote Command",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "Against the latest source from /mz-automation/lib60870/ (exact release not stated), the lib60870-C/examples/cs104_server/simple_server example crashes on the...",
+          "evidence_ids": [
+            "issue:53:53-summary:5effbdd9f0a0",
+            "issue:54:54-summary:869d6d1122d1",
+            "issue:55:55-summary:4c9b500bbb01",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:201:201-summary:b3ae09d5cfe3",
+            "issue:13:13-summary:2d54f90f2079"
+          ],
+          "issue_refs": [
+            "53"
+          ]
+        },
+        {
+          "plan_id": "plan-009",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Unknown Information Object Address",
+          "target_operation": "Unknown Information Object Address",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "On the latest source code from /mz-automation/lib60870/, the lib60870-C/examples/cs104_server/simple_server example crashes when processing the supplied inpu...",
+          "evidence_ids": [
+            "issue:54:54-summary:869d6d1122d1",
+            "issue:55:55-summary:4c9b500bbb01",
+            "issue:53:53-summary:5effbdd9f0a0",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:201:201-summary:b3ae09d5cfe3",
+            "issue:13:13-summary:2d54f90f2079"
+          ],
+          "issue_refs": [
+            "54"
+          ]
+        },
+        {
+          "plan_id": "plan-010",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Unknown Common Address of ASDU",
+          "target_operation": "Unknown Common Address of ASDU",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report tests the latest source code from /mz-automation/lib60870/ and triggers a crash while running the lib60870-C/examples/cs104_server/simple_server e...",
+          "evidence_ids": [
+            "issue:55:55-summary:4c9b500bbb01",
+            "issue:54:54-summary:869d6d1122d1",
+            "issue:53:53-summary:5effbdd9f0a0",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:201:201-summary:b3ae09d5cfe3",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9"
+          ],
+          "issue_refs": [
+            "55"
+          ]
+        },
+        {
+          "plan_id": "plan-011",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Select",
+          "target_operation": "Select",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "8. COMMON COMMAND QUALIFIER",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:bd87fb5872f8",
+            "function_code:function:function-text:e9b36f1a0533",
+            "issue:197:197-summary:c5a792284ff4",
+            "function_code:function:function-text:bcdc884a69d7",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "function_code:function:function-text:b5d0e8baf37c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-012",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Information Caused by Local Command",
+          "target_operation": "Return Information Caused by Local Command",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:53:53-summary:5effbdd9f0a0",
+            "issue:197:197-summary:c5a792284ff4"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-013",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Requested by General Counter Interrogation",
+          "target_operation": "Requested by General Counter Interrogation",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-014",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Requested by Counter Group 4",
+          "target_operation": "Requested by Counter Group 4",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+            "issue:197:197-summary:c5a792284ff4"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-015",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Requested by Counter Group 3",
+          "target_operation": "Requested by Counter Group 3",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-016",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Requested by Counter Group 2",
+          "target_operation": "Requested by Counter Group 2",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:197:197-summary:c5a792284ff4",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-017",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Requested by Counter Group 1",
+          "target_operation": "Requested by Counter Group 1",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:function-text:bcdc884a69d7",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-018",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Request",
+          "target_operation": "Request",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. CAUSE OF TRANSMISSION",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:c6e9b17b21aa",
+            "function_code:function:operation-catalog:7130d97792f3",
+            "function_code:function:operation-catalog:db49cd8f1e4f",
+            "function_code:function:function-text:bcdc884a69d7",
+            "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+            "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "overall_score": 58,
+      "needs_revision": true,
+      "protocol_validity_score": 46,
+      "seed_utility_score": 61,
+      "diversity_score": 66,
+      "issue_enhancement_score": 70,
+      "global_feedback": [
+        "The library shows good intent: framing is consistent at the CS104 APDU level, lengths mostly match, and the corpus avoids replaying the published crash payloads.",
+        "The strongest seeds are the canonical C_SC_NA_1 baseline, the stateful C_IC_NA_1 sequence, and the two TypeID 104 analogues; these are structurally complete and likely to reach useful parser paths.",
+        "A major weakness is semantic validity of several object payloads. The supplied sources only explicitly describe object-specific fields for C_SC_NA_1 and give generic ASDU/header rules; several other TypeIDs are asserted with minimal bodies that are not supported by the provided object templates and are unlikely to be valid requests.",
+        "Multiple seeds use cause-of-transmission values such as 44-47 as if they were ordinary fuzzable request seeds. Those values are error/report causes, not normal initiating causes, so they are weak as initial coverage seeds and may be dropped early on semantic checks.",
+        "Several monitoring/system-command seeds rely on guessed one-byte object payloads or IOA-only bodies without source-backed object layouts. This lowers confidence that they will survive beyond shallow parsing.",
+        "There is too much concentration on C_SC_NA_1 with mostly CoT/address variation. For a desired selected count of 12, the current library has more than six marginal variants competing for slots.",
+        "Issue enhancement is used appropriately in spirit: the TypeID 104 seeds preserve the parser-sensitive structure while avoiding oversized VSQ/body mismatches and avoiding the exact GHSA PoC.",
+        "The best revision path is to keep the strong framed/stateful/issue-guided seeds, drop weak CoT-only carrier variants, and replace them with source-backed operations whose object payloads are actually documented or can be made confidently complete."
+      ],
+      "sequence_feedback": [
+        {
+          "seed_id": "iec60870-rev-001",
+          "score": 90,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as a strong baseline valid seed."
+        },
+        {
+          "seed_id": "iec60870-rev-002",
+          "score": 88,
+          "keep": true,
+          "problems": [
+            "Warmup M_SP_NA_1 message uses an assumed minimal object body not explicitly backed by the provided object template sources."
+          ],
+          "recommended_action": "Keep, but if possible replace the warmup monitoring frame with a more source-backed command or system-command setup frame."
+        },
+        {
+          "seed_id": "iec60870-rev-003",
+          "score": 54,
+          "keep": false,
+          "problems": [
+            "Sequence-form semantics are described inconsistently against the supplied source, which states information_object_address is absent when isSequence flag is true.",
+            "Element payload structure for M_SP_NA_1 sequence objects is assumed rather than source-backed."
+          ],
+          "recommended_action": "Revise or replace with a better-supported boundary seed using a type whose sequence/object layout is explicitly documented."
+        },
+        {
+          "seed_id": "iec60870-rev-004",
+          "score": 84,
+          "keep": true,
+          "problems": [
+            "Second qualifier value is only loosely justified as a select variant from the supplied sources."
+          ],
+          "recommended_action": "Keep; minor improvement would be to tie qualifier bits more explicitly to documented command qualifier semantics."
+        },
+        {
+          "seed_id": "iec60870-rev-005",
+          "score": 86,
+          "keep": true,
+          "problems": [
+            "Exact object payload layout for C_TS_NA_1 is not explicitly documented in the provided sources."
+          ],
+          "recommended_action": "Keep as a strong issue-guided analogue, but validate the trailing object byte against an implementation-backed template if available."
+        },
+        {
+          "seed_id": "iec60870-rev-006",
+          "score": 72,
+          "keep": true,
+          "problems": [
+            "Sequence-form TypeID 104 body is not source-backed and may not match the implementation's expected object structure.",
+            "Relies on the same sequence-form ambiguity seen elsewhere."
+          ],
+          "recommended_action": "Keep only if a TypeID 104 sequence-form object layout can be confirmed; otherwise replace with another safe single-object analogue."
+        },
+        {
+          "seed_id": "iec60870-rev-007",
+          "score": 70,
+          "keep": true,
+          "problems": [
+            "Uses Activation Termination as a response-style CoT on a command carrier, which is semantically weaker than an ordinary initiating request.",
+            "Low incremental value versus other C_SC_NA_1 variants."
+          ],
+          "recommended_action": "Borderline keep; acceptable for one response-style variant, but do not keep many similar CoT-only command variants."
+        },
+        {
+          "seed_id": "iec60870-rev-008",
+          "score": 68,
+          "keep": false,
+          "problems": [
+            "Another CoT-only variation on C_SC_NA_1 with limited added parser depth.",
+            "Response/report semantics make it a weaker initial seed."
+          ],
+          "recommended_action": "Drop and replace with a structurally different valid operation."
+        },
+        {
+          "seed_id": "iec60870-rev-009",
+          "score": 80,
+          "keep": true,
+          "problems": [
+            "High IOA analogue is useful, but still another C_SC_NA_1 variant with modest diversity gain."
+          ],
+          "recommended_action": "Keep as the preferred address-stressing analogue among the C_SC_NA_1 variants."
+        },
+        {
+          "seed_id": "iec60870-rev-010",
+          "score": 79,
+          "keep": true,
+          "problems": [
+            "Unknown-CA analogue is useful, but overlaps with the CoT 46 carrier seed in overall semantic intent."
+          ],
+          "recommended_action": "Keep this direct address-variant seed and prefer it over weaker CoT-carrier variants."
+        },
+        {
+          "seed_id": "iec60870-rev-011",
+          "score": 82,
+          "keep": true,
+          "problems": [
+            "Select semantics are inferred from qualifier bits rather than fully grounded in the provided object template."
+          ],
+          "recommended_action": "Keep as useful qualifier coverage for C_SC_NA_1."
+        },
+        {
+          "seed_id": "iec60870-rev-012",
+          "score": 66,
+          "keep": false,
+          "problems": [
+            "Primarily a CoT-only mutation of existing C_SC_NA_1 seeds.",
+            "Response-style local-command return is a weaker initial corpus choice."
+          ],
+          "recommended_action": "Drop unless the corpus needs exactly one local-command response analogue."
+        },
+        {
+          "seed_id": "iec60870-rev-013",
+          "score": 40,
+          "keep": false,
+          "problems": [
+            "Uses CoT 44 as a carrier rather than a normal initiating cause.",
+            "M_SP_NA_1 object body is only assumed, not source-backed.",
+            "Likely low utility as an initial seed because semantic validation may reject it quickly."
+          ],
+          "recommended_action": "Drop and replace with a normal valid request/response carrying a supported cause."
+        },
+        {
+          "seed_id": "iec60870-rev-014",
+          "score": 38,
+          "keep": false,
+          "problems": [
+            "CoT 45 is not a strong initial-seed choice.",
+            "Monitoring object body is minimally guessed rather than explicitly documented."
+          ],
+          "recommended_action": "Drop."
+        },
+        {
+          "seed_id": "iec60870-rev-015",
+          "score": 38,
+          "keep": false,
+          "problems": [
+            "CoT 46 carrier is redundant with the stronger direct unknown-CA analogue.",
+            "Monitoring object body is not source-backed."
+          ],
+          "recommended_action": "Drop in favor of iec60870-rev-010."
+        },
+        {
+          "seed_id": "iec60870-rev-016",
+          "score": 39,
+          "keep": false,
+          "problems": [
+            "CoT 47 carrier is redundant with the stronger direct high-IOA analogue.",
+            "Monitoring object body is not source-backed."
+          ],
+          "recommended_action": "Drop in favor of iec60870-rev-009."
+        },
+        {
+          "seed_id": "iec60870-rev-017",
+          "score": 52,
+          "keep": false,
+          "problems": [
+            "C_RD_NA_1 IOA-only body is asserted without an explicit object-specific template in the supplied sources.",
+            "Semantic validity is uncertain."
+          ],
+          "recommended_action": "Revise with implementation-backed object layout before keeping."
+        },
+        {
+          "seed_id": "iec60870-rev-018",
+          "score": 34,
+          "keep": false,
+          "problems": [
+            "C_CS_NA_1 clock synchronization normally has a richer object body than the minimal IOA-only layout used here.",
+            "C_RP_NA_1 also likely requires object-specific payload beyond what is shown.",
+            "Strategy is outside the supplied candidate plans and both messages have weak validity confidence."
+          ],
+          "recommended_action": "Drop and replace with source-backed system-command seeds."
+        }
+      ],
+      "coverage_gaps": [
+        "Need more source-backed non-C_SC_NA_1 seeds with confident object layouts; current diversity is overstated because several alternatives are semantically weak.",
+        "Need stronger valid coverage for documented system commands such as C_IC_NA_1 variants with different interrogation qualifiers rather than many response-style CoT carriers.",
+        "Need at least one well-supported unknown-cause/address handling seed that is valid in role and semantics, not just by framing.",
+        "Need replacement seeds for C_RD_NA_1, C_CS_NA_1, and C_RP_NA_1 unless their object-specific payload requirements can be confirmed.",
+        "Need better boundary coverage around VSQ/count with explicitly supported object templates; current sequence-form seeds rely on ambiguous assumptions.",
+        "Need broader type coverage from documented control-direction types such as C_DC_NA_1, C_RC_NA_1, or parameter/file-transfer types only if full object bodies can be validated from sources."
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "iec60870-rev-001",
+        "iec60870-rev-002",
+        "iec60870-rev-011",
+        "iec60870-rev-003",
+        "iec60870-rev-005",
+        "iec60870-rev-004",
+        "iec60870-rev-009",
+        "iec60870-rev-010",
+        "iec60870-rev-007",
+        "iec60870-rev-008",
+        "iec60870-rev-012",
+        "iec60870-rev-017"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "function_code_coverage": 3,
+        "length_boundary_valid": 1,
+        "issue_structural_analogue": 5,
+        "parser_depth": 1
+      },
+      "selected_target_operations": [
+        "C_SC_NA_1",
+        "C_IC_NA_1",
+        "Select",
+        "M_SP_NA_1 sequence form",
+        "C_TS_NA_1",
+        "C_SC_NA_1",
+        "Unknown Information Object Address",
+        "Unknown Common Address of ASDU",
+        "Activation Termination",
+        "Return Information Caused by Remote Command",
+        "Return Information Caused by Local Command",
+        "C_RD_NA_1"
+      ]
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:iec60870:format-overview:aa7f710118bf",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec60870.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"lib60870-2.3.1\",\n    \"profile\": \"iec60870-5-101\",\n    \"protocol\": \"IEC60870\",\n    \"rule_family\": \"iec\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"asdu\": [\n      \"ASDU\",\n      \"C_SC_NA_1\",\n      \"M_ST_NA_1\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 0,\n    \"message_count\": 3,\n    \"non_header_templates\": 3,\n    \"real_strong_templates\": 3,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 3\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec60870:section-message-temp:1c282386f4cb",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec60870.json",
+        "content": "Section: Message Templates\nTemplates: ASDU",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec60870.json",
+        "content": "Section: Message Templates\nTemplate: ASDU\n- Field: type_id\n  Description: Protocol field 'type_id'. Layer: asdu. Role: type. Type: enum. Range: [1, 127]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 8 bits\n  Implementation constraints: must be one of the IEC 60870-5-101/104 valid TypeID values (1..127)\n- Field: vsq\n  Description: Protocol field 'vsq'. Layer: asdu. Role: control. Type: uint8. Constraints: 7-bit count 1..127, MSB=1 indicates sequence format, MSB=0 indicates non-sequence format. Range: [0, 127]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.\n  Length: 8 bits\n  Implementation constraints: mask 0x7f applied to extract count, mask 0x80 applied to extract flag, bit-7 encodes format flag, bits 0-6 encode element count\n- Field: cause_of_transmission\n  Description: Protocol field 'cause_of_transmission'. Layer: asdu. Role: cause. Type: uint8|uint16. Constraints: parameters->sizeOfCOT determines 1 or 2 octets, bit-7 is P/N bit, bit-6 is T bit. Range: [0, 65535]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset|mask|length_check.\n  Length: 8|16 bits\n  Implementation constraints: sizeOfCOT in parameters object, sizeOfCOT set by standard configuration\n- Field: common_address\n  Description: Protocol field 'common_address'. Layer: asdu. Role: address. Type: uint8|uint16. Constraints: size determined by CS101_AppLayerParameters.sizeOfCA (1 or 2), little-endian byte order for 2-byte case. Range: [0, 65535]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 8|16 bits\n  Implementation constraints: must be placed immediately after COT field, sizeOfCA is fixed for a single link/connection\n- Field: information_object_address\n  D",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:48ab3e72d47c",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "IEC 60870-5-101 and IEC 60870-5-104 Function Code Reference\n===========================================================\n\nScope\n-----\nThis file contains:\n\n1. IEC 60870 Type Identification values\n2. Cause of Transmission values\n3. IEC 60870-5-104 APCI frame types\n4. IEC 60870-5-104 U-format function codes\n5. Interrogation qualifiers\n6. Common command qualifiers\n7. IEC 60870-5-101 frame start codes\n\n================================================================\n1. IEC 60870 TYPE IDENTIFICATION\n================================================================\n\nMonitoring direction without long time tag:\n\n1   = M_SP_NA_1\n      Single-point information\n\n2   = M_SP_TA_1\n      Single-point information with CP24Time2a\n\n3   = M_DP_NA_1\n      Double-point information\n\n4   = M_DP_TA_1\n      Double-point information with CP24Time2a\n\n5   = M_ST_NA_1\n      Step-position information\n\n6   = M_ST_TA_1\n      Step-position information with CP24Time2a\n\n7   = M_BO_NA_1\n      Bitstring of 32 bits\n\n8   = M_BO_TA_1\n      Bitstring of 32 bits with CP24Time2a\n\n9   = M_ME_NA_1\n      Measured value, normalized value\n\n10  = M_ME_TA_1\n      Measured value, normalized value with CP24Time2a\n\n11  = M_ME_NB_1\n      Measured value, scaled value\n\n12  = M_ME_TB_1\n      Measured value, scaled value with CP24Time2a\n\n13  = M_ME_NC_1\n      Measured value, short floating-point value\n\n14  = M_ME_TC_1\n      Measured value, short floating-point value with CP24Time2a\n\n15  = M_IT_NA_1\n      Integrated totals\n\n16  = M_IT_TA_1\n      Integrated totals with CP24Time2a\n\n17  = M_EP_TA_1\n      Event of protection equipment with CP24Time2a\n\n18  = M_EP_TB_1\n      Packed start events of protection equipment with CP24Time2a\n\n19  = M_EP_TC_1\n      Packed output circuit information of protection equipment with CP24Time2a",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:1a7398f08c97",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "of protection equipment with CP24Time2a\n\n18  = M_EP_TB_1\n      Packed start events of protection equipment with CP24Time2a\n\n19  = M_EP_TC_1\n      Packed output circuit information of protection equipment with CP24Time2a\n\n20  = M_PS_NA_1\n      Packed single-point information with status change detection\n\n21  = M_ME_ND_1\n      Measured value, normalized value without quality descriptor\n\n22-29 = Reserved\n\nMonitoring direction with CP56Time2a:\n\n30  = M_SP_TB_1\n      Single-point information with CP56Time2a\n\n31  = M_DP_TB_1\n      Double-point information with CP56Time2a\n\n32  = M_ST_TB_1\n      Step-position information with CP56Time2a\n\n33  = M_BO_TB_1\n      Bitstring of 32 bits with CP56Time2a\n\n34  = M_ME_TD_1\n      Measured value, normalized value with CP56Time2a\n\n35  = M_ME_TE_1\n      Measured value, scaled value with CP56Time2a\n\n36  = M_ME_TF_1\n      Measured value, short floating-point value with CP56Time2a\n\n37  = M_IT_TB_1\n      Integrated totals with CP56Time2a\n\n38  = M_EP_TD_1\n      Event of protection equipment with CP56Time2a\n\n39  = M_EP_TE_1\n      Packed start events of protection equipment with CP56Time2a\n\n40  = M_EP_TF_1\n      Packed output circuit information of protection equipment with CP56Time2a\n\n41-44 = Reserved\n\nControl direction:\n\n45  = C_SC_NA_1\n      Single command\n\n46  = C_DC_NA_1\n      Double command\n\n47  = C_RC_NA_1\n      Regulating-step command\n\n48  = C_SE_NA_1\n      Set-point command, normalized value\n\n49  = C_SE_NB_1\n      Set-point command, scaled value\n\n50  = C_SE_NC_1\n      Set-point command, short floating-point value\n\n51  = C_BO_NA_1\n      Bitstring command\n\n52-57 = Reserved\n\nControl direction with CP56Time2a:\n\n58  = C_SC_TA_1\n      Single command with CP56Time2a\n\n59  = C_DC_TA_1\n      Double command with CP56Time2a",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:ff9a2bbfa022",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "ating-point value\n\n51  = C_BO_NA_1\n      Bitstring command\n\n52-57 = Reserved\n\nControl direction with CP56Time2a:\n\n58  = C_SC_TA_1\n      Single command with CP56Time2a\n\n59  = C_DC_TA_1\n      Double command with CP56Time2a\n\n60  = C_RC_TA_1\n      Regulating-step command with CP56Time2a\n\n61  = C_SE_TA_1\n      Set-point command, normalized value with CP56Time2a\n\n62  = C_SE_TB_1\n      Set-point command, scaled value with CP56Time2a\n\n63  = C_SE_TC_1\n      Set-point command, short floating-point value with CP56Time2a\n\n64  = C_BO_TA_1\n      Bitstring command with CP56Time2a\n\n65-69 = Reserved\n\nSystem information:\n\n70  = M_EI_NA_1\n      End of initialization\n\n71-99 = Reserved\n\nSystem command direction:\n\n100 = C_IC_NA_1\n      Interrogation command\n\n101 = C_CI_NA_1\n      Counter interrogation command\n\n102 = C_RD_NA_1\n      Read command\n\n103 = C_CS_NA_1\n      Clock synchronization command\n\n104 = C_TS_NA_1\n      Test command\n\n105 = C_RP_NA_1\n      Reset process command\n\n106 = C_CD_NA_1\n      Delay acquisition command\n\n107 = C_TS_TA_1\n      Test command with CP56Time2a\n\n108-109 = Reserved\n\nParameter direction:\n\n110 = P_ME_NA_1\n      Parameter of measured value, normalized value\n\n111 = P_ME_NB_1\n      Parameter of measured value, scaled value\n\n112 = P_ME_NC_1\n      Parameter of measured value, short floating-point value\n\n113 = P_AC_NA_1\n      Parameter activation\n\n114-119 = Reserved\n\nFile transfer:\n\n120 = F_FR_NA_1\n      File ready\n\n121 = F_SR_NA_1\n      Section ready\n\n122 = F_SC_NA_1\n      Call directory, select file, call file, call section\n\n123 = F_LS_NA_1\n      Last section or last segment\n\n124 = F_AF_NA_1\n      Acknowledge file or acknowledge section\n\n125 = F_SG_NA_1\n      File segment\n\n126 = F_DR_TA_1\n      File directory\n\n127 = Reserved",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:7130d97792f3",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "60870 TYPE IDENTIFICATION :: 103 = C_CS_NA_1 | Clock synchronization command\n- 1. IEC 60870 TYPE IDENTIFICATION :: 104 = C_TS_NA_1 | Test command\n- 1. IEC 60870 TYPE IDENTIFICATION :: 105 = C_RP_NA_1 | Reset process command\n- 1. IEC 60870 TYPE IDENTIFICATION :: 106 = C_CD_NA_1 | Delay acquisition command\n- 1. IEC 60870 TYPE IDENTIFICATION :: 107 = C_TS_TA_1 | Test command with CP56Time2a\n- 1. IEC 60870 TYPE IDENTIFICATION :: 110 = P_ME_NA_1 | Parameter of measured value, normalized value\n- 1. IEC 60870 TYPE IDENTIFICATION :: 111 = P_ME_NB_1 | Parameter of measured value, scaled value\n- 1. IEC 60870 TYPE IDENTIFICATION :: 112 = P_ME_NC_1 | Parameter of measured value, short floating-point value\n- 1. IEC 60870 TYPE IDENTIFICATION :: 113 = P_AC_NA_1 | Parameter activation\n- 1. IEC 60870 TYPE IDENTIFICATION :: 120 = F_FR_NA_1 | File ready\n- 1. IEC 60870 TYPE IDENTIFICATION :: 121 = F_SR_NA_1 | Section ready\n- 1. IEC 60870 TYPE IDENTIFICATION :: 122 = F_SC_NA_1 | Call directory, select file, call file, call section\n- 1. IEC 60870 TYPE IDENTIFICATION :: 123 = F_LS_NA_1 | Last section or last segment\n- 1. IEC 60870 TYPE IDENTIFICATION :: 124 = F_AF_NA_1 | Acknowledge file or acknowledge section\n- 1. IEC 60870 TYPE IDENTIFICATION :: 125 = F_SG_NA_1 | File segment\n- 1. IEC 60870 TYPE IDENTIFICATION :: 126 = F_DR_TA_1 | File directory\n- 1. IEC 60870 TYPE IDENTIFICATION :: 127 = Reserved\n- 2. CAUSE OF TRANSMISSION :: 0 = Unused\n- 2. CAUSE OF TRANSMISSION :: 1 = Periodic or Cyclic\n- 2. CAUSE OF TRANSMISSION :: 2 = Background Scan\n- 2. CAUSE OF TRANSMISSION :: 3 = Spontaneous\n- 2. CAUSE OF TRANSMISSION :: 4 = Initialized\n- 2. CAUSE OF TRANSMISSION :: 5 = Request\n- 2. CAUSE OF TRANSMISSION :: 6 = Activation\n- 2. CAUSE OF TRANSMISSION :: 7 = Activation Confirmation\n- 2. CAUSE OF TRANS",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec60870.json",
+        "content": "Protocol: IEC60870\nTemplate catalog:\n- Message Templates :: ASDU -> type_id, vsq, cause_of_transmission, common_address, information_object_address\n- Service or Function Specific Templates :: C_SC_NA_1 -> information_object_address, single_command_qualifier\n- Object or Data Templates :: M_ST_NA_1 -> information_object_address, value_with_transient_indication, quality_descriptor, three_octet_timestamp, seven_octet_timestamp",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec60870.json",
+        "content": "rect_byte_parse. Evidence-type: offset.\n  Length: 8|16 bits\n  Implementation constraints: must be placed immediately after COT field, sizeOfCA is fixed for a single link/connection\n- Field: information_object_address\n  Description: Protocol field 'information_object_address'. Layer: asdu. Role: address. Type: uint8|uint16|uint24. Constraints: length in bytes configured by parameters->sizeOfIOA (1,2,3), little-endian byte order, range 0x000000..0xFFFFFF. Range: [0, 16777215]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: variable\n  Implementation constraints: always placed immediately after ASDU header, absent when isSequence flag is true, sizeOfIOA determines presence of 2nd and 3rd byte",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:b5d0e8baf37c",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "Meaning:\n    Stop data transfer confirmation.\n\nTESTFR act:\n\nControl bytes:\n0x43 0x00 0x00 0x00\n\nMeaning:\n    Test frame activation.\n\nTESTFR con:\n\nControl bytes:\n0x83 0x00 0x00 0x00\n\nMeaning:\n    Test frame confirmation.\n\n================================================================\n5. IEC 60870-5-104 FRAME START\n================================================================\n\n0x68 = IEC 60870-5-104 APDU start byte\n\nAPDU format:\n\nByte 0:\n    0x68\n\nByte 1:\n    APDU length\n\nByte 2-5:\n    APCI control field\n\nByte 6 onward:\n    ASDU for I-format only\n\n================================================================\n6. IEC 60870-5-101 FRAME START CODES\n================================================================\n\n0x10 = Fixed-length frame start\n0x68 = Variable-length frame start\n0xE5 = Single-character positive acknowledgement\n\nFixed-length frame ending:\n\n0x16 = End delimiter\n\nVariable-length frame ending:\n\n0x16 = End delimiter\n\n================================================================\n7. INTERROGATION QUALIFIER\n================================================================\n\nQualifier of Interrogation:\n\n20 = Station Interrogation\n21 = Group 1 Interrogation\n22 = Group 2 Interrogation\n23 = Group 3 Interrogation\n24 = Group 4 Interrogation\n25 = Group 5 Interrogation\n26 = Group 6 Interrogation\n27 = Group 7 Interrogation\n28 = Group 8 Interrogation\n29 = Group 9 Interrogation\n30 = Group 10 Interrogation\n31 = Group 11 Interrogation\n32 = Group 12 Interrogation\n33 = Group 13 Interrogation\n34 = Group 14 Interrogation\n35 = Group 15 Interrogation\n36 = Group 16 Interrogation\n\n================================================================\n8. COMMON COMMAND QUALIFIER\n================================================================\n\nSelect/Execute bit:",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:bcdc884a69d7",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/3.lib60870/function.txt",
+        "content": "e, call section\n\n123 = F_LS_NA_1\n      Last section or last segment\n\n124 = F_AF_NA_1\n      Acknowledge file or acknowledge section\n\n125 = F_SG_NA_1\n      File segment\n\n126 = F_DR_TA_1\n      File directory\n\n127 = Reserved\n\n================================================================\n2. CAUSE OF TRANSMISSION\n================================================================\n\n0  = Unused\n\n1  = Periodic or Cyclic\n2  = Background Scan\n3  = Spontaneous\n4  = Initialized\n5  = Request\n6  = Activation\n7  = Activation Confirmation\n8  = Deactivation\n9  = Deactivation Confirmation\n10 = Activation Termination\n11 = Return Information Caused by Remote Command\n12 = Return Information Caused by Local Command\n13 = File Transfer\n\n14-19 = Reserved\n\n20 = Interrogated by Station\n21 = Interrogated by Group 1\n22 = Interrogated by Group 2\n23 = Interrogated by Group 3\n24 = Interrogated by Group 4\n25 = Interrogated by Group 5\n26 = Interrogated by Group 6\n27 = Interrogated by Group 7\n28 = Interrogated by Group 8\n29 = Interrogated by Group 9\n30 = Interrogated by Group 10\n31 = Interrogated by Group 11\n32 = Interrogated by Group 12\n33 = Interrogated by Group 13\n34 = Interrogated by Group 14\n35 = Interrogated by Group 15\n36 = Interrogated by Group 16\n\n37 = Requested by General Counter Interrogation\n38 = Requested by Counter Group 1\n39 = Requested by Counter Group 2\n40 = Requested by Counter Group 3\n41 = Requested by Counter Group 4\n\n42-43 = Reserved\n\n44 = Unknown Type Identification\n45 = Unknown Cause of Transmission\n46 = Unknown Common Address of ASDU\n47 = Unknown Information Object Address\n\n48-63 = Reserved or private use depending on profile\n\nCause-of-Transmission flags:\n\nTest Flag:\n    0 = Normal operation\n    1 = Test operation",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/3.lib60870/#GHSA-g3w7-x5rx-83xm.txt",
+        "content": "Issue: GHSA-G3W7-X5RX-83XM\nSummary: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can make TestCommand_getFromBuffer read 1 byte past the end of the heap-allocated message buffer. The immediate cause is that TestCommand_getFromBuffer calls InformationObject_ParseObjectAddress(msg, startIndex), and that helper has no msgSize parameter, so startIndex cannot be checked against the end of the buffer. The demonstrated impact is a heap out-of-bounds read detected under AddressSanitizer. The document additionally argues that roughly 150 *_getFromBuffer functions in cs101_information_objects.c share the same structural limitation, but the demonstrated crash here is in TestCommand_getFromBuffer.\nReproduce: Prerequisite/build setup: lib60870-C v2.4.0 fuzzed with LibFuzzer and AddressSanitizer. Provide the parser with a crafted IEC 60870-5-104 I-frame targeting TypeID 104 (C_TS_NA_1) whose VSQ/object count claims more objects than the ASDU body actually contains. When parsing reaches TestCommand_getFromBuffer, it calls InformationObject_ParseObjectAddress(msg, startIndex); because no message-size check is available there, startIndex advances past the heap allocation. Expected result: AddressSanitizer reports a 1-byte heap-buffer-over-read. The source also shows a 16-byte PoC hex string, 68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00, but notes uncertainty about the byte-level TypeID/offset interpretation.",
+        "issue_number": 3,
+        "title": "In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak..."
+      },
+      {
+        "chunk_id": "issue:13:13-payload:f28749d13c95",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/3.lib60870/#13.txt",
+        "content": "Payload message 0: 68 e0 40 00 00 83 80 68 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 80 00 08\nPayload message count: 1",
+        "issue_number": 13,
+        "title": "No affected version is specified. The report shows that `./test/iec104_monitor` in server mode crashes when it processes the supplied IEC104 input through Pr..."
+      }
+    ],
+    "generated_unix_time": 1786131411,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "iec60870-seed-001: removed unknown evidence ids: issue:200:200-summary:f3e6d652dd10, issue:201:201-summary:b3ae09d5cfe3, issue:13:13-summary:2d54f90f2079",
+          "iec60870-seed-002: removed unknown evidence ids: issue:197:197-summary:c5a792284ff4, issue:200:200-summary:f3e6d652dd10, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9, issue:175:175-summary:7d91c4955d65, issue:201:201-summary:b3ae09d5cfe3",
+          "iec60870-seed-003: removed unknown evidence ids: function_code:function:operation-catalog:af34dceea55e, issue:200:200-summary:f3e6d652dd10, issue:201:201-summary:b3ae09d5cfe3, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-004: removed unknown evidence ids: protocol_format:iec60870:object-or-data-templ:0a5c054cf594, protocol_format:iec60870:service-or-function-:afedead71eb6, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-005: removed unknown evidence ids: issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-006: removed unknown evidence ids: issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9, function_code:function:operation-catalog:db49cd8f1e4f, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-007: removed unknown evidence ids: issue:13:13-summary:2d54f90f2079, issue:197:197-summary:c5a792284ff4, issue:55:55-summary:4c9b500bbb01, issue:54:54-summary:869d6d1122d1, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+          "iec60870-seed-007: no valid evidence ids",
+          "iec60870-seed-008: removed unknown evidence ids: issue:53:53-summary:5effbdd9f0a0, issue:54:54-summary:869d6d1122d1, issue:55:55-summary:4c9b500bbb01, issue:197:197-summary:c5a792284ff4, issue:201:201-summary:b3ae09d5cfe3",
+          "iec60870-seed-008: no valid evidence ids",
+          "iec60870-seed-009: removed unknown evidence ids: issue:54:54-summary:869d6d1122d1, issue:55:55-summary:4c9b500bbb01, issue:53:53-summary:5effbdd9f0a0, issue:197:197-summary:c5a792284ff4, issue:201:201-summary:b3ae09d5cfe3",
+          "iec60870-seed-010: removed unknown evidence ids: issue:55:55-summary:4c9b500bbb01, issue:54:54-summary:869d6d1122d1, issue:53:53-summary:5effbdd9f0a0, issue:197:197-summary:c5a792284ff4, issue:201:201-summary:b3ae09d5cfe3",
+          "iec60870-seed-011: removed unknown evidence ids: function_code:function:operation-catalog:bd87fb5872f8, function_code:function:function-text:e9b36f1a0533, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-012: removed unknown evidence ids: function_code:function:operation-catalog:c6e9b17b21aa, function_code:function:operation-catalog:db49cd8f1e4f, issue:53:53-summary:5effbdd9f0a0, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-013: removed unknown evidence ids: function_code:function:operation-catalog:db49cd8f1e4f, function_code:function:operation-catalog:c6e9b17b21aa, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-014: removed unknown evidence ids: function_code:function:operation-catalog:db49cd8f1e4f, function_code:function:operation-catalog:c6e9b17b21aa, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-015: removed unknown evidence ids: function_code:function:operation-catalog:db49cd8f1e4f, function_code:function:operation-catalog:c6e9b17b21aa, issue:197:197-summary:c5a792284ff4",
+          "iec60870-seed-016: removed unknown evidence ids: function_code:function:operation-catalog:db49cd8f1e4f, function_code:function:operation-catalog:c6e9b17b21aa, issue:197:197-summary:c5a792284ff4, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+          "iec60870-plan-017-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:db49cd8f1e4f, function_code:function:operation-catalog:c6e9b17b21aa, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9",
+          "iec60870-plan-018-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:c6e9b17b21aa, function_code:function:operation-catalog:db49cd8f1e4f, issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:83eded76f2a9"
+        ],
+        "review": {
+          "overall_score": 68,
+          "needs_revision": true,
+          "protocol_validity_score": 62,
+          "seed_utility_score": 71,
+          "diversity_score": 64,
+          "issue_enhancement_score": 66,
+          "global_feedback": [
+            "The library is generally conservative and avoids obvious crash-payload replay, which is good for initial seeds.",
+            "A major strength is consistent use of complete field ordering inside the ASDU and mostly coherent IEC 104 outer framing for the framed seeds.",
+            "The weakest area is protocol certainty: several seeds assume 2-octet COT, 2-octet CA, and 3-octet IOA without a source that fully fixes those parameters for the intended target profile, and one framed seed has an incorrect stated length relation.",
+            "The corpus overuses a very small minimal shape, especially TypeID 1 one-object CS104 I-frames that differ only in cause of transmission; this limits structural diversity.",
+            "Issue-guided analogues are mostly safe, but some do not actually target the issue-referenced TypeID/path closely enough and instead only preserve generic framing.",
+            "Stateful coverage is underdeveloped: only one multi-message sequence is present, and it is ASDU-only while many other seeds are CS104-framed, reducing consistency.",
+            "Deterministic validator findings show widespread invalid or removed evidence references; this does not break the wire data directly but does reduce confidence in grounding, especially for seeds 007 and 008 which are absent and for several kept seeds whose rationale depends on removed evidence.",
+            "For a desired final set of 12, the current library has enough candidates, but several should be revised or deprioritized so the final selection is not dominated by near-duplicate COT-only variants."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "iec60870-seed-001",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "ASDU-only seed while much of the rest of the library uses CS104 framing, so corpus style is inconsistent.",
+                "Assumes 2-octet COT and 2-octet CA from issue-style practice rather than a fully grounded profile parameter source."
+              ],
+              "recommended_action": "Keep as a compact canonical C_SC_NA_1 seed, but add a framed CS104 companion or convert to framed form for consistency."
+            },
+            {
+              "seed_id": "iec60870-seed-002",
+              "score": 74,
+              "keep": true,
+              "problems": [
+                "Useful multi-message setup, but it is ASDU-only and may not exercise transport/parser state if the target expects CS104 framing.",
+                "The setup sequence is only loosely justified; the warm-up messages are valid but may not create meaningful protocol state for C_IC_NA_1."
+              ],
+              "recommended_action": "Keep for stateful diversity, but revise into fully framed CS104 I-frames and ensure the target interrogation object/qualifier shape matches documented practice."
+            },
+            {
+              "seed_id": "iec60870-seed-003",
+              "score": 69,
+              "keep": true,
+              "problems": [
+                "TypeID 127 is reserved rather than a clearly supported unknown-but-acceptable value, so behavior may collapse early at generic rejection.",
+                "The claimed sequence-form two-element validity is only weakly grounded because the object payload format for an unknown type is not documented."
+              ],
+              "recommended_action": "Keep as a boundary-adjacent unknown-type seed, but prefer a better-supported unknown-type analogue and consider full CS104 framing."
+            },
+            {
+              "seed_id": "iec60870-seed-004",
+              "score": 77,
+              "keep": true,
+              "problems": [
+                "Two-message repetition adds some parser work, but structural depth is limited because both messages are the same command family with minimal variation.",
+                "ASDU-only representation again reduces consistency with the framed half of the corpus."
+              ],
+              "recommended_action": "Keep, but strengthen by converting to CS104 framing or by varying command semantics more meaningfully than only IOA and qualifier."
+            },
+            {
+              "seed_id": "iec60870-seed-005",
+              "score": 58,
+              "keep": false,
+              "problems": [
+                "Expected behavior text says L=13, but byte 1 is 0x0c and the frame after the length octet is 12 bytes; this mismatch in explanation reduces confidence.",
+                "The actual frame is length-consistent, but the issue analogue is weak because it does not stay near the cited TypeID 104 C_TS_NA_1 path.",
+                "TypeID 17 choice is not a close structural match to the referenced over-read issue."
+              ],
+              "recommended_action": "Revise before keeping: fix the documented length relation and use a safe valid TypeID 104-based analogue with complete object/address bytes."
+            },
+            {
+              "seed_id": "iec60870-seed-006",
+              "score": 63,
+              "keep": true,
+              "problems": [
+                "Still a loose issue analogue: it does not target the documented vulnerable TypeID 104 path.",
+                "Minimal payload may not reach much deeper than generic ASDU header parsing."
+              ],
+              "recommended_action": "Keep only if revised slightly toward the actual issue structure; otherwise use as a secondary framed sanity seed."
+            },
+            {
+              "seed_id": "iec60870-seed-009",
+              "score": 83,
+              "keep": true,
+              "problems": [
+                "Relies on semantic 'unknown IOA' behavior that depends on server configuration rather than pure parser structure.",
+                "Still another C_SC_NA_1 seed, contributing to command-family concentration."
+              ],
+              "recommended_action": "Keep as one of the better issue-guided framed seeds; it is complete, safe, and likely to reach address-handling logic."
+            },
+            {
+              "seed_id": "iec60870-seed-010",
+              "score": 82,
+              "keep": true,
+              "problems": [
+                "Semantic outcome depends on target common-address configuration.",
+                "Closely overlaps with seed-009 except for the stressed address field."
+              ],
+              "recommended_action": "Keep, but retain only one of 009/010 if more diverse alternatives are added later."
+            },
+            {
+              "seed_id": "iec60870-seed-011",
+              "score": 81,
+              "keep": true,
+              "problems": [
+                "Select semantics are inferred only through qualifier choice, without a directly cited source for exact qualifier encoding in this specific object.",
+                "Another C_SC_NA_1 variant, so diversity gain is moderate rather than high."
+              ],
+              "recommended_action": "Keep as the strongest qualifier-focused command seed, but document qualifier intent more carefully."
+            },
+            {
+              "seed_id": "iec60870-seed-012",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "Uses COT 11 despite the plan title calling for Return Information Caused by Local Command, which should be 12.",
+                "This is a direct semantic mismatch against the target operation."
+              ],
+              "recommended_action": "Revise immediately by changing the cause-of-transmission to 12 if the seed is to remain in the final 12."
+            },
+            {
+              "seed_id": "iec60870-seed-013",
+              "score": 80,
+              "keep": true,
+              "problems": [
+                "Minimal TypeID 1 plus altered COT may be valid enough for parsing, but semantic pairing may be weak for some implementations.",
+                "Near-duplicate family with seeds 014, 015, 016, 017, and 018."
+              ],
+              "recommended_action": "Keep as one representative of the counter-interrogation COT family, but do not keep all near-duplicates unchanged."
+            },
+            {
+              "seed_id": "iec60870-seed-014",
+              "score": 76,
+              "keep": true,
+              "problems": [
+                "Very similar to the other minimal M_SP_NA_1 COT-variant frames.",
+                "Limited parser-depth value beyond COT dispatch."
+              ],
+              "recommended_action": "Keep only if the final set still needs this exact COT value; otherwise replace with a more structurally distinct seed."
+            },
+            {
+              "seed_id": "iec60870-seed-015",
+              "score": 76,
+              "keep": true,
+              "problems": [
+                "Near-duplicate of the other counter-group COT seeds.",
+                "Likely low marginal utility compared with a more diverse type/object seed."
+              ],
+              "recommended_action": "Keep only as part of a reduced representative subset of the COT-focused family."
+            },
+            {
+              "seed_id": "iec60870-seed-016",
+              "score": 76,
+              "keep": true,
+              "problems": [
+                "Near-duplicate of seeds 013-015 and plan-017 seed.",
+                "Adds little structural novelty beyond one byte in COT."
+              ],
+              "recommended_action": "Keep only if exact COT 39 coverage is desired in the initial 12; otherwise replace with a seed covering another TypeID or sequence form."
+            },
+            {
+              "seed_id": "iec60870-plan-017-seed-01",
+              "score": 77,
+              "keep": true,
+              "problems": [
+                "Another near-duplicate minimal M_SP_NA_1 frame differing only in COT.",
+                "Naming/label quality is weaker than the rest of the set."
+              ],
+              "recommended_action": "Keep at most one or two seeds from the 013-017 counter-group family; otherwise revise for more structural diversity."
+            },
+            {
+              "seed_id": "iec60870-plan-018-seed-01",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "Closely overlaps with the other minimal framed TypeID 1 seeds.",
+                "Request COT is covered, but structure remains too repetitive."
+              ],
+              "recommended_action": "Keep as a generic request-path seed, but consider dropping one of the similar COT-only variants to make room for other TypeIDs."
+            }
+          ],
+          "coverage_gaps": [
+            "Add a safe valid TypeID 104 C_TS_NA_1 framed seed, since the issue-guided set does not currently stay close enough to the documented vulnerable parser path.",
+            "Add at least one fully framed valid C_IC_NA_1 CS104 seed sequence instead of ASDU-only messages.",
+            "Add coverage for Unknown Cause of Transmission (45) because the plans include unknown-condition analogues but the library lacks this case.",
+            "Add a framed seed for Unknown Common Address/Unknown IOA using response-oriented COT values 46 and 47 if valid for the implementation under test.",
+            "Add a true sequence-form seed with a documented known TypeID and multiple elements, not only an unknown-type boundary case.",
+            "Add at least one non-command control/system type beyond C_SC_NA_1 and M_SP_NA_1, such as C_RD_NA_1, C_RP_NA_1, or C_CS_NA_1, to improve parser-entry diversity.",
+            "Reduce dependence on repeated TypeID 1 plus only COT-byte variation; replace some of those seeds with different object templates or time-tagged variants.",
+            "Improve grounding for parameter sizes or provide paired variants for sizeOfCOT/sizeOfCA/sizeOfIOA assumptions if the target configuration is uncertain."
+          ]
+        },
+        "candidate_count": 16
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "overall_score": 58,
+          "needs_revision": true,
+          "protocol_validity_score": 46,
+          "seed_utility_score": 61,
+          "diversity_score": 66,
+          "issue_enhancement_score": 70,
+          "global_feedback": [
+            "The library shows good intent: framing is consistent at the CS104 APDU level, lengths mostly match, and the corpus avoids replaying the published crash payloads.",
+            "The strongest seeds are the canonical C_SC_NA_1 baseline, the stateful C_IC_NA_1 sequence, and the two TypeID 104 analogues; these are structurally complete and likely to reach useful parser paths.",
+            "A major weakness is semantic validity of several object payloads. The supplied sources only explicitly describe object-specific fields for C_SC_NA_1 and give generic ASDU/header rules; several other TypeIDs are asserted with minimal bodies that are not supported by the provided object templates and are unlikely to be valid requests.",
+            "Multiple seeds use cause-of-transmission values such as 44-47 as if they were ordinary fuzzable request seeds. Those values are error/report causes, not normal initiating causes, so they are weak as initial coverage seeds and may be dropped early on semantic checks.",
+            "Several monitoring/system-command seeds rely on guessed one-byte object payloads or IOA-only bodies without source-backed object layouts. This lowers confidence that they will survive beyond shallow parsing.",
+            "There is too much concentration on C_SC_NA_1 with mostly CoT/address variation. For a desired selected count of 12, the current library has more than six marginal variants competing for slots.",
+            "Issue enhancement is used appropriately in spirit: the TypeID 104 seeds preserve the parser-sensitive structure while avoiding oversized VSQ/body mismatches and avoiding the exact GHSA PoC.",
+            "The best revision path is to keep the strong framed/stateful/issue-guided seeds, drop weak CoT-only carrier variants, and replace them with source-backed operations whose object payloads are actually documented or can be made confidently complete."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "iec60870-rev-001",
+              "score": 90,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as a strong baseline valid seed."
+            },
+            {
+              "seed_id": "iec60870-rev-002",
+              "score": 88,
+              "keep": true,
+              "problems": [
+                "Warmup M_SP_NA_1 message uses an assumed minimal object body not explicitly backed by the provided object template sources."
+              ],
+              "recommended_action": "Keep, but if possible replace the warmup monitoring frame with a more source-backed command or system-command setup frame."
+            },
+            {
+              "seed_id": "iec60870-rev-003",
+              "score": 54,
+              "keep": false,
+              "problems": [
+                "Sequence-form semantics are described inconsistently against the supplied source, which states information_object_address is absent when isSequence flag is true.",
+                "Element payload structure for M_SP_NA_1 sequence objects is assumed rather than source-backed."
+              ],
+              "recommended_action": "Revise or replace with a better-supported boundary seed using a type whose sequence/object layout is explicitly documented."
+            },
+            {
+              "seed_id": "iec60870-rev-004",
+              "score": 84,
+              "keep": true,
+              "problems": [
+                "Second qualifier value is only loosely justified as a select variant from the supplied sources."
+              ],
+              "recommended_action": "Keep; minor improvement would be to tie qualifier bits more explicitly to documented command qualifier semantics."
+            },
+            {
+              "seed_id": "iec60870-rev-005",
+              "score": 86,
+              "keep": true,
+              "problems": [
+                "Exact object payload layout for C_TS_NA_1 is not explicitly documented in the provided sources."
+              ],
+              "recommended_action": "Keep as a strong issue-guided analogue, but validate the trailing object byte against an implementation-backed template if available."
+            },
+            {
+              "seed_id": "iec60870-rev-006",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "Sequence-form TypeID 104 body is not source-backed and may not match the implementation's expected object structure.",
+                "Relies on the same sequence-form ambiguity seen elsewhere."
+              ],
+              "recommended_action": "Keep only if a TypeID 104 sequence-form object layout can be confirmed; otherwise replace with another safe single-object analogue."
+            },
+            {
+              "seed_id": "iec60870-rev-007",
+              "score": 70,
+              "keep": true,
+              "problems": [
+                "Uses Activation Termination as a response-style CoT on a command carrier, which is semantically weaker than an ordinary initiating request.",
+                "Low incremental value versus other C_SC_NA_1 variants."
+              ],
+              "recommended_action": "Borderline keep; acceptable for one response-style variant, but do not keep many similar CoT-only command variants."
+            },
+            {
+              "seed_id": "iec60870-rev-008",
+              "score": 68,
+              "keep": false,
+              "problems": [
+                "Another CoT-only variation on C_SC_NA_1 with limited added parser depth.",
+                "Response/report semantics make it a weaker initial seed."
+              ],
+              "recommended_action": "Drop and replace with a structurally different valid operation."
+            },
+            {
+              "seed_id": "iec60870-rev-009",
+              "score": 80,
+              "keep": true,
+              "problems": [
+                "High IOA analogue is useful, but still another C_SC_NA_1 variant with modest diversity gain."
+              ],
+              "recommended_action": "Keep as the preferred address-stressing analogue among the C_SC_NA_1 variants."
+            },
+            {
+              "seed_id": "iec60870-rev-010",
+              "score": 79,
+              "keep": true,
+              "problems": [
+                "Unknown-CA analogue is useful, but overlaps with the CoT 46 carrier seed in overall semantic intent."
+              ],
+              "recommended_action": "Keep this direct address-variant seed and prefer it over weaker CoT-carrier variants."
+            },
+            {
+              "seed_id": "iec60870-rev-011",
+              "score": 82,
+              "keep": true,
+              "problems": [
+                "Select semantics are inferred from qualifier bits rather than fully grounded in the provided object template."
+              ],
+              "recommended_action": "Keep as useful qualifier coverage for C_SC_NA_1."
+            },
+            {
+              "seed_id": "iec60870-rev-012",
+              "score": 66,
+              "keep": false,
+              "problems": [
+                "Primarily a CoT-only mutation of existing C_SC_NA_1 seeds.",
+                "Response-style local-command return is a weaker initial corpus choice."
+              ],
+              "recommended_action": "Drop unless the corpus needs exactly one local-command response analogue."
+            },
+            {
+              "seed_id": "iec60870-rev-013",
+              "score": 40,
+              "keep": false,
+              "problems": [
+                "Uses CoT 44 as a carrier rather than a normal initiating cause.",
+                "M_SP_NA_1 object body is only assumed, not source-backed.",
+                "Likely low utility as an initial seed because semantic validation may reject it quickly."
+              ],
+              "recommended_action": "Drop and replace with a normal valid request/response carrying a supported cause."
+            },
+            {
+              "seed_id": "iec60870-rev-014",
+              "score": 38,
+              "keep": false,
+              "problems": [
+                "CoT 45 is not a strong initial-seed choice.",
+                "Monitoring object body is minimally guessed rather than explicitly documented."
+              ],
+              "recommended_action": "Drop."
+            },
+            {
+              "seed_id": "iec60870-rev-015",
+              "score": 38,
+              "keep": false,
+              "problems": [
+                "CoT 46 carrier is redundant with the stronger direct unknown-CA analogue.",
+                "Monitoring object body is not source-backed."
+              ],
+              "recommended_action": "Drop in favor of iec60870-rev-010."
+            },
+            {
+              "seed_id": "iec60870-rev-016",
+              "score": 39,
+              "keep": false,
+              "problems": [
+                "CoT 47 carrier is redundant with the stronger direct high-IOA analogue.",
+                "Monitoring object body is not source-backed."
+              ],
+              "recommended_action": "Drop in favor of iec60870-rev-009."
+            },
+            {
+              "seed_id": "iec60870-rev-017",
+              "score": 52,
+              "keep": false,
+              "problems": [
+                "C_RD_NA_1 IOA-only body is asserted without an explicit object-specific template in the supplied sources.",
+                "Semantic validity is uncertain."
+              ],
+              "recommended_action": "Revise with implementation-backed object layout before keeping."
+            },
+            {
+              "seed_id": "iec60870-rev-018",
+              "score": 34,
+              "keep": false,
+              "problems": [
+                "C_CS_NA_1 clock synchronization normally has a richer object body than the minimal IOA-only layout used here.",
+                "C_RP_NA_1 also likely requires object-specific payload beyond what is shown.",
+                "Strategy is outside the supplied candidate plans and both messages have weak validity confidence."
+              ],
+              "recommended_action": "Drop and replace with source-backed system-command seeds."
+            }
+          ],
+          "coverage_gaps": [
+            "Need more source-backed non-C_SC_NA_1 seeds with confident object layouts; current diversity is overstated because several alternatives are semantically weak.",
+            "Need stronger valid coverage for documented system commands such as C_IC_NA_1 variants with different interrogation qualifiers rather than many response-style CoT carriers.",
+            "Need at least one well-supported unknown-cause/address handling seed that is valid in role and semantics, not just by framing.",
+            "Need replacement seeds for C_RD_NA_1, C_CS_NA_1, and C_RP_NA_1 unless their object-specific payload requirements can be confirmed.",
+            "Need better boundary coverage around VSQ/count with explicitly supported object templates; current sequence-form seeds rely on ambiguous assumptions.",
+            "Need broader type coverage from documented control-direction types such as C_DC_NA_1, C_RC_NA_1, or parameter/file-transfer types only if full object bodies can be validated from sources."
+          ]
+        },
+        "candidate_count": 18
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

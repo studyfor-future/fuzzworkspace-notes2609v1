@@ -1,0 +1,16 @@
+Number: 196
+
+Summarize:
+In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not check its passed arguments. The report states that intLen and bufPos can be large, so the access buffer[bufPos + i] can go out of bounds and cause a segmentation fault. The provided PoC reaches this through MmsValue_decodeMmsData with crafted input read from stdin, and the demonstrated impact is a crash.
+
+Reproduce:
+1. Build a small test program against libiec61850 that:
+   - declares a 0x10000-byte input buffer,
+   - reads stdin into that buffer,
+   - calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0).
+2. Run the program with this stdin byte sequence from the report:
+   80 92 92 92 92 92 92 92 92 92 ba ba ba ba ba ba 7f ff ff ff
+3. The reported result is a segmentation fault, attributed to BerDecoder_decodeUint32 accessing buffer[bufPos + i] with unchecked large intLen/bufPos values.
+
+Payload:
+80 92 92 92 92 92 92 92 92 92 ba ba ba ba ba ba 7f ff ff ff

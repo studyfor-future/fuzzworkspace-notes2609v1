@@ -1,0 +1,58 @@
+issue #1304
+
+Summary
+
+I found an out-of-bounds read in the WritePropertyMultiple decoding path of bacnet-stack 1.4.2. A specially crafted BACnet/IP packet can cause the server to read past the end of the receive buffer and crash.
+
+The issue is reproducible against the unmodified server-side code path with a real BACnet/IP UDP packet sequence. In my tests, the crash occurs in:
+
+bacnet_tag_number_decode()
+called from bacnet_tag_decode()
+called from bacnet_enclosed_data_length()
+reached through the WritePropertyMultiple handler path
+This appears to be a remotely reachable denial-of-service issue.
+
+Actual behavior if applicable
+
+==428972==ERROR: AddressSanitizer: global-buffer-overflow on address 0x5ad8a2811de2 at pc 0x5ad8a1a53f09 bp 0x7fffe7e71550 sp 0x7fffe7e71548
+READ of size 1 at 0x5ad8a2811de2 thread T0
+
+Root Cause Analysis
+
+The root cause is in wpm_decode_object_property() while parsing the optional priority field (tag 3).
+
+During debugging, the function is entered with:
+
+apdu_len = 12
+The decoder then processes the property identifier and property value container correctly. Later, it parses the priority field and obtains:
+
+tag_number = 3
+len_value = 4
+At that point, however, only 3 bytes remain in the current sub-buffer.
+
+Despite that, the code still executes:
+
+len += decode_unsigned(&apdu[len], len_value, &unsigned_value);
+Because len_value is trusted without verifying that len_value <= apdu_len - len, the function consumes more bytes than are actually available. As a result:
+
+wpm_decode_object_property() is called with apdu_len = 12
+but it returns len = 13
+This is the first incorrect length value in the failing path.
+
+After that, write_property_multiple_decode() adds the returned length to its local offset without validating that the returned length still fits in the remaining input:
+
+offset += len;
+In the failing case:
+
+original local apdu_len = 18
+offset = 6
+returned len = 13
+new offset = 19
+This makes offset > apdu_len, and the subsequent length calculation underflows. That forged large length is then propagated into deeper parsing logic, eventually causing bacnet_enclosed_data_length() / bacnet_tag_decode() to operate on a pointer that has already moved past the valid receive buffer. The final observable crash is an out-of-bounds read in bacnet_tag_number_decode().
+
+PoC
+
+<81><0b><00><19><01><20><ff><ff><00><ff><10><00><c4><02><00><03><e8><22><05><c4><91><03><22><01><04>
+<81><0a><30><30><01><04><00><00><30><10><00><0d><40><30><30><1e><03><00><01><9e><2e><30><30><2f><3c><01><30><2e>
+<81><0b><00><19><01><20><ff><ff><00><ff><10><00><c4><02><00><03><e8><22><05><c4><91><03><22><01><04>
+<81><0a><30><30><01><04><00><00><30><10><00><0d><40><30><30><1e><03><00><01><9e><2e><30><30><2f><3c><01><30><2e>

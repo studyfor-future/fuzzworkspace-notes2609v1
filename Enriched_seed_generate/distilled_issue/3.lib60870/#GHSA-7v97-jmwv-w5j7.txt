@@ -1,0 +1,10 @@
+Number: GHSA-7V97-JMWV-W5J7
+
+Summarize:
+The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-5-104 I-frame can cause InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex) to read past the end of a heap-allocated message buffer. According to the report, the function has no msgSize parameter and unconditionally reads msg[startIndex], msg[startIndex+1], and msg[startIndex+2]. When the VSQ field declares more objects than the ASDU body can hold, startIndex advances beyond the allocation. The demonstrated impact is a one-byte out-of-bounds read (CWE-125), observed with LibFuzzer and AddressSanitizer.
+
+Reproduce:
+Use lib60870-C v2.4.0 with LibFuzzer + AddressSanitizer. Provide the 14-byte IEC 104 I-frame `68 0a 68 0a 00 4e 11 e0 02 00 4e 68 10 ff` to the parser path that processes the ASDU. In this input, `68 0a` is the IEC 104 start byte with L=10, `11` is TypeID 17 (M_EP_TA_1), and `e0` sets VSQ with SQ=1 and N=96 even though only 4 bytes of ASDU body remain. As parsing walks the declared objects, InformationObject_ParseObjectAddress reads one byte past the heap buffer; AddressSanitizer should report the out-of-bounds read.
+
+Payload:
+68 0a 68 0a 00 4e 11 e0 02 00 4e 68 10 ff

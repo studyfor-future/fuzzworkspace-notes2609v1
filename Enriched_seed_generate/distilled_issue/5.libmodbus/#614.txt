@@ -1,0 +1,10 @@
+Number: 614
+
+Summarize:
+The report describes a heap-based buffer overflow in libmodbus triggered by a crafted request sent to the test server. The issue title names modbus_reply, while the description names _modbus_receive_msg; the provided AddressSanitizer trace shows the fault in modbus_reply at src/modbus.c:980:46. When tests/unit-test-server processes the supplied byte sequence, the observed result is a server abort: first with "double free or corruption (!prev)", and in the ASan run with a SEGV caused by a WRITE memory access in modbus_reply.
+
+Reproduce:
+Use the libmodbus test server program tests/unit-test-server.c. Run ./unit-test-server (the report also shows ./tests/unit-test-server). From a client, connect to the server and send the exact byte sequence <03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>. In the documented debug-enabled run, the server logs that the client connection from 127.0.0.1 is accepted, prints the received request, emits [03][DD][00][00][00][05][FF][17][02][00][00], then logs "ERROR Connection reset by peer: read", "Quit the loop: Connection reset by peer", and aborts with "double free or corruption (!prev)". In an AddressSanitizer build, sending the same input causes a SEGV on a WRITE access in modbus_reply at src/modbus.c:980:46, followed by process abort.
+
+Payload:
+03 dd 00 00 00 0d ff 17 01 62 00 01 00 84 00 01 02 d7 11

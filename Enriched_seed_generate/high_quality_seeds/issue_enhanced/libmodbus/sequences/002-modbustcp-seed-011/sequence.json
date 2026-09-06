@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-011",
+  "title": "Function coverage for Write Multiple Registers",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Provide a valid variable-length 0x10 request with two registers and matching byte count.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:ba5533b39dfa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_multiple_registers_request",
+      "hex": "00240000000b0110001000020412345678",
+      "byte_length": 17,
+      "sha256": "bc1cb3449f04d559ada34fde0223d9ff141ac6e4d4767bcfbb7b96e99e50ff11"
+    }
+  ],
+  "expected_behavior": "Server should parse the multi-register write, decode two values, and acknowledge the starting address and quantity or return an exception.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 000b for unit_id plus 10-byte PDU",
+    "function code is 10",
+    "quantity 0002 matches byte count 04 and exactly two 16-bit values",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Valid small write baseline with matched field relations.",
+  "sequence_sha256": "bbf93d7fc5bf9cab3a1c605facd9af80df957b40cc46e3d65fb6c2449ecd0e86",
+  "total_bytes": 17,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bc1cb3449f04d559ada34fde0223d9ff141ac6e4d4767bcfbb7b96e99e50ff11",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

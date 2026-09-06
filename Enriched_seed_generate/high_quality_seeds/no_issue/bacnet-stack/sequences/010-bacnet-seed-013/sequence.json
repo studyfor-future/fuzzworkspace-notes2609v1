@@ -1,0 +1,56 @@
+{
+  "seed_id": "bacnet-seed-013",
+  "title": "Function coverage for VT-Close",
+  "strategy": "function_code_coverage",
+  "target_operation": "VT-Close",
+  "purpose": "Cover VT-Close with corrected length accounting and a small non-empty payload region so the service parser sees more than a bare selector.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "vt_close_confirmed_request",
+      "hex": "810a000c0100000509162100",
+      "byte_length": 12,
+      "sha256": "010a8bf67e63ac9f8d6413593fdd703280570edae1d98f041f22d6f6c3250208"
+    }
+  ],
+  "expected_behavior": "The frame should parse cleanly and dispatch to VT-Close with a short payload region available for service-specific validation.",
+  "constraints_preserved": [
+    "BVLC length 0x000D matches the 13-byte message length.",
+    "NPDU version 0x01 and control 0x00 are present.",
+    "APDU type is confirmed-request.",
+    "Confirmed service choice 0x16 matches VT-Close.",
+    "Length accounting is self-consistent."
+  ],
+  "issue_safety_notes": "This corrected seed fixes prior framing weaknesses without adding unsupported service semantics.",
+  "sequence_sha256": "1c48d2c2226b131b8bb6f6b89704dcab8f67c3d2289f496287afc5ac6c1cfbf9",
+  "total_bytes": 12,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "010a8bf67e63ac9f8d6413593fdd703280570edae1d98f041f22d6f6c3250208",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

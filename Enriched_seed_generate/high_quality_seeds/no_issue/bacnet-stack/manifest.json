@@ -1,0 +1,1701 @@
+{
+  "protocol_name": "BACNET",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 14 structurally conservative BACnet initial seeds using only source-backed BACnet/IP layering and enumerated operation identifiers. All messages preserve BVLC header order before NPDU/APDU when those layers are present, use BACnet/IP type 0x81, and keep BVLC length fields consistent with the actual byte count. Confirmed-request seeds now include a fuller APDU skeleton using the documented APDU template fields apdu_type, invoke_id, service_choice, and service_request_payload, with a conservative confirmed-request control octet chosen to keep segmentation flags clear and max-segments fields simple. Because the supplied local sources do not provide full per-service wire grammars for object identifiers, context tags, or VT arguments, service payloads remain minimal but are no longer header-only stubs: each includes at least a small mutation-friendly payload region and, where applicable, BACnet application-tag-style bytes to exercise application-data parsing constraints. Unsupported issue claims were removed and the unsupported WriteGroup plan was replaced with a documented source-backed operation. Unconfirmed service choices were limited to values directly evidenced in the supplied sources.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: AtomicWriteFile, DeleteObject, I-Am, ReadProperty, ReadPropertyMultiple, VT-Close, VT-Data, VT-Open, Write-Broadcast-Distribution-Table, WriteProperty, WritePropertyMultiple",
+    "message_count_profile: 1msg=11, 3msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "bacnet-seed-001",
+      "title": "Canonical valid ReadPropertyMultiple",
+      "strategy": "baseline_valid",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Provide a conservative confirmed ReadPropertyMultiple request with complete BACnet/IP framing and a small payload region beyond the service selector for mutation into richer object and property lists.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "readpropertymultiple_confirmed_request_conservative",
+          "hex": "810a000f01000005010e0c00000019",
+          "byte_length": 15,
+          "sha256": "870b7fe13b67817eaafb114de7716cf3c29450b527ff7f4e7ac64068e47a4fc7"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP parser should accept the frame, parse a confirmed request APDU with invoke ID 0x01 and service choice 0x0E, and enter ReadPropertyMultiple handling with additional payload bytes available for service-specific validation.",
+      "constraints_preserved": [
+        "BVLC header uses type 0x81 and function 0x0A before NPDU and APDU.",
+        "BVLC length 0x000F matches the 15-byte message length.",
+        "NPDU contains version 0x01 and control 0x00.",
+        "APDU begins with confirmed-request type high nibble 0x00.",
+        "Confirmed APDU includes control octet, invoke ID, service choice, and trailing payload.",
+        "Confirmed service choice 0x0E matches ReadPropertyMultiple.",
+        "All payload bytes fit within the declared BVLC length."
+      ],
+      "issue_safety_notes": "No issue-specific shaping was used. This is a conservative validly framed seed with a short payload region rather than a replay of any malformed artifact.",
+      "sequence_sha256": "de1cb51fcdb2941b9fd97db6beee22411c67235143dde624e4ee15d196480709",
+      "total_bytes": 15,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "870b7fe13b67817eaafb114de7716cf3c29450b527ff7f4e7ac64068e47a4fc7",
+        "encoded_bytes": 15,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-002",
+      "title": "Stateful confirmed sequence ending in ReadProperty",
+      "strategy": "stateful_valid",
+      "target_operation": "ReadProperty",
+      "purpose": "Exercise sequential confirmed-request handling with distinct invoke IDs and related read services before a final ReadProperty request, improving stateful transaction coverage over repeated identical stubs.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "setup_atomicreadfile_confirmed_request",
+          "hex": "810a000d0100000501063e2100",
+          "byte_length": 13,
+          "sha256": "9dc27ea887688bb889f19bdb5e9dd384cd7a523385f2a0dd0217e38da7d7d938"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "setup_readpropertymultiple_confirmed_request",
+          "hex": "810a000f01000005020e0c00000019",
+          "byte_length": 15,
+          "sha256": "6e88c120a2bd470191ac114b6008224740ded1d9492d04de1dc9a610d376e940"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "target_readproperty_confirmed_request",
+          "hex": "810a000f01000005030c0c00000019",
+          "byte_length": 15,
+          "sha256": "9fbb1c137b57f30d25b31bb014e18ef744a4fc479e230d9dbeaf899a576596e6"
+        }
+      ],
+      "expected_behavior": "Each message should parse as a complete BACnet/IP confirmed request. The first two exercise transaction bookkeeping and related service dispatch, and the third should dispatch to ReadProperty with a distinct invoke ID.",
+      "constraints_preserved": [
+        "Each message contains complete BVLC plus NPDU plus APDU layering.",
+        "Every BVLC length field equals the actual byte count of its message.",
+        "NPDU version and control octets are present in each message.",
+        "All APDUs use confirmed-request type 0x00 in the high nibble.",
+        "Each confirmed APDU includes control, invoke ID, service choice, and payload bytes.",
+        "Invoke IDs vary monotonically across the sequence.",
+        "Final service choice 0x0C matches ReadProperty."
+      ],
+      "issue_safety_notes": "Statefulness is limited to normal sequential request handling and invoke-ID variation. No issue claims or malformed sequencing are used.",
+      "sequence_sha256": "de46bf01535497c8bc4c5d341d475c60dbb72b29c4e7b507a22d6f0f65e3e470",
+      "total_bytes": 43,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "05af87cdc83a326f9e9bd2bab1711f0a4809008e1ffdfa2ca6fc2246363f7205",
+        "encoded_bytes": 43,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 13,
+            "frame_length": 13
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 13,
+            "payload_offset": 13,
+            "payload_length": 15,
+            "frame_length": 15
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 28,
+            "payload_offset": 28,
+            "payload_length": 15,
+            "frame_length": 15
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-008",
+      "title": "BVLC management coverage for Write-Broadcast-Distribution-Table",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write-Broadcast-Distribution-Table",
+      "purpose": "Exercise standalone BVLC management parsing with at least one conservative table-entry-sized payload block instead of a header-only message.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:operation-catalog:a4301b6fad30",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "write_broadcast_distribution_table_with_one_entry_sized_block",
+          "hex": "8101000effffffffbac000180000",
+          "byte_length": 14,
+          "sha256": "fbc7eea3256753c01f8c14c799fb7f5247e8b699202d581e5a9f5a16e6ef3be2"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP implementation should recognize the BVLC management function as Write-Broadcast-Distribution-Table and then validate the supplied table payload rather than rejecting the frame as header-only.",
+      "constraints_preserved": [
+        "Standalone BVLC framing is used for a BVLC function target.",
+        "BVLC type is 0x81.",
+        "BVLC length 0x000E matches the 14-byte message length.",
+        "Message includes payload bytes after the BVLC header so it is not a pure header stub."
+      ],
+      "issue_safety_notes": "The payload is a conservative fixed-size analogue for an initial management-table entry region, not an exploit or a known crash sequence.",
+      "sequence_sha256": "6870172781516b274028e6aeb12e76509421de0235b7f33807044abca2ccdd70",
+      "total_bytes": 14,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "fbc7eea3256753c01f8c14c799fb7f5247e8b699202d581e5a9f5a16e6ef3be2",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-003",
+      "title": "Boundary-adjacent AtomicWriteFile",
+      "strategy": "length_boundary_valid",
+      "target_operation": "AtomicWriteFile",
+      "purpose": "Exercise a larger but still conservative confirmed request for AtomicWriteFile so length-sensitive code sees more than the smallest dispatch case while preserving valid outer framing.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "atomicwritefile_confirmed_request_boundary_valid",
+          "hex": "810a00110100000511073e21003e22003f",
+          "byte_length": 17,
+          "sha256": "5696ba87e2fa86365a7648d9e498e5b73dba54029da32735eb601f63b1754288"
+        }
+      ],
+      "expected_behavior": "The target should accept BVLC and NPDU framing, parse a confirmed request for service choice 0x07, and process a longer payload region during AtomicWriteFile validation.",
+      "constraints_preserved": [
+        "BVLC type 0x81 and function 0x0A are preserved.",
+        "BVLC length 0x0012 matches the 18-byte total message size.",
+        "NPDU header is present and minimal.",
+        "APDU uses confirmed-request PDU type high nibble 0x00.",
+        "Confirmed service choice 0x07 matches AtomicWriteFile.",
+        "Additional payload remains wholly inside the declared frame length."
+      ],
+      "issue_safety_notes": "This is a benign length-adjacent seed with self-consistent framing, not an oversized or truncated payload.",
+      "sequence_sha256": "92151f96b07a4c8cd0d224a339aeacb3a895e4a9e7e57c70d3aa32efc8adf262",
+      "total_bytes": 17,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "5696ba87e2fa86365a7648d9e498e5b73dba54029da32735eb601f63b1754288",
+        "encoded_bytes": 17,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 17,
+            "frame_length": 17
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-004",
+      "title": "Deep parser path for ReadPropertyMultiple",
+      "strategy": "parser_depth",
+      "target_operation": "ReadPropertyMultiple",
+      "purpose": "Increase nested payload depth within a validly framed confirmed request so list-oriented mutations have a richer starting structure for ReadPropertyMultiple parsing.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "readpropertymultiple_confirmed_request_parser_depth",
+          "hex": "810a001501000005220e0c000000190c000001191e",
+          "byte_length": 21,
+          "sha256": "f7291c8a3a88c2e88b1613c945812c0f6e98e5399d6c50c3e469510c4534c158"
+        }
+      ],
+      "expected_behavior": "The message should parse through BACnet/IP and confirmed APDU layers and then present a larger service payload region to ReadPropertyMultiple parsing than a minimal dispatch seed.",
+      "constraints_preserved": [
+        "BVLC length 0x0016 matches the 22-byte message length.",
+        "Layer ordering remains BVLC then NPDU then APDU.",
+        "NPDU version 0x01 and control 0x00 are preserved.",
+        "Confirmed APDU includes control, invoke ID, service choice, and multiple trailing bytes.",
+        "Service choice 0x0E matches ReadPropertyMultiple.",
+        "Payload stays within the remaining APDU bytes as required by documented length constraints."
+      ],
+      "issue_safety_notes": "Built only from source-backed structure and service IDs. The deeper payload is synthetic and safe, not issue-derived.",
+      "sequence_sha256": "1faf6b8bb5c3b7df6262babad9f42b09a84bc5011deb800eb479b2cf3f32db39",
+      "total_bytes": 21,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f7291c8a3a88c2e88b1613c945812c0f6e98e5399d6c50c3e469510c4534c158",
+        "encoded_bytes": 21,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 21,
+            "frame_length": 21
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-006",
+      "title": "Function coverage for WriteProperty",
+      "strategy": "function_code_coverage",
+      "target_operation": "WriteProperty",
+      "purpose": "Cover WriteProperty with a fuller confirmed APDU skeleton and application-tag-style bytes suitable for value mutations.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "writeproperty_confirmed_request_conservative",
+          "hex": "810a000f01000005050f0c00000021",
+          "byte_length": 15,
+          "sha256": "86a1eda7817408080ab7b69b67b223b88a72001c45ee1b90868007548584c54b"
+        }
+      ],
+      "expected_behavior": "The parser should recognize a confirmed WriteProperty request and continue into service-specific handling with a short value-like payload present.",
+      "constraints_preserved": [
+        "BVLC length 0x0010 matches actual bytes.",
+        "NPDU version and control are present.",
+        "APDU type is confirmed-request via high nibble 0x00.",
+        "Confirmed APDU includes control octet, invoke ID, service choice, and trailing payload.",
+        "Service choice 0x0F matches WriteProperty."
+      ],
+      "issue_safety_notes": "This is a normal functional coverage seed with no unsupported claims or malformed framing.",
+      "sequence_sha256": "a8c23f1a14d2bb37631bd843deb9763f3c20485574a59a90c7caa79404f3e409",
+      "total_bytes": 15,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "86a1eda7817408080ab7b69b67b223b88a72001c45ee1b90868007548584c54b",
+        "encoded_bytes": 15,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-005",
+      "title": "Function coverage for WritePropertyMultiple",
+      "strategy": "function_code_coverage",
+      "target_operation": "WritePropertyMultiple",
+      "purpose": "Cover the WritePropertyMultiple confirmed-service dispatch path with a conservative payload region that can mutate toward object, property, and value blocks.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "writepropertymultiple_confirmed_request_conservative",
+          "hex": "810a000f0100000504100c00000091",
+          "byte_length": 15,
+          "sha256": "45de5229c2473408b5f9a911be39ce24c9b1932809c0b6c9ca9b5b4424b16778"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP parser should dispatch this confirmed request to WritePropertyMultiple handling and expose a short write-oriented payload for downstream mutation.",
+      "constraints_preserved": [
+        "Complete BVLC and NPDU framing included.",
+        "BVLC length 0x0010 matches the actual 16-byte message.",
+        "Confirmed-request APDU format includes control, invoke ID, and service choice.",
+        "Service choice 0x10 matches WritePropertyMultiple.",
+        "Trailing payload bytes are present and bounded by the declared length."
+      ],
+      "issue_safety_notes": "No issue enhancement is used. The payload is intentionally conservative and mutation-friendly.",
+      "sequence_sha256": "92f552378816e8588bdfdabfbb5135f776e40917a08b91f79e6e6545ba690e74",
+      "total_bytes": 15,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "45de5229c2473408b5f9a911be39ce24c9b1932809c0b6c9ca9b5b4424b16778",
+        "encoded_bytes": 15,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-012",
+      "title": "Function coverage for VT-Data",
+      "strategy": "function_code_coverage",
+      "target_operation": "VT-Data",
+      "purpose": "Exercise VT-Data confirmed-service parsing with a distinct payload shape containing several extra bytes for data-oriented mutation.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "vt_data_confirmed_request",
+          "hex": "810a000e01000005081721414243",
+          "byte_length": 14,
+          "sha256": "275f5f4fcef4fdb7659da40d6f2a14f1517ff81a11ed6b9daee42bdacd986d73"
+        }
+      ],
+      "expected_behavior": "The parser should dispatch to VT-Data based on service choice 0x17 and then validate or consume the trailing payload bytes as service data.",
+      "constraints_preserved": [
+        "BVLC length 0x0010 matches the 16-byte message length.",
+        "Layer order remains BVLC then NPDU then APDU.",
+        "Confirmed APDU includes control octet, invoke ID, service choice, and payload.",
+        "Confirmed service choice 0x17 matches VT-Data."
+      ],
+      "issue_safety_notes": "This is a conservative data-bearing VT seed, not a malformed or issue-derived VT session message.",
+      "sequence_sha256": "a6c5fa944a9c06045fcb3f268372f07811d393342b9c46a4cb7ba370f96ecfcb",
+      "total_bytes": 14,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "275f5f4fcef4fdb7659da40d6f2a14f1517ff81a11ed6b9daee42bdacd986d73",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-014",
+      "title": "Function coverage for DeleteObject",
+      "strategy": "function_code_coverage",
+      "target_operation": "DeleteObject",
+      "purpose": "Add a distinct documented confirmed service to improve parser entry diversity after removing unsupported issue-oriented and uncertain unconfirmed seeds.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "deleteobject_confirmed_request_conservative",
+          "hex": "810a000e010000050a0b0c000001",
+          "byte_length": 14,
+          "sha256": "618d604c788204be0adc8f6cfb2706b1f4552917ade61b422dc5a3f9e6f382b9"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP endpoint should parse the frame as a confirmed DeleteObject request and pass the small payload region into service-specific validation.",
+      "constraints_preserved": [
+        "BVLC header is complete and first in the frame.",
+        "BVLC length 0x000F matches actual message length.",
+        "NPDU version and control fields are present.",
+        "Confirmed APDU contains control octet, invoke ID, service choice, and payload bytes.",
+        "Service choice 0x0B matches DeleteObject."
+      ],
+      "issue_safety_notes": "No issue claims are made. This seed is a straightforward source-backed confirmed-service coverage addition.",
+      "sequence_sha256": "4c4995f08f32aea80266eaf074d6584c8d4f8d07b916bc916c8ecc5b36c8c474",
+      "total_bytes": 14,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "618d604c788204be0adc8f6cfb2706b1f4552917ade61b422dc5a3f9e6f382b9",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-011",
+      "title": "Function coverage for VT-Open",
+      "strategy": "function_code_coverage",
+      "target_operation": "VT-Open",
+      "purpose": "Exercise VT-Open confirmed-service dispatch with a more complete APDU skeleton and non-empty payload region.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "vt_open_confirmed_request",
+          "hex": "810a000d0100000507150c0201",
+          "byte_length": 13,
+          "sha256": "f6a9af76a3f0b95f3bccd6b6e5afea826d6e3e9a747ac9240bd1d81ced1d8f67"
+        }
+      ],
+      "expected_behavior": "A BACnet/IP parser should recognize the confirmed request and enter VT-Open handling with a small argument-like payload region available.",
+      "constraints_preserved": [
+        "BVLC length 0x000E matches actual bytes.",
+        "NPDU header is complete and minimal.",
+        "APDU uses confirmed-request type and includes invoke ID plus service choice.",
+        "Confirmed service choice 0x15 matches VT-Open.",
+        "Payload bytes remain bounded by the declared length."
+      ],
+      "issue_safety_notes": "No VT-specific issue shaping is used; this is a conservative service-dispatch seed only.",
+      "sequence_sha256": "3fcc1a8a60e5e8575248821cfb8ad599f9ae5023231dfc32b13b369d28c9dfe3",
+      "total_bytes": 13,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f6a9af76a3f0b95f3bccd6b6e5afea826d6e3e9a747ac9240bd1d81ced1d8f67",
+        "encoded_bytes": 13,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 13,
+            "frame_length": 13
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-013",
+      "title": "Function coverage for VT-Close",
+      "strategy": "function_code_coverage",
+      "target_operation": "VT-Close",
+      "purpose": "Cover VT-Close with corrected length accounting and a small non-empty payload region so the service parser sees more than a bare selector.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:function-text:30bbed9e7725",
+        "function_code:function:function-text:57965da7c4c0",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "vt_close_confirmed_request",
+          "hex": "810a000c0100000509162100",
+          "byte_length": 12,
+          "sha256": "010a8bf67e63ac9f8d6413593fdd703280570edae1d98f041f22d6f6c3250208"
+        }
+      ],
+      "expected_behavior": "The frame should parse cleanly and dispatch to VT-Close with a short payload region available for service-specific validation.",
+      "constraints_preserved": [
+        "BVLC length 0x000D matches the 13-byte message length.",
+        "NPDU version 0x01 and control 0x00 are present.",
+        "APDU type is confirmed-request.",
+        "Confirmed service choice 0x16 matches VT-Close.",
+        "Length accounting is self-consistent."
+      ],
+      "issue_safety_notes": "This corrected seed fixes prior framing weaknesses without adding unsupported service semantics.",
+      "sequence_sha256": "1c48d2c2226b131b8bb6f6b89704dcab8f67c3d2289f496287afc5ac6c1cfbf9",
+      "total_bytes": 12,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "010a8bf67e63ac9f8d6413593fdd703280570edae1d98f041f22d6f6c3250208",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "bacnet-seed-009",
+      "title": "Function coverage for I-Am",
+      "strategy": "function_code_coverage",
+      "target_operation": "I-Am",
+      "purpose": "Provide source-backed unconfirmed service coverage using a broadcast NPDU and a compact payload region beyond the unconfirmed selector.",
+      "evidence_ids": [
+        "function_code:function:function-text:ea07db06bcca",
+        "function_code:function:operation-catalog:78d24f1cf578",
+        "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "i_am_unconfirmed_broadcast",
+          "hex": "810b000b010010000c0201",
+          "byte_length": 11,
+          "sha256": "74dfe47b241ba11d5a9f8140198ea3a17c996f450425aaa44e8e7d0fea5b7e5f"
+        }
+      ],
+      "expected_behavior": "The target should parse the broadcast NPDU, identify an Unconfirmed-Request-PDU, and dispatch to unconfirmed service choice 0x00 with payload bytes available for further validation.",
+      "constraints_preserved": [
+        "BVLC function 0x0B is used for Original-Broadcast-NPDU.",
+        "BVLC length 0x000C matches the 12-byte message length.",
+        "NPDU version 0x01 and control 0x00 are present.",
+        "APDU first octet 0x10 denotes Unconfirmed-Request-PDU.",
+        "Unconfirmed service choice 0x00 matches I-Am."
+      ],
+      "issue_safety_notes": "Uses only a source-backed unconfirmed selector and conservative extra bytes. No unsupported Who-Is or Who-Has claims remain.",
+      "sequence_sha256": "3c65b3778e9acbae0ce78b566e2762546178a07295d3d638770a9443fbcd094c",
+      "total_bytes": 11,
+      "repair_notes": [
+        "recomputed BVLC length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "74dfe47b241ba11d5a9f8140198ea3a17c996f450425aaa44e8e7d0fea5b7e5f",
+        "encoded_bytes": 11,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 11,
+            "frame_length": 11
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 7
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 7
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 14,
+    "candidate_pool_count": 14,
+    "returned_seed_count": 12,
+    "review_threshold": 86,
+    "protocol_family": "bacnet",
+    "planning": {
+      "protocol_name": "BACNET",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid ReadPropertyMultiple",
+          "target_operation": "ReadPropertyMultiple",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:function-text:57965da7c4c0",
+            "protocol_format:bacnet-stack:message-templates-ap:10e384995bcd",
+            "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+            "function_code:function:function-text:ea07db06bcca",
+            "protocol_format:bacnet-stack:object-or-data-templ:1ef0b7afab80"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for ReadProperty",
+          "target_operation": "ReadProperty",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "protocol_format:bacnet-stack:object-or-data-templ:1ef0b7afab80",
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:function-text:83d6282033cc",
+            "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+            "function_code:function:function-text:57965da7c4c0"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent AtomicWriteFile",
+          "target_operation": "AtomicWriteFile",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+            "protocol_format:bacnet-stack:object-or-data-templ:1ef0b7afab80",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:83d6282033cc",
+            "function_code:function:function-text:ea07db06bcca"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for ReadPropertyMultiple",
+          "target_operation": "ReadPropertyMultiple",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:30bbed9e7725",
+            "protocol_format:bacnet-stack:object-or-data-templ:1ef0b7afab80",
+            "function_code:function:function-text:9fe125c94c3c",
+            "protocol_format:bacnet-stack:message-templates-ap:6ed7abfac66a",
+            "protocol_format:bacnet-stack:message-templates-ap:10e384995bcd"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-005",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for WritePropertyMultiple",
+          "target_operation": "WritePropertyMultiple",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. BACnet CONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:operation-catalog:aaf584396b7c",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-006",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for WriteProperty",
+          "target_operation": "WriteProperty",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. BACnet CONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:operation-catalog:aaf584396b7c",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:08b40ec2ad9b",
+            "function_code:function:function-text:57965da7c4c0"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-007",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for WriteGroup",
+          "target_operation": "WriteGroup",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. BACnet UNCONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:cd2e4e56df0d",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:function-text:877e62cc4cf5",
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-008",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write-Broadcast-Distribution-Table",
+          "target_operation": "Write-Broadcast-Distribution-Table",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "4. BACnet/IP BVLC FUNCTION",
+          "evidence_ids": [
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:operation-catalog:cd2e4e56df0d",
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:a4301b6fad30",
+            "function_code:function:function-text:877e62cc4cf5",
+            "function_code:function:function-text:57965da7c4c0"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-009",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Who-Is",
+          "target_operation": "Who-Is",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. BACnet UNCONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:cd2e4e56df0d",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:function-text:877e62cc4cf5",
+            "function_code:function:function-text:08b40ec2ad9b",
+            "function_code:function:function-text:9fe125c94c3c"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-010",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Who-Has",
+          "target_operation": "Who-Has",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. BACnet UNCONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:cd2e4e56df0d",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:function-text:877e62cc4cf5",
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-011",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for VT-Open",
+          "target_operation": "VT-Open",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. BACnet CONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:operation-catalog:aaf584396b7c",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-012",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for VT-Data",
+          "target_operation": "VT-Data",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. BACnet CONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:operation-catalog:aaf584396b7c",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-013",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for VT-Close",
+          "target_operation": "VT-Close",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. BACnet CONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:operation-catalog:aaf584396b7c",
+            "function_code:function:function-text:30bbed9e7725",
+            "function_code:function:function-text:57965da7c4c0",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-014",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for UTCTimeSynchronization",
+          "target_operation": "UTCTimeSynchronization",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. BACnet UNCONFIRMED SERVICE CHOICE",
+          "evidence_ids": [
+            "function_code:function:function-text:ea07db06bcca",
+            "function_code:function:operation-catalog:cd2e4e56df0d",
+            "function_code:function:operation-catalog:78d24f1cf578",
+            "function_code:function:function-text:877e62cc4cf5",
+            "function_code:function:function-text:9fe125c94c3c",
+            "function_code:function:function-text:08b40ec2ad9b"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "overall_score": 78,
+      "needs_revision": true,
+      "protocol_validity_score": 72,
+      "seed_utility_score": 80,
+      "diversity_score": 84,
+      "issue_enhancement_score": 0,
+      "global_feedback": [
+        "Outer BACnet/IP framing is mostly self-consistent and many seeds correctly preserve BVLC->NPDU->APDU ordering with matching BVLC lengths.",
+        "The library improves diversity across confirmed, unconfirmed, and BVLC-management entry points, but several seeds still rely on highly synthetic service payloads that are unlikely to satisfy deeper service-specific grammar checks.",
+        "Stateful coverage is present, but the setup sequence is only transaction-varied confirmed requests and does not establish a clearly meaningful protocol state for the final target operation.",
+        "There is a notable mismatch against the requested plan set: unsupported planned operations such as Who-Is, Who-Has, UTCTimeSynchronization, and WriteGroup were not represented; these were replaced with different operations. That may be practical, but it reduces plan fidelity.",
+        "For initial fuzz seeds, the main weakness is shallow BACnet service payload structure: many confirmed services use generic bytes rather than plausible context-tagged object identifiers, property identifiers, or VT arguments, limiting deep parser reach.",
+        "No copied crash payload pattern is evident, and issue enhancement was correctly not used.",
+        "Given the desired final selected seed count of 12, the library should be trimmed by dropping the weakest synthetic confirmed-service seeds while strengthening at least a few retained seeds with more service-plausible payload structure."
+      ],
+      "sequence_feedback": [
+        {
+          "seed_id": "bacnet-seed-001",
+          "score": 84,
+          "keep": true,
+          "problems": [
+            "ReadPropertyMultiple payload is minimal and not clearly structured as a plausible object/property list.",
+            "Likely to reach dispatch and some validation, but not deep service parsing."
+          ],
+          "recommended_action": "Keep as a canonical shallow seed, but strengthen payload with a more plausible list-oriented context-tag structure if source support becomes available."
+        },
+        {
+          "seed_id": "bacnet-seed-002",
+          "score": 76,
+          "keep": true,
+          "problems": [
+            "Stateful sequence is weakly stateful; it varies invoke IDs and services but does not clearly set up state required for ReadProperty.",
+            "First setup step uses AtomicReadFile without source-backed service payload grammar, so depth gain is uncertain."
+          ],
+          "recommended_action": "Keep for transaction-sequence diversity, but if trimming to 12, retain only if no stronger stateful sequence is available; preferably replace setup with more semantically related read operations and richer payloads."
+        },
+        {
+          "seed_id": "bacnet-seed-003",
+          "score": 79,
+          "keep": true,
+          "problems": [
+            "AtomicWriteFile payload is boundary-adjacent only at outer length level and not obviously valid for file write mode semantics.",
+            "May stall at service-specific validation due to synthetic body."
+          ],
+          "recommended_action": "Keep as a length-sensitive outer-framing seed, but revise payload toward plausible stream or record mode structure."
+        },
+        {
+          "seed_id": "bacnet-seed-004",
+          "score": 86,
+          "keep": true,
+          "problems": [
+            "Deeper payload is still synthetic and may not match actual ReadPropertyMultiple list grammar.",
+            "Message_budget in plan suggested 2, but seed is only a single message; not fatal, but less aligned with plan shape."
+          ],
+          "recommended_action": "Keep as one of the better parser-depth candidates; enrich with more realistic repeated object/property elements."
+        },
+        {
+          "seed_id": "bacnet-seed-005",
+          "score": 80,
+          "keep": true,
+          "problems": [
+            "WritePropertyMultiple body is too generic to reliably enter nested write-list parsing.",
+            "Application-tag-like tail is minimal and may be semantically inconsistent with write-list expectations."
+          ],
+          "recommended_action": "Keep for service dispatch coverage, but prefer a payload that resembles object/property/value blocks."
+        },
+        {
+          "seed_id": "bacnet-seed-006",
+          "score": 82,
+          "keep": true,
+          "problems": [
+            "WriteProperty payload lacks plausible property/value context structure.",
+            "Likely useful for dispatch but limited for deep write parsing."
+          ],
+          "recommended_action": "Keep and strengthen with a more credible property identifier plus application-tagged value encoding."
+        },
+        {
+          "seed_id": "bacnet-seed-007",
+          "score": 61,
+          "keep": false,
+          "problems": [
+            "Does not match the corresponding plan target operation; CreateObject replaced unsupported WriteGroup plan content.",
+            "Payload is extremely shallow and not plausibly structured for CreateObject.",
+            "Lower value than other confirmed-service seeds for a final 12-seed set."
+          ],
+          "recommended_action": "Drop from final selection unless needed purely for confirmed-service enumeration diversity; better to replace with a plan-faithful supported operation or a stronger payload."
+        },
+        {
+          "seed_id": "bacnet-seed-008",
+          "score": 88,
+          "keep": true,
+          "problems": [
+            "BDT payload is only entry-sized raw bytes and may not represent a fully plausible table entry semantics.",
+            "No NPDU/APDU is appropriate here, but management payload could still be more realistic."
+          ],
+          "recommended_action": "Keep; this is one of the strongest non-APDU diversity seeds. Optionally refine the table-entry bytes to more closely resemble a valid BACnet/IP BDT record."
+        },
+        {
+          "seed_id": "bacnet-seed-009",
+          "score": 74,
+          "keep": true,
+          "problems": [
+            "Does not match planned Who-Is coverage; substituted I-Am instead.",
+            "I-Am payload is highly compressed and may not satisfy full unconfirmed service grammar.",
+            "Broadcast framing is good, but service-body realism is limited."
+          ],
+          "recommended_action": "Keep for unconfirmed coverage if no better source-backed unconfirmed seeds exist, but note reduced fidelity to the original plan."
+        },
+        {
+          "seed_id": "bacnet-seed-010",
+          "score": 72,
+          "keep": false,
+          "problems": [
+            "Does not match planned Who-Has coverage; substituted I-Have instead.",
+            "Payload is generic and likely too shallow for deeper I-Have parsing.",
+            "Overlap with bacnet-seed-009 limits marginal diversity gain."
+          ],
+          "recommended_action": "Drop for a final set of 12, or replace with a stronger distinct unconfirmed seed if source support permits."
+        },
+        {
+          "seed_id": "bacnet-seed-011",
+          "score": 77,
+          "keep": true,
+          "problems": [
+            "VT-Open arguments are synthetic and may not resemble valid VT parameters.",
+            "Useful mainly for service dispatch coverage rather than deeper VT parser state."
+          ],
+          "recommended_action": "Keep for operation diversity, but improve payload toward plausible VT-open argument structure if possible."
+        },
+        {
+          "seed_id": "bacnet-seed-012",
+          "score": 81,
+          "keep": true,
+          "problems": [
+            "VT-Data body uses raw ASCII-like bytes with unclear VT session structure.",
+            "Depth beyond dispatch may be limited without more plausible VT framing."
+          ],
+          "recommended_action": "Keep for data-bearing VT coverage; revise body toward a more credible VT payload if possible."
+        },
+        {
+          "seed_id": "bacnet-seed-013",
+          "score": 75,
+          "keep": true,
+          "problems": [
+            "VT-Close payload remains shallow and synthetic.",
+            "Some overlap with other VT service seeds reduces marginal benefit."
+          ],
+          "recommended_action": "Keep as the weakest of the VT set only if 3-way VT coverage is desired; otherwise this is a candidate to drop when trimming to 12."
+        },
+        {
+          "seed_id": "bacnet-seed-014",
+          "score": 78,
+          "keep": true,
+          "problems": [
+            "Does not match the corresponding plan target operation; DeleteObject substituted for planned UTCTimeSynchronization.",
+            "Payload is shallow and may not reach deep DeleteObject validation.",
+            "Plan fidelity is reduced by substitution."
+          ],
+          "recommended_action": "Keep only if confirmed-service diversity is prioritized over plan fidelity; otherwise replace with a plan-aligned unconfirmed service or strengthen another retained seed."
+        }
+      ],
+      "coverage_gaps": [
+        "Plan fidelity gap: no retained equivalents for planned Who-Is, Who-Has, or UTCTimeSynchronization targets.",
+        "No clear source-backed seed for WriteGroup, though its omission is understandable because the supplied sources did not support it.",
+        "Confirmed service payloads generally lack plausible context-tagged object identifiers and property identifiers, especially for ReadProperty, ReadPropertyMultiple, WriteProperty, and WritePropertyMultiple.",
+        "No seed exercises segmented-message flags or max-segments variations in a controlled valid manner.",
+        "No seed explores NPDU control variations beyond the minimal 0x00 path.",
+        "No seed targets network-layer message types despite source evidence for BACnet network layer message enumerations.",
+        "Stateful coverage does not include meaningful request/response interplay or state-establishing operations such as opening then using then closing VT sessions."
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "bacnet-seed-001",
+        "bacnet-seed-002",
+        "bacnet-seed-008",
+        "bacnet-seed-003",
+        "bacnet-seed-004",
+        "bacnet-seed-006",
+        "bacnet-seed-005",
+        "bacnet-seed-012",
+        "bacnet-seed-014",
+        "bacnet-seed-011",
+        "bacnet-seed-013",
+        "bacnet-seed-009"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "function_code_coverage": 8,
+        "length_boundary_valid": 1,
+        "parser_depth": 1
+      },
+      "selected_target_operations": [
+        "ReadPropertyMultiple",
+        "ReadProperty",
+        "Write-Broadcast-Distribution-Table",
+        "AtomicWriteFile",
+        "ReadPropertyMultiple",
+        "WriteProperty",
+        "WritePropertyMultiple",
+        "VT-Data",
+        "DeleteObject",
+        "VT-Open",
+        "VT-Close",
+        "I-Am"
+      ]
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"bacnet-stack\",\n    \"profile\": \"auto\",\n    \"protocol\": \"BACNET\",\n    \"rule_family\": \"bacnet\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"link\": [\n      \"BVLC Header\"\n    ],\n    \"payload\": [\n      \"APDU\",\n      \"Application-Data\",\n      \"Secure-Connect-Binding\"\n    ],\n    \"session\": [\n      \"NPDU Header\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 0,\n    \"message_count\": 3,\n    \"non_header_templates\": 3,\n    \"real_strong_templates\": 3,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "Section: Common Headers\nTemplates: BVLC Header, NPDU Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "Section: Common Headers\nTemplate: BVLC Header\n- Field: bvlc_type\n  Description: Protocol field 'bvlc_type'. Layer: link. Role: type. Inferred-from: protocol-template.\n  Length: 8 bits\n- Field: bvlc_function\n  Description: Protocol field 'bvlc_function'. Layer: link. Role: type. Inferred-from: protocol-template.\n  Length: 8 bits\n- Field: bvlc_length\n  Description: Protocol field 'bvlc_length'. Layer: link. Role: length. Inferred-from: protocol-template.\n  Length: 16 bits",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:ea07db06bcca",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "BACnet Function Code and Service Choice Reference\n=================================================\n\nScope\n-----\nThis file contains standardized BACnet protocol operation identifiers:\n\n1. BACnet APDU PDU Type\n2. Confirmed Service Choice\n3. Unconfirmed Service Choice\n4. BACnet/IP BVLC Function\n5. BACnet/IP BVLC Result Code\n6. BACnet Network Layer Message Type\n7. Reject Reason\n8. Abort Reason\n9. Error Class\n\nThe values marked RESERVED must not be interpreted as currently defined\nstandard operations.\n\n================================================================\n1. BACnet APDU PDU TYPE\n================================================================\n\nThe APDU type is stored in the high nibble of the first APDU octet.\n\n0x00 = Confirmed-Request-PDU\n0x10 = Unconfirmed-Request-PDU\n0x20 = SimpleACK-PDU\n0x30 = ComplexACK-PDU\n0x40 = SegmentACK-PDU\n0x50 = Error-PDU\n0x60 = Reject-PDU\n0x70 = Abort-PDU\n\nPDU type numeric value before shifting:\n\n0 = Confirmed-Request-PDU\n1 = Unconfirmed-Request-PDU\n2 = SimpleACK-PDU\n3 = ComplexACK-PDU\n4 = SegmentACK-PDU\n5 = Error-PDU\n6 = Reject-PDU\n7 = Abort-PDU\n\n================================================================\n2. BACnet CONFIRMED SERVICE CHOICE\n================================================================",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:30bbed9e7725",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "mentACK-PDU\n5 = Error-PDU\n6 = Reject-PDU\n7 = Abort-PDU\n\n================================================================\n2. BACnet CONFIRMED SERVICE CHOICE\n================================================================\n\n0x00 = AcknowledgeAlarm\n0x01 = ConfirmedCOVNotification\n0x02 = ConfirmedEventNotification\n0x03 = GetAlarmSummary\n0x04 = GetEnrollmentSummary\n0x05 = SubscribeCOV\n0x06 = AtomicReadFile\n0x07 = AtomicWriteFile\n0x08 = AddListElement\n0x09 = RemoveListElement\n0x0A = CreateObject\n0x0B = DeleteObject\n0x0C = ReadProperty\n0x0D = ReadPropertyConditional\n0x0E = ReadPropertyMultiple\n0x0F = WriteProperty\n0x10 = WritePropertyMultiple\n0x11 = DeviceCommunicationControl\n0x12 = ConfirmedPrivateTransfer\n0x13 = ConfirmedTextMessage\n0x14 = ReinitializeDevice\n0x15 = VT-Open\n0x16 = VT-Close\n0x17 = VT-Data\n0x18 = Authenticate\n0x19 = RequestKey\n0x1A = ReadRange\n0x1B = LifeSafetyOperation\n0x1C = SubscribeCOVProperty\n0x1D = GetEventInformation\n0x1E = SubscribeCOVPropertyMultiple\n0x1F = ConfirmedCOVNotificationMultiple\n0x20 = ConfirmedAuditNotification\n0x21 = AuditLogQuery\n\n0x22-0xFF = Reserved or future standard services\n\nConfirmed service summary:\n\nAcknowledgeAlarm\n    Acknowledge an alarm or event transition.\n\nConfirmedCOVNotification\n    Confirmed change-of-value notification.\n\nConfirmedEventNotification\n    Confirmed alarm or event notification.\n\nGetAlarmSummary\n    Retrieve summary information for active alarms.\n\nGetEnrollmentSummary\n    Retrieve enrollment summary information.\n\nSubscribeCOV\n    Create, renew, or cancel an object-level COV subscription.\n\nAtomicReadFile\n    Read a BACnet File object in stream or record mode.\n\nAtomicWriteFile\n    Write a BACnet File object in stream or record mode.\n\nAddListElement\n    Add one or more elements to a list property.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:57965da7c4c0",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "cription.\n\nAtomicReadFile\n    Read a BACnet File object in stream or record mode.\n\nAtomicWriteFile\n    Write a BACnet File object in stream or record mode.\n\nAddListElement\n    Add one or more elements to a list property.\n\nRemoveListElement\n    Remove one or more elements from a list property.\n\nCreateObject\n    Create a BACnet object instance.\n\nDeleteObject\n    Delete a BACnet object instance.\n\nReadProperty\n    Read one property of one object.\n\nReadPropertyConditional\n    Conditionally read properties.\n\nReadPropertyMultiple\n    Read multiple properties from one or more objects.\n\nWriteProperty\n    Write one property.\n\nWritePropertyMultiple\n    Write multiple properties.\n\nDeviceCommunicationControl\n    Enable, disable, or partially disable device communication.\n\nConfirmedPrivateTransfer\n    Vendor-specific confirmed service.\n\nConfirmedTextMessage\n    Confirmed text-message delivery.\n\nReinitializeDevice\n    Request device warm start, cold start, or supported reinitialization.\n\nVT-Open\n    Open virtual-terminal connection.\n\nVT-Close\n    Close virtual-terminal connection.\n\nVT-Data\n    Transfer virtual-terminal data.\n\nAuthenticate\n    Legacy BACnet authentication service.\n\nRequestKey\n    Legacy BACnet key request service.\n\nReadRange\n    Read a range of list, array, log, or record data.\n\nLifeSafetyOperation\n    Perform a life-safety operation.\n\nSubscribeCOVProperty\n    Subscribe to change-of-value for one property.\n\nGetEventInformation\n    Retrieve active event information.\n\nSubscribeCOVPropertyMultiple\n    Subscribe to multiple COV properties.\n\nConfirmedCOVNotificationMultiple\n    Confirmed notification containing multiple changed values.\n\nConfirmedAuditNotification\n    Confirmed audit notification.\n\nAuditLogQuery\n    Query BACnet audit log information.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "Protocol: BACNET\nTemplate catalog:\n- Common Headers :: BVLC Header -> bvlc_type, bvlc_function, bvlc_length\n- Common Headers :: NPDU Header -> npdu_version, npdu_control\n- Message Templates :: APDU -> apdu_type, invoke_id, service_choice, service_request_payload, segmented_message_flag, more_follows_flag, segmented_response_accepted_flag, max_segments\n- Message Templates :: Application-Data -> bacnet_application_data\n- Object or Data Templates :: Secure-Connect-Binding -> bacnet_sc_primary_hub_uri, bacnet_sc_failover_hub_uri, max_bvlc_length_accepted, max_npdu_length_accepted",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "Section: Message Templates\nTemplate: Application-Data\n- Field: bacnet_application_data\n  Description: Protocol field 'bacnet_application_data'. Layer: asdu. Role: payload. Type: variable. Inferred-from: wire. Binding-strength: tag_parse. Evidence-type: length_check.\n  Length: variable\n  Implementation constraints: Payload length must not exceed remaining APDU bytes, Encoded as a BACnet Application Tag (Tag Number + Length/Value Type) followed by the tag payload, Length of the tag payload is determined by bacnet_application_data_length(tag.number, tag.len_value_type)",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:bacnet-stack:object-or-data-templ:1ef0b7afab80",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/bacnet-stack.json",
+        "content": "Section: Object or Data Templates\nTemplate: Secure-Connect-Binding\n- Field: bacnet_sc_primary_hub_uri\n  Description: Protocol field 'bacnet_sc_primary_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: valid URI syntax, terminating NULL required, separator character ('|') splits URI from optional port number. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: BACNET_CHARACTER_STRING internal capacity ≤ ~128 chars, no explicit UTF-8/ASCII tag in wire encoding, port suffix parsed in-place by sc_binding_parse(), exactly one URI string per ASDU, separator '|' must precede decimal port number\n- Field: bacnet_sc_failover_hub_uri\n  Description: Protocol field 'bacnet_sc_failover_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: max length imposed by BACnet character-string encoding (up to 255 bytes payload plus length octet), must be null-terminated when used in local stack storage. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: stack buffers sized to accomodate 255-byte string plus null terminator, parser stops at first null byte in local copy, BACnet character-string type requires first octet to hold length (max 255 octets), no padding required beyond length octet\n- Field: max_bvlc_length_accepted\n  Description: Protocol field 'max_bvlc_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: semantic_inference. Evidence-type: unknown.\n  Length: 32 bits\n- Field: max_npdu_length_accepted\n  Description: Protocol field 'max_npdu_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:95cfead37e98",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0D = Request-Key-Update\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0E = Update-Key-Set\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0F = Update-Distribution-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x10 = Request-Master-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x11 = Set-Master-Key\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x12 = What-Is-Network-Number\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x13 = Network-Number-Is\n- 7. BACnet REJECT REASON :: 0x00 = Other\n- 7. BACnet REJECT REASON :: 0x01 = Buffer-Overflow\n- 7. BACnet REJECT REASON :: 0x02 = Inconsistent-Parameters\n- 7. BACnet REJECT REASON :: 0x03 = Invalid-Parameter-Data-Type\n- 7. BACnet REJECT REASON :: 0x04 = Invalid-Tag\n- 7. BACnet REJECT REASON :: 0x05 = Missing-Required-Parameter\n- 7. BACnet REJECT REASON :: 0x06 = Parameter-Out-Of-Range\n- 7. BACnet REJECT REASON :: 0x07 = Too-Many-Arguments\n- 7. BACnet REJECT REASON :: 0x08 = Undefined-Enumeration\n- 7. BACnet REJECT REASON :: 0x09 = Unrecognized-Service\n- 8. BACnet ABORT REASON :: 0x00 = Other\n- 8. BACnet ABORT REASON :: 0x01 = Buffer-Overflow\n- 8. BACnet ABORT REASON :: 0x02 = Invalid-APDU-In-This-State\n- 8. BACnet ABORT REASON :: 0x03 = Preempted-By-Higher-Priority-Task\n- 8. BACnet ABORT REASON :: 0x04 = Segmentation-Not-Supported\n- 8. BACnet ABORT REASON :: 0x05 = Security-Error\n- 8. BACnet ABORT REASON :: 0x06 = Insufficient-Security\n- 8. BACnet ABORT REASON :: 0x07 = Window-Size-Out-Of-Range\n- 8. BACnet ABORT REASON :: 0x08 = Application-Exceeded-Reply-Time\n- 8. BACnet ABORT REASON :: 0x09 = Out-Of-Resources\n- 8. BACnet ABORT REASON :: 0x0A = TSM-Timeout\n- 8. BACnet ABORT REASON :: 0x0B = APDU-Too-Long\n- 9. BACnet ERROR CLASS :: 0x00 = Device\n- 9. BACnet ERROR CLASS :: 0x01 = Object\n- 9. BACnet ERROR C",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:a4301b6fad30",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "Original-Broadcast-NPDU\n- 4. BACnet/IP BVLC FUNCTION :: 0x0C = Secure-BVLL\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0000 = Successful-Completion\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0010 = Write-Broadcast-Distribution-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0020 = Read-Broadcast-Distribution-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0030 = Register-Foreign-Device-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0040 = Read-Foreign-Device-Table-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0050 = Delete-Foreign-Device-Table-Entry-NAK\n- 5. BACnet/IP BVLC RESULT CODE :: 0x0060 = Distribute-Broadcast-To-Network-NAK\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x00 = Who-Is-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x01 = I-Am-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x02 = I-Could-Be-Router-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x03 = Reject-Message-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x04 = Router-Busy-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x05 = Router-Available-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x06 = Initialize-Routing-Table\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x07 = Initialize-Routing-Table-Ack\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x08 = Establish-Connection-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x09 = Disconnect-Connection-To-Network\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0A = Challenge-Request\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0B = Security-Payload\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0C = Security-Response\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0D = Request-Key-Update\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0E = Update-Key-Set\n- 6. BACnet NETWORK LAYER MESSAGE TYPE :: 0x0F = Update-Distribution-Key\n- 6. BACnet NETWO",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:78d24f1cf578",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/1.BACnet-stack/function.txt",
+        "content": "bject\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0C = ReadProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0D = ReadPropertyConditional\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0E = ReadPropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x0F = WriteProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x10 = WritePropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x11 = DeviceCommunicationControl\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x12 = ConfirmedPrivateTransfer\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x13 = ConfirmedTextMessage\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x14 = ReinitializeDevice\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x15 = VT-Open\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x16 = VT-Close\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x17 = VT-Data\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x18 = Authenticate\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x19 = RequestKey\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1A = ReadRange\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1B = LifeSafetyOperation\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1C = SubscribeCOVProperty\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1D = GetEventInformation\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1E = SubscribeCOVPropertyMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x1F = ConfirmedCOVNotificationMultiple\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x20 = ConfirmedAuditNotification\n- 2. BACnet CONFIRMED SERVICE CHOICE :: 0x21 = AuditLogQuery\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x00 = I-Am\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x01 = I-Have\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x02 = UnconfirmedCOVNotification\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x03 = UnconfirmedEventNotification\n- 3. BACnet UNCONFIRMED SERVICE CHOICE :: 0x04 = UnconfirmedPrivateTransfer\n- 3. BACnet",
+        "issue_number": -1,
+        "title": ""
+      }
+    ],
+    "generated_unix_time": 1786130718,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "bacnet-seed-001: removed unknown evidence ids: function_code:function:function-text:9fe125c94c3c, protocol_format:bacnet-stack:message-templates-ap:10e384995bcd",
+          "bacnet-seed-002: removed unknown evidence ids: function_code:function:function-text:9fe125c94c3c, function_code:function:function-text:83d6282033cc",
+          "bacnet-seed-003: removed unknown evidence ids: function_code:function:function-text:83d6282033cc",
+          "bacnet-seed-004: removed unknown evidence ids: function_code:function:function-text:9fe125c94c3c, protocol_format:bacnet-stack:message-templates-ap:6ed7abfac66a, protocol_format:bacnet-stack:message-templates-ap:10e384995bcd",
+          "bacnet-seed-005: removed unknown evidence ids: function_code:function:operation-catalog:aaf584396b7c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-seed-006: removed unknown evidence ids: function_code:function:operation-catalog:aaf584396b7c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-seed-007: removed unknown evidence ids: function_code:function:operation-catalog:cd2e4e56df0d, function_code:function:function-text:877e62cc4cf5, function_code:function:function-text:9fe125c94c3c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-seed-008: removed unknown evidence ids: function_code:function:function-text:9fe125c94c3c, function_code:function:operation-catalog:cd2e4e56df0d, function_code:function:function-text:877e62cc4cf5",
+          "bacnet-seed-009: removed unknown evidence ids: function_code:function:operation-catalog:cd2e4e56df0d, function_code:function:function-text:877e62cc4cf5, function_code:function:function-text:08b40ec2ad9b, function_code:function:function-text:9fe125c94c3c",
+          "bacnet-seed-010: removed unknown evidence ids: function_code:function:operation-catalog:cd2e4e56df0d, function_code:function:function-text:877e62cc4cf5, function_code:function:function-text:9fe125c94c3c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-seed-011: removed unknown evidence ids: function_code:function:operation-catalog:aaf584396b7c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-seed-012: removed unknown evidence ids: function_code:function:operation-catalog:aaf584396b7c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-plan-013-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:aaf584396b7c, function_code:function:function-text:08b40ec2ad9b",
+          "bacnet-plan-014-seed-01: removed unknown evidence ids: function_code:function:operation-catalog:cd2e4e56df0d, function_code:function:function-text:877e62cc4cf5, function_code:function:function-text:9fe125c94c3c, function_code:function:function-text:08b40ec2ad9b"
+        ],
+        "review": {
+          "overall_score": 44,
+          "needs_revision": true,
+          "protocol_validity_score": 34,
+          "seed_utility_score": 41,
+          "diversity_score": 63,
+          "issue_enhancement_score": 0,
+          "global_feedback": [
+            "The library has good operation diversity and consistently includes outer BACnet/IP layering, but many seeds are too skeletal to be considered valid service requests beyond top-level dispatch.",
+            "Several messages have internal inconsistencies between stated BVLC length and actual hex length, which is a major protocol-correctness problem for initial seeds.",
+            "Confirmed-request APDUs are generally missing required confirmed-request control fields beyond the high nibble and invoke ID, so they are unlikely to survive deeper APDU parsing in a real BACnet stack.",
+            "Service-specific payloads for ReadProperty, ReadPropertyMultiple, AtomicWriteFile, WriteProperty, WritePropertyMultiple, and VT services are not actually encoded; most seeds only carry service choice bytes and padding.",
+            "The stateful sequence does not establish meaningful BACnet state; it is just repeated minimal requests with incremented invoke IDs, so its value for deeper coverage is limited.",
+            "BVLC management coverage is useful, but the Write-Broadcast-Distribution-Table seed is header-only and omits any table entries, making validity doubtful for the target operation.",
+            "Unconfirmed-service seeds for Who-Is and Who-Has use likely incorrect service choice values and should not be trusted without source-backed mapping.",
+            "WriteGroup appears unsupported by the supplied source excerpts and the seed is explicitly an analogue rather than a documented valid operation seed, which weakens corpus quality.",
+            "Unknown evidence id removals are not fatal by themselves, but they correlate with multiple seeds being justified by unsupported references or assumptions.",
+            "Given the desired final count of 12, the current set still needs revision rather than direct selection; at least the malformed length cases and unsupported operation analogues should be fixed first."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "bacnet-seed-001",
+              "score": 38,
+              "keep": true,
+              "problems": [
+                "Outer BVLC/NPDU/APDU framing is present, but the APDU is only a bare confirmed-request type, invoke ID, and service choice.",
+                "No service-specific ReadPropertyMultiple body is encoded, so deeper parser entry is unlikely.",
+                "Confirmed-request control semantics are underspecified."
+              ],
+              "recommended_action": "Keep only as a very shallow dispatcher seed; revise by adding a minimally correct ReadPropertyMultiple object/property list body."
+            },
+            {
+              "seed_id": "bacnet-seed-002",
+              "score": 32,
+              "keep": false,
+              "problems": [
+                "The three-message sequence does not create meaningful protocol state for BACnet service handling.",
+                "Each message is still only a skeletal confirmed APDU without service payload.",
+                "Repeated minimal requests add little beyond invoke-id variation."
+              ],
+              "recommended_action": "Replace with a truly stateful sequence only if the target implementation requires setup; otherwise collapse to one corrected ReadProperty seed with a valid body."
+            },
+            {
+              "seed_id": "bacnet-seed-003",
+              "score": 18,
+              "keep": false,
+              "problems": [
+                "BVLC length field is inconsistent with the actual hex length.",
+                "AtomicWriteFile requires substantial service-specific payload, which is absent.",
+                "The claimed boundary-adjacent validity is not achieved because framing itself is incorrect."
+              ],
+              "recommended_action": "Drop until rebuilt with correct total length and a minimally valid AtomicWriteFile payload structure."
+            },
+            {
+              "seed_id": "bacnet-seed-004",
+              "score": 27,
+              "keep": false,
+              "problems": [
+                "Message is longer than the minimal dispatch stub, but the added bytes are undifferentiated padding rather than a valid ReadPropertyMultiple nested structure.",
+                "Likely insufficient for real deeper parser coverage.",
+                "No evidence-backed service body fields are encoded."
+              ],
+              "recommended_action": "Revise into an actually structured ReadPropertyMultiple request with at least one object identifier and one property reference."
+            },
+            {
+              "seed_id": "bacnet-seed-005",
+              "score": 36,
+              "keep": true,
+              "problems": [
+                "Good top-level confirmed-service coverage, but still only a dispatch stub.",
+                "WritePropertyMultiple normally needs a substantial body that is missing.",
+                "May be rejected immediately after service dispatch."
+              ],
+              "recommended_action": "Keep as low-priority coverage seed if count pressure exists, but prefer a corrected seed with one valid object/property/value block."
+            },
+            {
+              "seed_id": "bacnet-seed-006",
+              "score": 39,
+              "keep": true,
+              "problems": [
+                "Only contains service selector for WriteProperty with no property/value body.",
+                "Confirmed-request control fields remain minimal.",
+                "Likely shallow coverage only."
+              ],
+              "recommended_action": "Keep provisionally; revise by adding a valid object identifier, property identifier, and application-tagged value."
+            },
+            {
+              "seed_id": "bacnet-seed-007",
+              "score": 9,
+              "keep": false,
+              "problems": [
+                "Target operation WriteGroup is not supported by the provided source excerpts.",
+                "Seed is acknowledged as an analogue rather than a valid documented operation.",
+                "APDU trailing bytes are not source-backed and may not represent any valid unconfirmed service."
+              ],
+              "recommended_action": "Drop and replace with a source-backed unconfirmed service such as I-Am or a correctly encoded documented operation."
+            },
+            {
+              "seed_id": "bacnet-seed-008",
+              "score": 24,
+              "keep": false,
+              "problems": [
+                "BVLC function dispatch coverage is useful, but header-only Write-Broadcast-Distribution-Table is probably not a valid operation message.",
+                "No BDT entries are included.",
+                "Utility as an initial valid seed is limited."
+              ],
+              "recommended_action": "Revise with at least one minimally valid broadcast distribution table entry and confirm the BVLC function framing."
+            },
+            {
+              "seed_id": "bacnet-seed-009",
+              "score": 14,
+              "keep": false,
+              "problems": [
+                "Who-Is service choice appears incorrect for BACnet unconfirmed services.",
+                "No source excerpt provided here supports the chosen unconfirmed service selector.",
+                "Even though framing is compact and complete, semantic validity is doubtful."
+              ],
+              "recommended_action": "Rebuild using a source-backed unconfirmed service choice and, if applicable, optional low/high instance limits."
+            },
+            {
+              "seed_id": "bacnet-seed-010",
+              "score": 14,
+              "keep": false,
+              "problems": [
+                "Who-Has service choice appears incorrect for BACnet unconfirmed services.",
+                "No source-backed payload structure is provided.",
+                "Likely to be rejected after APDU dispatch."
+              ],
+              "recommended_action": "Rebuild with verified Who-Has service choice and a minimally valid object-name or object-identifier body."
+            },
+            {
+              "seed_id": "bacnet-seed-011",
+              "score": 34,
+              "keep": true,
+              "problems": [
+                "Confirmed VT-Open dispatch is covered, but no VT service body is present.",
+                "Likely rejected by service-specific parser quickly.",
+                "Only shallow utility."
+              ],
+              "recommended_action": "Keep only if broad service-choice coverage is required; revise with minimally correct VT-Open arguments."
+            },
+            {
+              "seed_id": "bacnet-seed-012",
+              "score": 34,
+              "keep": true,
+              "problems": [
+                "Confirmed VT-Data dispatch is covered, but the APDU lacks VT payload data.",
+                "Likely rejected after service dispatch.",
+                "Close to duplicate utility with VT-Open and VT-Close in current skeletal form."
+              ],
+              "recommended_action": "Keep provisionally for diversity, but prefer a corrected VT seed set with minimally valid VT arguments and data."
+            },
+            {
+              "seed_id": "bacnet-plan-013-seed-01",
+              "score": 12,
+              "keep": false,
+              "problems": [
+                "BVLC length statement is inconsistent with the actual hex length.",
+                "Confirmed request is missing meaningful VT-Close body content.",
+                "Framing inconsistency alone makes it unsuitable as an initial seed."
+              ],
+              "recommended_action": "Drop until length is fixed and a minimally valid VT-Close payload is supplied."
+            },
+            {
+              "seed_id": "bacnet-plan-014-seed-01",
+              "score": 8,
+              "keep": false,
+              "problems": [
+                "BVLC length statement is inconsistent with the actual hex length.",
+                "APDU is incomplete for an unconfirmed request because the service-choice byte is missing after the 0x10 APDU type.",
+                "UTCTimeSynchronization payload is absent."
+              ],
+              "recommended_action": "Drop and rebuild from scratch with correct unconfirmed APDU layout, verified service choice, and a minimally valid time payload."
+            }
+          ],
+          "coverage_gaps": [
+            "Minimally valid APDU encoding for confirmed requests, including realistic confirmed-request control octet semantics rather than just a zero byte placeholder.",
+            "Service-specific bodies for ReadProperty and ReadPropertyMultiple, especially object identifier and property reference encodings.",
+            "A truly valid AtomicWriteFile request in either stream or record mode.",
+            "Valid WriteProperty and WritePropertyMultiple payloads with BACnet application-tagged values.",
+            "Verified unconfirmed service choice mappings for Who-Is, Who-Has, and UTCTimeSynchronization.",
+            "At least one well-formed BVLC management payload for Write-Broadcast-Distribution-Table.",
+            "Replacement for unsupported or weakly supported WriteGroup coverage with a documented operation present in the supplied sources.",
+            "More boundary-adjacent but valid seeds using correct lengths and legal optional fields rather than filler bytes.",
+            "Meaningful stateful sequencing only where the protocol implementation actually maintains transaction or object state relevant to the target operation.",
+            "Cross-coverage of NPDU control variations if supported, while still preserving full validity."
+          ]
+        },
+        "candidate_count": 14
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "overall_score": 78,
+          "needs_revision": true,
+          "protocol_validity_score": 72,
+          "seed_utility_score": 80,
+          "diversity_score": 84,
+          "issue_enhancement_score": 0,
+          "global_feedback": [
+            "Outer BACnet/IP framing is mostly self-consistent and many seeds correctly preserve BVLC->NPDU->APDU ordering with matching BVLC lengths.",
+            "The library improves diversity across confirmed, unconfirmed, and BVLC-management entry points, but several seeds still rely on highly synthetic service payloads that are unlikely to satisfy deeper service-specific grammar checks.",
+            "Stateful coverage is present, but the setup sequence is only transaction-varied confirmed requests and does not establish a clearly meaningful protocol state for the final target operation.",
+            "There is a notable mismatch against the requested plan set: unsupported planned operations such as Who-Is, Who-Has, UTCTimeSynchronization, and WriteGroup were not represented; these were replaced with different operations. That may be practical, but it reduces plan fidelity.",
+            "For initial fuzz seeds, the main weakness is shallow BACnet service payload structure: many confirmed services use generic bytes rather than plausible context-tagged object identifiers, property identifiers, or VT arguments, limiting deep parser reach.",
+            "No copied crash payload pattern is evident, and issue enhancement was correctly not used.",
+            "Given the desired final selected seed count of 12, the library should be trimmed by dropping the weakest synthetic confirmed-service seeds while strengthening at least a few retained seeds with more service-plausible payload structure."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "bacnet-seed-001",
+              "score": 84,
+              "keep": true,
+              "problems": [
+                "ReadPropertyMultiple payload is minimal and not clearly structured as a plausible object/property list.",
+                "Likely to reach dispatch and some validation, but not deep service parsing."
+              ],
+              "recommended_action": "Keep as a canonical shallow seed, but strengthen payload with a more plausible list-oriented context-tag structure if source support becomes available."
+            },
+            {
+              "seed_id": "bacnet-seed-002",
+              "score": 76,
+              "keep": true,
+              "problems": [
+                "Stateful sequence is weakly stateful; it varies invoke IDs and services but does not clearly set up state required for ReadProperty.",
+                "First setup step uses AtomicReadFile without source-backed service payload grammar, so depth gain is uncertain."
+              ],
+              "recommended_action": "Keep for transaction-sequence diversity, but if trimming to 12, retain only if no stronger stateful sequence is available; preferably replace setup with more semantically related read operations and richer payloads."
+            },
+            {
+              "seed_id": "bacnet-seed-003",
+              "score": 79,
+              "keep": true,
+              "problems": [
+                "AtomicWriteFile payload is boundary-adjacent only at outer length level and not obviously valid for file write mode semantics.",
+                "May stall at service-specific validation due to synthetic body."
+              ],
+              "recommended_action": "Keep as a length-sensitive outer-framing seed, but revise payload toward plausible stream or record mode structure."
+            },
+            {
+              "seed_id": "bacnet-seed-004",
+              "score": 86,
+              "keep": true,
+              "problems": [
+                "Deeper payload is still synthetic and may not match actual ReadPropertyMultiple list grammar.",
+                "Message_budget in plan suggested 2, but seed is only a single message; not fatal, but less aligned with plan shape."
+              ],
+              "recommended_action": "Keep as one of the better parser-depth candidates; enrich with more realistic repeated object/property elements."
+            },
+            {
+              "seed_id": "bacnet-seed-005",
+              "score": 80,
+              "keep": true,
+              "problems": [
+                "WritePropertyMultiple body is too generic to reliably enter nested write-list parsing.",
+                "Application-tag-like tail is minimal and may be semantically inconsistent with write-list expectations."
+              ],
+              "recommended_action": "Keep for service dispatch coverage, but prefer a payload that resembles object/property/value blocks."
+            },
+            {
+              "seed_id": "bacnet-seed-006",
+              "score": 82,
+              "keep": true,
+              "problems": [
+                "WriteProperty payload lacks plausible property/value context structure.",
+                "Likely useful for dispatch but limited for deep write parsing."
+              ],
+              "recommended_action": "Keep and strengthen with a more credible property identifier plus application-tagged value encoding."
+            },
+            {
+              "seed_id": "bacnet-seed-007",
+              "score": 61,
+              "keep": false,
+              "problems": [
+                "Does not match the corresponding plan target operation; CreateObject replaced unsupported WriteGroup plan content.",
+                "Payload is extremely shallow and not plausibly structured for CreateObject.",
+                "Lower value than other confirmed-service seeds for a final 12-seed set."
+              ],
+              "recommended_action": "Drop from final selection unless needed purely for confirmed-service enumeration diversity; better to replace with a plan-faithful supported operation or a stronger payload."
+            },
+            {
+              "seed_id": "bacnet-seed-008",
+              "score": 88,
+              "keep": true,
+              "problems": [
+                "BDT payload is only entry-sized raw bytes and may not represent a fully plausible table entry semantics.",
+                "No NPDU/APDU is appropriate here, but management payload could still be more realistic."
+              ],
+              "recommended_action": "Keep; this is one of the strongest non-APDU diversity seeds. Optionally refine the table-entry bytes to more closely resemble a valid BACnet/IP BDT record."
+            },
+            {
+              "seed_id": "bacnet-seed-009",
+              "score": 74,
+              "keep": true,
+              "problems": [
+                "Does not match planned Who-Is coverage; substituted I-Am instead.",
+                "I-Am payload is highly compressed and may not satisfy full unconfirmed service grammar.",
+                "Broadcast framing is good, but service-body realism is limited."
+              ],
+              "recommended_action": "Keep for unconfirmed coverage if no better source-backed unconfirmed seeds exist, but note reduced fidelity to the original plan."
+            },
+            {
+              "seed_id": "bacnet-seed-010",
+              "score": 72,
+              "keep": false,
+              "problems": [
+                "Does not match planned Who-Has coverage; substituted I-Have instead.",
+                "Payload is generic and likely too shallow for deeper I-Have parsing.",
+                "Overlap with bacnet-seed-009 limits marginal diversity gain."
+              ],
+              "recommended_action": "Drop for a final set of 12, or replace with a stronger distinct unconfirmed seed if source support permits."
+            },
+            {
+              "seed_id": "bacnet-seed-011",
+              "score": 77,
+              "keep": true,
+              "problems": [
+                "VT-Open arguments are synthetic and may not resemble valid VT parameters.",
+                "Useful mainly for service dispatch coverage rather than deeper VT parser state."
+              ],
+              "recommended_action": "Keep for operation diversity, but improve payload toward plausible VT-open argument structure if possible."
+            },
+            {
+              "seed_id": "bacnet-seed-012",
+              "score": 81,
+              "keep": true,
+              "problems": [
+                "VT-Data body uses raw ASCII-like bytes with unclear VT session structure.",
+                "Depth beyond dispatch may be limited without more plausible VT framing."
+              ],
+              "recommended_action": "Keep for data-bearing VT coverage; revise body toward a more credible VT payload if possible."
+            },
+            {
+              "seed_id": "bacnet-seed-013",
+              "score": 75,
+              "keep": true,
+              "problems": [
+                "VT-Close payload remains shallow and synthetic.",
+                "Some overlap with other VT service seeds reduces marginal benefit."
+              ],
+              "recommended_action": "Keep as the weakest of the VT set only if 3-way VT coverage is desired; otherwise this is a candidate to drop when trimming to 12."
+            },
+            {
+              "seed_id": "bacnet-seed-014",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "Does not match the corresponding plan target operation; DeleteObject substituted for planned UTCTimeSynchronization.",
+                "Payload is shallow and may not reach deep DeleteObject validation.",
+                "Plan fidelity is reduced by substitution."
+              ],
+              "recommended_action": "Keep only if confirmed-service diversity is prioritized over plan fidelity; otherwise replace with a plan-aligned unconfirmed service or strengthen another retained seed."
+            }
+          ],
+          "coverage_gaps": [
+            "Plan fidelity gap: no retained equivalents for planned Who-Is, Who-Has, or UTCTimeSynchronization targets.",
+            "No clear source-backed seed for WriteGroup, though its omission is understandable because the supplied sources did not support it.",
+            "Confirmed service payloads generally lack plausible context-tagged object identifiers and property identifiers, especially for ReadProperty, ReadPropertyMultiple, WriteProperty, and WritePropertyMultiple.",
+            "No seed exercises segmented-message flags or max-segments variations in a controlled valid manner.",
+            "No seed explores NPDU control variations beyond the minimal 0x00 path.",
+            "No seed targets network-layer message types despite source evidence for BACnet network layer message enumerations.",
+            "Stateful coverage does not include meaningful request/response interplay or state-establishing operations such as opening then using then closing VT sessions."
+          ]
+        },
+        "candidate_count": 14
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

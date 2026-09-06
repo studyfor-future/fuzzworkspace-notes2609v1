@@ -1,0 +1,67 @@
+{
+  "seed_id": "modbustcp-seed-002",
+  "title": "Stateful setup for Read/Write Multiple Registers",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "First write one holding register, then issue a valid 0x17 combined read/write request to reach deeper parser and state handling.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:ba5533b39dfa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "setup_write_single_register_request",
+      "hex": "000200000006010600100123",
+      "byte_length": 12,
+      "sha256": "13d2dfddb63871ce55bce50200ac6b89f8bd29b8a8c40c6b925f4cbc6b204643"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "read_write_multiple_registers_request",
+      "hex": "00030000000d01170010000100200001021234",
+      "byte_length": 19,
+      "sha256": "d7df967475eafb2d32ada746406095137ef420d3044d102ffef61655eafba00f"
+    }
+  ],
+  "expected_behavior": "Server should accept the setup write and then parse the 0x17 request that reads one register from 0x0010 and writes one register to 0x0020.",
+  "constraints_preserved": [
+    "both messages have complete MBAP headers",
+    "protocol_id is 0000 in both messages",
+    "first length is 0006 for unit_id plus 5-byte 0x06 PDU",
+    "second length is 000d for unit_id plus 12-byte 0x17 PDU",
+    "0x17 field order is read address, read quantity, write address, write quantity, byte count, data",
+    "write quantity 0001 matches byte count 02 and one register value",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Uses safe minimal counts and does not reproduce any exact 0x17 issue payload.",
+  "sequence_sha256": "06ff59435accb1f339a79924dd3ea93325746941fabe49064d74bcd0b9073895",
+  "total_bytes": 31,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4b6c281da2a65621e1f0af53bf863e38bb104b9b6de7cfad11978ae43c84ce3d",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ]
+  }
+}

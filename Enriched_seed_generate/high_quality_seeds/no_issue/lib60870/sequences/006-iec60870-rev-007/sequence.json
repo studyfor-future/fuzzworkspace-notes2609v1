@@ -1,0 +1,54 @@
+{
+  "seed_id": "iec60870-rev-007",
+  "title": "C_SC_NA_1 with select qualifier",
+  "strategy": "field_interaction",
+  "target_operation": "Select",
+  "purpose": "Exercise the documented common-command qualifier select/execute bit while keeping all other fields identical to the canonical single-command baseline.",
+  "evidence_ids": [
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:1a7398f08c97",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "iec104_i_format_c_sc_na_1_activation_select",
+      "hex": "680e000000002d010600010001000081",
+      "byte_length": 16,
+      "sha256": "0073969680c45346c7133a27f314f3f2c68fcae6adc7f87ee2ae4ae3f2264476"
+    }
+  ],
+  "expected_behavior": "The frame should be parsed as a valid single command, with the final qualifier octet driving the select-form qualifier path instead of the execute-form path.",
+  "constraints_preserved": [
+    "Framing remains identical to the baseline 104 C_SC_NA_1 seed",
+    "Only the single command qualifier octet changes",
+    "Type_id 45 and cause 6 activation are preserved",
+    "One-object VSQ and fixed address widths are preserved",
+    "APDU length remains self-consistent at 0x0f"
+  ],
+  "issue_safety_notes": "A conservative field-interaction seed varying a documented qualifier bit only.",
+  "sequence_sha256": "46e1468154342c2ced2dc18ff407a1bde10f5baacc817fa375deb6680a9454cf",
+  "total_bytes": 16,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0073969680c45346c7133a27f314f3f2c68fcae6adc7f87ee2ae4ae3f2264476",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

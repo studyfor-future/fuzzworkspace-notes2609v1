@@ -1,0 +1,17 @@
+Number: 532
+
+Summarize:
+During Peach fuzzing of the OpENer protocol implementation, the endian-conversion code at `source/src/enet_encap/endianconv.c:101` triggers undefined behavior from a 24-bit left shift in type `int` while handling fuzzed UDP input. The report describes this as a crash, and the included UBSan log specifically reports `left shift of 255 by 24 places cannot be represented in type 'int'`.
+
+Reproduce:
+On Linux, use the Peach XML configuration from the report. It runs `/root/shared/test/tool_build/OpENer/bin/posix/src/ports/POSIX/OpENer` with argument `eth0` under a Process monitor with `RestartOnEachTest=false` and `Faultonearlyexit=true`, and uses a UDP publisher targeting `127.0.0.1:44818`, logger path `logs`, and a `Random` strategy with `MaxFieldsToMutate=3`. The single `test` state sends `packet_1`, `packet_2`, `packet_3`, `packet_4`, `packet_5`, `packet_6`, `packet_7`, and `packet_8` in that order, using the exact seed `DataModel` values shown in the document. The document provides the fuzzing harness and seed packets, but not the exact mutated testcase that caused the failure. The reported result is `/root/shared/test/tool_build/OpENer/source/src/enet_encap/endianconv.c:101:76: runtime error: left shift of 255 by 24 places cannot be represented in type 'int'`, followed by `SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior`.
+
+Payload:
+6f 00 4c 00 01 00 00 00 00 00 00 00 c0 a8 64 1c 00 00 40 7e 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 b2 00 3c 00 54 02 20 06 24 01 05 9b 00 00 00 00 00 00 00 00 0e 00 01 00 22 f5 13 00 02 00 00 00 10 27 00 00 1a 48 10 27 00 00 1a 28 01 09 34 04 00 00 00 00 00 00 00 00 20 04 24 06 2c 02 2c 01
+6f 00 4c 00 01 00 00 00 00 00 00 00 c0 a8 64 1c 00 00 40 37 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 b2 00 3c 00 54 02 20 06 24 01 05 9b 00 00 00 00 00 00 00 00 0d 00 01 00 22 f5 13 00 02 00 00 00 10 27 00 00 1a 48 10 27 00 00 1a 28 01 09 34 04 00 00 00 00 00 00 00 00 20 04 24 06 2c 02 2c 01
+04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+04 00 1a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 01 14 00 01 00 20 01 43 6f 6d 6d 75 6e 69 63 61 74 69 6f 6e 73 00 00
+65 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+65 00 04 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+6f 00 4c 00 01 00 00 00 00 00 00 00 c0 a8 64 1c 00 00 48 57 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 b2 00 3c 00 54 02 20 06 24 01 05 9b 00 00 00 00 00 00 00 00 0e 00 01 00 22 f5 13 00 02 00 00 00 10 27 00 00 1a 48 10 27 00 00 1a 28 01 09 34 04 00 00 00 00 00 00 00 00 20 04 24 06 2c 02 2c 01
+6f 00 56 00 01 00 00 00 00 00 00 00 c0 a8 64 1c 00 00 48 57 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 b2 00 1e 00 d4 00 00 00 02 00 a2 f1 03 00 a2 f1 0e 00 01 00 22 f5 13 00 10 27 00 00 10 27 00 00 00 00 00 80 10 00 00 02 08 ae 00 00 00 00 00 00 00 00 00 00 00 00 01 80 10 00 00 02 08 ae ef c0 05 80 00 00 00 00 00 00 00 00

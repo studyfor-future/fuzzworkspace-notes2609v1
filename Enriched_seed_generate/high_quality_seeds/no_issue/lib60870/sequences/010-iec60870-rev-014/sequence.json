@@ -1,0 +1,70 @@
+{
+  "seed_id": "iec60870-rev-014",
+  "title": "Cause-value diagnostics on compact monitoring frames",
+  "strategy": "function_code_coverage",
+  "target_operation": "Unknown Type Identification and Unknown Cause of Transmission",
+  "purpose": "Exercise documented diagnostic cause values 44 and 45 using compact valid monitoring-type envelopes so parsers and dispatch tables see explicit unknown-type and unknown-cause indications.",
+  "evidence_ids": [
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:48ab3e72d47c",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "iec104_i_format_m_sp_na_1_cot_44",
+      "hex": "680d0000000001012c000100000000",
+      "byte_length": 15,
+      "sha256": "a8511a1ffa1e898b3c993db57512c47d56ba74d45fdead3a47d7f9da4b60db4e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "iec104_i_format_m_sp_na_1_cot_45",
+      "hex": "680d0000000001012d000100000000",
+      "byte_length": 15,
+      "sha256": "9625be91957bdb60a1feaaa6bd74c0a9cedba251846ff45cda3ea6f89d91a59b"
+    }
+  ],
+  "expected_behavior": "The endpoint should parse both frames as valid M_SP_NA_1 envelopes and branch on the documented diagnostic cause values 44 and 45.",
+  "constraints_preserved": [
+    "Type_id 1 is a documented monitoring type",
+    "Cause values 44 and 45 are explicitly documented",
+    "Each frame keeps the same self-consistent 104 envelope",
+    "VSQ is one-object non-sequence",
+    "Two-byte common address and three-byte information object address are present",
+    "No unsupported service-specific payload is added"
+  ],
+  "issue_safety_notes": "These are standards-derived diagnostic cause-value seeds, not issue or crash analogues.",
+  "sequence_sha256": "084741029574df17d52a6638267875fc556c7b43d3753ca794ba0449f57a6815",
+  "total_bytes": 30,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4290ece5dbbaa848203ad523c8072d22ea3fc8b82caaae052632a0b09aa4e670",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

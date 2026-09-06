@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-001",
+  "title": "Canonical valid Read Holding Registers",
+  "strategy": "baseline_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Exercise a minimal valid 0x03 request with conservative address and quantity from a clean MBAP-framed baseline.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:8b7e3446e51a",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_holding_registers_request",
+      "hex": "000100000006010300000001",
+      "byte_length": 12,
+      "sha256": "b860206b9dcbeed8c614bfeb144a1d25759f7da3aafea2cfbb494bf296227289"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Read Holding Registers request for one register at address 0 and return register data or a standards-conformant exception.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 0006 for unit_id plus 5-byte PDU",
+    "function code is 03",
+    "request body is starting address followed by quantity",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Pure canonical baseline; not derived from any crash payload.",
+  "sequence_sha256": "9c59bceeb7256e4b5936b3a476ebc9caee06d940ab9d1b3fbc43e3a2f66d0b6e",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b860206b9dcbeed8c614bfeb144a1d25759f7da3aafea2cfbb494bf296227289",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "seed_id": "iec61850-seed-001",
+  "title": "Conservative ACSE-wrapped GetNameList request",
+  "strategy": "baseline_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Provide a compact MMS Confirmed-Request-PDU carrying confirmed service tag [1] GetNameList inside an ACSE/UserInformation-style wrapper with self-consistent BER lengths.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "acse_wrapped_confirmed_request_getnamelist",
+      "hex": "6010300ea003020101be070405a003020101",
+      "byte_length": 18,
+      "sha256": "a72a6cd21e5c5404995189e84334b1ab79756db2a2a97f14c53a5f5f71892b93"
+    }
+  ],
+  "expected_behavior": "A parser should recognize ACSE message type 0x60, descend through the wrapped user-information bytes, and dispatch the inner MMS Confirmed-Request-PDU for service tag [1].",
+  "constraints_preserved": [
+    "ACSE first byte is a documented accepted message type 0x60.",
+    "All BER lengths are definite short-form and internally consistent.",
+    "Uses user-information-style wrapping with nested lengths before the MMS payload.",
+    "Inner MMS PDU tag is 0xa0 for Confirmed-Request-PDU.",
+    "Inner confirmed service tag is [1] for GetNameList."
+  ],
+  "issue_safety_notes": "Issue enhancement is disabled. This seed is a conservative structural parser-entry seed and not a crash replay.",
+  "sequence_sha256": "5c016c0d3eb76e998627b5dee33ce60d17f492d8cf49424061fc8acbbca9b924",
+  "total_bytes": 18,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a72a6cd21e5c5404995189e84334b1ab79756db2a2a97f14c53a5f5f71892b93",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

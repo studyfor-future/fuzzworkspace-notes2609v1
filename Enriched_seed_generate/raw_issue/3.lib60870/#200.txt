@@ -1,0 +1,49 @@
+issue #200
+
+lib60870-C accepts a sequence-form M_SP_NA_1 ASDU whose header advertises elements even when the payload does not contain the required base information object address. When application code uses the normal CS101_ASDU_getElement() iteration pattern, the sequence decoder reaches InformationObject_ParseObjectAddress() and reads the missing IOA bytes out of bounds. I don't see any risk caused by this, but I decided to report as it is an actual bug in iteself.
+
+Reproduction
+poc.c
+
+#include <stdint.h>
+#include <stdio.h>
+
+#include "cs101_information_objects.h"
+
+int main(void)
+{
+    struct sCS101_AppLayerParameters params = {
+        .sizeOfTypeId = 1,
+        .sizeOfVSQ = 1,
+        .sizeOfCOT = 2,
+        .originatorAddress = 0,
+        .sizeOfCA = 2,
+        .sizeOfIOA = 3,
+        .maxSizeOfASDU = 249
+    };
+
+    uint8_t msg[] = {
+        0x01,       /* M_SP_NA_1 */
+        0x82,       /* sequence bit + two claimed elements */
+        0x03, 0x00, /* COT */
+        0x01, 0x00  /* CA; no sequence base IOA or element payload */
+    };
+
+    CS101_ASDU asdu = CS101_ASDU_createFromBuffer(&params, msg, sizeof(msg));
+    if (asdu == NULL) {
+        puts("parser rejected short sequence ASDU");
+        return 0;
+    }
+
+    InformationObject io = CS101_ASDU_getElement(asdu, 1);
+    if (io == NULL) {
+        puts("parser returned NULL for missing sequence element");
+        CS101_ASDU_destroy(asdu);
+        return 0;
+    }
+
+    printf("unexpected element IOA=%d\n", InformationObject_getObjectAddress(io));
+    InformationObject_destroy(io);
+    CS101_ASDU_destroy(asdu);
+    return 0;
+}

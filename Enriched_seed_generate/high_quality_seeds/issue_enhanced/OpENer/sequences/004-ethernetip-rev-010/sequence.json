@@ -1,0 +1,53 @@
+{
+  "seed_id": "ethernetip-rev-010",
+  "title": "Structurally valid invalid-session SendRRData",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Invalid session handle",
+  "purpose": "Exercise invalid-session handling using a fully valid SendRRData outer and inner structure so rejection occurs on session semantics rather than malformed framing.",
+  "evidence_ids": [
+    "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "issue:582:582-summary:95e9bb0be3fe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "sendrrdata_with_likely_invalid_session",
+      "hex": "6f0015000100000000000000000000000000000000000000000000000000020000000000b20006010220012401",
+      "byte_length": 45,
+      "sha256": "e0d74273837ee758f98577b5d675b04ad62706fc84d46dda91abd75f52bf9bea"
+    }
+  ],
+  "expected_behavior": "A compliant target should report or internally handle the invalid session condition while the packet remains useful for valid CPF and CIP parsing coverage on permissive implementations.",
+  "constraints_preserved": [
+    "SendRRData command is 0x006f.",
+    "Length 0x0014 matches the 20-byte payload.",
+    "Session handle is nonzero but no malformed fields are present.",
+    "CPF item count is 2.",
+    "Null Address and Unconnected Data item headers are complete and valid.",
+    "Unconnected Data Item length 6 matches the CIP payload."
+  ],
+  "issue_safety_notes": "Only the session-handle value is adversarial; CPF and CIP structure remain valid to avoid exact malformed-parser crash triggers.",
+  "sequence_sha256": "27ddafdd6c5a80d3d34afe2c2c38d7822e6b3f84a8f3d65e05df12812090c8ca",
+  "total_bytes": 45,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e0d74273837ee758f98577b5d675b04ad62706fc84d46dda91abd75f52bf9bea",
+    "encoded_bytes": 45,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

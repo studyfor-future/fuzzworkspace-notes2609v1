@@ -1,0 +1,64 @@
+{
+  "seed_id": "iec61850-seed-008",
+  "title": "Initiate response coverage with prior initiate request",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Response-PDU",
+  "purpose": "Cover Initiate-Response-PDU in a more realistic two-message exchange instead of a standalone response-only seed.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "wrapped_initiate_request",
+      "hex": "600f300da003020101be060404a80100",
+      "byte_length": 16,
+      "sha256": "1d97808397f369f6fe6099dafe2e846a4baa377245f698e9153eb424a6eac72b"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "wrapped_initiate_response",
+      "hex": "610f300da003020101be060404a90100",
+      "byte_length": 16,
+      "sha256": "3d19625dce9e91f7b26121e2f9530113dd957e5eb04aea6d6ca7348cf01930b6"
+    }
+  ],
+  "expected_behavior": "The endpoint should parse the initiate request branch and then dispatch the response-side MMS tag 0xa9 on the return message.",
+  "constraints_preserved": [
+    "Uses documented ACSE types 0x60 and 0x61.",
+    "Uses documented MMS tags 0xa8 and 0xa9.",
+    "Maintains self-consistent BER short-form lengths.",
+    "Avoids a bare response-only fragment."
+  ],
+  "issue_safety_notes": "No issue analogue is used. This is a conservative setup/response pair.",
+  "sequence_sha256": "bd9187cf52e280119a15e703a98a2fc3a2a7dff68c7459c897961b006d8019c3",
+  "total_bytes": 32,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "82425e276207760cdf36386f542c6901136d5bb999d0e07d46b0455606243dfb",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

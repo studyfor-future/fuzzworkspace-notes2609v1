@@ -1,0 +1,68 @@
+{
+  "seed_id": "modbustcp-seed-002",
+  "title": "Stateful setup for Read/Write Multiple Registers",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Prime server register state with a valid 0x10 request and then exercise function 0x17 in a deeper valid sequence.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:ba5533b39dfa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "setup_write_multiple_registers_request",
+      "hex": "000200000009011000100001021234",
+      "byte_length": 15,
+      "sha256": "753407deaaac105b0708e2405dfb6ac24a3bd39bc6a5d98c3d943b59cf31f497"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "read_write_multiple_registers_request",
+      "hex": "00030000000d0117001000010020000102abcd",
+      "byte_length": 19,
+      "sha256": "54f02201a21bc013c4ed27f4e6a6ef772716ad9854b34a38d494f31999e8ab59"
+    }
+  ],
+  "expected_behavior": "Server should first parse a valid 0x10 write of one holding register at 0x0010, then parse a valid 0x17 request that reads one register from 0x0010 and writes one register at 0x0020.",
+  "constraints_preserved": [
+    "Both messages use complete MBAP headers with protocol_id 0x0000.",
+    "Message 0 length 0x0009 matches unit_id plus 8-byte PDU for function 0x10 with quantity 0x0001 and byte_count 0x02.",
+    "Message 1 length 0x000f matches unit_id plus 14-byte PDU for function 0x17.",
+    "Function 0x10 fields preserve address, quantity, byte count, and register data ordering.",
+    "Function 0x17 fields preserve read address, read quantity, write address, write quantity, byte count, and write data ordering.",
+    "All 16-bit fields are big-endian."
+  ],
+  "issue_safety_notes": "This sequence is stateful for coverage only and remains conservative and fully framed.",
+  "sequence_sha256": "21e859bdf64015dc71febdbd6e890435a0cdbe7fae4a27bed2621d0bcdec9784",
+  "total_bytes": 34,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "088f59fde3a23a0cef6c263fd067351d03b1f3463f217696aa655cdb808d915c",
+    "encoded_bytes": 34,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ]
+  }
+}

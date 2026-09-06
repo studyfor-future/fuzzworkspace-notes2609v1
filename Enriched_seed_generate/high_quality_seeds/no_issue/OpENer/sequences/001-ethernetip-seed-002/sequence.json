@@ -1,0 +1,83 @@
+{
+  "seed_id": "ethernetip-seed-002",
+  "title": "Discovery prelude then RegisterSession",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Exercise sequential parsing through valid discovery commands before a final RegisterSession request.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:operation-catalog:b5c7ceede78d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "list_services_request",
+      "hex": "040000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "list_identity_request",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000011223344556677880000000001000000",
+      "byte_length": 28,
+      "sha256": "57fa077005914160a9eb206e4daa7dc3bd9571feab2c30fad09c929c99f2babb"
+    }
+  ],
+  "expected_behavior": "The implementation should parse two complete zero-length encapsulation commands and then a valid RegisterSession frame without framing errors.",
+  "constraints_preserved": [
+    "Each message has a complete 24-byte encapsulation header.",
+    "ListServices uses command 0x0004 with zero payload length.",
+    "ListIdentity uses command 0x0063 with zero payload length.",
+    "RegisterSession uses command 0x0065 with a 4-byte payload.",
+    "All status fields are zero.",
+    "All options fields are zero.",
+    "Length fields exactly match appended payload sizes."
+  ],
+  "issue_safety_notes": "Stateful sequencing is limited to ordinary documented commands; no issue-derived behavior is claimed.",
+  "sequence_sha256": "f5f34595984ca54d8fec5695e884ff4719b2de4231bc49eb664746abbca26455",
+  "total_bytes": 76,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "268570118b8a61cdce052fe46a5cb736f23ac5b50aeb54a5ff4860014620bc87",
+    "encoded_bytes": 76,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 48,
+        "payload_offset": 48,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ]
+  }
+}

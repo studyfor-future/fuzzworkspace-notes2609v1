@@ -1,0 +1,54 @@
+{
+  "seed_id": "ethernetip-seed-006",
+  "title": "Start service over valid SendRRData",
+  "strategy": "function_code_coverage",
+  "target_operation": "Start",
+  "purpose": "Exercise CIP service code 0x06 within a correct SendRRData and CPF envelope to reach explicit-message service dispatch.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:dac0edf7a66f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_start_request",
+      "hex": "6f0016000000000000000000000000000000000000000000000000000000020000000000b2000800060220012401",
+      "byte_length": 46,
+      "sha256": "80108a84ef160833af9b7674db4d33310077b455b7e240018d1e1bac03b370b1"
+    }
+  ],
+  "expected_behavior": "The receiver should accept the encapsulation and CPF framing and then handle or reject the Start service request at CIP level rather than failing outer parsing.",
+  "constraints_preserved": [
+    "SendRRData command is 0x006f.",
+    "Encapsulation length matches the 24 bytes after the header.",
+    "Interface handle and timeout are present before CPF.",
+    "CPF item_count is 2 with documented Null Address Item and Unconnected Data Item ordering.",
+    "Unconnected item length is 8 and matches the CIP bytes.",
+    "Service code 0x06 is the documented Start service."
+  ],
+  "issue_safety_notes": "The seed stays within documented framing and uses a compact service request for safe initial coverage.",
+  "sequence_sha256": "c1ff78647461f5bc1cf5e64fb6ebe65fea5239f33721d034ba9a31f652779c33",
+  "total_bytes": 46,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "80108a84ef160833af9b7674db4d33310077b455b7e240018d1e1bac03b370b1",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ]
+  }
+}

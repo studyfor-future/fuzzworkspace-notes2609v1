@@ -1,0 +1,10 @@
+Number: 1270
+
+Summarize:
+In v1.3.1, the report says a malformed UCOV/property-value payload can make bacapp_decode_application_data() accept an oversized extended application length without checking it against the remaining APDU bytes. That unchecked length is then propagated through bacapp_decode_data() into host_n_port_decode(), which trusts it, and bacnet_tag_number_decode() eventually performs an invalid read and crashes. The observed result was an AddressSanitizer SEGV; GDB showed apdu_len_max=12, tag_len=7, len_value_type=0xFF210121, and tag_data_type=34 (BACNET_APPLICATION_TAG_HOST_N_PORT).
+
+Reproduce:
+1) Use v1.3.1. 2) Decode a malformed UCOV/property-value payload whose extended application length exceeds the remaining APDU bytes; the reported bytes near the triggering boundary were: f5 22 ff ff 21 01 21 0e 2d ff 00 e6. 3) In the failing case, GDB showed apdu_len_max=12, tag_len=7, len_value_type=0xFF210121, and tag_data_type=34 (BACNET_APPLICATION_TAG_HOST_N_PORT). 4) Expected result: the oversized length is accepted by bacapp_decode_application_data(), passed via bacapp_decode_data() into host_n_port_decode(), and bacnet_tag_number_decode() hits an invalid read, with AddressSanitizer reporting SEGV on an unknown address 0x641f9505e92e (pc 0x641f93a5ffdd bp 0x7ffeab919b70 sp 0x7ffeab919b50 T0).
+
+Payload:
+f5 22 ff ff 21 01 21 0e 2d ff 00 e6

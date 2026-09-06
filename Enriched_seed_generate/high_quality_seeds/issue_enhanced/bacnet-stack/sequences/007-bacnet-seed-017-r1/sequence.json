@@ -1,0 +1,83 @@
+{
+  "seed_id": "bacnet-seed-017-r1",
+  "title": "VT service trio request set",
+  "strategy": "function_code_coverage",
+  "target_operation": "VT-Open/VT-Data/VT-Close",
+  "purpose": "Retain VT coverage but strengthen it as a small three-message set with bounded payload bytes for open, data, and close services rather than isolated bare shells.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "vt-open-request",
+      "hex": "810a000c0100000170150001",
+      "byte_length": 12,
+      "sha256": "54ed2f260c6597be538b8872f80656e09c29efce7964bb6bfedd92170c6b0ef0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "vt-data-request",
+      "hex": "810a000d0100000171170001aa",
+      "byte_length": 13,
+      "sha256": "3aeaffaf5c042966d587efbe49b91cc1753122c256053ad7acd44eba592efc0e"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "vt-close-request",
+      "hex": "810a000c0100000172160001",
+      "byte_length": 12,
+      "sha256": "829c6f8afe7b16fa0c92c03e07f57940974c566bed2e72fdb91890d71f2612e0"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP implementation should at minimum dispatch the three confirmed service choices for VT-Open, VT-Data, and VT-Close with short bounded parameter bytes.",
+  "constraints_preserved": [
+    "All three frames use BVLC type 0x81 and unicast function 0x0a.",
+    "Lengths are self-consistent: 0x000c, 0x000d, and 0x000c respectively.",
+    "Service choices 0x15, 0x17, and 0x16 match VT-Open, VT-Data, and VT-Close.",
+    "Confirmed-request PDU type is preserved in each APDU."
+  ],
+  "issue_safety_notes": "These are bounded VT entry seeds rather than exact protocol-complete sessions, but they are stronger than prior bare service-choice shells and avoid dangerous payload growth.",
+  "sequence_sha256": "26f9a861ab6dbef484001eec4a92be85a99a188383cab2fbfb4f5456d43c4b6a",
+  "total_bytes": 37,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "987cb8d4e3834bef94de069270c6fec4d2cf2fcb12ceba0b100b2b6ddcfdba23",
+    "encoded_bytes": 37,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 13,
+        "frame_length": 13
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 25,
+        "payload_offset": 25,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

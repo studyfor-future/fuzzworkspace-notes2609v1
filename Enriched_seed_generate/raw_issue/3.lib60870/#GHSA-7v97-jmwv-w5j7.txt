@@ -1,0 +1,13 @@
+issue #GHSA-7v97-jmwv-w5j7
+
+Summary
+A crafted IEC 60870-5-104 I-frame with a declared object count exceeding what fits in the ASDU body causes InformationObject_ParseObjectAddress to read one byte past the end of the heap-allocated message buffer (CWE-125). Discovered by fuzzing lib60870-C v2.4.0 with LibFuzzer + AddressSanitizer.
+
+Root Cause
+InformationObject_ParseObjectAddress(uint8_t* msg, int startIndex) has no msgSize parameter. The function reads msg[startIndex], msg[startIndex+1], msg[startIndex+2] unconditionally. When the VSQ field declares more objects than the ASDU body can hold, startIndex walks past the end of the allocation.
+
+Proof of Concept (14 bytes)
+68 0a 68 0a 00 4e 11 e0 02 00 4e 68 10 ff
+68 0a — IEC 104 start byte + L=10
+11 — TypeID 17 (M_EP_TA_1)
+e0 — VSQ: SQ=1, N=96 objects (only 4 bytes of ASDU body remain)

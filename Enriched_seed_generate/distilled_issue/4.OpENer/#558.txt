@@ -1,0 +1,14 @@
+Number: 558
+
+Summarize:
+At OpENer `v2.3-558-g1e99582` (commit `1e99582`), the report documents an out-of-bounds read in the CPF parser's `CreateCommonPacketFormatStructure()` (`source/src/enet_encap/cpf.c`). The report attributes it to trusting the CPF `item_count` taken from message data without consistently validating later reads against the supplied `data_length`. In the documented debug case, a 16-byte CPF slice beginning `01 e8` was interpreted as `item_count = 0xe801`, and parsing continued after `data` reached `cpf_start + data_length`. The observed result is an out-of-bounds read reported by ASan as `AddressSanitizer: heap-buffer-overflow` in `CreateCommonPacketFormatStructure`; in a non-ASan debug session, the first invalid read was observed around `source/src/enet_encap/cpf.c:280`.
+
+Reproduce:
+1. Use OpENer `v2.3-558-g1e99582` / commit `1e99582`.
+2. Run the POSIX `OpENer_afl` target referenced by the stack trace (`source/src/ports/POSIX/OpENer_afl.c`); the report used an ASan build (`OpENer_afl_asan`). The document does not provide exact build or run commands.
+3. Feed the following 60-byte PoC input to the path shown in the trace (`main -> ExecuteFallbackSinglePacket -> CallTcp`): `<6f><00><16><00><06><00><00><00><1a><00><f7><0c><40><d3><ff><7f><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><b2><00><0a><00><4c><00><20><01><24><01><30><05><91><04><00><00><00><00><00><00>`.
+4. Expected result in the ASan build: `ERROR: AddressSanitizer: heap-buffer-overflow` on a 1-byte read in `CreateCommonPacketFormatStructure` at `source/src/enet_encap/cpf.c:298:75`, with a stack through `NotifyCommonPacketFormat`, `HandleReceivedSendRequestResponseDataCommand`, `HandleReceivedExplictTcpData`, `CallTcp`, `ExecuteFallbackSinglePacket`, and `main`.
+5. The report additionally notes that, in a non-ASan debug build under GDB, parsing continued even when `data == cpf_start + data_length`, with the first invalid read observed around `source/src/enet_encap/cpf.c:280`; it also describes a debug case where a 16-byte CPF slice beginning `01 e8` was parsed as `item_count = 0xe801`.
+
+Payload:
+6f 00 16 00 06 00 00 00 1a 00 f7 0c 40 d3 ff 7f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 b2 00 0a 00 4c 00 20 01 24 01 30 05 91 04 00 00 00 00 00 00

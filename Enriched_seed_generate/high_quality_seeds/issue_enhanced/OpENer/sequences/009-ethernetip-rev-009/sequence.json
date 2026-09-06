@@ -1,0 +1,65 @@
+{
+  "seed_id": "ethernetip-rev-009",
+  "title": "Unconnected Data Item analogue with padded EPATH",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Unconnected Data Item",
+  "purpose": "Exercise padded EPATH decoding using a fully consistent Unconnected Data Item length and a small valid attribute path.",
+  "evidence_ids": [
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:07e39e004b86",
+    "issue:582:582-summary:95e9bb0be3fe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_for_unconnected_data",
+      "hex": "65000400785634120000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "7eaa4db40ae3e1ce8536b2bad1aa183177ba1027551d9b4ede21b1f2b31c66ce"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_short_padded_epath",
+      "hex": "6f0016007856341200000000000000000000000000000000000000000000020000000000b2000801032001240100",
+      "byte_length": 46,
+      "sha256": "b5424db46712d13426725c52f549255db74cff413091d2e91553005cc1fe3ad5"
+    }
+  ],
+  "expected_behavior": "The server should parse the explicit message and decode a small but valid padded EPATH request without reading beyond declared item boundaries.",
+  "constraints_preserved": [
+    "SendRRData length is 22 bytes and exact.",
+    "CPF item count is 2.",
+    "Unconnected Data Item length is 8 and matches the CIP bytes.",
+    "CIP path size is 3 words, matching six EPATH bytes including a padding byte.",
+    "No extra bytes are present beyond declared lengths."
+  ],
+  "issue_safety_notes": "This is a safe analogue for the padded-EPATH issue: the path size is small and truthful, unlike the forged oversized values described in issue 582.",
+  "sequence_sha256": "e4096ce5f6fc42be012e895069194331153822cc5ddeaeb99b7ab7ce77c5e721",
+  "total_bytes": 74,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cf5734c9ddfa87a5283f0f16227e5dc8d25c2f49304c58fb46182c3e5d34f9c3",
+    "encoded_bytes": 74,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ]
+  }
+}

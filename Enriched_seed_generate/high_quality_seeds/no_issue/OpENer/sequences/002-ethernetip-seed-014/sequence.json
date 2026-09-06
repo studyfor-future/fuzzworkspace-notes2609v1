@@ -1,0 +1,55 @@
+{
+  "seed_id": "ethernetip-seed-014",
+  "title": "Connected explicit path with SendUnitData",
+  "strategy": "function_code_coverage",
+  "target_operation": "SendUnitData",
+  "purpose": "Add coverage for the separate SendUnitData encapsulation command using the documented Connected Address Item plus Connected Data Item CPF combination and a small connected payload.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:operation-catalog:b5c7ceede78d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_unit_data_connected_minimal",
+      "hex": "70001600111111110000000001020304050607080000000000000000000002000001040078563412b10002001400",
+      "byte_length": 46,
+      "sha256": "08bdb5bf2b35a469cac6741404fd493033ebfbd417d686af4f52d59dce8ed0ea"
+    }
+  ],
+  "expected_behavior": "The implementation should accept the SendUnitData header, parse the connected CPF item combination, and hand the small connected data item to subsequent handling.",
+  "constraints_preserved": [
+    "Command 0x0070 is encoded little-endian as 7000.",
+    "Encapsulation length is 0x0018 and matches 24 bytes of command-specific data.",
+    "SendUnitData uses a 4-byte interface handle and 2-byte timeout before CPF.",
+    "CPF item_count is 2.",
+    "First CPF item is Connected Address Item 0x0100 with length 4 and a 4-byte address payload.",
+    "Second CPF item is Connected Data Item 0x00b1 with length 2 and a 2-byte data payload.",
+    "The documented common SendUnitData item combination is preserved."
+  ],
+  "issue_safety_notes": "This is a conservative connected-path seed and avoids inventing larger connected transport structures.",
+  "sequence_sha256": "ebfb3e97e00ba582077930b794e7e05543cf508f1c6593c109fffa94b2032845",
+  "total_bytes": 46,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "08bdb5bf2b35a469cac6741404fd493033ebfbd417d686af4f52d59dce8ed0ea",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+Number: 200
+
+Summarize:
+lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU whose header advertises elements actually includes the required base information object address. A buffer whose payload ends after the CA field is accepted, and when application code later uses the normal CS101_ASDU_getElement() iteration pattern, the sequence decoder reaches InformationObject_ParseObjectAddress() and reads the missing IOA bytes out of bounds. The reporter states they did not identify any further risk beyond this bug.
+
+Reproduce:
+Use the provided poc.c against lib60870-C. In the program, initialize sCS101_AppLayerParameters with sizeOfTypeId=1, sizeOfVSQ=1, sizeOfCOT=2, originatorAddress=0, sizeOfCA=2, sizeOfIOA=3, and maxSizeOfASDU=249. Define a 6-byte ASDU buffer with 0x01 (M_SP_NA_1), 0x82 (sequence bit set, two claimed elements), 0x03 0x00 (COT), and 0x01 0x00 (CA), with no sequence base IOA or element payload. Call CS101_ASDU_createFromBuffer(&params, msg, sizeof(msg)); if it returns non-NULL, call CS101_ASDU_getElement(asdu, 1). The PoC then prints InformationObject_getObjectAddress(io) if a non-NULL object is returned. The documented result is that the short sequence ASDU is accepted and CS101_ASDU_getElement() drives the decoder into InformationObject_ParseObjectAddress(), causing an out-of-bounds read of the missing IOA bytes. The PoC's printed alternatives are 'parser rejected short sequence ASDU', 'parser returned NULL for missing sequence element', or 'unexpected element IOA=%d'.
+
+Payload:
+01 82 03 00 01 00

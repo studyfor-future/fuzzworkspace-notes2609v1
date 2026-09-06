@@ -1,0 +1,10 @@
+Number: 867
+
+Summarize:
+The Modbus TCP receive path does not use the MBAP Length field to delimit the complete ADU. In `_modbus_receive_msg()`, after reading the MBAP header and function code, the remaining length is derived only from `compute_meta_length_after_function()` and `compute_data_length_after_meta()`, using the function code and PDU byte-count fields. The TCP integrity callback `_modbus_tcp_check_integrity()` does not validate the MBAP header and simply returns `msg_length`. As documented, a request with a syntactically valid PDU prefix plus extra bytes declared by the MBAP Length field can therefore be processed while the trailing bytes remain in the TCP stream.
+
+Reproduce:
+No specific build configuration or command line is provided. Reproduction in the document is to send this FC16 Modbus TCP request: `00 01 00 00 00 0B 01 10 00 00 00 01 02 12 34 AA BB`. The documented result is that the valid FC16 request prefix is processed, while the trailing extra bytes (`AA BB`), covered by the MBAP Length value, remain in the TCP stream.
+
+Payload:
+00 01 00 00 00 0b 01 10 00 00 00 01 02 12 34 aa bb

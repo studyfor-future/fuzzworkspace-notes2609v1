@@ -1,0 +1,31 @@
+issue #593
+
+Target: OpENer (EIPStackGroup EtherNet/IP + CIP stack). source/src/cip/cipcommon.c — DecodePaddedEPath.
+Affected version: commit 36943e6 (HEAD at time of test); present at HEAD.
+
+Summary
+OpENer decodes a CIP EPATH (electronic path) by reading a path_size count byte from the request and then
+walking that many path words — without a remaining-buffer-length argument or bound. A request whose EPATH
+path_size is larger than the actual data walks off the end of the incoming_message receive buffer.
+
+
+Technical details
+/* source/src/cip/cipcommon.c : DecodePaddedEPath */
+number_of_decoded_elements = *message;   /* :1397 path_size, one wire byte, 0..255 words — attacker-controlled */
+++message;
+while (number_of_decoded_elements < path_size) {     /* :1404 no check vs the received buffer end */
+    ...
+    case ...:                                        /* e.g. class/instance/attribute segments */
+        /* reads *(message+1), message += 2  — walks 2+ bytes per iteration off the buffer */
+}
+DecodePaddedEPath receives only the message pointer, not the number of bytes remaining in incoming_message
+(a fixed receive buffer, ~512 bytes on the stack/session). With path_size = 0xFF and segment bytes that keep
+the loop consuming, the walk reads well past the buffer.
+
+Proof of Concept
+Faithful ASan model (poc/opener_epath_oob_read_repro.c): a 300-byte redzoned buffer models the tail of
+incoming_message; buf[0] = 255 (path_size = max), segment type bytes drive the 2-bytes/iteration walk with
+no end check. ASan (poc/OPENER-01-asan.txt): heap-buffer-overflow READ of size 1 past the 300-byte region.
+Root cause
+DecodePaddedEPath trusts the in-band path_size count and lacks a remaining-length parameter, so the segment
+walk has no upper bound tied to the actual received size.

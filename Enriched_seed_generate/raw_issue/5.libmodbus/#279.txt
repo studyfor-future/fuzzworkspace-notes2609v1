@@ -1,0 +1,36 @@
+issue #279
+Error on modbus_write_registers
+
+Hi,
+
+I am writing a loopback program to test Modbus quality of service. First time when the modbus_write_registers() is called, it has no error. However, the second time it is called, the following error comes:
+
+ERROR Connection timed out: select
+
+Here is the whole debug messages:
+
+$ ./loopbackTest -p /dev/ttyS1 -a 2 -s increment
+Opening /dev/ttyS1 at 9600 bauds (N, 8, 1)
+
+===>This is the first try
+Size: 2, Data Packets Built:
+<0xE1> <0x4E>
+[02][10][A0][48][00][04][08][20][00][00][00][00][02][4E][E1][C3][0A]
+Waiting for a confirmation...
+<02><10><A0><48><00><04><63><EF>
+[02][03][A0][48][00][04][E6][2C]
+Waiting for a confirmation...
+<02><03><08><20><00><00><00><00><02><4E><E1><CC><A3>
+Packet Sent: 1, Packet Received: 1, Good Packets: 1, Bad Packets: 0
+elapsedTime: 500.100000
+
+===>This is the second try
+Size: 4, Data Packets Built:
+<0x83> <0x7B> <0x1> <0x64>
+[02][10][A0][48][00][05][0A][00][20][00][00][02][04][7B][83][64][01][72][D7]
+Waiting for a confirmation...
+ERROR Connection timed out: select
+[02][03][A0][48][00][05][27][EC]
+Waiting for a confirmation...
+ERROR Connection timed out: select
+Connection timed out

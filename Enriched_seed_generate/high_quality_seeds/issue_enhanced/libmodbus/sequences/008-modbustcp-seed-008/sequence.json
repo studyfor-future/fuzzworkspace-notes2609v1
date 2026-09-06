@@ -1,0 +1,53 @@
+{
+  "seed_id": "modbustcp-seed-008",
+  "title": "Issue-guided Read Input Registers quantity-seven analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Input Registers",
+  "purpose": "Preserve the historically mentioned address 0, quantity 7 read shape as a safe valid 0x04 request.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "issue:738:738-summary:5a1139e7dbc0",
+    "issue:614:614-summary:e0c037e7e5cc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_input_registers_request_addr0_qty7",
+      "hex": "002100000006ff0400000007",
+      "byte_length": 12,
+      "sha256": "13a0de1884530880a6820d2454abca24c814f46ba5d52c23b7bcd32cbeb9262a"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Read Input Registers request for seven registers starting at address 0 and return data or a legal exception.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 0006 for unit_id plus 5-byte PDU",
+    "function code is 04",
+    "request body is starting address followed by quantity",
+    "quantity is 0007 as a valid nonzero read size",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Uses the issue-adjacent valid read shape only; no malformed or crash-specific bytes are reused.",
+  "sequence_sha256": "a5efe65832ef5d315900f857ba866b17a68765ea677c73799a4acbac2c208404",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "13a0de1884530880a6820d2454abca24c814f46ba5d52c23b7bcd32cbeb9262a",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

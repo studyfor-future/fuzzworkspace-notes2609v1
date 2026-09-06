@@ -1,0 +1,83 @@
+{
+  "Common Headers": {
+    "MBAP Header": {
+      "Field 1": {
+        "Description": "Protocol field 'transaction_id'. Layer: mbap. Role: control. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.",
+        "Implementation constraints": "checked byte-by-byte at offsets 0 and 1, used for request/response pairing",
+        "Length": "16 bits",
+        "Protocol constraints": "must match request transaction_id echoed in response"
+      },
+      "Field 2": {
+        "Description": "Protocol field 'protocol_id'. Layer: mbap. Role: meta. Type: uint16. Constraints: value must be 0 (0x0000). Range: [0, 0]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.",
+        "Implementation constraints": "must be 0x0000 for Modbus",
+        "Length": "16 bits",
+        "Protocol constraints": "protocol_id == 0"
+      },
+      "Field 3": {
+        "Description": "Protocol field 'length'. Layer: mbap. Role: length. Type: uint16. Constraints: must equal total frame size minus 6 octets, sent big-endian. Range: [1, 253]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "covers Unit-ID + PDU only",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'unit_id'. Layer: mbap. Role: address. Type: uint8. Constraints: range 0-255. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "positional at byte 6 in MBAP header, must match request/response pair",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Error or Exception Templates": {
+    "Modbus exception response": {
+      "Field 1": {
+        "Description": "Protocol field 'function_code'. Layer: pdu. Role: type. Type: uint8. Range: [1, 255]. Enum: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, .... Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "must be 0x81–0x8F to signal Modbus exception (MSB set), legal values restricted to 1..127 in normal requests, 129..255 for exceptions",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Extraction Quality": {
+    "header_templates": 1,
+    "message_count": 3,
+    "non_header_templates": 2,
+    "real_strong_templates": 3,
+    "reasons": [],
+    "status": "success",
+    "strong_fields": 2
+  },
+  "Layered Structure": {
+    "mbap": [
+      "MBAP Header"
+    ],
+    "pdu": [
+      "Modbus exception response",
+      "Modbus response"
+    ]
+  },
+  "Message Templates": {},
+  "Object or Data Templates": {},
+  "Protocol Overview": {
+    "implementation": "libmodbus-3.1.6",
+    "profile": "auto",
+    "protocol": "MODBUSTCP",
+    "rule_family": "modbus",
+    "variant": ""
+  },
+  "Service or Function Specific Templates": {
+    "Modbus response": {
+      "Field 1": {
+        "Description": "Protocol field 'function_code'. Layer: pdu. Role: type. Type: enum. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "First byte of PDU",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'data'. Layer: pdu. Role: payload. Type: variable. Inferred-from: wire.",
+        "Implementation constraints": "",
+        "Length": "variable",
+        "Protocol constraints": ""
+      }
+    }
+  }
+}

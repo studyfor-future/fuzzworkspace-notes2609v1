@@ -1,0 +1,50 @@
+{
+  "seed_id": "modbustcp-seed-009",
+  "title": "Function coverage for Write Single Register",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Single Register",
+  "purpose": "Exercise a fixed-size 0x06 write request with one address and one 16-bit value.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_single_register_request",
+      "hex": "002200000006ff0600011234",
+      "byte_length": 12,
+      "sha256": "3cbccc1fa59728b2be6dd44489b51a27e7b94202460717202a6d0039422336b4"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid single-register write and usually echo address and value in the response.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 0006 for unit_id plus 5-byte PDU",
+    "function code is 06",
+    "request contains one 16-bit address and one 16-bit value",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Simple valid write baseline with no issue payload overlap.",
+  "sequence_sha256": "9ea979e2b1d4798b194f71f63d03cdb7b327b92a4e169dda0a88e51a00c77861",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3cbccc1fa59728b2be6dd44489b51a27e7b94202460717202a6d0039422336b4",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

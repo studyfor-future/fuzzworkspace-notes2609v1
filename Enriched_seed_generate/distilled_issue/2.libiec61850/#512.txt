@@ -1,0 +1,10 @@
+Number: 512
+
+Summarize:
+The report describes an out-of-bounds read in `parseAarqPdu` in `libiec61850/src/mms/iso_acse/acse.c`, found by fuzzing. While parsing tags `0xa6`, `0xa7`, or `0xbe`, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then used in reads such as `buffer[bufPos]` without confirming it is still within the input bounds; the example input ending in `a7 00` is said to leave `bufPos` at end-of-file + 1, after which the tag-specific checks for `0xa7`, `0xa6`, and `0xbe` can read out of bounds.
+
+Reproduce:
+Use the provided `LLVMFuzzerTestOneInput` harness: initialize an `AcseConnection`, create a `ByteBuffer` for the input size, append the input bytes, call `AcseConnection_parseMessage(&acseConnection, acseBuffer)`, then destroy the buffer. Feed the sample bytes `<60><02><30><02><30><30><30><02><30><30><30><00><30><00><30><02><30><30><30><00><30><02><30><30><a7><00>`. The report states that when `parseAarqPdu` processes the final `a7 00`, `bufPos` advances past the end and the `0xa7` case dereferences `buffer[bufPos]`, producing the out-of-bounds read; the same unchecked access pattern is cited for the `0xa6` and `0xbe` cases.
+
+Payload:
+60 02 30 02 30 30 30 02 30 30 30 00 30 00 30 02 30 30 30 00 30 02 30 30 a7 00

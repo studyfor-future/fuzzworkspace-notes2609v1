@@ -1,0 +1,13 @@
+issue #197
+
+Summary
+I found a reproducible deadlock in the CS104 slave implementation in lib60870 2.4.0.
+
+On the server side, the library invokes the user-provided connectionEventHandler while still holding the internal connection state lock. If the handler calls the public API IMasterConnection_close(connection) from the CS104_CON_EVENT_ACTIVATED or CS104_CON_EVENT_DEACTIVATED callback, the same connection path re-enters MasterConnection_close and blocks on the same semaphore/lock, resulting in a deadlock.
+
+This can be triggered remotely by a client sending valid CS104 U-frames (STARTDT_ACT and optionally STOPDT_ACT) over a real TCP connection.
+
+PoC
+
+68 04 07 00 00 00   
+68 04 13 00 00 00    

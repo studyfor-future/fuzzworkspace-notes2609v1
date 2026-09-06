@@ -1,0 +1,10 @@
+Number: 562
+
+Summarize:
+OpENer 2.3.0 (commit 76b95cf) is reported vulnerable to a Slowloris-style denial of service in its TCP/ENIP handling path. The report points to the single-threaded network loop in NetworkHandlerProcessCyclic(), where a newly accepted TCP socket from CheckAndHandleTcpListenerSocket() is added to the read set without being set non-blocking, and HandleDataOnTcpSocket() then performs blocking recv() calls. If a client opens one TCP connection, sends only the first 4 bytes of an ENIP packet so the server learns a payload length, and then withholds the rest of the packet, the subsequent recv() for the remaining data can block indefinitely until more data arrives or a TCP timeout occurs. The demonstrated impact is that the main network processing loop stalls and legitimate requests are not handled during that time.
+
+Reproduce:
+Prerequisite: have an OpENer 2.3.0 server listening on TCP port 44818 (the PoC defaults to 127.0.0.1:44818). Use the provided Python PoC logic as follows: 1) Open a TCP socket to the target host and port. 2) Build an ENIP header for command 0x006F with a declared payload length (the PoC default is 128 bytes). 3) Send only the first 4 bytes of that header, which contain the ENIP command and length. 4) Keep the connection open and send no additional bytes; the PoC idles for 60 seconds by default. The documented expected result is that OpENer reads the first 4 bytes, derives data_size, then blocks in the next recv() inside HandleDataOnTcpSocket() while waiting for the undeclared remainder. Because this occurs inside the single-threaded NetworkHandlerProcessCyclic loop, other legitimate requests are not processed until data arrives or the TCP connection times out.
+
+Payload:
+6f 00 80 00

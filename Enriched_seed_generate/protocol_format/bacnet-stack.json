@@ -1,0 +1,187 @@
+{
+  "Common Headers": {
+    "BVLC Header": {
+      "Field 1": {
+        "Description": "Protocol field 'bvlc_type'. Layer: link. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'bvlc_function'. Layer: link. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'bvlc_length'. Layer: link. Role: length. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      }
+    },
+    "NPDU Header": {
+      "Field 1": {
+        "Description": "Protocol field 'npdu_version'. Layer: session. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'npdu_control'. Layer: session. Role: control. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Error or Exception Templates": {},
+  "Extraction Quality": {
+    "header_templates": 0,
+    "message_count": 3,
+    "non_header_templates": 3,
+    "real_strong_templates": 3,
+    "reasons": [],
+    "status": "success",
+    "strong_fields": 2
+  },
+  "Layered Structure": {
+    "link": [
+      "BVLC Header"
+    ],
+    "payload": [
+      "APDU",
+      "Application-Data",
+      "Secure-Connect-Binding"
+    ],
+    "session": [
+      "NPDU Header"
+    ]
+  },
+  "Message Templates": {
+    "APDU": {
+      "Field 1": {
+        "Description": "Protocol field 'apdu_type'. Layer: payload. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 10": {
+        "Description": "Protocol field 'invoke_id'. Layer: apdu. Role: control. Type: uint8. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "must be stored as a single byte, must exactly match the invoke-id sent by requester",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 11": {
+        "Description": "Protocol field 'sequence_number'. Layer: apdu. Role: control. Type: uint8. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "only present when segmented_message flag is set",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 12": {
+        "Description": "Protocol field 'proposed_window_number'. Layer: apdu. Role: control. Type: uint8. Constraints: value 1..127. Range: [1, 127]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "present only when segmented_message flag set, value 1..127",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 13": {
+        "Description": "Protocol field 'service_choice'. Layer: apdu. Role: type. Type: uint8. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'invoke_id'. Layer: payload. Role: control. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'service_choice'. Layer: payload. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'service_request_payload'. Layer: payload. Role: payload. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "service_request points to remaining APDU bytes after service-choice byte, service_request_len set to apdu_len - consumed_header_bytes",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 5": {
+        "Description": "Protocol field 'segmented_message_flag'. Layer: apdu. Role: control. Type: enum. Constraints: value is either true or false. Range: [0, 1]. Enum: False, True. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.",
+        "Implementation constraints": "derived via (apdu[0] & BIT(3)), bit 3 of first APDU octet",
+        "Length": "1 bits",
+        "Protocol constraints": ""
+      },
+      "Field 6": {
+        "Description": "Protocol field 'more_follows_flag'. Layer: apdu. Role: control. Type: enum. Enum: {'0': 'no_more'}, {'1': 'more_follows'}. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.",
+        "Implementation constraints": "extracted from bit 2 of first APDU octet, shall indicate the sender has another frame to send",
+        "Length": "1 bits",
+        "Protocol constraints": ""
+      },
+      "Field 7": {
+        "Description": "Protocol field 'segmented_response_accepted_flag'. Layer: apdu. Role: control. Type: enum. Constraints: bit 1 of octet 0 (mask 0x02). Range: [0, 1]. Enum: 0, 1. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.",
+        "Implementation constraints": "decoded as boolean in service_data, BACnet confirmed request header",
+        "Length": "1 bits",
+        "Protocol constraints": ""
+      },
+      "Field 8": {
+        "Description": "Protocol field 'max_segments'. Layer: apdu. Role: control. Type: enum. Range: [0, 15]. Enum: {'0': 'Unspecified (up to 2 segments)'}, {'1': '2 segments'}, {'2': '4 segments'}, {'3': '8 segments'}, {'4': '16 segments'}, {'5': '32 segments'}, {'6': '64 segments'}, {'7': 'Greater than 64 segments'}, {'8..15': 'Reserved (treat as >64)'}. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: mask.",
+        "Implementation constraints": "decoded by decode_max_segs() helper routine, used only in confirmed APDU; absent otherwise, Encoded within the same octet as max_apdu (upper 4 bits)",
+        "Length": "4 bits",
+        "Protocol constraints": ""
+      },
+      "Field 9": {
+        "Description": "Protocol field 'max_apdu_size'. Layer: apdu. Role: length. Type: enum. Range: [0, 15]. Enum: {'0': 'Up to 50 octets'}, {'1': 'Up to 128 octets'}, {'2': 'Up to 206 octets'}, {'3': 'Up to 480 octets'}, {'4': 'Up to 1024 octets'}, {'5': 'Up to 1476 octets'}. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.",
+        "Implementation constraints": "Encoded in the low nibble of octet 1 of a confirmed-request APDU",
+        "Length": "4 bits",
+        "Protocol constraints": ""
+      }
+    },
+    "Application-Data": {
+      "Field 1": {
+        "Description": "Protocol field 'bacnet_application_data'. Layer: asdu. Role: payload. Type: variable. Inferred-from: wire. Binding-strength: tag_parse. Evidence-type: length_check.",
+        "Implementation constraints": "Payload length must not exceed remaining APDU bytes, Encoded as a BACnet Application Tag (Tag Number + Length/Value Type) followed by the tag payload, Length of the tag payload is determined by bacnet_application_data_length(tag.number, tag.len_value_type)",
+        "Length": "variable",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Object or Data Templates": {
+    "Secure-Connect-Binding": {
+      "Field 1": {
+        "Description": "Protocol field 'bacnet_sc_primary_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: valid URI syntax, terminating NULL required, separator character ('|') splits URI from optional port number. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: tag_parse.",
+        "Implementation constraints": "BACNET_CHARACTER_STRING internal capacity ≤ ~128 chars, no explicit UTF-8/ASCII tag in wire encoding, port suffix parsed in-place by sc_binding_parse(), exactly one URI string per ASDU, separator '|' must precede decimal port number",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'bacnet_sc_failover_hub_uri'. Layer: asdu. Role: address. Type: string. Constraints: max length imposed by BACnet character-string encoding (up to 255 bytes payload plus length octet), must be null-terminated when used in local stack storage. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.",
+        "Implementation constraints": "stack buffers sized to accomodate 255-byte string plus null terminator, parser stops at first null byte in local copy, BACnet character-string type requires first octet to hold length (max 255 octets), no padding required beyond length octet",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'max_bvlc_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: semantic_inference. Evidence-type: unknown.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'max_npdu_length_accepted'. Layer: asdu. Role: length. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: semantic_inference. Evidence-type: compare.",
+        "Implementation constraints": "Returned by Network_Port_Max_NPDU_Length_Accepted() as BACNET_UNSIGNED_INTEGER, Stored in BACNET_SC_PARAMS.Max_NPDU_Length_Accepted, BACnet-APDU only; never placed in BVLC or NPDU",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Protocol Overview": {
+    "implementation": "bacnet-stack",
+    "profile": "auto",
+    "protocol": "BACNET",
+    "rule_family": "bacnet",
+    "variant": ""
+  },
+  "Service or Function Specific Templates": {}
+}

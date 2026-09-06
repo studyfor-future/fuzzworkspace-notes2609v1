@@ -1,0 +1,112 @@
+issue #597
+
+Summary
+A heap use-after-free exists in the MMS file service implementation of libIEC61850 in the v1.6_develop HEAD commit 196bb76.
+
+The bug is triggered when an ObtainFile / set-file transfer is still in progress and the peer disconnects unexpectedly. The server-side asynchronous upload task (MmsObtainFileTask) keeps a stale raw pointer to the per-connection object (MmsServerConnection). During disconnect handling, the task is only moved to MMS_FILE_UPLOAD_STATE_INTERRUPTED, but its connection field is not cleared. The connection object is then freed by MmsServerConnection_destroy. In the next background-task iteration, mmsServer_fileUploadTask dereferences task->connection->isoConnection before the interrupted-state cleanup path runs, causing a heap-use-after-free.
+
+Root Cause
+1. The ObtainFile task stores a raw connection pointer
+MmsObtainFileTask keeps a persistent MmsServerConnection pointer inside the task object.
+This means the asynchronous file-upload task directly depends on the lifetime of the per-connection heap object.
+
+Conceptually, the task structure contains:
+
+struct sMmsObtainFileTask {
+    MmsServerConnection connection;
+    ...
+    int state;
+    ...
+};
+This is the fundamental ownership problem: the task is longer-lived than a single request, but it only stores a borrowed raw pointer to a connection object that can be destroyed independently.
+
+2. ObtainFile task creation binds the task to the live connection
+During ObtainFile handling, the implementation assigns the active connection into the task and transitions the task into the file-upload state machine.
+
+The relevant logic is effectively:
+
+task->connection = connection;
+task->obtainFileRequestInvokeId = invokeId;
+task->lastRequestInvokeId = MmsServerConnection_getNextRequestInvokeId(connection);
+...
+task->state = MMS_FILE_UPLOAD_STATE_FILE_OPEN_SENT;
+This is the point where the background task becomes tied to the connection object's lifetime.
+
+3. Normal task cleanup clears the connection pointer
+The library already contains a proper cleanup routine, changeObtainFileStateToUnused, which fully resets the task and explicitly nulls the pointer:
+
+task->connection = NULL;
+...
+task->state = MMS_FILE_UPLOAD_STATE_NOT_USED;
+This is important because it shows the implementation already recognizes that task->connection must be invalidated when the task is reclaimed.
+
+4. Disconnect cleanup does not clear the pointer
+On connection teardown, the helper that stops file-upload tasks only marks matching tasks as interrupted. It does not clear task->connection.
+
+Its effective behavior is:
+
+if (server->fileUploadTasks[i].connection == self) {
+    server->fileUploadTasks[i].state = MMS_FILE_UPLOAD_STATE_INTERRUPTED;
+}
+So after disconnect handling, the task is only half-cleaned:
+
+the state changes to INTERRUPTED,
+but the raw connection pointer still points to the same heap object.
+5. The connection object is then freed
+MmsServerConnection_destroy invokes the file-upload stop helper and later frees the connection object itself.
+
+So the ordering is:
+
+mark task as interrupted,
+keep task->connection unchanged,
+free self.
+At that point the task contains a dangling pointer.
+
+6. Background task processing dereferences the stale pointer before interrupted-state cleanup
+The decisive bug is in mmsServer_fileUploadTask. At function entry it dereferences the connection pointer immediately:
+
+ByteBuffer* message = NULL;
+IsoConnection isoConnection = task->connection->isoConnection;
+Only after that does it continue toward the task-state handling logic, including the MMS_FILE_UPLOAD_STATE_INTERRUPTED case.
+
+This means the intended interrupted-state cleanup is too late. The code reaches the stale-pointer dereference before it reaches the branch that would reclaim the task.
+
+Terminal 1: start the official example server
+cd /tmp/libiec61850-uaf/file_server
+
+/.../libiec61850/build-asan/examples/server_example_files/server_example_files 11013
+Expected startup banner:
+
+Using libIEC61850 version 1.6.1
+Terminal 2: start the official example client and kill it during upload
+cd /tmp/libiec61850-uaf/file_client
+
+timeout -s KILL 1.0s \
+  /.../libiec61850/build-asan/examples/iec61850_client_example_files/file-tool \
+  -h 127.0.0.1 -p 11013 set big.bin
+Important: use a relative path (set big.bin) exactly as shown above.
+
+Observed client output
+local dir: .
+local file: big.bin
+filestore basepath: ./
+Killed
+Observed server output
+Using libIEC61850 version 1.6.1
+Connection opened
+fileAccessHandler: service = 2, local-file: big.bin other-file: big.bin
+Connection closed
+=================================================================
+==137324==ERROR: AddressSanitizer: heap-use-after-free on address 0x61100000ff58
+READ of size 8 at 0x61100000ff58 thread T1
+    #0  mmsServer_fileUploadTask .../src/mms/iso_mms/server/mms_file_service.c:487:53
+    #1  MmsServer_handleBackgroundTasks .../src/mms/iso_mms/server/mms_server.c:874:13
+    #2  processPeriodicTasks .../src/iec61850/server/mms_mapping/mms_mapping.c:4987:9
+    #3  IedServer_performPeriodicTasks .../src/iec61850/server/mms_mapping/mms_mapping.c:4993:5
+    #4  singleThreadedServerThread .../src/iec61850/server/impl/ied_server.c:862:9
+...
+freed by thread T1 here:
+    #2  MmsServerConnection_destroy .../src/mms/iso_mms/server/mms_server_connection.c:848:5
+...
+previously allocated by thread T1 here:
+    #2  MmsServerConnection_init .../src/mms/iso_mms/server/mms_server_connection.c:802:38

@@ -1,0 +1,11 @@
+Number: 837
+
+Summarize:
+In src/modbus.c, modbus_reply() unconditionally reads req[offset+1] and req[offset+2] to compute an address. For function codes that do not include an address, such as MODBUS_FC_READ_EXCEPTION_STATUS (0x07) and MODBUS_FC_REPORT_SLAVE_ID (0x11), a valid Modbus TCP request can consist of only the MBAP header plus the function code. If such an 8-byte request is received into an 8-byte buffer and passed to modbus_reply(), the function reads past the end of the request buffer, causing an out-of-bounds read on the stack. The report states this is remotely triggerable by a Modbus TCP client sending the minimal-length request.
+
+Reproduce:
+Use the provided PoC server: it listens on TCP port 1502, accepts one client, receives exactly 8 bytes into a stack buffer (uint8_t req[8]) with recv(..., MSG_WAITALL), creates a Modbus TCP context for 127.0.0.1:1502, assigns the accepted socket with modbus_set_socket(), creates a mapping with modbus_mapping_new(8, 0, 0, 0), and then calls modbus_reply(ctx, req, (int)n, mapping). From a Modbus TCP client, connect to the server and send a valid minimal-length request consisting only of the 7-byte MBAP header plus a function code that does not include an address, for example 0x07 (READ_EXCEPTION_STATUS) or 0x11 (REPORT_SLAVE_ID), for a total of 8 bytes. When modbus_reply() processes this request, it still accesses req[offset+1] and req[offset+2] to compute an address and reads beyond the end of the 8-byte stack buffer, triggering the out-of-bounds read.
+
+Payload:
+00 01 00 00 00 02 01 07
+00 02 00 00 00 02 01 11

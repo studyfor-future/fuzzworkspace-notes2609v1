@@ -1,0 +1,53 @@
+{
+  "seed_id": "modbustcp-seed-010",
+  "title": "Diagnostics Return Query Data",
+  "strategy": "function_code_coverage",
+  "target_operation": "Return Query Data",
+  "purpose": "Exercise Diagnostics function 0x08 with subfunction 0x0000 using a small nonzero query value to cover echo-style handling.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:ba5533b39dfa",
+    "function_code:function:function-text:c22ca2f57716",
+    "function_code:function:operation-catalog:2528c48db80b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "diagnostics_return_query_data_request",
+      "hex": "000b00000006010800001234",
+      "byte_length": 12,
+      "sha256": "274f7ea09a384e7cc157ff93ac99eb1eb128693baf843789816a683b140767bb"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Diagnostics request with subfunction 0x0000 and typically echo the 0x1234 data value in the response, or return an exception if unsupported.",
+  "constraints_preserved": [
+    "MBAP header present.",
+    "protocol_id is 0x0000.",
+    "length is 0x0006 for unit_id plus 5-byte Diagnostics PDU.",
+    "Function code 0x08 is used for Diagnostics.",
+    "The first two data bytes after function code contain subfunction 0x0000.",
+    "The remaining two bytes carry query data 0x1234."
+  ],
+  "issue_safety_notes": "Diagnostics coverage is retained in a single stronger seed rather than many near-duplicate counter queries.",
+  "sequence_sha256": "6c74afc7eee9d8df23642b065f20465677b1dc7295b31cdb226cc5399903ec7b",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "274f7ea09a384e7cc157ff93ac99eb1eb128693baf843789816a683b140767bb",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

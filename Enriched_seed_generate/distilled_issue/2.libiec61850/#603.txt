@@ -1,0 +1,10 @@
+Number: 603
+
+Summarize:
+Since v1.6.2, `parseGooseMessage` in `src/goose/goose_receiver.c:1175` changed its size check from `<` to `<=`, so a complete GOOSE frame whose byte count exactly matches `headerLength + length` is rejected instead of accepted. This drops normal unpadded frames, including frames passed through `GooseReceiver_handleMessage`, before subscriber matching and reports `Invalid PDU size`. v1.6.1 accepted these frames. The observed effect is that live GOOSE subscription fails for realistic frames longer than the Ethernet minimum, while only padded frames with extra slack bytes still get through.
+
+Reproduce:
+Build and run the provided self-contained C program against libiec61850; no socket or special capabilities are needed. The program assembles a valid GOOSE frame in memory with one BOOLEAN dataset entry, total size 111 bytes, Ethernet header 14 bytes plus GOOSE Length 97, and no trailing padding, then creates a `GooseReceiver`, registers a subscriber/listener for `IEDLD0/LLN0$GO$gcb01`, and calls `GooseReceiver_handleMessage(receiver, frame, f)`. On affected versions the frame is rejected as `Invalid PDU size`, the listener never fires, and the program prints `RESULT: frame DROPPED (listener never fired)`; v1.6.1 accepted the same frame.
+
+Payload:
+6a 5b 8f 50 00 00 00 0a

@@ -1,0 +1,10 @@
+Number: 743
+
+Summarize:
+In libmodbus 3.1.10, the modbus_write_bits function reportedly has a heap-buffer-overflow caused by an out-of-bounds read of the input buffer when specially crafted input makes the nb (number of bits) parameter read past available data. The sample input provided is <00><01><02><00><80><04><01><01><2A>. The report says this produces undefined behavior and crashes, with ASan indicating a heap-buffer-overflow; the mention of other unintended behaviors is speculative.
+
+Reproduce:
+Reported environment: libmodbus 3.1.10 on Linux/Ubuntu 20.04 amd64. No specific example program, build flags, or command line is given, but the report says libmodbus debug mode was enabled and refers to ASan reports. To reproduce as documented: 1) Run a libmodbus instance with debug output enabled so it accepts a client connection and waits for an indication. 2) Provide the sample input <00><01><02><00><80><04><01><01><2A>. 3) Observe the debug output shown in the report: "Client connection accepted from 127.0.0.1.", "Waiting for an indication...", "ERROR Connection timed out: select", the sample input, and "Quit the loop: Connection timed out". Expected result: ASan reports a heap-buffer-overflow in modbus_write_bits due to an out-of-bounds read of the input buffer, and the function exhibits undefined behavior/crashes.
+
+Payload:
+00 01 02 00 80 04 01 01 2a

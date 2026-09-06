@@ -1,0 +1,10 @@
+Number: 738
+
+Summarize:
+In libmodbus-3.1.10, an intermittent crash is reported in `read_registers()` in `modbus.c` at line 1313, reached from `modbus_read_input_registers(ctx, 0, 7, reg)`. The failing statement is the loop that stores response data into `dest[i]`; the provided backtrace shows `dest=0x1` and inaccessible at that point. The report does not identify the root cause or a specific missing validation, although the reporter states the original `reg` array address looked valid in gdb. The documented trigger is reading 7 input registers starting at address 0 from the device, and the demonstrated impact is an intermittent process crash.
+
+Reproduce:
+Use libmodbus-3.1.10 and a program like the reporter's `pollExternalDevice.cpp`, where `main()` calls `modbus_read_input_registers(ctx, 0, 7, reg)` (reported at line 366) to read 7 input registers starting at address 0 from the device. Repeat the read operation; the report says it is "not reproduceble everytime" and "crashing sometimes." When it fails, inspect under gdb/debug mode: the backtrace shows frame `#0 read_registers` at `modbus.c:1313` on the `dest[i] = ...` assignment, with `dest=0x1`, and frame `#1 main()` at `pollExternalDevice.cpp:366`. No standalone PoC or exact command sequence is provided.
+
+Payload:
+04 00 00 00 07

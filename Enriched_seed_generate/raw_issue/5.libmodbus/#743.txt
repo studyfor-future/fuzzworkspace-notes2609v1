@@ -1,0 +1,25 @@
+issue #743
+heap-buffer-overflow in in modbus_write_bits
+libmodbus version
+libmodbus 3.1.10
+
+OS and/or distribution
+Linux, Ubuntu 20.04
+
+Environment
+amd64
+
+Description
+A heap-buffer-overflow was discovered in the modbus_write_bits function. This issue can be triggered when the function is fed with specially crafted input, which leads to out-of-bounds read and can potentially cause a crash or other unintended behaviors.
+
+Sample Input Causing Crash:
+<00><01><02><00><80><04><01><01><2A>
+
+Actual behavior if applicable
+The function modbus_write_bits exhibits undefined behavior and crashes when processing certain inputs where the nb (number of bits) parameter leads to an out-of-bounds read of the input buffer. This is evident from the ASan reports indicating a heap-buffer-overflow.
+
+libmodbus output with debug mode enabled
+Client connection accepted from 127.0.0.1.
+Waiting for an indication...
+ERROR Connection timed out: select
+<00><01><02><00><80><04><01><01><2A>Quit the loop: Connection timed out

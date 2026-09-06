@@ -1,0 +1,50 @@
+{
+  "seed_id": "bacnet-seed-013-r1",
+  "title": "BVLC Write-Broadcast-Distribution-Table with one entry",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write-Broadcast-Distribution-Table",
+  "purpose": "Strengthen BVLC-function coverage by including a non-empty BDT payload instead of a zero-length shell.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:operation-catalog:a4301b6fad30"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "bvlc-write-bdt-one-entry",
+      "hex": "8101000a0a000001ffff",
+      "byte_length": 10,
+      "sha256": "a876298586b466023e394cadc8faeff87dbde6e98327b037d66604502ec94b71"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP endpoint should recognize BACnet/IP BVLC framing and dispatch the Write-Broadcast-Distribution-Table function with one bounded table entry payload.",
+  "constraints_preserved": [
+    "BVLC type is 0x81.",
+    "BVLC function 0x01 is used for a BVLC function-only frame.",
+    "BVLC length 0x000a matches the 10-byte frame.",
+    "No NPDU or APDU bytes are invented for this BVLC-only seed."
+  ],
+  "issue_safety_notes": "This is a non-crashing structural coverage seed with a single small entry instead of any malformed BVLC replay.",
+  "sequence_sha256": "1e7977ea71695bfc0a4b79e1cdb6cb1d679b4f535cb6d46e96e07e55be522489",
+  "total_bytes": 10,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a876298586b466023e394cadc8faeff87dbde6e98327b037d66604502ec94b71",
+    "encoded_bytes": 10,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ]
+  }
+}

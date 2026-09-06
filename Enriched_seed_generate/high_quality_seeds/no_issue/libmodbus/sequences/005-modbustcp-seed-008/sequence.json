@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-008",
+  "title": "Function coverage for Write Multiple Coils",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Provide a valid packed-bit write request for function 0x0F.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:8b7e3446e51a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_multiple_coils_request",
+      "hex": "000900000008010f0001000801aa",
+      "byte_length": 14,
+      "sha256": "00f4fc3968bd34228470aab9885973a1045073bdc9561b19dbe05a37fc5e8bc2"
+    }
+  ],
+  "expected_behavior": "Server should parse the request as Write Multiple Coils starting at 0x0001, quantity 0x0008, byte count 0x01, with one packed coil data byte 0xAA.",
+  "constraints_preserved": [
+    "MBAP header present.",
+    "protocol_id is 0x0000.",
+    "length is 0x0008 for unit_id plus 7-byte function 0x0F PDU.",
+    "Function code 0x0F is used for Write Multiple Coils.",
+    "Quantity 0x0008 correctly maps to byte count 0x01.",
+    "Payload contains exactly one packed data byte."
+  ],
+  "issue_safety_notes": "Packed-bit structure is valid and compact, making it suitable as an initial mutation target.",
+  "sequence_sha256": "4e5a9c8f4d017ddcfcbc18fe70a422d48f0f4699641a890e3850879b24d46732",
+  "total_bytes": 14,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "00f4fc3968bd34228470aab9885973a1045073bdc9561b19dbe05a37fc5e8bc2",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

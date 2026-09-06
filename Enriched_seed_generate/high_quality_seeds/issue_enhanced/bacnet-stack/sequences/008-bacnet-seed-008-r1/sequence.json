@@ -1,0 +1,52 @@
+{
+  "seed_id": "bacnet-seed-008-r1",
+  "title": "AtomicReadFile record-mode style conservative request",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Exercise AtomicReadFile with a bounded record-mode-like body so mutations can later vary count fields near the historically sensitive record-count area.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "atomicreadfile-request",
+      "hex": "810a00110100000524060c040001000101",
+      "byte_length": 17,
+      "sha256": "7528885073feb1ec5e5d93477968a3136424daaca95427321c2313bb67e79a19"
+    }
+  ],
+  "expected_behavior": "The target should recognize confirmed service choice 0x06 and enter AtomicReadFile file-access decoding with a short bounded body.",
+  "constraints_preserved": [
+    "BVLC length 0x0011 matches the 17-byte frame.",
+    "APDU uses confirmed-request type.",
+    "Service choice 0x06 matches AtomicReadFile.",
+    "Outer BVLC and NPDU fields follow documented layout."
+  ],
+  "issue_safety_notes": "The seed omits any excessively large RecordCount and is a safe structural analogue rather than the overflow-triggering request pattern.",
+  "sequence_sha256": "ca0f7c38ea6c0b4db93c4ca4ee8410adc67cd432c382708fb8b2f368e710adff",
+  "total_bytes": 17,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7528885073feb1ec5e5d93477968a3136424daaca95427321c2313bb67e79a19",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

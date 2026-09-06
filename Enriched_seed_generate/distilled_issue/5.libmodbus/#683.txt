@@ -1,0 +1,17 @@
+Number: 683
+
+Summarize:
+The report describes a heap-based buffer overflow in `read_io_status` in `src/modbus.c`. It was observed when the `tests/unit-test-client` utility executed `modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB + 1, tab_rp_bits)` at `tests/unit-test-client.c:363` and received a mutated Read Coils response. The normal response `001100000006ff0101300026` was changed by modifying the Modbus ADU `unitId` from `0xff` to `0x7c`, producing `0011000000067c0101300023`. Under AddressSanitizer, this caused a size-1 heap write in `read_io_status` at `src/modbus.c:1207`, reached from `modbus_read_bits`, and the client crashed with a reported `heap-buffer-overflow`.
+
+Reproduce:
+1. Build with ASan using the documented commands:
+`CC=clang CXX=clang++ CFLAGS="-g -fsanitize=address" CXXFLAGS="-g -fsanitize=address" ./autogen.sh`
+`CC=clang CXX=clang++ CFLAGS="-g -fsanitize=address" CXXFLAGS="-g -fsanitize=address" ./configure && make`
+2. Launch `tests/unit-test-server`.
+3. Exercise the `tests/unit-test-client` path that reaches line 363:
+`rc = modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB + 1, tab_rp_bits);`
+4. For that request, use the normal Read Coils response `001100000006ff0101300026`, then mutate only the Modbus ADU `unitId` from `0xff` to `0x7c`, producing `0011000000067c0101300023`.
+5. With the mutated packet, `tests/unit-test-client` crashes. The reported stderr includes `ERROR Connection timed out: select`, `ERROR Illegal data address`, and an AddressSanitizer `heap-buffer-overflow` in `read_io_status` (`src/modbus.c:1207`), reached from `modbus_read_bits` and `tests/unit-test-client.c:363`.
+
+Payload:
+00 11 00 00 00 06 7c 01 01 30 00 23

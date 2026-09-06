@@ -1,0 +1,50 @@
+{
+  "seed_id": "iec61850-seed-005",
+  "title": "Wrapped Unconfirmed-PDU seed",
+  "strategy": "function_code_coverage",
+  "target_operation": "Unconfirmed-PDU",
+  "purpose": "Replace the weak bare tag-only PDU with an ACSE/UserInformation-carried Unconfirmed-PDU so the parser reaches the MMS unconfirmed entry through a realistic wrapper.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:section-message-temp:35380083cd47",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "acse_wrapped_unconfirmed_pdu",
+      "hex": "600f300da003020101be060404a30000",
+      "byte_length": 16,
+      "sha256": "7c58874b38638398f50b38754349c4a3995cd58f271dfcaeadab3584510c240d"
+    }
+  ],
+  "expected_behavior": "A receiver should accept the ACSE wrapper, reach the MMS layer, and route on tag 0xa3 to unconfirmed-PDU handling.",
+  "constraints_preserved": [
+    "Uses documented ACSE message type 0x60.",
+    "Uses MMS PDU tag 0xa3 for Unconfirmed-PDU.",
+    "All BER lengths are definite and matched to content.",
+    "Maintains a complete wrapper instead of a raw tag-only fragment."
+  ],
+  "issue_safety_notes": "No issue-based shaping is used; the body stays minimal and length-consistent.",
+  "sequence_sha256": "1b4352da7d8c75d1a7c5065ad1ff6d5258dfccfc7495bee96c564ef39278c545",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7c58874b38638398f50b38754349c4a3995cd58f271dfcaeadab3584510c240d",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

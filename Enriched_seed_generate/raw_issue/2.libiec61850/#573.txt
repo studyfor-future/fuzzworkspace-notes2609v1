@@ -1,0 +1,76 @@
+issue #573
+
+Hi, there is a potential bug in LogicalDevice_getLogicalNode reachable by providing a long name.
+
+Description
+Inside LogicalDevice_getLogicalNode it calls ModelNode_getChild with the same name parameter.
+
+In that function there is an unsafe copy into a fixed-size stack buffer which can overflow with a long name, e.g. 100 x "A" followed by "()".
+
+These are likely not valid names according to the underlying protocol, but the library could be easily hardened to avoid memory corruption in the case that it receives such a malformed name.
+
+Specifically, this pattern is unsafe:
+
+libiec61850/src/iec61850/server/model/model.c
+
+Lines 762 to 775 in a139611
+
+ char nameCopy[65]; 
+  
+ const char* pos = name; 
+  
+ int cpyIdx = 0; 
+  
+ while (pos < arraySeparator) 
+ { 
+     nameCopy[cpyIdx] = *pos; 
+     cpyIdx++; 
+     pos++; 
+ } 
+  
+ nameCopy[cpyIdx] = 0; 
+A safer replacement for this snippet could be:
+
+char nameCopy[65];
+
+const char* pos = name;
+size_t cpyIdx = 0;
+size_t max = sizeof(nameCopy) - 1;
+
+while (pos < arraySeparator && cpyIdx < max)
+{
+    nameCopy[cpyIdx++] = *pos++;
+}
+
+nameCopy[cpyIdx] = '\0';
+There is a similar unbounded write in LogicalDevice_getChildByMmsVariableName.
+
+POC
+The following testcase demonstrates the bug:
+
+testcase.cpp
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+extern "C" {
+#include "/fuzz/install/include/libiec61850/iec61850_dynamic_model.h"
+}
+extern "C" {
+#include "/fuzz/install/include/libiec61850/iec61850_model.h"
+}
+int main(){
+    // Build minimal dynamic model
+    IedModel* model = IedModel_create("M");
+    if (!model) return 0;
+    LogicalDevice* ld = LogicalDevice_create("LD1", model);
+    if (!ld) return 0;
+
+    std::string lnName(100, 'A');
+    lnName.push_back('(');
+    lnName.push_back(')');
+    // Crash in ModelNode_getChild (model.c) due to unchecked copy into nameCopy
+    (void) LogicalDevice_getLogicalNode(ld, lnName.c_str());
+    return 0;
+}

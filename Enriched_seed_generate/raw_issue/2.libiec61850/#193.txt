@@ -1,0 +1,38 @@
+issue: #193
+
+Function MmsValue_newOctetString didn't check argument maxSize if it's negative. If it is a negative number, then argument which malloc will use later is a huge number. For example -1 would be interpreted as 0xffffffff on 32 bit arch or 0xffffffffffffffff on 64 bit arch.
+
+poc:
+8989 f189 8989 ff9d ffff 8994 8b96 df40 893f 8989 af89
+
+steps to reproduce:
+
+compile libiec61850 with compiler flag
+CFLAGS=-fsanitize=address -g
+CXXFLAGS=-fsanitize=address -g
+compile test.c in poc.zip
+run: ./test < poc in gdb
+result in gdb
+
+gdb-peda$ r < poc
+Starting program: /home/casper/targets/struct/libiec61850/dbg/fuzzrun/test < poc
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+=================================================================
+==123865==ERROR: AddressSanitizer: requested allocation size 0xffffffffffffff94 (0x798 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)
+[New process 124882]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+process 124882 is executing new program: /home/casper/fuzz/fuzzdeps/llvm9/bin/llvm-symbolizer
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+    #0 0x492c12 in calloc /tmp/final/llvm.src/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:154:3
+    #1 0x7ffff7b6f15c in Memory_calloc /home/casper/targets/struct/libiec61850/dbg/SRC/hal/memory/lib_memory.c:59:20
+    #2 0x7ffff7989679 in MmsValue_newOctetString /home/casper/targets/struct/libiec61850/dbg/SRC/src/mms/iso_mms/common/mms_value.c:1334:46
+    #3 0x7ffff7a0082b in MmsValue_decodeMmsData /home/casper/targets/struct/libiec61850/dbg/SRC/src/mms/iso_mms/server/mms_access_result.c:253:17
+    #4 0x4c21df in main /home/casper/targets/struct/libiec61850/dbg/../fuzzsrc/fuzzmmsdata.c:12:21
+    #5 0x7ffff6969b96 in __libc_start_main /build/glibc-OTsEL5/glibc-2.27/csu/../csu/libc-start.c:310
+
+==123865==HINT: if you don't care about these errors you may set allocator_may_return_null=1
+SUMMARY: AddressSanitizer: allocation-size-too-big /tmp/final/llvm.src/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:154:3 in calloc
+==123865==ABORTING

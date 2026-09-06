@@ -1,0 +1,53 @@
+{
+  "seed_id": "modbustcp-seed-003",
+  "title": "Boundary-adjacent Read File Record",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read File Record",
+  "purpose": "Drive grouped file-record parsing with one valid subrequest and corrected MBAP length.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_file_record_single_group_request",
+      "hex": "00040000000a01140706000100000001",
+      "byte_length": 16,
+      "sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Read File Record request with one 7-byte subrequest group and either return record data or an exception if unsupported.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 0009 for unit_id plus 8-byte PDU",
+    "function code is 14",
+    "byte count 07 matches exactly one 7-byte file-record subrequest",
+    "subrequest starts with reference type 06 followed by file number, record number, and record length",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Valid grouped structure only; avoids malformed length combinations.",
+  "sequence_sha256": "6d8afee8dd529addfa39d003c475f705e33f359bc28be01ddb9a3b76f007a1c8",
+  "total_bytes": 16,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

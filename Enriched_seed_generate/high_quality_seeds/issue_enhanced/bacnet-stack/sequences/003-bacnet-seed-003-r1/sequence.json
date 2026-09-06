@@ -1,0 +1,54 @@
+{
+  "seed_id": "bacnet-seed-003-r1",
+  "title": "Boundary-adjacent AtomicWriteFile request",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Exercise AtomicWriteFile with an explicit short file-access body containing bounded count-like and data-like bytes so later mutations can target stream or record mode edges.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "atomicwritefile-request",
+      "hex": "810a00170100000520070c060000010e0000013e414243",
+      "byte_length": 23,
+      "sha256": "7851ef26023538f38348d792a47d4a3c07195f661eb3f0193d54dbd974c10ad4"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP peer should dispatch the confirmed service choice 0x07 and enter AtomicWriteFile decode logic with a short, bounded payload that is safe for mutation.",
+  "constraints_preserved": [
+    "BVLC type/function are 0x81/0x0a.",
+    "BVLC length 0x0018 matches the 24-byte frame.",
+    "NPDU version/control are 0x01/0x00.",
+    "Confirmed service choice 0x07 matches AtomicWriteFile."
+  ],
+  "issue_safety_notes": "This avoids the exact file replacement and oversized record interactions from historical file-write issues while preserving the file-write parser entry point.",
+  "sequence_sha256": "779db63abc7fb2f6b3d5bb442c583e772ab51ca8db7eef497f72d205957fbb52",
+  "total_bytes": 23,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7851ef26023538f38348d792a47d4a3c07195f661eb3f0193d54dbd974c10ad4",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ]
+  }
+}

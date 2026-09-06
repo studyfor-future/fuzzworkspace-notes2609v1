@@ -1,0 +1,85 @@
+{
+  "seed_id": "bacnet-seed-018-r1",
+  "title": "Additional confirmed-service diversity set",
+  "strategy": "function_code_coverage",
+  "target_operation": "ReadRange/SubscribeCOVProperty/ReinitializeDevice",
+  "purpose": "Close remaining coverage gaps by adding three distinct confirmed services with compact bounded payloads that reach different service dispatchers.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "readrange-request",
+      "hex": "810a001101000005801a0c02000001194b",
+      "byte_length": 17,
+      "sha256": "0af852a1ed6bc8271b7ae603ebbdeddbca9bbd88ab5c8d1a4e63707715ad4403"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "subscribecovproperty-request",
+      "hex": "810a001101000005811c0c020000011921",
+      "byte_length": 17,
+      "sha256": "4554b092183d2b1a0772ccefefb9e806c3a9f7e40b1e700db3a8b0fa152c6ddb"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "reinitializedevice-request",
+      "hex": "810a000c0100000182140000",
+      "byte_length": 12,
+      "sha256": "ee0b5cf5ac864a200567cd9113ef439b2059a1339d256dc19b45cdd1aa4ff948"
+    }
+  ],
+  "expected_behavior": "These frames should enter three separate confirmed-service dispatch paths: ReadRange, SubscribeCOVProperty, and ReinitializeDevice, providing broader initial corpus variety.",
+  "constraints_preserved": [
+    "All frames preserve documented BVLC and NPDU layering.",
+    "Lengths are self-consistent at 0x0012, 0x0012, and 0x000d.",
+    "Service choices 0x1a, 0x1c, and 0x14 match ReadRange, SubscribeCOVProperty, and ReinitializeDevice.",
+    "All APDUs use confirmed-request PDU type."
+  ],
+  "issue_safety_notes": "These are coverage-oriented valid entry seeds and are not derived from any exact crash payload.",
+  "sequence_sha256": "316ece4a4da343346b1e363b4b1764f1e548714058a403bfb512f6bce51e8e53",
+  "total_bytes": 46,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "aa0c4860941ce77a11776dc3b42c5ffc8b6010fa542ca20215bf7186eb3de1f0",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 17,
+        "payload_offset": 17,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 34,
+        "payload_offset": 34,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

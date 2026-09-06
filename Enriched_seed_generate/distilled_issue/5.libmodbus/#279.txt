@@ -1,0 +1,21 @@
+Number: 279
+
+Summarize:
+In the reported loopback test, repeated use of `modbus_write_registers()` does not behave consistently. The first call completes normally, but the second call times out while waiting for the write confirmation. The debug log shows the first write request (`[02][10]...`) succeeds and is followed by a successful read/confirmation exchange, while the second write request (`[02][10]...`) triggers `ERROR Connection timed out: select`, and a subsequent read request also times out. No affected version or root cause is stated in the report.
+
+Reproduce:
+Use the reporter's loopback test setup on serial port `/dev/ttyS1` at `9600` baud with `(N, 8, 1)`. Run:
+
+`./loopbackTest -p /dev/ttyS1 -a 2 -s increment`
+
+Observed sequence from the report:
+1. Start the program; it opens `/dev/ttyS1`.
+2. On the first try, the program builds and sends a Modbus write request, waits for confirmation, then performs a read/confirmation exchange successfully. The output ends with `Packet Sent: 1, Packet Received: 1, Good Packets: 1, Bad Packets: 0`.
+3. On the second try, the program builds another write request and waits for confirmation.
+4. The expected result is the reported failure: `ERROR Connection timed out: select`.
+5. The following read request also waits for confirmation and again reports `ERROR Connection timed out: select`, ending with `Connection timed out`.
+
+Payload:
+02 10 a0 48 00 04 08 20 00 00 00 00 02 4e e1 c3 0a
+02 03 a0 48 00 04 e6 2c
+02 10 a0 48 00 05 0a 00 20 00 00 02 04 7b 83 64 01 72 d7

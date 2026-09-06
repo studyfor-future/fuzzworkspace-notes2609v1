@@ -1,0 +1,10 @@
+Number: 175
+
+Summarize:
+lib60870 v2.1.1 contains a NULL pointer dereference in `CS101_ASDU_getCOT()` in `src/iec60870/cs101/cs101_asdu.c`. In the reported case, the `self` parameter is NULL and the function accesses `self->asdu[2]`, which results in a segmentation error. The document ties the crash to the supplied PoC input bytes.
+
+Reproduce:
+The document does not provide a build configuration, target example/program, or execution commands. It supplies only this PoC input: `6805 1f00 0583 8068 0800 0000 0000 0000 8068 e002`. The documented result is a segmentation error in `CS101_ASDU_getCOT()` when `self` is NULL and `self->asdu[2]` is accessed.
+
+Payload:
+68 05 1f 00 05 83 80 68 08 00 00 00 00 00 00 00 80 68 e0 02

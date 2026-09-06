@@ -1,0 +1,66 @@
+{
+  "seed_id": "iec61850-seed-011",
+  "title": "Confirmed request and response with invoke continuity",
+  "strategy": "field_interaction",
+  "target_operation": "Confirmed-Response-PDU",
+  "purpose": "Increase stateful realism by pairing a confirmed request with a confirmed response that reuses the same small invoke-id-like integer bytes.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "confirmed_request_read_invoke_1",
+      "hex": "6010300ea003020101be070405a004020101",
+      "byte_length": 18,
+      "sha256": "c6456245dc263793fc8a8a188680d3a0627c74810d2ca10243c569cd970c896a"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "confirmed_response_invoke_1",
+      "hex": "6111300fa003020101be080406a103020101",
+      "byte_length": 18,
+      "sha256": "fadbff329500383be4ab8a8988557a7b3605af832c31a28cabec24a5e017f822"
+    }
+  ],
+  "expected_behavior": "The parser should accept both wrapped messages, route the first to confirmed-request service [4] Read, and route the second to confirmed-response parsing with matching small identifier bytes.",
+  "constraints_preserved": [
+    "Request uses MMS tag 0xa0 with confirmed service tag [4] Read.",
+    "Response uses MMS tag 0xa1 Confirmed-Response-PDU.",
+    "ACSE wrapper types 0x60 and 0x61 are preserved.",
+    "Definite BER lengths remain self-consistent.",
+    "A small integer value is reused across the pair to support field-interaction mutations."
+  ],
+  "issue_safety_notes": "This is a benign request/response analogue for stateful coverage, not an issue-enhanced exchange.",
+  "sequence_sha256": "27ebf54384f7d66f75be692453abe8de9ff756a3640010dddbcc5fe209a48a9d",
+  "total_bytes": 36,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "94423736ebb5eed302bc22c5d160a77960fafd4500567548fb33e4182b6f47a9",
+    "encoded_bytes": 36,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

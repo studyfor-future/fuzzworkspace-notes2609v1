@@ -1,0 +1,54 @@
+issue #837
+
+Description of bug
+modbus_reply() reads req[offset+1] and req[offset+2] unconditionally to compute the address. For function codes that do not include an address (for example MODBUS_FC_READ_EXCEPTION_STATUS 0x07 and MODBUS_FC_REPORT_SLAVE_ID 0x11), a valid request can be only MBAP header + function code. When the server reads only 8 bytes into a small buffer (MBAP + function), modbus_reply() reads past the end of the buffer, triggering an out-of-bounds read on the stack. This is remotely triggerable as a Modbus TCP client can send a minimal-length request.
+
+Affected component
+src/modbus.c (modbus_reply)
+
+PoC server
+
+#include "modbus.h"
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+int main(void)
+{
+    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int enable = 1;
+    setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &enable,
+sizeof(enable));
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = htons(1502);
+
+    if (bind(listen_fd, (struct sockaddr *)&addr, sizeof(addr)) !=
+0) return 1;
+    if (listen(listen_fd, 1) != 0) return 1;
+
+    int client_fd = accept(listen_fd, NULL, NULL);
+    if (client_fd < 0) return 1;
+
+    uint8_t req[8];
+    ssize_t n = recv(client_fd, req, sizeof(req), MSG_WAITALL);
+    if (n != (ssize_t)sizeof(req)) return 1;
+
+    modbus_t *ctx = modbus_new_tcp("127.0.0.1", 1502);
+    modbus_set_socket(ctx, client_fd);
+
+    modbus_mapping_t *mapping = modbus_mapping_new(8, 0, 0, 0);
+    modbus_reply(ctx, req, (int)n, mapping);
+
+    modbus_mapping_free(mapping);
+    modbus_free(ctx);
+    close(client_fd);
+    close(listen_fd);
+    return 0;
+}

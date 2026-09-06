@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-017",
+  "title": "Read Coils minimal valid request",
+  "strategy": "function_code_coverage",
+  "target_operation": "Read Coils",
+  "purpose": "Add simple packed-status read coverage for function 0x01 with one-coil quantity.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:8b7e3446e51a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_coils_request",
+      "hex": "002a00000006010100000001",
+      "byte_length": 12,
+      "sha256": "082a4799e19837755cb2f56acd4c9794d5f673aca6ba650cc4591e7933fe45d2"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Read Coils request for one coil at address 0 and return packed coil status or an exception.",
+  "constraints_preserved": [
+    "MBAP header included",
+    "protocol_id is 0000",
+    "length is 0006 for unit_id plus 5-byte PDU",
+    "function code is 01",
+    "request body is starting address then quantity of coils",
+    "quantity is nonzero and minimal",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Simple canonical read seed with no issue replay.",
+  "sequence_sha256": "b89127314e9d9afafd4031ef04d369637b96b04bbd08f06e59493f5dbdefb7fd",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "082a4799e19837755cb2f56acd4c9794d5f673aca6ba650cc4591e7933fe45d2",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

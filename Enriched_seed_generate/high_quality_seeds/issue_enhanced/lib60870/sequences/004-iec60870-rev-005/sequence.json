@@ -1,0 +1,53 @@
+{
+  "seed_id": "iec60870-rev-005",
+  "title": "TypeID 104 C_TS_NA_1 safe single-object analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "C_TS_NA_1",
+  "purpose": "Stay close to the documented GHSA parser path by using a valid CS104 I-frame for TypeID 104 with VSQ count 1 and a complete object body.",
+  "evidence_ids": [
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:13ba793bc1c8",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:operation-catalog:7130d97792f3",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cs104_i_frame_c_ts_na_1_single_object_safe",
+      "hex": "680e0000000068010600010000000080",
+      "byte_length": 16,
+      "sha256": "74cb5a28ffda7c942ff43d25e0b46a260e349240fc5f57e2e1c23612d0987f9a"
+    }
+  ],
+  "expected_behavior": "An implementation should parse a well-formed TypeID 104 test command APDU with one object and a complete body, reaching the same general parser family implicated by the issue without overrunning memory.",
+  "constraints_preserved": [
+    "Start byte 0x68 and explicit APDU length 0x0e are correct",
+    "Four APCI control bytes precede the ASDU",
+    "TypeID 104 is documented as C_TS_NA_1",
+    "VSQ is one-object non-sequence form, not oversized",
+    "ASDU includes 2-octet CoT, 2-octet CA, and 3-octet IOA",
+    "A trailing one-byte test-command payload is present to keep the object complete"
+  ],
+  "issue_safety_notes": "This is not the published GHSA payload and specifically avoids the dangerous oversized VSQ/body mismatch.",
+  "sequence_sha256": "6170d6423e5247e0688759c3c01e4b5af8f05f4cc6d165651403ff726f9232ae",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "74cb5a28ffda7c942ff43d25e0b46a260e349240fc5f57e2e1c23612d0987f9a",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

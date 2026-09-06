@@ -1,0 +1,64 @@
+{
+  "seed_id": "iec61850-seed-014",
+  "title": "Conclude request and response closing pair",
+  "strategy": "stateful_valid",
+  "target_operation": "Conclude-Response-PDU",
+  "purpose": "Strengthen conclude coverage by replacing an isolated conclude-response fragment with a simple request/response closing exchange using documented ACSE and MMS conclude tags.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "rlrq_like_with_conclude_request_pdu",
+      "hex": "620f300da003020101be060404ab0000",
+      "byte_length": 16,
+      "sha256": "c0e9529e6a574b6b587c861cef1c10f1c8299480a72f39c3d98575d60bf9b9c3"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "rlre_like_with_conclude_response_pdu",
+      "hex": "630f300da003020101be060404ac0000",
+      "byte_length": 16,
+      "sha256": "a9fefbd6d9773c9beb38413115ffbd029280a73697eed8adf1547dc5dfb16238"
+    }
+  ],
+  "expected_behavior": "A parser should accept the release-style ACSE message types and route the embedded MMS bytes to Conclude-Request-PDU and Conclude-Response-PDU handlers respectively.",
+  "constraints_preserved": [
+    "Uses documented ACSE message types 0x62 RLRQ and 0x63 RLRE.",
+    "Uses documented MMS PDU tags 0xab Conclude-Request-PDU and 0xac Conclude-Response-PDU.",
+    "Both messages keep definite BER lengths and consistent wrappers.",
+    "This is a complete closing pair rather than a standalone response-only fragment."
+  ],
+  "issue_safety_notes": "Session-closing coverage only; no abort or malformed termination pattern is introduced.",
+  "sequence_sha256": "2b2a34369920b277faa6e77af4fde37d7011fcd9a80e6444d72385116093b883",
+  "total_bytes": 32,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5e422b710d486a08a4b44fe53ce88b33ad87cb5804f2e6788a3186a0cab3cf61",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

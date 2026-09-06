@@ -1,0 +1,23 @@
+issue #612
+Untrusted Pointer Dereference in modbus_reply() at modbus.c:1001
+
+Description
+Untrusted Pointer Dereference in modbus_reply() at modbus.c:1001
+
+Expected behaviour
+no crash.
+
+Actual behaviour
+Program received signal SIGSEGV, Segmentation fault.
+
+Steps to reproduce the behavior (commands or source code)
+libmodbus/tests/unit-test-server.c
+
+./unit-test-server
+<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><6A><00><01><02><D7><11>
+
+libmodbus output with debug mode enabled
+The client connection from 127.0.0.1 is accepted
+Waiting for an indication...
+<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><6A><00><01><02><D7><11>
+[1]    961170 segmentation fault  ./unit-test-server

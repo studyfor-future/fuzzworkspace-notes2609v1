@@ -1,0 +1,10 @@
+Number: 200
+
+Summarize:
+The report states that in libiec61850, `MMS_BIT_STRING` parsing in `MmsValue_decodeMmsData` (`src/mms/iso_mms/server/mms_access_result.c`) does not check `bufPos` before copying from `buffer + bufPos + 1`. A crafted input that makes `bufPos` larger reaches this copy path. In the provided run, AddressSanitizer reports a heap-buffer-overflow: `__asan_memcpy` performs a write of size 5 just past a 3-byte heap allocation, with the stack trace pointing to `MmsValue_decodeMmsData` at lines 231 and 200.
+
+Reproduce:
+Use the AddressSanitizer build shown in the report with the target `/home/casper/targets/struct/libiec61850/afl/fuzzrun/fuzzmmsdata`. Create a file `poc` from the reported hex sequence `a20c 8406 1600 0002 009d 8000 8000 006b`. With that program loaded in `gdb-peda`, run it as shown with stdin redirected from the PoC: `r < ./poc`. Expected result: AddressSanitizer aborts with `ERROR: AddressSanitizer: heap-buffer-overflow`, including `WRITE of size 5` in `__asan_memcpy`; the stack trace includes `MmsValue_decodeMmsData` in `src/mms/iso_mms/server/mms_access_result.c`.
+
+Payload:
+a2 0c 84 06 16 00 00 02 00 9d 80 00 80 00 00 6b

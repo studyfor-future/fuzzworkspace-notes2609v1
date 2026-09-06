@@ -1,0 +1,10 @@
+Number: GHSA-G3W7-X5RX-83XM
+
+Summarize:
+In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can make TestCommand_getFromBuffer read 1 byte past the end of the heap-allocated message buffer. The immediate cause is that TestCommand_getFromBuffer calls InformationObject_ParseObjectAddress(msg, startIndex), and that helper has no msgSize parameter, so startIndex cannot be checked against the end of the buffer. The demonstrated impact is a heap out-of-bounds read detected under AddressSanitizer. The document additionally argues that roughly 150 *_getFromBuffer functions in cs101_information_objects.c share the same structural limitation, but the demonstrated crash here is in TestCommand_getFromBuffer.
+
+Reproduce:
+Prerequisite/build setup: lib60870-C v2.4.0 fuzzed with LibFuzzer and AddressSanitizer. Provide the parser with a crafted IEC 60870-5-104 I-frame targeting TypeID 104 (C_TS_NA_1) whose VSQ/object count claims more objects than the ASDU body actually contains. When parsing reaches TestCommand_getFromBuffer, it calls InformationObject_ParseObjectAddress(msg, startIndex); because no message-size check is available there, startIndex advances past the heap allocation. Expected result: AddressSanitizer reports a 1-byte heap-buffer-over-read. The source also shows a 16-byte PoC hex string, 68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00, but notes uncertainty about the byte-level TypeID/offset interpretation.
+
+Payload:
+68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00

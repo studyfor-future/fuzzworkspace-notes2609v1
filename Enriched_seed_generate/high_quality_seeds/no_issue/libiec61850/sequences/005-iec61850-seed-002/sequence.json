@@ -1,0 +1,81 @@
+{
+  "seed_id": "iec61850-seed-002",
+  "title": "Association setup then Identify request",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Exercise a deeper stateful path by sending an AARQ-like ACSE wrapper carrying Initiate-Request-PDU, a matching AARE-like response carrying Initiate-Response-PDU, then a follow-on Confirmed-Request-PDU for Identify.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "aarq_like_with_initiate_request_pdu",
+      "hex": "6010300ea003020101be070405a803020100",
+      "byte_length": 18,
+      "sha256": "9acdfec9c4687fece0ac1cdf764bd8ce42f4d0d9c50e92a6d5fa9251898db08a"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "aare_like_with_initiate_response_pdu",
+      "hex": "6110300ea003020101be070405a903020100",
+      "byte_length": 18,
+      "sha256": "e8c3a7b4a4b724f067ad9ec0aee88ac9ca1a64ccb83a95feac9c9574827526d0"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "confirmed_request_identify_after_setup",
+      "hex": "600f300da003020101be060404a002020102",
+      "byte_length": 18,
+      "sha256": "e44f135842e89459a6c742447aa662c639419e87b2b43965cdfeeb69892a7291"
+    }
+  ],
+  "expected_behavior": "The target should parse the setup wrappers, encounter MMS initiate request and response tags, and then accept a small confirmed request in a post-setup parser state.",
+  "constraints_preserved": [
+    "Uses documented ACSE message types 0x60 and 0x61.",
+    "Uses documented MMS PDU tags 0xa8 and 0xa9 for initiate request and response.",
+    "Follow-on message uses MMS Confirmed-Request-PDU tag 0xa0.",
+    "Confirmed service [2] Identify is preserved in the final message.",
+    "Nested BER lengths remain consistent across all three messages."
+  ],
+  "issue_safety_notes": "This sequence is only a conservative stateful analogue for parser reach. No unsupported semantic or issue claim is made.",
+  "sequence_sha256": "5145eb447f9a2002c32bafadd42bd7984b2db8a37a524fd089d219b6d9852c8c",
+  "total_bytes": 54,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "efb45b18fc4c1a611a339247b3727ba7d172a58ad392c780bcd14a5df81367a5",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

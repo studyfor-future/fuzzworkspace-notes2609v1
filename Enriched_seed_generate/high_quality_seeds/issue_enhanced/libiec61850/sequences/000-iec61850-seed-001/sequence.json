@@ -1,0 +1,56 @@
+{
+  "seed_id": "iec61850-seed-001",
+  "title": "Canonical valid GetNameList over framed MMS transport",
+  "strategy": "baseline_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Provide a compact framed confirmed request using documented MMS Confirmed-Request-PDU and confirmed service tag [1] GetNameList with consistent TPKT and BER nesting.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+    "protocol_format:iec61850:section-message-temp:35380083cd47",
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_aarq_with_confirmed_getnamelist",
+      "hex": "0300002911e00000000100c1020000c2020001c0010aa00f0201010607040001010101be0404023000",
+      "byte_length": 41,
+      "sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1"
+    }
+  ],
+  "expected_behavior": "A receiver should accept TPKT and COTP CR framing, parse an AARQ-like ACSE wrapper, reach user-information, and then dispatch the embedded MMS Confirmed-Request-PDU to the GetNameList service path.",
+  "constraints_preserved": [
+    "TPKT version is 0x03 and total length 0x0027 matches 39 bytes.",
+    "COTP CR length byte 0x11 matches the 17 bytes following it before ACSE content.",
+    "ACSE message type uses documented 0x60 AARQ.",
+    "ACSE context identifier is encoded as 02 01 01.",
+    "User-information tag 0xbe uses definite BER length.",
+    "Embedded MMS PDU tag is 0xa0 and confirmed service tag is [1] encoded as 0xa1.",
+    "All BER and transport lengths are self-consistent."
+  ],
+  "issue_safety_notes": "This does not reproduce any known crash payload and avoids malformed or oversized lengths. It is a conservative framed request seed.",
+  "sequence_sha256": "e136bd55ce3222c97acd47cf05956110f3dd47b8e1ec6c4839250adfd91c1106",
+  "total_bytes": 41,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1",
+    "encoded_bytes": 41,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 41,
+        "frame_length": 41
+      }
+    ]
+  }
+}

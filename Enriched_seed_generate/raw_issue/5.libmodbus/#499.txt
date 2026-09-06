@@ -1,0 +1,30 @@
+issue #499
+A heap-use-after-free bug find in unit-test-server.c (V3.1.6)
+
+Hello, I found a heap-use-after-free bug in stephane/libmodbus/unit-test-server.c.
+
+Below are Steps Followed to Reproduce Crash
+I'm using Ubuntu16.04. Download latest source code from: stephane/libmodbus/unit-test-server.c, compiled with clang and ASANexport CFLAGS="-g -fsanitize=address" LDFLAGS="-fsanitize=address"before make. Then I fuzz it with afl, in order to make your program runnable with afl, I use peeny to reload system's socket function by adding prefix LD_PRELOAD=/preeny/x86_64-linux-gnu/desock.so. Also I made few adjustments in your program, more specifically, I modified the loop for(;;) into if(1), and the break/continue statements within the loop, used to break the for(;;) was changed into goto, which allows it jumps out the code block as break/continue did.(Same modification as #498)
+
+Input Data
+<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>
+
+Crash Output
+
+The client connection from 0.0.0.0 is accepted
+Waiting for an indication...
+<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>
+=================================================================
+==13121==ERROR: AddressSanitizer: heap-use-after-free on address 0x606000000020 at pc 0x7fbda7fc4952 bp 0x7ffcd407b250 sp 0x7ffcd407b248
+WRITE of size 2 at 0x606000000020 thread T0                                                                                                                                                                            #0 0x7fbda7fc4951 in modbus_reply /root/temp/iec/untest/libmodbus/src/modbus.c:980:46
+    #1 0x511ddd in main /root/temp/iec/untest/libmodbus/tests/unit-test-server.c:183:14
+    #2 0x7fbda70c382f in __libc_start_main /build/glibc-LK5gWL/glibc-2.23/csu/../csu/libc-start.c:291
+    #3 0x41a168 in _start (/root/temp/iec/untest/libmodbus/tests/unit-test-server+0x41a168)
+
+0x606000000020 is located 0 bytes inside of 52-byte region [0x606000000020,0x606000000054)                                                                                                                         freed by thread T0 here:                                                                                                                                                                                               #0 0x4daaa0 in __interceptor_cfree.localalias.0 (/root/temp/iec/untest/libmodbus/tests/unit-test-server+0x4daaa0)
+    #1 0x7fbda7684654 in _dlerror_run /build/glibc-LK5gWL/glibc-2.23/dlfcn/dlerror.c:159
+
+previously allocated by thread T0 here:                                                                                                                                                                                #0 0x4dac68 in __interceptor_malloc (/root/temp/iec/untest/libmodbus/tests/unit-test-server+0x4dac68)
+    #1 0x7fbda8421340 in _dl_signal_error /build/glibc-LK5gWL/glibc-2.23/elf/dl-error.c:90
+
+SUMMARY: AddressSanitizer: heap-use-after-free /root/temp/iec/untest/libmodbus/src/modbus.c:980:46 in modbus_reply

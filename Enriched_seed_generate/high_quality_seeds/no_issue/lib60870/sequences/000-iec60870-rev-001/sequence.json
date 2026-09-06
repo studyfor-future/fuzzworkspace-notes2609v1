@@ -1,0 +1,59 @@
+{
+  "seed_id": "iec60870-rev-001",
+  "title": "Canonical 104-framed C_SC_NA_1 activation execute",
+  "strategy": "baseline_valid",
+  "target_operation": "C_SC_NA_1",
+  "purpose": "Provide a compact canonical IEC 60870-5-104 I-format APDU carrying a single command activation with one information object and a minimal execute-form qualifier.",
+  "evidence_ids": [
+    "protocol_format:iec60870:format-overview:aa7f710118bf",
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:1a7398f08c97",
+    "function_code:function:function-text:bcdc884a69d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "iec104_i_format_c_sc_na_1_activation_execute",
+      "hex": "680e000000002d010600010001000001",
+      "byte_length": 16,
+      "sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18"
+    }
+  ],
+  "expected_behavior": "A 104-capable parser should accept the APDU framing, parse a one-object C_SC_NA_1 ASDU, and dispatch it as an activation-style single command with a minimal qualifier.",
+  "constraints_preserved": [
+    "APDU start byte is 0x68 as documented",
+    "APDU length 0x0f matches the 15 bytes following the length byte",
+    "ASDU field order is type_id, vsq, cause_of_transmission, common_address, information_object_address",
+    "Type_id 45 is used for C_SC_NA_1",
+    "VSQ count is 1 with sequence flag clear",
+    "Cause of transmission uses value 6 activation with two octets present",
+    "Common address is two octets in little-endian form",
+    "Information object address is three octets in little-endian form",
+    "Single command qualifier is appended after the information object address for C_SC_NA_1"
+  ],
+  "issue_safety_notes": "No issue enhancement is used. This is a conservative valid framed seed intended as a baseline for later mutation.",
+  "sequence_sha256": "47bf8e1d95b518d5558c94c009edcdc34171dae1943ace40118a0b10f318f45b",
+  "total_bytes": 16,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d3fce2ef3bd779b42cff2f15873fa086e66ceaacc16835691a453f0b54f2ca18",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

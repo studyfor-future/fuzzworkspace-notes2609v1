@@ -1,0 +1,81 @@
+{
+  "seed_id": "ethernetip-rev-002",
+  "title": "Discovery sequence then RegisterSession",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Exercise realistic pre-session discovery commands before a valid RegisterSession to diversify parser state and sender-context handling.",
+  "evidence_ids": [
+    "protocol_format:opener:common-headers-encap:f6b76a46f963",
+    "function_code:function:operation-catalog:b5c7ceede78d",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:function-text:07e39e004b86"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "list_identity_request",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "list_services_request",
+      "hex": "040000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "register_session_after_discovery",
+      "hex": "65000400000000000000000011223344556677880000000001000000",
+      "byte_length": 28,
+      "sha256": "57fa077005914160a9eb206e4daa7dc3bd9571feab2c30fad09c929c99f2babb"
+    }
+  ],
+  "expected_behavior": "A compliant endpoint should accept the two zero-length discovery commands and then parse the valid RegisterSession request with preserved sender context.",
+  "constraints_preserved": [
+    "All messages use the documented 24-byte encapsulation header.",
+    "ListIdentity command is 0x0063 with zero payload length.",
+    "ListServices command is 0x0004 with zero payload length.",
+    "RegisterSession command is 0x0065 with length 0x0004.",
+    "All request status fields are zero.",
+    "The final message keeps an 8-byte sender_context and zero options."
+  ],
+  "issue_safety_notes": "This sequence stays within normal discovery and registration behavior and avoids malformed or oversized fields.",
+  "sequence_sha256": "67c3bb284f2ee73ffdc267660d92c54b4cea7d96a062233ab6ba8945055deabd",
+  "total_bytes": 76,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "72d498fc1f990dc857e4fc986ee1624c1924a9c61df8bd70d8d4da176c09c9d3",
+    "encoded_bytes": 76,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 48,
+        "payload_offset": 48,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ]
+  }
+}

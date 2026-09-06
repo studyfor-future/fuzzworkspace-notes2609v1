@@ -1,0 +1,11 @@
+Number: 314
+
+Summarize:
+In OpENer V2.3, the function `HandleReceivedSendRequestResponseDataCommand` in `encape.c` is declared to return `EipStatus`, but the reported code assigns `send_size` from `NotifyCommonPacketFormat()` to the `EipStatus` variable `return_value`. The report states that this value is the size of the reply message, not a status value, and that assigning it to `return_value` leads to an overflow. This occurs in the branch where `receive_data->data_length >= 6` and `CheckRegisteredSessions(receive_data)` reports a valid session. If `send_size < 0`, the code then sets `return_value = kEipStatusError`; otherwise the size-derived value is returned.
+
+Reproduce:
+The report does not provide a full PoC, build procedure, or runtime commands. Based on the supplied code path, reproduction is limited to exercising `HandleReceivedSendRequestResponseDataCommand()` in OpENer V2.3 so that: (1) `receive_data->data_length >= 6`; (2) `CheckRegisteredSessions(receive_data)` returns `kSessionStatusValid`; and (3) `NotifyCommonPacketFormat(receive_data, originator_address, outgoing_message)` returns a reply size in `send_size`. In that path, the function assigns `send_size` to the `EipStatus` variable `return_value` and returns it, which the report identifies as the overflow-causing condition.
+
+Payload:
+65 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+6f 00 18 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 b2 00 08 00 0e 03 20 01 24 01 30 01

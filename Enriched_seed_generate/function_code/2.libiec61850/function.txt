@@ -1,0 +1,614 @@
+IEC 61850 Function and Service Code Reference
+=============================================
+
+Important Note
+--------------
+IEC 61850 does not define one single "Function Code" field like Modbus.
+
+IEC 61850 operations are represented through:
+
+1. MMS PDU types
+2. MMS confirmed service tags
+3. MMS unconfirmed service tags
+4. IEC 61850 ACSI service names
+5. GOOSE EtherType and APDU fields
+6. Sampled Values EtherType and APDU fields
+7. Control model values
+
+For an IEC 61850 function-code corpus, the MMS service tag is the closest
+equivalent to a Modbus function code.
+
+================================================================
+1. IEC 61850 TRANSPORT AND PROTOCOL IDENTIFIERS
+================================================================
+
+TCP Port:
+
+102 = MMS over ISO-on-TCP
+
+EtherType:
+
+0x88B8 = GOOSE
+0x88BA = Sampled Values
+0x88F7 = Precision Time Protocol
+
+OSI transport commonly used for MMS:
+
+TPKT
+COTP
+ACSE
+Presentation
+MMS
+
+================================================================
+2. MMS PDU TYPE TAGS
+================================================================
+
+0xA0 = Confirmed-Request-PDU
+0xA1 = Confirmed-Response-PDU
+0xA2 = Confirmed-Error-PDU
+0xA3 = Unconfirmed-PDU
+0xA4 = Reject-PDU
+0xA5 = Cancel-Request-PDU
+0xA6 = Cancel-Response-PDU
+0xA7 = Cancel-Error-PDU
+0xA8 = Initiate-Request-PDU
+0xA9 = Initiate-Response-PDU
+0xAA = Initiate-Error-PDU
+0xAB = Conclude-Request-PDU
+0xAC = Conclude-Response-PDU
+0xAD = Conclude-Error-PDU
+
+================================================================
+3. MMS CONFIRMED SERVICE TAGS
+================================================================
+
+The following values are ASN.1 context-specific service-choice tags.
+
+[0]  = Status
+[1]  = GetNameList
+[2]  = Identify
+[3]  = Rename
+[4]  = Read
+[5]  = Write
+[6]  = GetVariableAccessAttributes
+[7]  = DefineNamedVariable
+[8]  = DefineScatteredAccess
+[9]  = GetScatteredAccessAttributes
+[10] = DeleteVariableAccess
+[11] = DefineNamedVariableList
+[12] = GetNamedVariableListAttributes
+[13] = DeleteNamedVariableList
+[14] = DefineNamedType
+[15] = GetNamedTypeAttributes
+[16] = DeleteNamedType
+[17] = Input
+[18] = Output
+[19] = TakeControl
+[20] = RelinquishControl
+[21] = DefineSemaphore
+[22] = DeleteSemaphore
+[23] = ReportSemaphoreStatus
+[24] = ReportPoolSemaphoreStatus
+[25] = ReportSemaphoreEntryStatus
+[26] = InitiateDownloadSequence
+[27] = DownloadSegment
+[28] = TerminateDownloadSequence
+[29] = InitiateUploadSequence
+[30] = UploadSegment
+[31] = TerminateUploadSequence
+[32] = RequestDomainDownload
+[33] = RequestDomainUpload
+[34] = LoadDomainContent
+[35] = StoreDomainContent
+[36] = DeleteDomain
+[37] = GetDomainAttributes
+[38] = CreateProgramInvocation
+[39] = DeleteProgramInvocation
+[40] = Start
+[41] = Stop
+[42] = Resume
+[43] = Reset
+[44] = Kill
+[45] = GetProgramInvocationAttributes
+[46] = ObtainFile
+[47] = DefineEventCondition
+[48] = DeleteEventCondition
+[49] = GetEventConditionAttributes
+[50] = ReportEventConditionStatus
+[51] = AlterEventConditionMonitoring
+[52] = TriggerEvent
+[53] = DefineEventAction
+[54] = DeleteEventAction
+[55] = GetEventActionAttributes
+[56] = ReportEventActionStatus
+[57] = DefineEventEnrollment
+[58] = DeleteEventEnrollment
+[59] = AlterEventEnrollment
+[60] = ReportEventEnrollmentStatus
+[61] = GetEventEnrollmentAttributes
+[62] = AcknowledgeEventNotification
+[63] = GetAlarmSummary
+[64] = GetAlarmEnrollmentSummary
+[65] = ReadJournal
+[66] = WriteJournal
+[67] = InitializeJournal
+[68] = ReportJournalStatus
+[69] = CreateJournal
+[70] = DeleteJournal
+[71] = GetCapabilityList
+[72] = FileOpen
+[73] = FileRead
+[74] = FileClose
+[75] = FileRename
+[76] = FileDelete
+[77] = FileDirectory
+
+================================================================
+4. MMS UNCONFIRMED SERVICE TAGS
+================================================================
+
+[0] = InformationReport
+[1] = UnsolicitedStatus
+[2] = EventNotification
+
+IEC 61850 reports normally use:
+
+InformationReport
+
+GOOSE and Sampled Values do not use MMS InformationReport.
+
+================================================================
+5. IEC 61850 ACSI SERVER SERVICES
+================================================================
+
+Associate
+Abort
+Release
+
+GetServerDirectory
+GetLogicalDeviceDirectory
+GetLogicalNodeDirectory
+GetAllDataValues
+GetDataValues
+SetDataValues
+GetDataDirectory
+GetDataDefinition
+
+MMS mapping:
+
+GetServerDirectory
+    MMS GetNameList
+
+GetLogicalDeviceDirectory
+    MMS GetNameList
+
+GetLogicalNodeDirectory
+    MMS GetNameList
+
+GetAllDataValues
+    MMS Read
+
+GetDataValues
+    MMS Read
+
+SetDataValues
+    MMS Write
+
+GetDataDirectory
+    MMS GetVariableAccessAttributes
+    MMS GetNameList
+
+GetDataDefinition
+    MMS GetVariableAccessAttributes
+
+================================================================
+6. IEC 61850 DATASET SERVICES
+================================================================
+
+GetDataSetValues
+SetDataSetValues
+CreateDataSet
+DeleteDataSet
+GetDataSetDirectory
+
+MMS mapping:
+
+GetDataSetValues
+    MMS Read
+
+SetDataSetValues
+    MMS Write
+
+CreateDataSet
+    MMS DefineNamedVariableList
+
+DeleteDataSet
+    MMS DeleteNamedVariableList
+
+GetDataSetDirectory
+    MMS GetNamedVariableListAttributes
+
+================================================================
+7. IEC 61850 REPORT SERVICES
+================================================================
+
+GetBRCBValues
+SetBRCBValues
+GetURCBValues
+SetURCBValues
+
+Buffered Report Control Block:
+    BRCB
+
+Unbuffered Report Control Block:
+    URCB
+
+Report transmission:
+    MMS InformationReport
+
+Report Control Block attributes commonly accessed through MMS Read and Write:
+
+RptID
+RptEna
+Resv
+DatSet
+ConfRev
+OptFlds
+BufTm
+SqNum
+TrgOps
+IntgPd
+GI
+PurgeBuf
+EntryID
+TimeOfEntry
+ResvTms
+Owner
+
+Report Trigger Option bits:
+
+bit 0 = Data Change
+bit 1 = Quality Change
+bit 2 = Data Update
+bit 3 = Integrity
+bit 4 = General Interrogation
+
+Common report reasons:
+
+Data Change
+Quality Change
+Data Update
+Integrity
+General Interrogation
+
+================================================================
+8. IEC 61850 LOG SERVICES
+================================================================
+
+GetLCBValues
+SetLCBValues
+QueryLogByTime
+QueryLogAfter
+
+MMS mapping:
+
+GetLCBValues
+    MMS Read
+
+SetLCBValues
+    MMS Write
+
+QueryLogByTime
+    MMS ReadJournal
+
+QueryLogAfter
+    MMS ReadJournal
+
+Log Control Block attributes:
+
+LogEna
+DatSet
+OldEntrTm
+NewEntrTm
+OldEntr
+NewEntr
+TrgOps
+IntgPd
+
+================================================================
+9. IEC 61850 CONTROL SERVICES
+================================================================
+
+Select
+SelectWithValue
+Cancel
+Operate
+CommandTermination
+
+Control operations are commonly mapped to MMS Write operations on control
+attributes.
+
+Common control object attributes:
+
+SBO
+SBOw
+Oper
+Cancel
+
+Control Model enumeration:
+
+0 = Status-Only
+1 = Direct-Control-With-Normal-Security
+2 = Select-Before-Operate-With-Normal-Security
+3 = Direct-Control-With-Enhanced-Security
+4 = Select-Before-Operate-With-Enhanced-Security
+
+Control operation fields:
+
+ctlVal
+origin
+ctlNum
+T
+Test
+Check
+
+Check bits:
+
+bit 0 = Synchrocheck
+bit 1 = Interlock-check
+
+Control services:
+
+Select
+    Reserve one control object.
+
+SelectWithValue
+    Reserve a control object together with the intended value.
+
+Operate
+    Execute a direct or previously selected control operation.
+
+Cancel
+    Cancel a selected control operation.
+
+CommandTermination
+    Report final result for enhanced-security control.
+
+================================================================
+10. IEC 61850 SETTING GROUP SERVICES
+================================================================
+
+SelectActiveSG
+SelectEditSG
+SetSGValues
+ConfirmEditSGValues
+GetSGValues
+
+Setting Group Control Block attributes:
+
+NumOfSG
+ActSG
+EditSG
+CnfEdit
+LActTm
+
+MMS mapping:
+
+SelectActiveSG
+    MMS Write
+
+SelectEditSG
+    MMS Write
+
+SetSGValues
+    MMS Write
+
+ConfirmEditSGValues
+    MMS Write
+
+GetSGValues
+    MMS Read
+
+================================================================
+11. IEC 61850 GOOSE IDENTIFIERS
+================================================================
+
+EtherType:
+
+0x88B8 = GOOSE
+
+GOOSE APDU outer ASN.1 tag:
+
+0x61 = GOOSE PDU
+
+GOOSE APDU field tags:
+
+0x80 = gocbRef
+0x81 = timeAllowedToLive
+0x82 = datSet
+0x83 = goID
+0x84 = t
+0x85 = stNum
+0x86 = sqNum
+0x87 = test
+0x88 = confRev
+0x89 = ndsCom
+0x8A = numDatSetEntries
+0xAB = allData
+
+GOOSE control block attributes:
+
+GoEna
+GoID
+DatSet
+ConfRev
+NdsCom
+DstAddress
+MinTime
+MaxTime
+FixedOffs
+
+GOOSE state-number semantics:
+
+stNum
+    Incremented when dataset state changes.
+
+sqNum
+    Incremented for repeated transmissions of the same state.
+
+confRev
+    Changes when dataset/control-block configuration changes.
+
+timeAllowedToLive
+    Validity interval expected by subscriber.
+
+================================================================
+12. IEC 61850 SAMPLED VALUES IDENTIFIERS
+================================================================
+
+EtherType:
+
+0x88BA = Sampled Values
+
+Sampled Values APDU outer ASN.1 tag:
+
+0x60 = SAV PDU
+
+Common Sampled Values fields:
+
+svID
+datSet
+smpCnt
+confRev
+refrTm
+smpSynch
+smpRate
+sample
+smpMod
+
+Sampled Value Control Block attributes:
+
+SvEna
+SvID
+DatSet
+ConfRev
+SmpRate
+SmpMod
+OptFlds
+DstAddress
+NoASDU
+
+Sample count:
+
+smpCnt
+    Sample sequence counter.
+
+Configuration revision:
+
+confRev
+    Stream configuration revision.
+
+Sample synchronization:
+
+smpSynch
+    Indicates synchronization source or synchronization quality.
+
+================================================================
+13. IEC 61850 FILE SERVICES
+================================================================
+
+GetFile
+SetFile
+DeleteFile
+GetFileAttributeValues
+
+MMS mapping:
+
+GetFile
+    FileOpen
+    FileRead
+    FileClose
+
+SetFile
+    ObtainFile or implementation-supported file transfer
+
+DeleteFile
+    FileDelete
+
+GetFileAttributeValues
+    FileDirectory
+
+MMS file service tags:
+
+[72] = FileOpen
+[73] = FileRead
+[74] = FileClose
+[75] = FileRename
+[76] = FileDelete
+[77] = FileDirectory
+
+================================================================
+14. IEC 61850 COMMON FUNCTIONAL CONSTRAINTS
+================================================================
+
+ST = Status Information
+MX = Measurands
+SP = Setpoint
+SV = Substitution
+CF = Configuration
+DC = Description
+SG = Setting Group
+SE = Setting Group Editable
+SR = Service Response
+OR = Operate Received
+BL = Blocking
+EX = Extended Definition
+CO = Control
+RP = Unbuffered Reporting
+BR = Buffered Reporting
+LG = Logging
+GO = GOOSE
+GS = GSSE
+MS = Multicast Sampled Values
+US = Unicast Sampled Values
+
+================================================================
+15. NORMAL INITIAL SEED SERVICES
+================================================================
+
+Recommended MMS initial operations:
+
+[1]  GetNameList
+[4]  Read
+[5]  Write
+[6]  GetVariableAccessAttributes
+[11] DefineNamedVariableList
+[12] GetNamedVariableListAttributes
+[13] DeleteNamedVariableList
+[65] ReadJournal
+[72] FileOpen
+[73] FileRead
+[74] FileClose
+[77] FileDirectory
+
+Recommended IEC 61850 operations:
+
+GetServerDirectory
+GetLogicalDeviceDirectory
+GetDataValues
+GetDataDefinition
+GetDataSetValues
+GetDataSetDirectory
+GetBRCBValues
+GetURCBValues
+SetBRCBValues
+SetURCBValues
+Select
+Operate
+Cancel
+GetFile
+GetFileAttributeValues
+GOOSE stable retransmission
+GOOSE state-change message
+Sampled Values normal sample frame

@@ -1,0 +1,49 @@
+{
+  "seed_id": "iec61850-seed-009",
+  "title": "Wrapped Initiate-Error-PDU response",
+  "strategy": "function_code_coverage",
+  "target_operation": "Initiate-Error-PDU",
+  "purpose": "Exercise the initiate-error branch through the same wrapper style used by other MMS-bearing seeds while keeping the inner body compact.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "wrapped_initiate_error_pdu",
+      "hex": "6111300fa003020101be080406aa03020101",
+      "byte_length": 18,
+      "sha256": "0c55885d5bd9ba3bfb846af8bd86d78380bfdb31acb09655d461808bcc1c1954"
+    }
+  ],
+  "expected_behavior": "A receiver should descend through the AARE-like wrapper and route on tag 0xaa to MMS initiate-error handling.",
+  "constraints_preserved": [
+    "ACSE outer type 0x61 is documented.",
+    "MMS inner tag 0xaa for Initiate-Error-PDU is preserved.",
+    "Length bytes are definite and internally consistent.",
+    "The message remains fully wrapped rather than a raw PDU."
+  ],
+  "issue_safety_notes": "Error-path coverage only; no malformed or exploit-specific content is included.",
+  "sequence_sha256": "0fb9011cc117f0691b1a7cfac1b7df4dfc64791bc639b48de03e9d66f4b55ce6",
+  "total_bytes": 18,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0c55885d5bd9ba3bfb846af8bd86d78380bfdb31acb09655d461808bcc1c1954",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

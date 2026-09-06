@@ -1,0 +1,15 @@
+#issue #GHSA-g3w7-x5rx-83xm
+
+Summary
+A crafted IEC 60870-5-104 I-frame with TypeID 104 (C_TS_NA_1) and an inflated object count causes TestCommand_getFromBuffer to read one byte past the end of the heap-allocated message buffer (CWE-125). Discovered by fuzzing lib60870-C v2.4.0 with LibFuzzer + AddressSanitizer.
+
+Root Cause
+TestCommand_getFromBuffer calls InformationObject_ParseObjectAddress(msg, startIndex), which has no msgSize parameter and cannot bounds-check startIndex against the end of the buffer. When the VSQ object count exceeds what the ASDU body can hold, startIndex walks past the end of the allocation. This is the same structural omission as the separately reported vulnerability in InformationObject_ParseObjectAddress — approximately 150 *_getFromBuffer functions across cs101_information_objects.c share this limitation.
+
+Proof of Concept (16 bytes)
+68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00
+68 0e — IEC 104 start byte + L=14
+15 — TypeID 21... wait
+Actually let me recalculate. From the crash output, the TypeID that triggers via TestCommand_getFromBuffer is TypeID 104 (C_TS_NA_1). Let me recheck the bytes.
+
+Actually from the earlier analysis, Crash B PoC is 68 0e 00 00 eb 00 68 06 15 24 00 04 00 00 80 00. TypeID byte is at ASDU offset: APCI is 6 bytes, so ASDU starts at byte 6. Byte 6 = 68... wait that doesn't look right. Let me just present what we have.

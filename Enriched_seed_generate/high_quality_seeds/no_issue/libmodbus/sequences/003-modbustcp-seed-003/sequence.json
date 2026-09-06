@@ -1,0 +1,52 @@
+{
+  "seed_id": "modbustcp-seed-003",
+  "title": "Repaired valid Read File Record",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read File Record",
+  "purpose": "Exercise function 0x14 with one minimal valid file-record subrequest and internally consistent byte-count and MBAP length fields.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:template-catalog:9387d801be8f",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "function_code:function:function-text:ba5533b39dfa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_file_record_request_single_group",
+      "hex": "00040000000a01140706000100000001",
+      "byte_length": 16,
+      "sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid function 0x14 request with byte count 0x07 and one file-record subrequest, then return file-record data or a standard exception.",
+  "constraints_preserved": [
+    "MBAP header is present and complete.",
+    "protocol_id is 0x0000.",
+    "length is 0x000a, matching unit_id plus 9-byte PDU.",
+    "Function code 0x14 is used for Read File Record.",
+    "Request contains a byte count field 0x07 followed by exactly one 7-byte file-record subrequest.",
+    "Subrequest preserves reference type 0x06, file number, record number, and record length fields in big-endian order."
+  ],
+  "issue_safety_notes": "Repaired to remove prior count and length inconsistencies. It is a valid structural seed rather than a malformed boundary test.",
+  "sequence_sha256": "6d8afee8dd529addfa39d003c475f705e33f359bc28be01ddb9a3b76f007a1c8",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

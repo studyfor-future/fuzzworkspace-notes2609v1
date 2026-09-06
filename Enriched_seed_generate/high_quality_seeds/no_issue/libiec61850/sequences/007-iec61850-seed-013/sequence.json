@@ -1,0 +1,65 @@
+{
+  "seed_id": "iec61850-seed-013",
+  "title": "Wrapped Confirmed-Error-PDU after request",
+  "strategy": "stateful_valid",
+  "target_operation": "Confirmed-Error-PDU",
+  "purpose": "Replace the bare confirmed-error fragment with a paired sequence so the error branch is reached after a prior confirmed request.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "preceding_confirmed_request_filedirectory",
+      "hex": "6010300ea003020101be070405a04d00",
+      "byte_length": 16,
+      "sha256": "a1f2b8bd4c05e1df1974b9af969e2b7ca4e3dc00edd70cb9f6af676560244f00"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "wrapped_confirmed_error_pdu",
+      "hex": "6111300fa003020101be080406a203020101",
+      "byte_length": 18,
+      "sha256": "e7f161e52581a9b5b53bfbf575cc582f9b3f9850c89bb5d6282de2739ba0baca"
+    }
+  ],
+  "expected_behavior": "The target should parse the initial confirmed request for service [77] FileDirectory and then route the reply into Confirmed-Error-PDU processing.",
+  "constraints_preserved": [
+    "Request uses documented MMS Confirmed-Request-PDU tag 0xa0 and confirmed service [77] FileDirectory.",
+    "Response uses documented MMS tag 0xa2 Confirmed-Error-PDU.",
+    "ACSE wrapper bytes use documented accepted types 0x60 and 0x61.",
+    "Nested lengths are definite and internally consistent."
+  ],
+  "issue_safety_notes": "This sequence intentionally uses a safe structural error analogue and does not claim any known fault trigger.",
+  "sequence_sha256": "fe94e2d119fa7f9be1739939bc59b80933858b547a20c2d28bd2c1da21c62cd8",
+  "total_bytes": 34,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5bd47b9850a7600bfcfa22127ffeab514aa92356613c99edd87488135aad2188",
+    "encoded_bytes": 34,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "seed_id": "iec61850-seed-002",
+  "title": "Stateful association then Initiate-Request-PDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Provide a realistic small stateful sequence with client association setup, server association response, and a final initiate request to seed deeper state-dependent parser behavior.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+    "protocol_format:iec61850:section-message-temp:35380083cd47",
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "aarq_with_identify_probe",
+      "hex": "0300002911e00000000100c1020000c2020001c0010aa00f0201010607040001010101be0404023000",
+      "byte_length": 41,
+      "sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "aare_with_confirmed_response_stub",
+      "hex": "0300001a02f0806115a109020101a203020100be050403a10100",
+      "byte_length": 26,
+      "sha256": "93aee3ab8d13c75e48fa0c1e1f31dfdf201cc50635a4444beabda3e6d89a6e10"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "framed_initiate_request_pdu",
+      "hex": "0300001502f080a80e800101810103820100830101",
+      "byte_length": 21,
+      "sha256": "2f2fb896f25ec6797e4bc6ccdc48a4a90420d280826e274d59ace3fc34da623b"
+    }
+  ],
+  "expected_behavior": "A test target should parse the setup AARQ, tolerate the compact AARE response, and then accept the final framed Initiate-Request-PDU for distinct stateful parser coverage.",
+  "constraints_preserved": [
+    "Each message has a complete TPKT header with self-consistent total length.",
+    "Message 0 uses ACSE message type 0x60 AARQ and message 1 uses 0x61 AARE.",
+    "Message 2 uses documented MMS PDU tag 0xa8 for Initiate-Request-PDU.",
+    "COTP data TPDU 02f080 is used on data-bearing messages 1 and 2.",
+    "BER definite lengths are consistent in all three messages.",
+    "No negative lengths, truncation, or raw crash fragments are used."
+  ],
+  "issue_safety_notes": "The sequence is issue-informed only in preferring valid state transitions over malformed setup. It is not an exact replay of any historical input.",
+  "sequence_sha256": "dcae1e9faa14e2c09c99c43aaae2aac7286f43810c4ac54725f37a50852d02ab",
+  "total_bytes": 88,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f2b0d7fab6c333b3206ea67b5a6a1f2eb98e6e30652b0e6d1c21e0fb050fc429",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 41,
+        "frame_length": 41
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 41,
+        "payload_offset": 41,
+        "payload_length": 26,
+        "frame_length": 26
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 67,
+        "payload_offset": 67,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ]
+  }
+}

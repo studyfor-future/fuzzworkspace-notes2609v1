@@ -1,0 +1,15 @@
+Number: 499
+
+Summarize:
+The report states that libmodbus V3.1.6 has a heap-use-after-free reachable through the `tests/unit-test-server.c` test program. When the program accepts a connection and processes the provided input bytes `<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>`, AddressSanitizer reports a `heap-use-after-free` with a `WRITE of size 2` in `modbus_reply` at `src/modbus.c:980:46`, called from `tests/unit-test-server.c:183:14`. The document demonstrates the use-after-free but does not describe a specific missing validation or root cause beyond that observed crash.
+
+Reproduce:
+1. Use Ubuntu 16.04.
+2. Build the libmodbus `unit-test-server` target with clang and AddressSanitizer by setting `CFLAGS="-g -fsanitize=address"` and `LDFLAGS="-fsanitize=address"` before running `make`.
+3. Apply the reporter's harness edits to make the server easier to fuzz: change the `for(;;)` loop to `if(1)`, and change the related `break/continue` statements that exit that loop into `goto` statements (the report says this is the same modification as issue #498).
+4. Run/fuzz the program with AFL, prefixing execution with preeny desock: `LD_PRELOAD=/preeny/x86_64-linux-gnu/desock.so`.
+5. Feed this input data to the program: `<00><00><00><00><00><0D><FF><17><01><60><00><01><01><00><00><01><02><12><34>`.
+6. Expected result: the program prints `The client connection from 0.0.0.0 is accepted` and `Waiting for an indication...`, echoes the input, and then AddressSanitizer reports `ERROR: AddressSanitizer: heap-use-after-free` with `WRITE of size 2` in `modbus_reply` at `src/modbus.c:980:46`, reached from `tests/unit-test-server.c:183:14`.
+
+Payload:
+00 00 00 00 00 0d ff 17 01 60 00 01 01 00 00 01 02 12 34

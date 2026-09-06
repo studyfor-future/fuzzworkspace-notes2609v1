@@ -1,0 +1,17 @@
+issue #810
+
+I found a bug that violates the specification that the length field should adhere to.
+
+Steps to reproduce(after installation):
+
+Terminal 1 - Server
+cd libmodbus/tests
+./unit-test-server
+Terminal 2 - Client
+First, send one valid input:
+b'\x00\x01\x00\x00\x00\x06\xff\x01\x01\x30\x00\x06
+Second, send invalid inputs that contain incorrect length field values:
+b'\x00\x01\x00\x00\x00\x00\xff\x01\x01\x30\x00\x06
+b'\x00\x01\x00\x00\x10\x00\xff\x01\x01\x30\x00\x06
+3）Observe the server's outputs; we can see that they received the same positive response.
+b'\x00\x01\x00\x00\x00\x04\xff\x01\x01\x00

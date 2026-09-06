@@ -1,0 +1,12 @@
+Number: 764
+
+Summarize:
+In libmodbus v3.1.6, an invalid pointer dereference is reported in modbus.c. The issue can be triggered by sending a specific packet to the unit-test-server program. The observed result is a crash, shown in the report as an AddressSanitizer SEGV. The report further states that the issue appears to be caused by the backend_type pointer not being properly initialized, but that cause is presented as apparent/speculative rather than demonstrated.
+
+Reproduce:
+1. Use libmodbus v3.1.6 and run the unit-test-server target.
+2. Send the documented PoC packet to the server: 00000000000CFF1701600002006B0001021234
+3. The reported result is a crash instead of normal handling; the document shows an AddressSanitizer diagnostic beginning with: "ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe96".
+
+Payload:
+00 00 00 00 00 0c ff 17 01 60 00 02 00 6b 00 01 02 12 34

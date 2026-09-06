@@ -1,0 +1,38 @@
+issue #13
+I use prenny desock tool to redirect TCP socket communication to the console. I save the preeny source code in the initial project and the project which includes preeny can by found at this address.
+The command to build preeny is :
+cd ./preeny && make
+But when I use the following file as the input data to test the iec104_monitor on the server mode. The monitor will result in crash.
+
+Input data: 68e0 4000 0083 8068 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0083 8000 08
+
+The command line is as following:
+LD_PRELOAD=./preeny/x86_64-linux-gnu/desock.so ./test/iec104_monitor -m server -n 1 < ./crash/crash_input_2
+where ./preeny/x86_64-linux-gnu/desock.so is the library of preeny desock.
+
+So the commands to touch the crash from the very beginning is:
+
+This crash is a SEGV crash in fucntion Iec104_Deal_FirmUpdate and the crash line is at ./IEC10X/Iec104.c:1129.
+
+I use gdb to debug it and the crash information is as following:
+
+Thread 2 "iec104_monitor" received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x7ffff37ff700 (LWP 19690)]
+0x0000000000000000 in ?? ()
+(gdb) backtrace
+#0  0x0000000000000000 in ?? ()
+#1  0x000000000040898d in Iec104_Deal_FirmUpdate (asdu=asdu@entry=0x7ffff37fe886, Len=Len@entry=226 '\342') at ../IEC10X/Iec104.c:1129
+#2  0x000000000040a631 in Iec104_Deal_I (Iec104Data=Iec104Data@entry=0x7ffff37fe880, len=len@entry=226) at ../IEC10X/Iec104.c:1208
+#3  0x000000000040adac in Iex104_Receive (buf=buf@entry=0x7ffff37fe880 "h\340@", len=len@entry=43) at ../IEC10X/Iec104.c:1305
+#4  0x000000000040fe67 in Iec104_main (arg=<optimized out>) at main.c:138
+#5  0x00007ffff6a306ba in start_thread (arg=0x7ffff37ff700) at pthread_create.c:333
+#6  0x00007ffff676641d in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:109
+(gdb) 
+#0  0x0000000000000000 in ?? ()
+#1  0x000000000040898d in Iec104_Deal_FirmUpdate (asdu=asdu@entry=0x7ffff37fe886, Len=Len@entry=226 '\342') at ../IEC10X/Iec104.c:1129
+#2  0x000000000040a631 in Iec104_Deal_I (Iec104Data=Iec104Data@entry=0x7ffff37fe880, len=len@entry=226) at ../IEC10X/Iec104.c:1208
+#3  0x000000000040adac in Iex104_Receive (buf=buf@entry=0x7ffff37fe880 "h\340@", len=len@entry=43) at ../IEC10X/Iec104.c:1305
+#4  0x000000000040fe67 in Iec104_main (arg=<optimized out>) at main.c:138
+#5  0x00007ffff6a306ba in start_thread (arg=0x7ffff37ff700) at pthread_create.c:333
+#6  0x00007ffff676641d in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:109
+(gdb) 

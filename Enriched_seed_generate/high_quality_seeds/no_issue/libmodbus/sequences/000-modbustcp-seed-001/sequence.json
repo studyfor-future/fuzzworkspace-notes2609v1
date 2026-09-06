@@ -1,0 +1,51 @@
+{
+  "seed_id": "modbustcp-seed-001",
+  "title": "Canonical valid Read Holding Registers",
+  "strategy": "baseline_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Construct a canonical valid MODBUS/TCP request for function 0x03 with conservative starting address and register quantity.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:section-common-heade:526e4447ee47",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:8b7e3446e51a",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_holding_registers_request",
+      "hex": "000100000006010300000002",
+      "byte_length": 12,
+      "sha256": "98725d9c53b849b2fb57a2d5e8ce6afcdd355603dd736ae7f0de7429b7d853f0"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid MBAP header and function 0x03 request for starting address 0x0000 and quantity 0x0002, then return register data or a standard exception.",
+  "constraints_preserved": [
+    "MBAP header included before the PDU.",
+    "protocol_id is 0x0000.",
+    "length is 0x0006, which matches unit_id plus 5-byte function 0x03 PDU.",
+    "Function code 0x03 is used for Read Holding Registers.",
+    "Request fields are starting address followed by quantity of registers, both big-endian 16-bit."
+  ],
+  "issue_safety_notes": "No issue-specific content is used. This is a conservative baseline seed suitable for safe initial mutation.",
+  "sequence_sha256": "3bf2b6280e24f1ffcfb70bb89cd711fd035b263df60d5836e3683080df8624d3",
+  "total_bytes": 12,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "98725d9c53b849b2fb57a2d5e8ce6afcdd355603dd736ae7f0de7429b7d853f0",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

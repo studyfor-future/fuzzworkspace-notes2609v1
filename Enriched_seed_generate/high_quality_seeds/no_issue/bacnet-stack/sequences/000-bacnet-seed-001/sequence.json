@@ -1,0 +1,55 @@
+{
+  "seed_id": "bacnet-seed-001",
+  "title": "Canonical valid ReadPropertyMultiple",
+  "strategy": "baseline_valid",
+  "target_operation": "ReadPropertyMultiple",
+  "purpose": "Provide a conservative confirmed ReadPropertyMultiple request with complete BACnet/IP framing and a small payload region beyond the service selector for mutation into richer object and property lists.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "readpropertymultiple_confirmed_request_conservative",
+      "hex": "810a000f01000005010e0c00000019",
+      "byte_length": 15,
+      "sha256": "870b7fe13b67817eaafb114de7716cf3c29450b527ff7f4e7ac64068e47a4fc7"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP parser should accept the frame, parse a confirmed request APDU with invoke ID 0x01 and service choice 0x0E, and enter ReadPropertyMultiple handling with additional payload bytes available for service-specific validation.",
+  "constraints_preserved": [
+    "BVLC header uses type 0x81 and function 0x0A before NPDU and APDU.",
+    "BVLC length 0x000F matches the 15-byte message length.",
+    "NPDU contains version 0x01 and control 0x00.",
+    "APDU begins with confirmed-request type high nibble 0x00.",
+    "Confirmed APDU includes control octet, invoke ID, service choice, and trailing payload.",
+    "Confirmed service choice 0x0E matches ReadPropertyMultiple.",
+    "All payload bytes fit within the declared BVLC length."
+  ],
+  "issue_safety_notes": "No issue-specific shaping was used. This is a conservative validly framed seed with a short payload region rather than a replay of any malformed artifact.",
+  "sequence_sha256": "de1cb51fcdb2941b9fd97db6beee22411c67235143dde624e4ee15d196480709",
+  "total_bytes": 15,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "870b7fe13b67817eaafb114de7716cf3c29450b527ff7f4e7ac64068e47a4fc7",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

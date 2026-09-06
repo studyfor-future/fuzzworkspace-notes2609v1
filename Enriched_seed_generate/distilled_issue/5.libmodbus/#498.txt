@@ -1,0 +1,14 @@
+Number: 498
+
+Summarize:
+In the latest `stephane/libmodbus` source, sending the documented input `0000 0000 000d ff17 0160 0020 0000 0001 0212 34` to the `tests/unit-test-server` example triggers a crash. Although the issue is reported against `unit-test-server.c`, the ASAN trace shows a SEGV caused by a WRITE memory access in `modbus_reply` at `src/modbus.c:981:44`, called from `tests/unit-test-server.c:183`, and the process aborts. The document does not describe the specific underlying validation failure beyond this observed invalid write.
+
+Reproduce:
+1. Obtain the latest `stephane/libmodbus` source.
+2. Build with clang and AddressSanitizer by exporting `CFLAGS="-g -fsanitize=address"` and `LDFLAGS="-fsanitize=address"` before running `make`.
+3. Run the built `tests/unit-test-server` program.
+4. Connect a client and send the input data `0000 0000 000d ff17 0160 0020 0000 0001 0212 34`.
+5. Expected result: the server accepts the client, prints the received bytes, then AddressSanitizer reports `DEADLYSIGNAL` / `ERROR: AddressSanitizer: SEGV` caused by a WRITE memory access in `modbus_reply` (`src/modbus.c:981:44`), with the call from `tests/unit-test-server.c:183`, and aborts.
+
+Payload:
+00 00 00 00 00 0d ff 17 01 60 00 20 00 00 00 01 02 12 34

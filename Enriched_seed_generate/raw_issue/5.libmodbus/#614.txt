@@ -1,0 +1,46 @@
+issue #614
+Heap-based Buffer Overflow in modbus_reply
+
+Description
+Heap-based Buffer Overflow in _modbus_receive_msg
+
+Expected behaviour
+no crash.
+
+Actual behaviour
+double free or corruption (!prev)
+
+Steps to reproduce the behavior (commands or source code)
+libmodbus/tests/unit-test-server.c
+
+./unit-test-server
+<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>
+
+libmodbus output with debug mode enabled
+./unit-test-server
+The client connection from 127.0.0.1 is accepted
+Waiting for an indication...
+<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>
+[03][DD][00][00][00][05][FF][17][02][00][00]
+Waiting for an indication...
+ERROR Connection reset by peer: read
+Quit the loop: Connection reset by peer
+double free or corruption (!prev)
+[1]    3966417 abort      ./unit-test-server
+
+❯ ./tests/unit-test-server 
+The client connection from 127.0.0.1 is accepted
+Waiting for an indication...
+<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><84><00><01><02><D7><11>
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==174549==ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffec8 (pc 0x7fd8514abc62 bp 0x7ffebf02e730 sp 0x7ffebf02dcc0 T0)
+==174549==The signal is caused by a WRITE memory access.
+    #0 0x7fd8514abc62 in modbus_reply /XXX/src/libmodbus/build/src/../../src/modbus.c:980:46
+    #1 0x4cbcaf in main /XXX/src/libmodbus/build/tests/../../tests/unit-test-server.c:183:14
+    #2 0x7fd85112a564 in __libc_start_main csu/../csu/libc-start.c:332:16
+    #3 0x41c40d in _start (/XXX/src/libmodbus/build/tests/.libs/unit-test-server+0x41c40d)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /XXX/src/libmodbus/build/src/../../src/modbus.c:980:46 in modbus_reply
+==174549==ABORTING

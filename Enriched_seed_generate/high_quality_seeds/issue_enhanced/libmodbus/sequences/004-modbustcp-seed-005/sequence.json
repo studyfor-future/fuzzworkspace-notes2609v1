@@ -1,0 +1,81 @@
+{
+  "seed_id": "modbustcp-seed-005",
+  "title": "Issue-guided repeated valid write analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Mirror the repeated-write motif from the historical issue using two consecutive valid 0x10 requests and a small address shift on the third message.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053",
+    "issue:738:738-summary:5a1139e7dbc0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_multiple_registers_first",
+      "hex": "00100000000b0110001000020411112222",
+      "byte_length": 17,
+      "sha256": "58ee5c84f78969ef6756dd249fb44c2aa44a282a8de0a3d35770b083ea78e610"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "write_multiple_registers_second_same_range",
+      "hex": "00110000000b0110001000020433334444",
+      "byte_length": 17,
+      "sha256": "dc3970e6ddd9cc5b07e8b7a16d681e8802331cdb37314859e66987b3566604f6"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "write_multiple_registers_third_adjacent_range",
+      "hex": "00120000000b0110001200020455556666",
+      "byte_length": 17,
+      "sha256": "bcd4bad59484dce86e07ef876173e42c22630c1c88708a875968407a9b66e207"
+    }
+  ],
+  "expected_behavior": "A compliant server should parse all three valid write requests without desynchronizing the connection and either acknowledge the writes or return legal exceptions for unsupported addresses.",
+  "constraints_preserved": [
+    "each message has a complete MBAP header",
+    "protocol_id is 0000 throughout",
+    "length is 000b for unit_id plus 10-byte 0x10 PDU in each message",
+    "function code is 10",
+    "quantity 0002 matches byte count 04 and exactly two register values",
+    "all multibyte fields are big-endian"
+  ],
+  "issue_safety_notes": "Preserves the repeated-operation motif without using the original undocumented failing sequence or any exact crash payload.",
+  "sequence_sha256": "6e9978051a4f5d9d4f6148902749dc6239076cd470789317548546e3a445acde",
+  "total_bytes": 51,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c937d80279be4885d7e3c7afa48c0f0ca441f4e72b0a05ad11c2d26034e48dd9",
+    "encoded_bytes": 51,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 17,
+        "payload_offset": 17,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 34,
+        "payload_offset": 34,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

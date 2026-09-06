@@ -1,0 +1,62 @@
+issue #683
+A heap-based buffer overflow in function read_io_status in src/modbus.c
+
+Description
+There is a heap-based buffer overflow in the function read_io_status in src/modbus.c.
+
+Actual behavior if applicable
+Heap-buffer-overflow
+
+Steps to reproduce the behavior (commands or source code)
+Build with ASan
+CC=clang CXX=clang++ CFLAGS="-g -fsanitize=address" CXXFLAGS="-g -fsanitize=address" ./autogen.sh
+CC=clang CXX=clang++ CFLAGS="-g -fsanitize=address" CXXFLAGS="-g -fsanitize=address" ./configure && make
+Asan traceback
+I found a heap-buffer-overflow bug via the utility tests/unit-test-client, here is the stderr output:
+ERROR Connection timed out: select
+ERROR Illegal data address
+=================================================================
+==2758680==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x604000000035 at pc 0x7f80c1952a2a bp 0x7ffd59cbdb30 sp 0x7ffd59cbdb28
+WRITE of size 1 at 0x604000000035 thread T0
+    #0 0x7f80c1952a29 in read_io_status /root/libmodbus/src/modbus.c:1207:29
+    #1 0x7f80c195254d in modbus_read_bits /root/libmodbus/src/modbus.c:1238:10
+    #2 0x560ca1aa26b4 in main /root/libmodbus/tests/unit-test-client.c:363:10
+    #3 0x7f80c15d4d09 in __libc_start_main csu/../csu/libc-start.c:308:16
+    #4 0x560ca19e15c9 in _start (/root/libmodbus/tests/.libs/unit-test-client+0x255c9) (BuildId: 06a076f26a7dd417c82e6c39b9bbb21e4b70fc3e)
+
+0x604000000035 is located 0 bytes to the right of 37-byte region [0x604000000010,0x604000000035)
+allocated by thread T0 here:
+    #0 0x560ca1a6616b in __interceptor_malloc (/root/libmodbus/tests/.libs/unit-test-client+0xaa16b) (BuildId: 06a076f26a7dd417c82e6c39b9bbb21e4b70fc3e)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /root/libmodbus/src/modbus.c:1207:29 in read_io_status
+
+PoC
+This bug is triggered when the client executing modbus_read_bits:
+libmodbus/tests/unit-test-client.c
+
+Line 363 in b25629b
+
+ rc = modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB + 1, tab_rp_bits); 
+
+For this operation, the corresponding normal response to tests/unit-test-client (collected by launching tests/unit-test-server) is 001100000006ff0101300026, with structure:
+###[ ModbusADU ]### 
+  transId   = 0x11
+  protoId   = 0x0
+  len       = 6
+  unitId    = 0xff
+###[ Read Coils Response ]### 
+     funcCode  = 0x1
+     byteCount = 1
+     coilStatus= [48]
+However, if mutating this packet by manipulating the field unitId:
+
+###[ ModbusADU ]### 
+  transId   = 0x11
+  protoId   = 0x0
+  len       = 6
+  unitId    = 0x7c
+###[ Read Coils Response ]### 
+     funcCode  = 0x1
+     byteCount = 1
+     coilStatus= [48]
+with hex stream 0011000000067c0101300023, the tests/unit-test-client crashed due to heap buffer overflow.

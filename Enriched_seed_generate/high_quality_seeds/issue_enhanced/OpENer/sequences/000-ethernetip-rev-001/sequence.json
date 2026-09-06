@@ -1,0 +1,52 @@
+{
+  "seed_id": "ethernetip-rev-001",
+  "title": "Canonical valid RegisterSession",
+  "strategy": "baseline_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Provide a canonical valid session-registration request as a stable baseline for subsequent stateful mutations.",
+  "evidence_ids": [
+    "protocol_format:opener:common-headers-encap:f6b76a46f963",
+    "protocol_format:opener:common-headers-encap:99dadc40b5a3",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:function-text:07e39e004b86"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    }
+  ],
+  "expected_behavior": "A compliant target should parse the 24-byte encapsulation header, accept the 4-byte RegisterSession payload, and allocate or return a session handle.",
+  "constraints_preserved": [
+    "Command 0x0065 is encoded little-endian.",
+    "Length field is 0x0004 and matches the 4-byte command-specific payload.",
+    "Session handle is zero for initial registration.",
+    "Status is zero in the request.",
+    "Sender context is present as 8 bytes.",
+    "Options field is 4-byte little-endian zero.",
+    "RegisterSession payload preserves protocol version 0x0001 and option flags 0x0000."
+  ],
+  "issue_safety_notes": "This is a standard valid registration request and does not embed any issue-derived malformed state or payload relation.",
+  "sequence_sha256": "914adde531fb6d680e3de8c37d48249a199f6649e495ac1e8993a59ee82c852a",
+  "total_bytes": 28,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ]
+  }
+}

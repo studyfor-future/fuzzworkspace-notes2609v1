@@ -1,0 +1,21 @@
+Number: 810
+
+Summarize:
+In libmodbus/tests/unit-test-server, requests with incorrect length field values were accepted. In the reported test, a valid input and inputs with length field values \x00\x00 and \x10\x00 all received the same positive response \x00\x01\x00\x00\x00\x04\xff\x01\x01\x00. The reporter states this violates the specification for the length field.
+
+Reproduce:
+After installation:
+1. In terminal 1, start the server:
+   cd libmodbus/tests
+   ./unit-test-server
+2. In terminal 2, first send a valid input:
+   \x00\x01\x00\x00\x00\x06\xff\x01\x01\x30\x00\x06
+3. Then send inputs with incorrect length field values:
+   \x00\x01\x00\x00\x00\x00\xff\x01\x01\x30\x00\x06
+   \x00\x01\x00\x00\x10\x00\xff\x01\x01\x30\x00\x06
+4. Observe the server output; the invalid inputs receive the same positive response:
+   \x00\x01\x00\x00\x00\x04\xff\x01\x01\x00
+
+Payload:
+00 01 00 00 00 00 ff 01 01 30 00 06
+00 01 00 00 10 00 ff 01 01 30 00 06

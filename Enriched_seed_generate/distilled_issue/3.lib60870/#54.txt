@@ -1,0 +1,14 @@
+Number: 54
+
+Summarize:
+On the latest source code from /mz-automation/lib60870/, the lib60870-C/examples/cs104_server/simple_server example crashes when processing the supplied input data. The reporter said a gdb trace reached CS101_ASDU_getCOT in src/iec60870/cs101/cs101_asdu.c:308 at the self->asdu[2] access; the supplied AddressSanitizer output shows the observed failure as a READ from address 0x10 in InterrogationCommand_getQOI at src/iec60870/cs101/cs101_information_objects.c:5616, via handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c. The document does not identify the exact validation flaw, but it demonstrates that the provided input triggers an invalid memory read, SEGV, and abort.
+
+Reproduce:
+1. Obtain the latest source code from /mz-automation/lib60870/.
+2. Build with clang and AddressSanitizer by exporting CFLAGS="-g -fsanitize=address" and LDFLAGS="-fsanitize=address" before running make.
+3. Run the simple_server example built from lib60870-C/examples/cs104_server/simple_server.c.
+4. Provide the following input data to the running example; the report does not specify the exact client command or tool used to deliver it: 681a 0f00 0000 0000 0000 0000 0000 0000 0083 00fa 0000 0083 00fa 00e2 680a 0000 0000 6483 08fa 00e2 eb00 8000 0000 0000 0100 0083 0004 83f0.
+5. Expected result: AddressSanitizer reports DEADLYSIGNAL / ERROR: AddressSanitizer: SEGV on unknown address 0x000000000010, with the top frame in InterrogationCommand_getQOI (src/iec60870/cs101/cs101_information_objects.c:5616), followed by handleASDU and handleMessage in src/iec60870/cs104/cs104_slave.c, and the process aborts. The reporter also noted a gdb trace to CS101_ASDU_getCOT at src/iec60870/cs101/cs101_asdu.c:308.
+
+Payload:
+68 1a 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 00 fa 00 00 00 83 00 fa 00 e2 68 0a 00 00 00 00 64 83 08 fa 00 e2 eb 00 80 00 00 00 00 00 01 00 00 83 00 04 83 f0

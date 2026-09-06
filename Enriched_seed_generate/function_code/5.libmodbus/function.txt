@@ -1,0 +1,382 @@
+Modbus Function Code Reference
+==============================
+
+Scope
+-----
+This file contains:
+
+1. Modbus public function codes
+2. Legacy function codes
+3. Diagnostics subfunctions
+4. Encapsulated Interface Transport MEI types
+5. Read Device Identification codes
+6. Modbus exception codes
+7. User-defined function-code ranges
+
+================================================================
+1. MODBUS FUNCTION CODES
+================================================================
+
+0x01 = Read Coils
+0x02 = Read Discrete Inputs
+0x03 = Read Holding Registers
+0x04 = Read Input Registers
+0x05 = Write Single Coil
+0x06 = Write Single Register
+0x07 = Read Exception Status
+0x08 = Diagnostics
+0x09 = Program 484
+0x0A = Poll 484
+0x0B = Get Communication Event Counter
+0x0C = Get Communication Event Log
+0x0D = Program Controller
+0x0E = Poll Controller
+0x0F = Write Multiple Coils
+0x10 = Write Multiple Registers
+0x11 = Report Server ID
+0x12 = Program 884/M84
+0x13 = Reset Communication Link
+0x14 = Read File Record
+0x15 = Write File Record
+0x16 = Mask Write Register
+0x17 = Read/Write Multiple Registers
+0x18 = Read FIFO Queue
+0x2B = Encapsulated Interface Transport
+
+Function code summary:
+
+0x01 Read Coils
+    Read one or more coil values.
+    Request:
+        Starting Address
+        Quantity of Coils
+    Response:
+        Byte Count
+        Packed Coil Status
+
+0x02 Read Discrete Inputs
+    Read one or more discrete input values.
+    Request:
+        Starting Address
+        Quantity of Inputs
+    Response:
+        Byte Count
+        Packed Input Status
+
+0x03 Read Holding Registers
+    Read holding registers.
+    Request:
+        Starting Address
+        Quantity of Registers
+    Response:
+        Byte Count
+        Register Values
+
+0x04 Read Input Registers
+    Read input registers.
+    Request:
+        Starting Address
+        Quantity of Registers
+    Response:
+        Byte Count
+        Register Values
+
+0x05 Write Single Coil
+    Write one coil.
+    Legal output values:
+        0xFF00 = ON
+        0x0000 = OFF
+
+0x06 Write Single Register
+    Write one 16-bit holding register.
+
+0x07 Read Exception Status
+    Serial-line-only function returning exception status bits.
+
+0x08 Diagnostics
+    Execute one diagnostics subfunction.
+
+0x09 Program 484
+    Legacy Modicon 484 programming function.
+
+0x0A Poll 484
+    Legacy Modicon 484 polling function.
+
+0x0B Get Communication Event Counter
+    Return communication event status and event count.
+
+0x0C Get Communication Event Log
+    Return communication status, counters, and event bytes.
+
+0x0D Program Controller
+    Legacy controller programming function.
+
+0x0E Poll Controller
+    Legacy controller polling function.
+
+0x0F Write Multiple Coils
+    Write multiple packed coil values.
+
+0x10 Write Multiple Registers
+    Write multiple 16-bit holding registers.
+
+0x11 Report Server ID
+    Return server identifier and run-state information.
+
+0x12 Program 884/M84
+    Legacy controller programming function.
+
+0x13 Reset Communication Link
+    Legacy communication-link reset function.
+
+0x14 Read File Record
+    Read one or more file-record groups.
+
+0x15 Write File Record
+    Write one or more file-record groups.
+
+0x16 Mask Write Register
+    Modify one holding register using AND and OR masks.
+
+0x17 Read/Write Multiple Registers
+    Write multiple registers and read multiple registers in one transaction.
+
+0x18 Read FIFO Queue
+    Read the contents of a FIFO queue.
+
+0x2B Encapsulated Interface Transport
+    Carry an MEI operation, including Read Device Identification.
+
+================================================================
+2. FUNCTION CODE ASSIGNMENT RANGES
+================================================================
+
+0x01-0x40 = Public or historically assigned range
+0x41-0x48 = User-defined function-code range
+0x49-0x63 = Public/reserved range
+0x64-0x6E = User-defined function-code range
+0x6F-0x7F = Public/reserved range
+
+0x80-0xFF are not normal request function codes.
+
+For an exception response:
+
+Exception Function Code = Request Function Code OR 0x80
+
+Examples:
+
+Request 0x03 -> Exception Response 0x83
+Request 0x06 -> Exception Response 0x86
+Request 0x10 -> Exception Response 0x90
+Request 0x2B -> Exception Response 0xAB
+
+================================================================
+3. MODBUS DIAGNOSTICS SUBFUNCTIONS
+================================================================
+
+Diagnostics function code:
+
+0x08 = Diagnostics
+
+The first two data bytes contain the diagnostics subfunction.
+
+0x0000 = Return Query Data
+0x0001 = Restart Communications Option
+0x0002 = Return Diagnostic Register
+0x0003 = Change ASCII Input Delimiter
+0x0004 = Force Listen Only Mode
+
+0x0005-0x0009 = Reserved
+
+0x000A = Clear Counters and Diagnostic Register
+0x000B = Return Bus Message Count
+0x000C = Return Bus Communication Error Count
+0x000D = Return Bus Exception Error Count
+0x000E = Return Server Message Count
+0x000F = Return Server No Response Count
+0x0010 = Return Server NAK Count
+0x0011 = Return Server Busy Count
+0x0012 = Return Bus Character Overrun Count
+0x0013 = Clear Overrun Counter and Flag
+0x0014 = Get/Clear Modbus Plus Statistics
+
+Diagnostics subfunction details:
+
+0x0000 Return Query Data
+    Echo the request data in the response.
+
+0x0001 Restart Communications Option
+    Restart communication processing.
+    Data value 0x0000:
+        Clear event log.
+    Data value 0xFF00:
+        Preserve event log where supported.
+
+0x0002 Return Diagnostic Register
+    Return the server diagnostic register.
+
+0x0003 Change ASCII Input Delimiter
+    Change the Modbus ASCII message delimiter.
+
+0x0004 Force Listen Only Mode
+    Place the serial server into listen-only mode.
+
+0x000A Clear Counters and Diagnostic Register
+    Clear communication counters and diagnostic register.
+
+0x000B Return Bus Message Count
+    Return number of messages detected on the bus.
+
+0x000C Return Bus Communication Error Count
+    Return number of communication errors.
+
+0x000D Return Bus Exception Error Count
+    Return number of exception responses.
+
+0x000E Return Server Message Count
+    Return number of messages processed by the server.
+
+0x000F Return Server No Response Count
+    Return number of messages for which no response was sent.
+
+0x0010 Return Server NAK Count
+    Return server negative-acknowledgement count.
+
+0x0011 Return Server Busy Count
+    Return server busy exception count.
+
+0x0012 Return Bus Character Overrun Count
+    Return character-overrun count.
+
+0x0013 Clear Overrun Counter and Flag
+    Clear overrun state.
+
+0x0014 Get/Clear Modbus Plus Statistics
+    Network-specific legacy operation.
+
+================================================================
+4. ENCAPSULATED INTERFACE TRANSPORT
+================================================================
+
+Function Code:
+
+0x2B = Encapsulated Interface Transport
+
+MEI Type:
+
+0x0D = CANopen General Reference
+0x0E = Read Device Identification
+
+Other MEI values:
+    Reserved, future, or implementation-specific.
+
+================================================================
+5. READ DEVICE IDENTIFICATION CODES
+================================================================
+
+Function Code:
+    0x2B
+
+MEI Type:
+    0x0E
+
+Read Device ID Code:
+
+0x01 = Basic Device Identification
+0x02 = Regular Device Identification
+0x03 = Extended Device Identification
+0x04 = Specific Device Identification Object
+
+Device Identification Object IDs:
+
+0x00 = VendorName
+0x01 = ProductCode
+0x02 = MajorMinorRevision
+0x03 = VendorUrl
+0x04 = ProductName
+0x05 = ModelName
+0x06 = UserApplicationName
+
+0x07-0x7F = Reserved for additional standard objects
+0x80-0xFF = Private or optional extended objects
+
+Basic Device Identification normally contains:
+
+0x00 VendorName
+0x01 ProductCode
+0x02 MajorMinorRevision
+
+Regular Device Identification may also contain:
+
+0x03 VendorUrl
+0x04 ProductName
+0x05 ModelName
+0x06 UserApplicationName
+
+================================================================
+6. MODBUS EXCEPTION CODES
+================================================================
+
+0x01 = Illegal Function
+0x02 = Illegal Data Address
+0x03 = Illegal Data Value
+0x04 = Server Device Failure
+0x05 = Acknowledge
+0x06 = Server Device Busy
+0x07 = Negative Acknowledge
+0x08 = Memory Parity Error
+0x0A = Gateway Path Unavailable
+0x0B = Gateway Target Device Failed to Respond
+
+Exception details:
+
+0x01 Illegal Function
+    Function code is not supported by the addressed server.
+
+0x02 Illegal Data Address
+    Requested data address or range is not supported.
+
+0x03 Illegal Data Value
+    Request quantity, value, or request format is invalid.
+
+0x04 Server Device Failure
+    Server encountered an internal failure.
+
+0x05 Acknowledge
+    Long-duration operation was accepted and is still processing.
+
+0x06 Server Device Busy
+    Server is temporarily unable to process the request.
+
+0x07 Negative Acknowledge
+    Legacy programming operation cannot be completed.
+
+0x08 Memory Parity Error
+    Memory parity error occurred.
+
+0x0A Gateway Path Unavailable
+    Gateway cannot access the required downstream path.
+
+0x0B Gateway Target Device Failed to Respond
+    Downstream server did not respond.
+
+================================================================
+7. NORMAL INITIAL SEED FUNCTION CODES
+================================================================
+
+Recommended initial Modbus request function codes:
+
+0x01 Read Coils
+0x02 Read Discrete Inputs
+0x03 Read Holding Registers
+0x04 Read Input Registers
+0x05 Write Single Coil
+0x06 Write Single Register
+0x0F Write Multiple Coils
+0x10 Write Multiple Registers
+0x14 Read File Record
+0x15 Write File Record
+0x16 Mask Write Register
+0x17 Read/Write Multiple Registers
+0x18 Read FIFO Queue
+0x2B Read Device Identification

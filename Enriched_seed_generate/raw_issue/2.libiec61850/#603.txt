@@ -1,0 +1,130 @@
+issue #603
+
+Summary
+Since v1.6.2, parseGooseMessage drops every GOOSE frame whose byte count
+equals its declared size exactly — the normal case for any GOOSE frame
+longer than the 60-byte Ethernet minimum, and for every frame fed through
+GooseReceiver_handleMessage. v1.6.1 accepted these frames. In practice
+this breaks live GOOSE subscription for realistic datasets: only frames
+small enough to be padded up to the Ethernet minimum (which delivers extra
+slack bytes past the declared size) still get through.
+
+Root cause
+Commit 78fc47d ("GOOSE receiver: fixed length check that can cause
+out-of-bound read when parsing GOOSE messages", first released in v1.6.2)
+changed the size guard in parseGooseMessage
+(src/goose/goose_receiver.c:1175) from
+
+if (numbytes < length + headerLength)
+to
+
+if (numbytes <= length + headerLength)
+But equality is the well-formed minimum, not an error: headerLength is
+the Ethernet header (14, +4 with VLAN) and length is the GOOSE Length
+field (8 header bytes + APDU), so a complete frame with no trailing
+padding is exactly headerLength + length bytes. With <= such a frame
+is rejected as "Invalid PDU size" before any subscriber matching.
+
+Reproduction
+Self-contained (no socket, no capabilities): builds a minimal valid GOOSE
+frame — one BOOLEAN dataset entry, 111 bytes total, exactly
+14 + Length(97), i.e. no trailing padding, exactly what a raw socket
+delivers for any GOOSE frame above the Ethernet minimum — and feeds it to
+GooseReceiver_handleMessage.
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <libiec61850/goose_receiver.h>
+#include <libiec61850/goose_subscriber.h>
+#include <libiec61850/iec61850_common.h>
+
+static int fired = 0;
+
+static void
+listener(GooseSubscriber s, void* param)
+{
+    (void) param;
+    fired++;
+    printf("listener fired: stNum=%u sqNum=%u confRev=%u valid=%d\n",
+           GooseSubscriber_getStNum(s), GooseSubscriber_getSqNum(s),
+           GooseSubscriber_getConfRev(s), GooseSubscriber_isValid(s));
+}
+
+/* tag + short-form BER length + content */
+static int
+tlv(uint8_t* out, uint8_t tag, const uint8_t* content, int len)
+{
+    out[0] = tag;
+    out[1] = (uint8_t) len;
+    memcpy(out + 2, content, (size_t) len);
+    return 2 + len;
+}
+
+int
+main(void)
+{
+    uint8_t pduBody[256];
+    int p = 0;
+
+    static const char goCbRef[] = "IEDLD0/LLN0$GO$gcb01";
+    static const char datSet[] = "IEDLD0/LLN0$DS$ds01";
+    static const char goId[] = "gcb01";
+    static const uint8_t tal[] = { 0x07, 0xd0 };            /* 2000 ms */
+    static const uint8_t t[] = { 0x6a, 0x5b, 0x8f, 0x50,    /* utc time */
+                                 0x00, 0x00, 0x00, 0x0a };
+    static const uint8_t one[] = { 0x01 };
+    static const uint8_t zero[] = { 0x00 };
+    static const uint8_t seven[] = { 0x07 };
+    static const uint8_t boolTrue[] = { 0x83, 0x01, 0x01 }; /* allData */
+
+    p += tlv(pduBody + p, 0x80, (const uint8_t*) goCbRef, (int) strlen(goCbRef));
+    p += tlv(pduBody + p, 0x81, tal, 2);
+    p += tlv(pduBody + p, 0x82, (const uint8_t*) datSet, (int) strlen(datSet));
+    p += tlv(pduBody + p, 0x83, (const uint8_t*) goId, (int) strlen(goId));
+    p += tlv(pduBody + p, 0x84, t, 8);
+    p += tlv(pduBody + p, 0x85, one, 1);   /* stNum 1 */
+    p += tlv(pduBody + p, 0x86, zero, 1);  /* sqNum 0 */
+    p += tlv(pduBody + p, 0x87, zero, 1);  /* simulation false */
+    p += tlv(pduBody + p, 0x88, seven, 1); /* confRev 7 */
+    p += tlv(pduBody + p, 0x89, zero, 1);  /* ndsCom false */
+    p += tlv(pduBody + p, 0x8a, one, 1);   /* numDatSetEntries 1 */
+    p += tlv(pduBody + p, 0xab, boolTrue, 3);
+
+    uint8_t frame[512];
+    int f = 0;
+    static const uint8_t dst[] = { 0x01, 0x0c, 0xcd, 0x01, 0x00, 0x01 };
+    static const uint8_t src[] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
+    memcpy(frame + f, dst, 6); f += 6;
+    memcpy(frame + f, src, 6); f += 6;
+    frame[f++] = 0x88; frame[f++] = 0xb8;  /* GOOSE Ethertype */
+    frame[f++] = 0x30; frame[f++] = 0x00;  /* appId 0x3000 */
+    int pduLen = 2 + p;                    /* goosePdu TLV (0x61, len < 128) */
+    int length = 8 + pduLen;               /* the GOOSE Length field */
+    frame[f++] = (uint8_t) (length >> 8);
+    frame[f++] = (uint8_t) (length & 0xff);
+    frame[f++] = 0; frame[f++] = 0;        /* reserved 1 */
+    frame[f++] = 0; frame[f++] = 0;        /* reserved 2 */
+    frame[f++] = 0x61;
+    frame[f++] = (uint8_t) p;
+    memcpy(frame + f, pduBody, (size_t) p); f += p;
+
+    /* f == 14 + length: a complete frame, no trailing padding — exactly
+     * what a raw socket delivers for any GOOSE frame > 60 bytes. */
+    printf("libiec61850 %s, frame bytes=%d (14 eth + Length=%d)\n",
+           LibIEC61850_getVersionString(), f, length);
+
+    GooseReceiver receiver = GooseReceiver_create();
+    GooseSubscriber subscriber = GooseSubscriber_create((char*) goCbRef, NULL);
+    GooseSubscriber_setListener(subscriber, listener, NULL);
+    GooseReceiver_addSubscriber(receiver, subscriber);
+
+    GooseReceiver_handleMessage(receiver, frame, f);
+
+    printf(fired ? "RESULT: frame accepted\n"
+                 : "RESULT: frame DROPPED (listener never fired)\n");
+
+    GooseReceiver_destroy(receiver);
+    return fired ? 0 : 1;
+}

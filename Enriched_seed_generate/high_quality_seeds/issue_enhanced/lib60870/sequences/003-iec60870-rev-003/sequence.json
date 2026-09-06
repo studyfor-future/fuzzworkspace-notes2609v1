@@ -1,0 +1,52 @@
+{
+  "seed_id": "iec60870-rev-003",
+  "title": "Sequence-form known-type M_SP_NA_1 with two elements",
+  "strategy": "length_boundary_valid",
+  "target_operation": "M_SP_NA_1 sequence form",
+  "purpose": "Cover valid sequence-form VSQ parsing with a documented known TypeID and two data elements, using base IOA semantics consistent with sequence form.",
+  "evidence_ids": [
+    "protocol_format:iec60870:template-catalog:9f5b0c23042f",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:48ab3e72d47c",
+    "function_code:function:function-text:b5d0e8baf37c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cs104_i_frame_m_sp_na_1_sequence_two_elements",
+      "hex": "680e0000000001820300010000000001",
+      "byte_length": 16,
+      "sha256": "20096ac50ab89bd69543a2a2ef56fd91c062de5ad4551022410af0eeb7a78463"
+    }
+  ],
+  "expected_behavior": "A robust implementation should parse a valid sequence-form ASDU for TypeID 1 with count 2, one base IOA, and two element bytes, then process or reject it semantically without boundary errors.",
+  "constraints_preserved": [
+    "TypeID 1 is a documented IEC 60870 monitoring type",
+    "VSQ 0x82 sets sequence flag and count 2",
+    "Sequence form still preserves documented ASDU header ordering",
+    "Only one base information object address is encoded for the sequence-form ASDU",
+    "Two element payload octets follow the base IOA",
+    "APDU length 0x0e exactly matches 4 APCI bytes plus 10 ASDU bytes"
+  ],
+  "issue_safety_notes": "Intentionally avoids the historical missing-base-IOA and oversized-count patterns by keeping count small and body length sufficient.",
+  "sequence_sha256": "eec8e326988c17709ebc53283c17cb5905a31dd071f89dd2fe13152e2d8667b0",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "20096ac50ab89bd69543a2a2ef56fd91c062de5ad4551022410af0eeb7a78463",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

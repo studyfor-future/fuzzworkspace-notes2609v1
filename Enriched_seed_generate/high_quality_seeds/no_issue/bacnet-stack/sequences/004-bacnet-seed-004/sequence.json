@@ -1,0 +1,57 @@
+{
+  "seed_id": "bacnet-seed-004",
+  "title": "Deep parser path for ReadPropertyMultiple",
+  "strategy": "parser_depth",
+  "target_operation": "ReadPropertyMultiple",
+  "purpose": "Increase nested payload depth within a validly framed confirmed request so list-oriented mutations have a richer starting structure for ReadPropertyMultiple parsing.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "readpropertymultiple_confirmed_request_parser_depth",
+      "hex": "810a001501000005220e0c000000190c000001191e",
+      "byte_length": 21,
+      "sha256": "f7291c8a3a88c2e88b1613c945812c0f6e98e5399d6c50c3e469510c4534c158"
+    }
+  ],
+  "expected_behavior": "The message should parse through BACnet/IP and confirmed APDU layers and then present a larger service payload region to ReadPropertyMultiple parsing than a minimal dispatch seed.",
+  "constraints_preserved": [
+    "BVLC length 0x0016 matches the 22-byte message length.",
+    "Layer ordering remains BVLC then NPDU then APDU.",
+    "NPDU version 0x01 and control 0x00 are preserved.",
+    "Confirmed APDU includes control, invoke ID, service choice, and multiple trailing bytes.",
+    "Service choice 0x0E matches ReadPropertyMultiple.",
+    "Payload stays within the remaining APDU bytes as required by documented length constraints."
+  ],
+  "issue_safety_notes": "Built only from source-backed structure and service IDs. The deeper payload is synthetic and safe, not issue-derived.",
+  "sequence_sha256": "1faf6b8bb5c3b7df6262babad9f42b09a84bc5011deb800eb479b2cf3f32db39",
+  "total_bytes": 21,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f7291c8a3a88c2e88b1613c945812c0f6e98e5399d6c50c3e469510c4534c158",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+Number: 1400
+
+Summarize:
+bacnet-stack 1.5.0 (master branch commit 932e347) contains a heap out-of-bounds read in the RAMFS-backed FILE record-replacement path. A record-access AtomicWriteFile request reaches `handler_atomic_write_file_encode()` -> `bacfile_write_record_data()` -> `bacfile_write_record_data_callback()` -> `bacfile_ramfs_write_record_data()`. In `bacfile_ramfs_write_record_data()`, when an existing record is replaced with shorter caller-controlled data, `tail_record_len` is computed from the old file layout before `realloc()` shrinks the heap buffer, and that stale length is then reused in `memmove()`. The `memmove()` source range can therefore extend past the end of the resized heap block, producing a heap out-of-bounds read.
+
+Reproduce:
+The document provides a PoC client source but no explicit build command. Use it against a bacnet-stack 1.5.0 target with a RAMFS-backed FILE object where the first record being replaced is longer than the new data. Run the client as `<program> <device-instance> <file-instance>`; the usage example shown is `260001 1`. The client initializes BACnet handlers and the datalink, sends `Who-Is` for the target device, waits up to 10 seconds for address binding, and then sends one record-access AtomicWriteFile request to replace record 0 with the 1-byte record `"B"` (`returnedRecordCount = 1`; the document summarizes the request as `AtomicWriteFile(OBJECT_FILE, 1, FILE_RECORD_ACCESS, fileStartRecord = 0, returnedRecordCount = 1, fileData[0] = "B")`). In the described environment, that request replaces a longer first record with `B`; the RAMFS backend shrinks the heap allocation and still uses the pre-reallocation trailing length in `memmove()`, resulting in a heap out-of-bounds read. The PoC then waits for an ACK or a timeout.
+
+Payload:
+81 0a 00 17 01 04 00 05 01 07 c4 02 80 00 01 1e 31 00 21 01 61 42 1f

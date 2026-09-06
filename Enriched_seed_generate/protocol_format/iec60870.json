@@ -1,0 +1,113 @@
+{
+  "iec60870-5-101": {
+    "Common Headers": {},
+    "Error or Exception Templates": {},
+    "Extraction Quality": {
+      "header_templates": 0,
+      "message_count": 3,
+      "non_header_templates": 3,
+      "real_strong_templates": 3,
+      "reasons": [],
+      "status": "success",
+      "strong_fields": 3
+    },
+    "Layered Structure": {
+      "asdu": [
+        "ASDU",
+        "C_SC_NA_1",
+        "M_ST_NA_1"
+      ]
+    },
+    "Message Templates": {
+      "ASDU": {
+        "Field 1": {
+          "Description": "Protocol field 'type_id'. Layer: asdu. Role: type. Type: enum. Range: [1, 127]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "must be one of the IEC 60870-5-101/104 valid TypeID values (1..127)",
+          "Length": "8 bits",
+          "Protocol constraints": ""
+        },
+        "Field 2": {
+          "Description": "Protocol field 'vsq'. Layer: asdu. Role: control. Type: uint8. Constraints: 7-bit count 1..127, MSB=1 indicates sequence format, MSB=0 indicates non-sequence format. Range: [0, 127]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: mask.",
+          "Implementation constraints": "mask 0x7f applied to extract count, mask 0x80 applied to extract flag, bit-7 encodes format flag, bits 0-6 encode element count",
+          "Length": "8 bits",
+          "Protocol constraints": ""
+        },
+        "Field 3": {
+          "Description": "Protocol field 'cause_of_transmission'. Layer: asdu. Role: cause. Type: uint8|uint16. Constraints: parameters->sizeOfCOT determines 1 or 2 octets, bit-7 is P/N bit, bit-6 is T bit. Range: [0, 65535]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset|mask|length_check.",
+          "Implementation constraints": "sizeOfCOT in parameters object, sizeOfCOT set by standard configuration",
+          "Length": "8|16 bits",
+          "Protocol constraints": ""
+        },
+        "Field 4": {
+          "Description": "Protocol field 'common_address'. Layer: asdu. Role: address. Type: uint8|uint16. Constraints: size determined by CS101_AppLayerParameters.sizeOfCA (1 or 2), little-endian byte order for 2-byte case. Range: [0, 65535]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "must be placed immediately after COT field, sizeOfCA is fixed for a single link/connection",
+          "Length": "8|16 bits",
+          "Protocol constraints": ""
+        },
+        "Field 5": {
+          "Description": "Protocol field 'information_object_address'. Layer: asdu. Role: address. Type: uint8|uint16|uint24. Constraints: length in bytes configured by parameters->sizeOfIOA (1,2,3), little-endian byte order, range 0x000000..0xFFFFFF. Range: [0, 16777215]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "always placed immediately after ASDU header, absent when isSequence flag is true, sizeOfIOA determines presence of 2nd and 3rd byte",
+          "Length": "variable",
+          "Protocol constraints": ""
+        }
+      }
+    },
+    "Object or Data Templates": {
+      "M_ST_NA_1": {
+        "Field 1": {
+          "Description": "Protocol field 'information_object_address'. Layer: asdu. Role: address. Type: variable. Inferred-from: wire.",
+          "Implementation constraints": "",
+          "Length": "variable",
+          "Protocol constraints": ""
+        },
+        "Field 2": {
+          "Description": "Protocol field 'value_with_transient_indication'. Layer: asdu. Role: value. Type: int8. Constraints: range -64..+63 stored as 0..127 in low 7 bits, bit 7 used as isTransient boolean. Range: [-64, 63]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "value clamped to -64..+63 before encode, value<0 offset by +128 to fit 0..127, bit 7 isTransient flag, 0x7F mask covers valid step value",
+          "Length": "8 bits",
+          "Protocol constraints": ""
+        },
+        "Field 3": {
+          "Description": "Protocol field 'quality_descriptor'. Layer: asdu. Role: quality. Type: uint8. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "",
+          "Length": "8 bits",
+          "Protocol constraints": ""
+        },
+        "Field 4": {
+          "Description": "Protocol field 'three_octet_timestamp'. Layer: asdu. Role: time. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: length_check.",
+          "Implementation constraints": "size sanity-checked via minSize +=5 (3-byte timestamp + 2 bytes vti+quality), encoded by Frame_appendBytes(self->timestamp.encodedValue, 3), decode copies 3 bytes sequentially from msg buffer",
+          "Length": "24 bits",
+          "Protocol constraints": "CP24Time2a is a packed 3-byte structure encoding milliseconds (0–59999) in first 2 bytes and minutes/invalid bits in third byte"
+        },
+        "Field 5": {
+          "Description": "Protocol field 'seven_octet_timestamp'. Layer: asdu. Role: time. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: length_check.",
+          "Implementation constraints": "exactly 7 octets, milliseconds since minute 0..59999, invalid=0xFFFF, summer-time flag bit 6",
+          "Length": "56 bits",
+          "Protocol constraints": ""
+        }
+      }
+    },
+    "Protocol Overview": {
+      "implementation": "lib60870-2.3.1",
+      "profile": "iec60870-5-101",
+      "protocol": "IEC60870",
+      "rule_family": "iec",
+      "variant": ""
+    },
+    "Service or Function Specific Templates": {
+      "C_SC_NA_1": {
+        "Field 1": {
+          "Description": "Protocol field 'information_object_address'. Layer: asdu. Role: address. Type: uint24. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: length_check.",
+          "Implementation constraints": "set inside SingleCommand_create(ioa), consumed in SingleCommand_getFromBuffer via InformationObject_getFromBuffer, size configurable per CS101_AppLayerParameters->sizeOfIOA",
+          "Length": "24 bits",
+          "Protocol constraints": ""
+        },
+        "Field 2": {
+          "Description": "Protocol field 'single_command_qualifier'. Layer: asdu. Role: control. Type: uint8. Constraints: bit 7: select (0 = execute, 1 = select), bits 6-2: QU (qualifier, 0-31), bit 0: state (0 = off, 1 = on). Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+          "Implementation constraints": "qu masked to 5 bits (0x1f) before shift",
+          "Length": "8 bits",
+          "Protocol constraints": "SCO byte follows IOA in ASDU payload"
+        }
+      }
+    }
+  }
+}

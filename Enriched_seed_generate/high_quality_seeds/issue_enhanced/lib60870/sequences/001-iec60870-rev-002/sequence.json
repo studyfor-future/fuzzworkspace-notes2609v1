@@ -1,0 +1,87 @@
+{
+  "seed_id": "iec60870-rev-002",
+  "title": "Stateful framed setup ending in C_IC_NA_1 station interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "C_IC_NA_1",
+  "purpose": "Exercise parser state across multiple complete CS104 I-frames, warming with a monitoring APDU and a command APDU before a valid station interrogation request using qualifier 20.",
+  "evidence_ids": [
+    "protocol_format:iec60870:format-overview:aa7f710118bf",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:48ab3e72d47c",
+    "function_code:function:function-text:1a7398f08c97",
+    "function_code:function:function-text:b5d0e8baf37c",
+    "function_code:function:function-text:bcdc884a69d7",
+    "function_code:function:function-text:ff9a2bbfa022"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "warmup_m_sp_na_1_request",
+      "hex": "680d00000000010105000100000000",
+      "byte_length": 15,
+      "sha256": "7d2268237ae3cc568eb72d871cce6524ebb7518b3a00aa87428e8ab1a56d4afd"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "warmup_c_sc_na_1_activation",
+      "hex": "680e020000002d010600010002000001",
+      "byte_length": 16,
+      "sha256": "f13df412586d44fe935b5579ba6837a6034e36c2b2f2acc8661f0a4e9593438f"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "target_c_ic_na_1_station_interrogation",
+      "hex": "680e0400000064010600010000000014",
+      "byte_length": 16,
+      "sha256": "451f04f969bd6ba295e0887645f3e0319e92b6e5b402a2792012f2056c40f731"
+    }
+  ],
+  "expected_behavior": "A CS104 endpoint should parse three successive valid I-frames and reach interrogation-command handling on the final frame with TypeID 100 and interrogation qualifier 20.",
+  "constraints_preserved": [
+    "Each message is a complete CS104 APDU with start byte 0x68 and correct L field",
+    "Each message includes 4 APCI control bytes before the ASDU",
+    "ASDU core field order is preserved in all frames",
+    "First frame uses documented TypeID 1 M_SP_NA_1",
+    "Second frame uses documented TypeID 45 C_SC_NA_1",
+    "Third frame uses documented TypeID 100 C_IC_NA_1",
+    "VSQ is one-object non-sequence in all three frames",
+    "Final qualifier byte 20 matches the documented station interrogation qualifier"
+  ],
+  "issue_safety_notes": "Uses valid framed traffic only and avoids deadlock or malformed-framing motifs from issue reports while still adding stateful depth.",
+  "sequence_sha256": "1bd1eaef7d8fa8961daeab9009bab12bff57fd6d40a478362400e211ca39048f",
+  "total_bytes": 47,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b183699f52d98bd562c9fd1ec7b565fb75c66a9f139ebee50bdda3109cbe591d",
+    "encoded_bytes": 47,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 31,
+        "payload_offset": 31,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

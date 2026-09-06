@@ -1,0 +1,56 @@
+{
+  "seed_id": "bacnet-seed-011",
+  "title": "Function coverage for VT-Open",
+  "strategy": "function_code_coverage",
+  "target_operation": "VT-Open",
+  "purpose": "Exercise VT-Open confirmed-service dispatch with a more complete APDU skeleton and non-empty payload region.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "vt_open_confirmed_request",
+      "hex": "810a000d0100000507150c0201",
+      "byte_length": 13,
+      "sha256": "f6a9af76a3f0b95f3bccd6b6e5afea826d6e3e9a747ac9240bd1d81ced1d8f67"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP parser should recognize the confirmed request and enter VT-Open handling with a small argument-like payload region available.",
+  "constraints_preserved": [
+    "BVLC length 0x000E matches actual bytes.",
+    "NPDU header is complete and minimal.",
+    "APDU uses confirmed-request type and includes invoke ID plus service choice.",
+    "Confirmed service choice 0x15 matches VT-Open.",
+    "Payload bytes remain bounded by the declared length."
+  ],
+  "issue_safety_notes": "No VT-specific issue shaping is used; this is a conservative service-dispatch seed only.",
+  "sequence_sha256": "3fcc1a8a60e5e8575248821cfb8ad599f9ae5023231dfc32b13b369d28c9dfe3",
+  "total_bytes": 13,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f6a9af76a3f0b95f3bccd6b6e5afea826d6e3e9a747ac9240bd1d81ced1d8f67",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ]
+  }
+}

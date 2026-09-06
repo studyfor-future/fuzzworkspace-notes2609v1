@@ -1,0 +1,49 @@
+{
+  "seed_id": "modbustcp-seed-007",
+  "title": "Function coverage for Write Multiple Registers",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Provide a valid multi-register write with matched quantity and byte-count fields.",
+  "evidence_ids": [
+    "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+    "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+    "function_code:function:function-text:f0f06c273053"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_multiple_registers_request",
+      "hex": "00080000000b01100001000204000a000b",
+      "byte_length": 17,
+      "sha256": "ec6449e1a73e35005435dfef4a3ccbd5f6e377a8d2ca448462f7258ae51a9957"
+    }
+  ],
+  "expected_behavior": "Server should parse the request as Write Multiple Registers starting at 0x0001, quantity 0x0002, byte count 0x04, with two register values 0x000A and 0x000B.",
+  "constraints_preserved": [
+    "MBAP header present.",
+    "protocol_id is 0x0000.",
+    "length is 0x000b for unit_id plus 10-byte function 0x10 PDU.",
+    "Function code 0x10 is used for Write Multiple Registers.",
+    "Quantity 0x0002 matches byte count 0x04 and exactly two 16-bit register values."
+  ],
+  "issue_safety_notes": "This seed stays fully coherent and avoids inflated counts or malformed payload lengths.",
+  "sequence_sha256": "e4548a6d122b6258920de6f4b16be5bf09e2e1933e965c4b4005cde3fe23d74c",
+  "total_bytes": 17,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ec6449e1a73e35005435dfef4a3ccbd5f6e377a8d2ca448462f7258ae51a9957",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

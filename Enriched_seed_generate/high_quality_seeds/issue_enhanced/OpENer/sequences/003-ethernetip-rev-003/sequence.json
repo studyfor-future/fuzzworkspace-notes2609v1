@@ -1,0 +1,70 @@
+{
+  "seed_id": "ethernetip-rev-003",
+  "title": "Stateful minimal valid SendRRData",
+  "strategy": "length_boundary_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Repair the minimal SendRRData concept by preceding it with RegisterSession and using the smallest complete valid CPF plus CIP Message Router request.",
+  "evidence_ids": [
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:dac0edf7a66f",
+    "function_code:function:function-text:07e39e004b86",
+    "issue:582:582-summary:95e9bb0be3fe"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_setup",
+      "hex": "65000400785634120000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "7eaa4db40ae3e1ce8536b2bad1aa183177ba1027551d9b4ede21b1f2b31c66ce"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_minimal_complete_cip",
+      "hex": "6f0015007856341200000000000000000000000000000000000000000000020000000000b20006010220012401",
+      "byte_length": 45,
+      "sha256": "39ae591558e065227bedefee43345ac52e1fa994b82ab169f8c40c1057e96c46"
+    }
+  ],
+  "expected_behavior": "After registration, the target should parse SendRRData, process the documented Null Address and Unconnected Data CPF items, and dispatch the 6-byte CIP request or reject it cleanly at the application layer.",
+  "constraints_preserved": [
+    "SendRRData command is 0x006f little-endian.",
+    "SendRRData session handle is nonzero and consistent across the stateful pair.",
+    "Encapsulation length is 0x0014 matching 20 bytes of command-specific data.",
+    "Interface handle is 4-byte zero and timeout is 2-byte zero.",
+    "CPF item count is 2.",
+    "Null Address Item type is 0x0000 with length 0.",
+    "Unconnected Data Item type is 0x00b2 with length 0x0006 matching the CIP bytes.",
+    "CIP request uses service 0x01 and path size 0x02 with exactly four request-path bytes."
+  ],
+  "issue_safety_notes": "This preserves the sensitive explicit-message surface while avoiding forged path sizes or truncated item data described in issue 582.",
+  "sequence_sha256": "ea4cce5a886a0e2fa6aee9ff9b2e518ba2a7c17cd1fb48e79fe074327cf00798",
+  "total_bytes": 73,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "67427468a0337af285a0433646e9b5c8ec97c3ae259dd6adff271c779ea9c717",
+    "encoded_bytes": 73,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

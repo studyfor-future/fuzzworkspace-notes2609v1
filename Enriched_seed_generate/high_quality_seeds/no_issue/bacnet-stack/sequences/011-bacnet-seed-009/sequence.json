@@ -1,0 +1,54 @@
+{
+  "seed_id": "bacnet-seed-009",
+  "title": "Function coverage for I-Am",
+  "strategy": "function_code_coverage",
+  "target_operation": "I-Am",
+  "purpose": "Provide source-backed unconfirmed service coverage using a broadcast NPDU and a compact payload region beyond the unconfirmed selector.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "i_am_unconfirmed_broadcast",
+      "hex": "810b000b010010000c0201",
+      "byte_length": 11,
+      "sha256": "74dfe47b241ba11d5a9f8140198ea3a17c996f450425aaa44e8e7d0fea5b7e5f"
+    }
+  ],
+  "expected_behavior": "The target should parse the broadcast NPDU, identify an Unconfirmed-Request-PDU, and dispatch to unconfirmed service choice 0x00 with payload bytes available for further validation.",
+  "constraints_preserved": [
+    "BVLC function 0x0B is used for Original-Broadcast-NPDU.",
+    "BVLC length 0x000C matches the 12-byte message length.",
+    "NPDU version 0x01 and control 0x00 are present.",
+    "APDU first octet 0x10 denotes Unconfirmed-Request-PDU.",
+    "Unconfirmed service choice 0x00 matches I-Am."
+  ],
+  "issue_safety_notes": "Uses only a source-backed unconfirmed selector and conservative extra bytes. No unsupported Who-Is or Who-Has claims remain.",
+  "sequence_sha256": "3c65b3778e9acbae0ce78b566e2762546178a07295d3d638770a9443fbcd094c",
+  "total_bytes": 11,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "74dfe47b241ba11d5a9f8140198ea3a17c996f450425aaa44e8e7d0fea5b7e5f",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "seed_id": "ethernetip-seed-010",
+  "title": "Set_Attribute_Single with compact write data",
+  "strategy": "function_code_coverage",
+  "target_operation": "Set_Attribute_Single",
+  "purpose": "Exercise a write-style CIP common service with class, instance, and attribute path segments plus a short service-data body.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:dac0edf7a66f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_set_attribute_single",
+      "hex": "6f001a000000000000000000000000000000000000000000000000000000020000000000b2000c0010032001240130010100",
+      "byte_length": 50,
+      "sha256": "1d6756ec6882bcc8b14e5534709a15bd478323be52368c8f8fec10c5947ad925"
+    }
+  ],
+  "expected_behavior": "The receiver should parse the valid explicit-message transport and then process or reject the single-attribute write request at CIP level.",
+  "constraints_preserved": [
+    "Encapsulation length is 0x001c and matches 28 command-specific bytes.",
+    "SendRRData uses interface handle and timeout before CPF.",
+    "CPF item_count is 2 with Null Address Item then Unconnected Data Item.",
+    "Unconnected item length is 12 and matches the CIP bytes.",
+    "Service code 0x10 is the documented Set_Attribute_Single service.",
+    "Path-size byte 0x03 matches the class-instance-attribute path."
+  ],
+  "issue_safety_notes": "This seed is valid and compact, leaving payload growth to later mutations rather than forcing aggressive writes.",
+  "sequence_sha256": "b054f4d636cf122ad07daa5737afff97ddd5e2a3e0e7a1ce674fed4b74d648a3",
+  "total_bytes": 50,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1d6756ec6882bcc8b14e5534709a15bd478323be52368c8f8fec10c5947ad925",
+    "encoded_bytes": 50,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ]
+  }
+}

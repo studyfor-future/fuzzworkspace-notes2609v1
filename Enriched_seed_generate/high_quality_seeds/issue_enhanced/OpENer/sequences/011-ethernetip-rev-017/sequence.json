@@ -1,0 +1,66 @@
+{
+  "seed_id": "ethernetip-rev-017",
+  "title": "Stateful Start service explicit request",
+  "strategy": "function_code_coverage",
+  "target_operation": "Start",
+  "purpose": "Repair prior service-code fidelity by encoding the documented CIP Start service 0x06 inside a valid registered-session SendRRData request.",
+  "evidence_ids": [
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:07e39e004b86"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_for_start",
+      "hex": "650004000dd0fec00000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "b85605fb80838ef37408b6114b094baa7936882d84731e77ed277dd07348af90"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_start_service",
+      "hex": "6f0015000dd0fec000000000000000000000000000000000000000000000020000000000b20006060220012401",
+      "byte_length": 45,
+      "sha256": "1df59046dd1afde2d87b13f8964f2cef0de9c4c43006729cacf8e8bd506c1e0f"
+    }
+  ],
+  "expected_behavior": "The endpoint should parse the valid explicit-message wrapper and reach CIP service dispatch for Start or return a normal unsupported-service/object error.",
+  "constraints_preserved": [
+    "Documented CIP Start service code 0x06 is used.",
+    "SendRRData outer length is exact at 20 bytes.",
+    "CPF item count is 2 with Null Address plus Unconnected Data items.",
+    "Unconnected Data Item length is 6 and matches the CIP bytes.",
+    "CIP path size is 2 words with four bytes of request path."
+  ],
+  "issue_safety_notes": "This corrects the prior wrong-service issue while keeping the payload minimal and structurally valid.",
+  "sequence_sha256": "77f6f3962f4acd76a9f5a9723738676c47e7ffc88d12d48625a8185998afe256",
+  "total_bytes": 73,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2da891839be70826344ccc46b3a58af1ee81b879d51fe8901027e671f8c4061c",
+    "encoded_bytes": 73,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

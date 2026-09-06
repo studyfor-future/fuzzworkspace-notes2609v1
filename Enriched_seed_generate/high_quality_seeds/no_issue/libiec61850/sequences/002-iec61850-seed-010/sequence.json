@@ -1,0 +1,49 @@
+{
+  "seed_id": "iec61850-seed-010",
+  "title": "GOOSE frame with non-empty allData",
+  "strategy": "function_code_coverage",
+  "target_operation": "GOOSE PDU",
+  "purpose": "Retain a strong GOOSE seed and improve parser depth by making allData non-empty while preserving documented field tags and coherent lengths.",
+  "evidence_ids": [
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:dbd9b2bafab1",
+    "function_code:function:function-text:f2901601984c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "ethernet_goose_frame_nonempty_alldata",
+      "hex": "010ccd01000100112233445588b8612e800447434231810201f48204445354318304474f4944840801020304050607088501018601018701008801018901008a0101ab0402010001",
+      "byte_length": 72,
+      "sha256": "ec82d3a5a7bc6ea27ba7d9f6531a078a299c2c2089785cd8caf1c8a2538ef61a"
+    }
+  ],
+  "expected_behavior": "A GOOSE-capable implementation should identify EtherType 0x88b8, parse outer tag 0x61, process the standard field tags, and continue into a non-empty allData field.",
+  "constraints_preserved": [
+    "Preserves documented GOOSE EtherType 0x88b8.",
+    "Preserves documented GOOSE outer APDU tag 0x61.",
+    "Uses only documented field tags 0x80 through 0x8a and 0xab.",
+    "All TLV lengths, including the outer APDU length, are internally consistent.",
+    "allData is present and non-empty to increase data-path coverage."
+  ],
+  "issue_safety_notes": "No issue-driven or malformed GOOSE payload is used; values are bounded and mutation-friendly.",
+  "sequence_sha256": "51b7471e50e18ce0c85fe714b718b9993b288f24a436227bec33185f5fb5cecc",
+  "total_bytes": 72,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ec82d3a5a7bc6ea27ba7d9f6531a078a299c2c2089785cd8caf1c8a2538ef61a",
+    "encoded_bytes": 72,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 72,
+        "frame_length": 72
+      }
+    ]
+  }
+}

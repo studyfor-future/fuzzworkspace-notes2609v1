@@ -1,0 +1,50 @@
+{
+  "seed_id": "bacnet-seed-008",
+  "title": "BVLC management coverage for Write-Broadcast-Distribution-Table",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write-Broadcast-Distribution-Table",
+  "purpose": "Exercise standalone BVLC management parsing with at least one conservative table-entry-sized payload block instead of a header-only message.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:operation-catalog:a4301b6fad30",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "write_broadcast_distribution_table_with_one_entry_sized_block",
+      "hex": "8101000effffffffbac000180000",
+      "byte_length": 14,
+      "sha256": "fbc7eea3256753c01f8c14c799fb7f5247e8b699202d581e5a9f5a16e6ef3be2"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP implementation should recognize the BVLC management function as Write-Broadcast-Distribution-Table and then validate the supplied table payload rather than rejecting the frame as header-only.",
+  "constraints_preserved": [
+    "Standalone BVLC framing is used for a BVLC function target.",
+    "BVLC type is 0x81.",
+    "BVLC length 0x000E matches the 14-byte message length.",
+    "Message includes payload bytes after the BVLC header so it is not a pure header stub."
+  ],
+  "issue_safety_notes": "The payload is a conservative fixed-size analogue for an initial management-table entry region, not an exploit or a known crash sequence.",
+  "sequence_sha256": "6870172781516b274028e6aeb12e76509421de0235b7f33807044abca2ccdd70",
+  "total_bytes": 14,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fbc7eea3256753c01f8c14c799fb7f5247e8b699202d581e5a9f5a16e6ef3be2",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

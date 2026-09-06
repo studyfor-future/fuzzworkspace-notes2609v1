@@ -1,0 +1,56 @@
+{
+  "seed_id": "bacnet-seed-003",
+  "title": "Boundary-adjacent AtomicWriteFile",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Exercise a larger but still conservative confirmed request for AtomicWriteFile so length-sensitive code sees more than the smallest dispatch case while preserving valid outer framing.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "atomicwritefile_confirmed_request_boundary_valid",
+      "hex": "810a00110100000511073e21003e22003f",
+      "byte_length": 17,
+      "sha256": "5696ba87e2fa86365a7648d9e498e5b73dba54029da32735eb601f63b1754288"
+    }
+  ],
+  "expected_behavior": "The target should accept BVLC and NPDU framing, parse a confirmed request for service choice 0x07, and process a longer payload region during AtomicWriteFile validation.",
+  "constraints_preserved": [
+    "BVLC type 0x81 and function 0x0A are preserved.",
+    "BVLC length 0x0012 matches the 18-byte total message size.",
+    "NPDU header is present and minimal.",
+    "APDU uses confirmed-request PDU type high nibble 0x00.",
+    "Confirmed service choice 0x07 matches AtomicWriteFile.",
+    "Additional payload remains wholly inside the declared frame length."
+  ],
+  "issue_safety_notes": "This is a benign length-adjacent seed with self-consistent framing, not an oversized or truncated payload.",
+  "sequence_sha256": "92151f96b07a4c8cd0d224a339aeacb3a895e4a9e7e57c70d3aa32efc8adf262",
+  "total_bytes": 17,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5696ba87e2fa86365a7648d9e498e5b73dba54029da32735eb601f63b1754288",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

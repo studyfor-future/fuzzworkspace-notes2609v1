@@ -1,0 +1,52 @@
+{
+  "seed_id": "bacnet-seed-014-r1",
+  "title": "Who-Is broadcast with bounded device range",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Improve unconfirmed-service depth by using a broadcast Who-Is with small low/high device-instance range bytes rather than a payload-free shell.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:operation-catalog:78d24f1cf578"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "who-is-range-broadcast",
+      "hex": "810b000a010010080000",
+      "byte_length": 10,
+      "sha256": "de37af96de2598529093e7bf64b1660860a0b3b114bc5412c6ed75a4780852eb"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP device should parse Original-Broadcast-NPDU and route the APDU as an unconfirmed Who-Is request with a short bounded range-style payload.",
+  "constraints_preserved": [
+    "BVLC broadcast function 0x0b is used.",
+    "BVLC length 0x000c matches the 12-byte frame.",
+    "APDU first octet uses unconfirmed-request PDU type 0x10.",
+    "Unconfirmed service choice 0x08 is used for Who-Is from the visible operation catalog excerpt."
+  ],
+  "issue_safety_notes": "This is a bounded broadcast discovery seed and does not use any issue crash pattern.",
+  "sequence_sha256": "590aae32d3939301c39134ae903008e238be33b5c6ecda2f637d270511d86ef8",
+  "total_bytes": 10,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "de37af96de2598529093e7bf64b1660860a0b3b114bc5412c6ed75a4780852eb",
+    "encoded_bytes": 10,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ]
+  }
+}

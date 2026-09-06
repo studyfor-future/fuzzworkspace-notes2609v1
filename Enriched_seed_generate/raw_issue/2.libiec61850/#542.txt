@@ -1,0 +1,18 @@
+issue #542
+
+Issue
+There may be a flaw in libiec61850 v1.5.1 that fails to properly handle certain types of requests, resulting in an empty listOfVariableListName field. Creates a null pointer dereference vulnerability.
+
+Description
+A Segmentation Fault (SEGV) exists in libiec61850 v1.5.1. mmsServer_handleDeleteNamedVariableListRequest function in mms_named_variable_list_service .c attempted to read an invalid memory address and crashed the program.
+
+After GDB debugging, the vulnerability is caused by an invalid pointer request->listOfVariableListName->list.count; called in the mmsServer_handleDeleteNamedVariableListRequest() function. request->listOfVariableListName->list.count; is not checked for validity before being used and is directly accessed by dereference.
+there may be a flaw in libiec61850 that fails to handle certain types of requests correctly, resulting in a null field for listOfVariableListName. I think it should fall under the null pointer dereference vulnerability
+
+poc.bin
+
+0300 0044 02f0 8001 0001 0061 3730 3502
+0100 a030 a02e 0201 03ad 2980 0100 8224
+8000 a120 1a11 7369 6d70 6c65 494f 4765
+6e65 7269 6349 4f1a 0b4c 4c4e 3024 4576
+656e 7473 

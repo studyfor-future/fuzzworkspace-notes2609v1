@@ -1,0 +1,52 @@
+{
+  "seed_id": "iec61850-seed-003",
+  "title": "Longer GetVariableAccessAttributes request",
+  "strategy": "length_boundary_valid",
+  "target_operation": "GetVariableAccessAttributes",
+  "purpose": "Keep a compact but slightly longer confirmed request so object-name-like bytes extend the service body while preserving valid outer definite lengths.",
+  "evidence_ids": [
+    "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+    "protocol_format:iec61850:message-templates-us:629784f4e27f",
+    "protocol_format:iec61850:object-or-data-templ:cda370993ecd",
+    "protocol_format:iec61850:template-catalog:54329d7f4509",
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:700ac27cdef2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "confirmed_request_getvariableaccessattributes_longer_payload",
+      "hex": "60183016a003020101be0f040da00686096c6c6e3024646f31",
+      "byte_length": 25,
+      "sha256": "968810153d40bfe0ae9e24565bf536c2795ae25582f9d9e2da84b3d3b7f9a0c0"
+    }
+  ],
+  "expected_behavior": "A parser should traverse the ACSE wrapper and reach the GetVariableAccessAttributes branch with a modestly longer inner payload than the shortest service skeletons.",
+  "constraints_preserved": [
+    "Outer ACSE type 0x60 is documented.",
+    "BER definite lengths are self-consistent.",
+    "MMS inner tag is 0xa0 Confirmed-Request-PDU.",
+    "Confirmed service tag [6] for GetVariableAccessAttributes is preserved.",
+    "Object/presentation-related nested TLV bytes stay compact and mutation-friendly."
+  ],
+  "issue_safety_notes": "Boundary intent is conservative only; this seed avoids malformed length mismatch patterns.",
+  "sequence_sha256": "1f874bced8a7e4a185b71883b4ccafb5672ca7df7f29238452d4fc064c05ba6b",
+  "total_bytes": 25,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "968810153d40bfe0ae9e24565bf536c2795ae25582f9d9e2da84b3d3b7f9a0c0",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ]
+  }
+}

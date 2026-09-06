@@ -1,0 +1,56 @@
+{
+  "seed_id": "bacnet-seed-005",
+  "title": "Function coverage for WritePropertyMultiple",
+  "strategy": "function_code_coverage",
+  "target_operation": "WritePropertyMultiple",
+  "purpose": "Cover the WritePropertyMultiple confirmed-service dispatch path with a conservative payload region that can mutate toward object, property, and value blocks.",
+  "evidence_ids": [
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0",
+    "function_code:function:operation-catalog:78d24f1cf578",
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "writepropertymultiple_confirmed_request_conservative",
+      "hex": "810a000f0100000504100c00000091",
+      "byte_length": 15,
+      "sha256": "45de5229c2473408b5f9a911be39ce24c9b1932809c0b6c9ca9b5b4424b16778"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP parser should dispatch this confirmed request to WritePropertyMultiple handling and expose a short write-oriented payload for downstream mutation.",
+  "constraints_preserved": [
+    "Complete BVLC and NPDU framing included.",
+    "BVLC length 0x0010 matches the actual 16-byte message.",
+    "Confirmed-request APDU format includes control, invoke ID, and service choice.",
+    "Service choice 0x10 matches WritePropertyMultiple.",
+    "Trailing payload bytes are present and bounded by the declared length."
+  ],
+  "issue_safety_notes": "No issue enhancement is used. The payload is intentionally conservative and mutation-friendly.",
+  "sequence_sha256": "92f552378816e8588bdfdabfbb5135f776e40917a08b91f79e6e6545ba690e74",
+  "total_bytes": 15,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "45de5229c2473408b5f9a911be39ce24c9b1932809c0b6c9ca9b5b4424b16778",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

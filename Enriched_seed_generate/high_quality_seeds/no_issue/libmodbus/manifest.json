@@ -1,0 +1,1475 @@
+{
+  "protocol_name": "MODBUSTCP",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 14 structurally valid MODBUS/TCP candidate seed sequences with issue enhancement disabled and unsupported issue claims removed. All requests use MBAP framing with protocol_id 0x0000 and a big-endian length equal to unit_id plus PDU size, as required by the MBAP header definition. Weak seeds were replaced or repaired by recomputing exact byte counts and MBAP lengths from the emitted hex. Diversity was improved by retaining strong coverage for 0x03, 0x10, 0x17, 0x14, 0x15, 0x2B, 0x05, 0x06, 0x0F, and Diagnostics, while adding missing public function coverage for 0x01, 0x02, 0x04, 0x16, and 0x18 and reducing redundant diagnostics-only variation. Seeds remain conservative, complete, and mutation-friendly rather than malformed.",
+  "coverage_summary": [
+    "strategies: baseline_valid, function_code_coverage, length_boundary_valid, parser_depth, stateful_valid",
+    "target_operations: Encapsulated Interface Transport, Read Coils, Read Discrete Inputs, Read File Record, Read Holding Registers, Read Input Registers, Read/Write Multiple Registers, Return Query Data, Write Multiple Coils, Write Multiple Registers, Write Single Coil, Write Single Register",
+    "message_count_profile: 1msg=11, 2msg=1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "modbustcp-seed-001",
+      "title": "Canonical valid Read Holding Registers",
+      "strategy": "baseline_valid",
+      "target_operation": "Read Holding Registers",
+      "purpose": "Construct a canonical valid MODBUS/TCP request for function 0x03 with conservative starting address and register quantity.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:section-common-heade:526e4447ee47",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:8b7e3446e51a",
+        "function_code:function:function-text:f0f06c273053"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_holding_registers_request",
+          "hex": "000100000006010300000002",
+          "byte_length": 12,
+          "sha256": "98725d9c53b849b2fb57a2d5e8ce6afcdd355603dd736ae7f0de7429b7d853f0"
+        }
+      ],
+      "expected_behavior": "Server should parse a valid MBAP header and function 0x03 request for starting address 0x0000 and quantity 0x0002, then return register data or a standard exception.",
+      "constraints_preserved": [
+        "MBAP header included before the PDU.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006, which matches unit_id plus 5-byte function 0x03 PDU.",
+        "Function code 0x03 is used for Read Holding Registers.",
+        "Request fields are starting address followed by quantity of registers, both big-endian 16-bit."
+      ],
+      "issue_safety_notes": "No issue-specific content is used. This is a conservative baseline seed suitable for safe initial mutation.",
+      "sequence_sha256": "3bf2b6280e24f1ffcfb70bb89cd711fd035b263df60d5836e3683080df8624d3",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "98725d9c53b849b2fb57a2d5e8ce6afcdd355603dd736ae7f0de7429b7d853f0",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-002",
+      "title": "Stateful setup for Read/Write Multiple Registers",
+      "strategy": "stateful_valid",
+      "target_operation": "Read/Write Multiple Registers",
+      "purpose": "Prime server register state with a valid 0x10 request and then exercise function 0x17 in a deeper valid sequence.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053",
+        "function_code:function:function-text:ba5533b39dfa"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "setup_write_multiple_registers_request",
+          "hex": "000200000009011000100001021234",
+          "byte_length": 15,
+          "sha256": "753407deaaac105b0708e2405dfb6ac24a3bd39bc6a5d98c3d943b59cf31f497"
+        },
+        {
+          "index": 1,
+          "direction": "client_to_server",
+          "label": "read_write_multiple_registers_request",
+          "hex": "00030000000d0117001000010020000102abcd",
+          "byte_length": 19,
+          "sha256": "54f02201a21bc013c4ed27f4e6a6ef772716ad9854b34a38d494f31999e8ab59"
+        }
+      ],
+      "expected_behavior": "Server should first parse a valid 0x10 write of one holding register at 0x0010, then parse a valid 0x17 request that reads one register from 0x0010 and writes one register at 0x0020.",
+      "constraints_preserved": [
+        "Both messages use complete MBAP headers with protocol_id 0x0000.",
+        "Message 0 length 0x0009 matches unit_id plus 8-byte PDU for function 0x10 with quantity 0x0001 and byte_count 0x02.",
+        "Message 1 length 0x000f matches unit_id plus 14-byte PDU for function 0x17.",
+        "Function 0x10 fields preserve address, quantity, byte count, and register data ordering.",
+        "Function 0x17 fields preserve read address, read quantity, write address, write quantity, byte count, and write data ordering.",
+        "All 16-bit fields are big-endian."
+      ],
+      "issue_safety_notes": "This sequence is stateful for coverage only and remains conservative and fully framed.",
+      "sequence_sha256": "21e859bdf64015dc71febdbd6e890435a0cdbe7fae4a27bed2621d0bcdec9784",
+      "total_bytes": 34,
+      "repair_notes": [
+        "recomputed MBAP length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "088f59fde3a23a0cef6c263fd067351d03b1f3463f217696aa655cdb808d915c",
+        "encoded_bytes": 34,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 15,
+            "frame_length": 15
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 15,
+            "payload_offset": 15,
+            "payload_length": 19,
+            "frame_length": 19
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-007",
+      "title": "Function coverage for Write Multiple Registers",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Multiple Registers",
+      "purpose": "Provide a valid multi-register write with matched quantity and byte-count fields.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_multiple_registers_request",
+          "hex": "00080000000b01100001000204000a000b",
+          "byte_length": 17,
+          "sha256": "ec6449e1a73e35005435dfef4a3ccbd5f6e377a8d2ca448462f7258ae51a9957"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Write Multiple Registers starting at 0x0001, quantity 0x0002, byte count 0x04, with two register values 0x000A and 0x000B.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x000b for unit_id plus 10-byte function 0x10 PDU.",
+        "Function code 0x10 is used for Write Multiple Registers.",
+        "Quantity 0x0002 matches byte count 0x04 and exactly two 16-bit register values."
+      ],
+      "issue_safety_notes": "This seed stays fully coherent and avoids inflated counts or malformed payload lengths.",
+      "sequence_sha256": "e4548a6d122b6258920de6f4b16be5bf09e2e1933e965c4b4005cde3fe23d74c",
+      "total_bytes": 17,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "ec6449e1a73e35005435dfef4a3ccbd5f6e377a8d2ca448462f7258ae51a9957",
+        "encoded_bytes": 17,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 17,
+            "frame_length": 17
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-003",
+      "title": "Repaired valid Read File Record",
+      "strategy": "length_boundary_valid",
+      "target_operation": "Read File Record",
+      "purpose": "Exercise function 0x14 with one minimal valid file-record subrequest and internally consistent byte-count and MBAP length fields.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:template-catalog:9387d801be8f",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053",
+        "function_code:function:function-text:ba5533b39dfa"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_file_record_request_single_group",
+          "hex": "00040000000a01140706000100000001",
+          "byte_length": 16,
+          "sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3"
+        }
+      ],
+      "expected_behavior": "Server should parse a valid function 0x14 request with byte count 0x07 and one file-record subrequest, then return file-record data or a standard exception.",
+      "constraints_preserved": [
+        "MBAP header is present and complete.",
+        "protocol_id is 0x0000.",
+        "length is 0x000a, matching unit_id plus 9-byte PDU.",
+        "Function code 0x14 is used for Read File Record.",
+        "Request contains a byte count field 0x07 followed by exactly one 7-byte file-record subrequest.",
+        "Subrequest preserves reference type 0x06, file number, record number, and record length fields in big-endian order."
+      ],
+      "issue_safety_notes": "Repaired to remove prior count and length inconsistencies. It is a valid structural seed rather than a malformed boundary test.",
+      "sequence_sha256": "6d8afee8dd529addfa39d003c475f705e33f359bc28be01ddb9a3b76f007a1c8",
+      "total_bytes": 16,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "94f3873ac2320084918a4faa4472c84f18130d9c2263c5d3b85ffb3c72ccb0b3",
+        "encoded_bytes": 16,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 16,
+            "frame_length": 16
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-004",
+      "title": "Minimal Read Device Identification via Encapsulated Interface Transport",
+      "strategy": "parser_depth",
+      "target_operation": "Encapsulated Interface Transport",
+      "purpose": "Exercise function 0x2B with MEI type 0x0E Read Device Identification using a compact valid nested request.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "protocol_format:modbustcp:template-catalog:9387d801be8f",
+        "function_code:function:function-text:ba5533b39dfa",
+        "function_code:function:operation-catalog:2528c48db80b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "encapsulated_interface_transport_read_device_id_request",
+          "hex": "000500000005012b0e0100",
+          "byte_length": 11,
+          "sha256": "f329d5b04e1e7e91885adbd63fe8a966e5ca2c4cf3b7fe95ba5f8b0cf6c1e3f9"
+        }
+      ],
+      "expected_behavior": "Server should parse a valid MBAP-framed function 0x2B request carrying MEI type 0x0E Read Device Identification, then respond with identification data or a standard exception if unsupported.",
+      "constraints_preserved": [
+        "Complete MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0005, matching unit_id plus 4-byte PDU.",
+        "Function code 0x2B is used for Encapsulated Interface Transport.",
+        "Nested fields are MEI type 0x0E, Read Device ID code 0x01, and object id 0x00."
+      ],
+      "issue_safety_notes": "No issue enhancement is used. This is a small, valid nested request chosen for parser-depth coverage.",
+      "sequence_sha256": "39a78f0213eacadf5eb120e4f3cb81d6b4530112d1c9e3b11955bd9059d49a7f",
+      "total_bytes": 11,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f329d5b04e1e7e91885adbd63fe8a966e5ca2c4cf3b7fe95ba5f8b0cf6c1e3f9",
+        "encoded_bytes": 11,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 11,
+            "frame_length": 11
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-008",
+      "title": "Function coverage for Write Multiple Coils",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Multiple Coils",
+      "purpose": "Provide a valid packed-bit write request for function 0x0F.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053",
+        "function_code:function:function-text:8b7e3446e51a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_multiple_coils_request",
+          "hex": "000900000008010f0001000801aa",
+          "byte_length": 14,
+          "sha256": "00f4fc3968bd34228470aab9885973a1045073bdc9561b19dbe05a37fc5e8bc2"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Write Multiple Coils starting at 0x0001, quantity 0x0008, byte count 0x01, with one packed coil data byte 0xAA.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0008 for unit_id plus 7-byte function 0x0F PDU.",
+        "Function code 0x0F is used for Write Multiple Coils.",
+        "Quantity 0x0008 correctly maps to byte count 0x01.",
+        "Payload contains exactly one packed data byte."
+      ],
+      "issue_safety_notes": "Packed-bit structure is valid and compact, making it suitable as an initial mutation target.",
+      "sequence_sha256": "4e5a9c8f4d017ddcfcbc18fe70a422d48f0f4699641a890e3850879b24d46732",
+      "total_bytes": 14,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "00f4fc3968bd34228470aab9885973a1045073bdc9561b19dbe05a37fc5e8bc2",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-006",
+      "title": "Function coverage for Write Single Coil",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Single Coil",
+      "purpose": "Provide a valid function 0x05 request using the documented legal ON value 0xFF00.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:8b7e3446e51a",
+        "function_code:function:function-text:f0f06c273053"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_single_coil_request_on",
+          "hex": "00070000000601050001ff00",
+          "byte_length": 12,
+          "sha256": "ac63bec22a2075d594adc4f309c1ae842063f20b5cced0c4bee1a8033c03dc0b"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Write Single Coil for address 0x0001 with legal ON encoding 0xFF00.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte function 0x05 PDU.",
+        "Function code 0x05 is used for Write Single Coil.",
+        "Coil output value is the documented legal value 0xFF00."
+      ],
+      "issue_safety_notes": "Uses a legal coil encoding and a small address to keep the seed valid and mutation-friendly.",
+      "sequence_sha256": "3364d09a8ad933875ede164c01d1e0730a4006e593e27ef7d064d0601c4ca10f",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "ac63bec22a2075d594adc4f309c1ae842063f20b5cced0c4bee1a8033c03dc0b",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-005",
+      "title": "Function coverage for Write Single Register",
+      "strategy": "function_code_coverage",
+      "target_operation": "Write Single Register",
+      "purpose": "Provide a valid function 0x06 request with a simple address and 16-bit value pair.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "write_single_register_request",
+          "hex": "000600000006010600010001",
+          "byte_length": 12,
+          "sha256": "d209fb583cb1f00ce66c582ab63a160918f499f6d752fa12d795e5a3e4e8bca5"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Write Single Register for address 0x0001 with value 0x0001 and either echo a normal write response or return an exception.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte function 0x06 PDU.",
+        "Function code 0x06 is used for Write Single Register.",
+        "Address and register value are encoded as big-endian 16-bit fields."
+      ],
+      "issue_safety_notes": "The seed uses a conservative address and value and avoids malformed or stress-oriented content.",
+      "sequence_sha256": "c11ac0761fb28f4cd5c3a2388da3bfa66ef27c94cbae45675974c9047d6da780",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "d209fb583cb1f00ce66c582ab63a160918f499f6d752fa12d795e5a3e4e8bca5",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-010",
+      "title": "Diagnostics Return Query Data",
+      "strategy": "function_code_coverage",
+      "target_operation": "Return Query Data",
+      "purpose": "Exercise Diagnostics function 0x08 with subfunction 0x0000 using a small nonzero query value to cover echo-style handling.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053",
+        "function_code:function:function-text:ba5533b39dfa",
+        "function_code:function:function-text:c22ca2f57716",
+        "function_code:function:operation-catalog:2528c48db80b"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "diagnostics_return_query_data_request",
+          "hex": "000b00000006010800001234",
+          "byte_length": 12,
+          "sha256": "274f7ea09a384e7cc157ff93ac99eb1eb128693baf843789816a683b140767bb"
+        }
+      ],
+      "expected_behavior": "Server should parse a valid Diagnostics request with subfunction 0x0000 and typically echo the 0x1234 data value in the response, or return an exception if unsupported.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte Diagnostics PDU.",
+        "Function code 0x08 is used for Diagnostics.",
+        "The first two data bytes after function code contain subfunction 0x0000.",
+        "The remaining two bytes carry query data 0x1234."
+      ],
+      "issue_safety_notes": "Diagnostics coverage is retained in a single stronger seed rather than many near-duplicate counter queries.",
+      "sequence_sha256": "6c74afc7eee9d8df23642b065f20465677b1dc7295b31cdb226cc5399903ec7b",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "274f7ea09a384e7cc157ff93ac99eb1eb128693baf843789816a683b140767bb",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-013",
+      "title": "Function coverage for Read Input Registers",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read Input Registers",
+      "purpose": "Add missing public function coverage for function 0x04 with a simple valid register-read request.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:f0f06c273053"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_input_registers_request",
+          "hex": "000e00000006010400000002",
+          "byte_length": 12,
+          "sha256": "992b6e1c6a0da46af115199ef6adaf3b7fb1887d1b99a8aacb99c9e078b9ab9a"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Read Input Registers starting at address 0x0000 for quantity 0x0002 and return register values or an exception.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte function 0x04 PDU.",
+        "Function code 0x04 is used for Read Input Registers.",
+        "Request uses starting address followed by quantity of registers."
+      ],
+      "issue_safety_notes": "This valid seed broadens read-side coverage without introducing malformed fields.",
+      "sequence_sha256": "abc355a69ac8618991fe0345788274200ca00ce97a05117a3298633bf51fdf59",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "992b6e1c6a0da46af115199ef6adaf3b7fb1887d1b99a8aacb99c9e078b9ab9a",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-012",
+      "title": "Function coverage for Read Discrete Inputs",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read Discrete Inputs",
+      "purpose": "Add missing public function coverage for function 0x02 with a conservative valid input-read request.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:8b7e3446e51a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_discrete_inputs_request",
+          "hex": "000d00000006010200000008",
+          "byte_length": 12,
+          "sha256": "f68cfbcf21df43c8382f8f8a4bcf5f30fb9bb34edaf98410917390c0a28b7dae"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Read Discrete Inputs starting at address 0x0000 for quantity 0x0008 and return packed input status bytes or an exception.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte function 0x02 PDU.",
+        "Function code 0x02 is used for Read Discrete Inputs.",
+        "Request carries starting address and quantity fields in big-endian 16-bit format."
+      ],
+      "issue_safety_notes": "Added to improve public read-function diversity while remaining fully valid.",
+      "sequence_sha256": "981b5ffa6255494b0287e09663625c8320faf45e364e2e3f7668fce9e92a2a8d",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f68cfbcf21df43c8382f8f8a4bcf5f30fb9bb34edaf98410917390c0a28b7dae",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "modbustcp-seed-011",
+      "title": "Function coverage for Read Coils",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read Coils",
+      "purpose": "Add missing public function coverage for function 0x01 with a compact valid read request.",
+      "evidence_ids": [
+        "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "function_code:function:function-text:8b7e3446e51a"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "read_coils_request",
+          "hex": "000c00000006010100000008",
+          "byte_length": 12,
+          "sha256": "fde5d6b15c3989ccf11bf7c2fa14ac10dd7561234dec12e3817e8f2d9d5fd2ff"
+        }
+      ],
+      "expected_behavior": "Server should parse the request as Read Coils starting at address 0x0000 for quantity 0x0008 and return packed coil status bytes or an exception.",
+      "constraints_preserved": [
+        "MBAP header present.",
+        "protocol_id is 0x0000.",
+        "length is 0x0006 for unit_id plus 5-byte function 0x01 PDU.",
+        "Function code 0x01 is used for Read Coils.",
+        "Request carries starting address and quantity fields in big-endian 16-bit format."
+      ],
+      "issue_safety_notes": "This is a straightforward valid read request added for entry-point diversity.",
+      "sequence_sha256": "da27d015da742a4619255292dad5ab0c2dd21047c209863576eae9cfde41731b",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "fde5d6b15c3989ccf11bf7c2fa14ac10dd7561234dec12e3817e8f2d9d5fd2ff",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 7
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 7
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function",
+    "issue_enhancement_enabled": false,
+    "issue_document_count": 0,
+    "candidate_plan_count": 14,
+    "candidate_pool_count": 14,
+    "returned_seed_count": 12,
+    "review_threshold": 86,
+    "protocol_family": "modbus",
+    "planning": {
+      "protocol_name": "MODBUSTCP",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid Read Holding Registers",
+          "target_operation": "Read Holding Registers",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:f0f06c273053",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "protocol_format:modbustcp:service-or-function-:080a2f1a6d88"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for Read/Write Multiple Registers",
+          "target_operation": "Read/Write Multiple Registers",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "multi_step_stateful",
+          "message_budget": 2,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:function-text:74ceb19d06f8",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:8b7e3446e51a"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent Read File Record",
+          "target_operation": "Read File Record",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "function_code:function:function-text:f0f06c273053",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:c22ca2f57716",
+            "protocol_format:modbustcp:template-catalog:9387d801be8f",
+            "function_code:function:function-text:74ceb19d06f8"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for Encapsulated Interface Transport",
+          "target_operation": "Encapsulated Interface Transport",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:function-text:74ceb19d06f8",
+            "function_code:function:function-text:8b7e3446e51a",
+            "protocol_format:modbustcp:template-catalog:9387d801be8f",
+            "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-005",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write Single Register",
+          "target_operation": "Write Single Register",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. MODBUS FUNCTION CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:f0f06c273053"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-006",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write Single Coil",
+          "target_operation": "Write Single Coil",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. MODBUS FUNCTION CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:f0f06c273053"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-007",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write Multiple Registers",
+          "target_operation": "Write Multiple Registers",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. MODBUS FUNCTION CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:f0f06c273053"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-008",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write Multiple Coils",
+          "target_operation": "Write Multiple Coils",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. MODBUS FUNCTION CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:f0f06c273053"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-009",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Write File Record",
+          "target_operation": "Write File Record",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "1. MODBUS FUNCTION CODES",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:0d07fe14b66a",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:f0f06c273053"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-010",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Server No Response Count",
+          "target_operation": "Return Server No Response Count",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. MODBUS DIAGNOSTICS SUBFUNCTIONS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ce18d238aecd"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-011",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Server NAK Count",
+          "target_operation": "Return Server NAK Count",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. MODBUS DIAGNOSTICS SUBFUNCTIONS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ce18d238aecd"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-012",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Server Message Count",
+          "target_operation": "Return Server Message Count",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. MODBUS DIAGNOSTICS SUBFUNCTIONS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a",
+            "function_code:function:function-text:ce18d238aecd"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-013",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Server Busy Count",
+          "target_operation": "Return Server Busy Count",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. MODBUS DIAGNOSTICS SUBFUNCTIONS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:8b7e3446e51a"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-014",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Return Query Data",
+          "target_operation": "Return Query Data",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "3. MODBUS DIAGNOSTICS SUBFUNCTIONS",
+          "evidence_ids": [
+            "function_code:function:function-text:ba5533b39dfa",
+            "function_code:function:operation-catalog:2528c48db80b",
+            "function_code:function:operation-catalog:0fc31a311d1b",
+            "function_code:function:function-text:c22ca2f57716",
+            "function_code:function:function-text:ce18d238aecd",
+            "function_code:function:function-text:8b7e3446e51a"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "overall_score": 86,
+      "needs_revision": true,
+      "protocol_validity_score": 78,
+      "seed_utility_score": 88,
+      "diversity_score": 90,
+      "issue_enhancement_score": 0,
+      "global_feedback": [
+        "The library is generally strong on MBAP framing discipline, conservative valid requests, and broad function-code diversity.",
+        "The stateful 0x10 -> 0x17 sequence is useful and better aligned with deeper parser coverage than a set of isolated single-message seeds.",
+        "Several seeds go beyond the supplied plans and add worthwhile public-function diversity, but this also displaced planned diagnostics coverage that was explicitly requested.",
+        "There are protocol-validity problems in at least two advanced seeds where stated MBAP length values do not match the emitted bytes.",
+        "For a desired final selected seed count of 12, two seeds should be dropped or repaired and then re-ranked; currently the best drop candidates are the faulty Write File Record seed and the off-plan combined advanced sequence.",
+        "Issue enhancement was disabled and the library appropriately avoids crash-payload style content."
+      ],
+      "sequence_feedback": [
+        {
+          "seed_id": "modbustcp-seed-001",
+          "score": 95,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as a canonical baseline valid read seed."
+        },
+        {
+          "seed_id": "modbustcp-seed-002",
+          "score": 96,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as one of the strongest seeds due to valid stateful setup before 0x17."
+        },
+        {
+          "seed_id": "modbustcp-seed-003",
+          "score": 90,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep for deeper file-record parser coverage."
+        },
+        {
+          "seed_id": "modbustcp-seed-004",
+          "score": 92,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep for nested 0x2B/MEI parsing coverage."
+        },
+        {
+          "seed_id": "modbustcp-seed-005",
+          "score": 89,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as solid single-register write coverage."
+        },
+        {
+          "seed_id": "modbustcp-seed-006",
+          "score": 90,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as valid 0x05 coverage using the legal coil encoding."
+        },
+        {
+          "seed_id": "modbustcp-seed-007",
+          "score": 91,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as valid 0x10 multi-write coverage."
+        },
+        {
+          "seed_id": "modbustcp-seed-008",
+          "score": 90,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep as compact but structurally useful packed-coil coverage."
+        },
+        {
+          "seed_id": "modbustcp-seed-009",
+          "score": 35,
+          "keep": false,
+          "problems": [
+            "MBAP length field in the hex is 0x000c but the constraints and actual payload imply 0x000d.",
+            "This framing inconsistency makes the request malformed despite the intent to be repaired and valid."
+          ],
+          "recommended_action": "Drop or fix the MBAP length to match the actual unit_id plus PDU size before inclusion."
+        },
+        {
+          "seed_id": "modbustcp-seed-010",
+          "score": 84,
+          "keep": true,
+          "problems": [
+            "Only one diagnostics seed is retained even though multiple diagnostics subfunctions were explicitly planned."
+          ],
+          "recommended_action": "Keep, but consider adding one planned counter-oriented diagnostics subfunction if a replacement slot is available."
+        },
+        {
+          "seed_id": "modbustcp-seed-011",
+          "score": 82,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep for public function entry-point diversity."
+        },
+        {
+          "seed_id": "modbustcp-seed-012",
+          "score": 82,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep for public function entry-point diversity."
+        },
+        {
+          "seed_id": "modbustcp-seed-013",
+          "score": 83,
+          "keep": true,
+          "problems": [],
+          "recommended_action": "Keep for read-register coverage complementing 0x03."
+        },
+        {
+          "seed_id": "modbustcp-seed-014",
+          "score": 52,
+          "keep": false,
+          "problems": [
+            "The first message has MBAP length 0x0008, but the emitted 0x16 request contains an 8-byte PDU and should have length 0x0009.",
+            "This sequence does not correspond to any supplied plan and replaces planned diagnostics coverage with an off-plan combined sequence.",
+            "Combining 0x16 and 0x18 in one seed is less clean for corpus curation than selecting one valid operation per planned slot."
+          ],
+          "recommended_action": "Do not select in the final 12 unless repaired and intentionally chosen over a missing planned diagnostics seed."
+        }
+      ],
+      "coverage_gaps": [
+        "Planned diagnostics subfunctions Return Server No Response Count, Return Server NAK Count, Return Server Message Count, and Return Server Busy Count are missing.",
+        "No seed targets the exact planned diagnostics counter-query shapes beyond Return Query Data.",
+        "Because two advanced seeds have framing issues, valid retained coverage for Write File Record and Mask Write Register is currently weaker than intended.",
+        "No clean single planned seed exists for Mask Write Register or Read FIFO Queue; they were introduced off-plan in a combined sequence."
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "modbustcp-seed-001",
+        "modbustcp-seed-002",
+        "modbustcp-seed-007",
+        "modbustcp-seed-003",
+        "modbustcp-seed-004",
+        "modbustcp-seed-008",
+        "modbustcp-seed-006",
+        "modbustcp-seed-005",
+        "modbustcp-seed-010",
+        "modbustcp-seed-013",
+        "modbustcp-seed-012",
+        "modbustcp-seed-011"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "function_code_coverage": 8,
+        "length_boundary_valid": 1,
+        "parser_depth": 1
+      },
+      "selected_target_operations": [
+        "Read Holding Registers",
+        "Read/Write Multiple Registers",
+        "Write Multiple Registers",
+        "Read File Record",
+        "Encapsulated Interface Transport",
+        "Write Multiple Coils",
+        "Write Single Coil",
+        "Write Single Register",
+        "Return Query Data",
+        "Read Input Registers",
+        "Read Discrete Inputs",
+        "Read Coils"
+      ]
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:modbustcp:format-overview:f8b69bad4b46",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/modbustcp.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"libmodbus-3.1.6\",\n    \"profile\": \"auto\",\n    \"protocol\": \"MODBUSTCP\",\n    \"rule_family\": \"modbus\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"mbap\": [\n      \"MBAP Header\"\n    ],\n    \"pdu\": [\n      \"Modbus exception response\",\n      \"Modbus response\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 1,\n    \"message_count\": 3,\n    \"non_header_templates\": 2,\n    \"real_strong_templates\": 3,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 2\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:section-common-heade:526e4447ee47",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/modbustcp.json",
+        "content": "Section: Common Headers\nTemplates: MBAP Header",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:common-headers-mbap-:9d3afa0220d1",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/modbustcp.json",
+        "content": "Section: Common Headers\nTemplate: MBAP Header\n- Field: transaction_id\n  Description: Protocol field 'transaction_id'. Layer: mbap. Role: control. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.\n  Length: 16 bits\n  Protocol constraints: must match request transaction_id echoed in response\n  Implementation constraints: checked byte-by-byte at offsets 0 and 1, used for request/response pairing\n- Field: protocol_id\n  Description: Protocol field 'protocol_id'. Layer: mbap. Role: meta. Type: uint16. Constraints: value must be 0 (0x0000). Range: [0, 0]. Inferred-from: wire. Binding-strength: explicit_check. Evidence-type: compare.\n  Length: 16 bits\n  Protocol constraints: protocol_id == 0\n  Implementation constraints: must be 0x0000 for Modbus\n- Field: length\n  Description: Protocol field 'length'. Layer: mbap. Role: length. Type: uint16. Constraints: must equal total frame size minus 6 octets, sent big-endian. Range: [1, 253]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 16 bits\n  Implementation constraints: covers Unit-ID + PDU only\n- Field: unit_id\n  Description: Protocol field 'unit_id'. Layer: mbap. Role: address. Type: uint8. Constraints: range 0-255. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 8 bits\n  Implementation constraints: positional at byte 6 in MBAP header, must match request/response pair",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:8b7e3446e51a",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/5.libmodbus/function.txt",
+        "content": "Modbus Function Code Reference\n==============================\n\nScope\n-----\nThis file contains:\n\n1. Modbus public function codes\n2. Legacy function codes\n3. Diagnostics subfunctions\n4. Encapsulated Interface Transport MEI types\n5. Read Device Identification codes\n6. Modbus exception codes\n7. User-defined function-code ranges\n\n================================================================\n1. MODBUS FUNCTION CODES\n================================================================\n\n0x01 = Read Coils\n0x02 = Read Discrete Inputs\n0x03 = Read Holding Registers\n0x04 = Read Input Registers\n0x05 = Write Single Coil\n0x06 = Write Single Register\n0x07 = Read Exception Status\n0x08 = Diagnostics\n0x09 = Program 484\n0x0A = Poll 484\n0x0B = Get Communication Event Counter\n0x0C = Get Communication Event Log\n0x0D = Program Controller\n0x0E = Poll Controller\n0x0F = Write Multiple Coils\n0x10 = Write Multiple Registers\n0x11 = Report Server ID\n0x12 = Program 884/M84\n0x13 = Reset Communication Link\n0x14 = Read File Record\n0x15 = Write File Record\n0x16 = Mask Write Register\n0x17 = Read/Write Multiple Registers\n0x18 = Read FIFO Queue\n0x2B = Encapsulated Interface Transport\n\nFunction code summary:\n\n0x01 Read Coils\n    Read one or more coil values.\n    Request:\n        Starting Address\n        Quantity of Coils\n    Response:\n        Byte Count\n        Packed Coil Status\n\n0x02 Read Discrete Inputs\n    Read one or more discrete input values.\n    Request:\n        Starting Address\n        Quantity of Inputs\n    Response:\n        Byte Count\n        Packed Input Status\n\n0x03 Read Holding Registers\n    Read holding registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:f0f06c273053",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/5.libmodbus/function.txt",
+        "content": "Byte Count\n        Packed Input Status\n\n0x03 Read Holding Registers\n    Read holding registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values\n\n0x04 Read Input Registers\n    Read input registers.\n    Request:\n        Starting Address\n        Quantity of Registers\n    Response:\n        Byte Count\n        Register Values\n\n0x05 Write Single Coil\n    Write one coil.\n    Legal output values:\n        0xFF00 = ON\n        0x0000 = OFF\n\n0x06 Write Single Register\n    Write one 16-bit holding register.\n\n0x07 Read Exception Status\n    Serial-line-only function returning exception status bits.\n\n0x08 Diagnostics\n    Execute one diagnostics subfunction.\n\n0x09 Program 484\n    Legacy Modicon 484 programming function.\n\n0x0A Poll 484\n    Legacy Modicon 484 polling function.\n\n0x0B Get Communication Event Counter\n    Return communication event status and event count.\n\n0x0C Get Communication Event Log\n    Return communication status, counters, and event bytes.\n\n0x0D Program Controller\n    Legacy controller programming function.\n\n0x0E Poll Controller\n    Legacy controller polling function.\n\n0x0F Write Multiple Coils\n    Write multiple packed coil values.\n\n0x10 Write Multiple Registers\n    Write multiple 16-bit holding registers.\n\n0x11 Report Server ID\n    Return server identifier and run-state information.\n\n0x12 Program 884/M84\n    Legacy controller programming function.\n\n0x13 Reset Communication Link\n    Legacy communication-link reset function.\n\n0x14 Read File Record\n    Read one or more file-record groups.\n\n0x15 Write File Record\n    Write one or more file-record groups.\n\n0x16 Mask Write Register\n    Modify one holding register using AND and OR masks.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:ba5533b39dfa",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/5.libmodbus/function.txt",
+        "content": "unction.\n\n0x14 Read File Record\n    Read one or more file-record groups.\n\n0x15 Write File Record\n    Write one or more file-record groups.\n\n0x16 Mask Write Register\n    Modify one holding register using AND and OR masks.\n\n0x17 Read/Write Multiple Registers\n    Write multiple registers and read multiple registers in one transaction.\n\n0x18 Read FIFO Queue\n    Read the contents of a FIFO queue.\n\n0x2B Encapsulated Interface Transport\n    Carry an MEI operation, including Read Device Identification.\n\n================================================================\n2. FUNCTION CODE ASSIGNMENT RANGES\n================================================================\n\n0x01-0x40 = Public or historically assigned range\n0x41-0x48 = User-defined function-code range\n0x49-0x63 = Public/reserved range\n0x64-0x6E = User-defined function-code range\n0x6F-0x7F = Public/reserved range\n\n0x80-0xFF are not normal request function codes.\n\nFor an exception response:\n\nException Function Code = Request Function Code OR 0x80\n\nExamples:\n\nRequest 0x03 -> Exception Response 0x83\nRequest 0x06 -> Exception Response 0x86\nRequest 0x10 -> Exception Response 0x90\nRequest 0x2B -> Exception Response 0xAB\n\n================================================================\n3. MODBUS DIAGNOSTICS SUBFUNCTIONS\n================================================================\n\nDiagnostics function code:\n\n0x08 = Diagnostics\n\nThe first two data bytes contain the diagnostics subfunction.\n\n0x0000 = Return Query Data\n0x0001 = Restart Communications Option\n0x0002 = Return Diagnostic Register\n0x0003 = Change ASCII Input Delimiter\n0x0004 = Force Listen Only Mode\n\n0x0005-0x0009 = Reserved",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:modbustcp:template-catalog:9387d801be8f",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/modbustcp.json",
+        "content": "Protocol: MODBUSTCP\nTemplate catalog:\n- Common Headers :: MBAP Header -> transaction_id, protocol_id, length, unit_id\n- Service or Function Specific Templates :: Modbus response -> function_code, data\n- Error or Exception Templates :: Modbus exception response -> function_code",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:operation-catalog:2528c48db80b",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/5.libmodbus/function.txt",
+        "content": "Diagnostics\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0000 = Return Query Data\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0001 = Restart Communications Option\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0002 = Return Diagnostic Register\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0003 = Change ASCII Input Delimiter\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0004 = Force Listen Only Mode\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000A = Clear Counters and Diagnostic Register\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000B = Return Bus Message Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000C = Return Bus Communication Error Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000D = Return Bus Exception Error Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000E = Return Server Message Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x000F = Return Server No Response Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0010 = Return Server NAK Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0011 = Return Server Busy Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0012 = Return Bus Character Overrun Count\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0013 = Clear Overrun Counter and Flag\n- 3. MODBUS DIAGNOSTICS SUBFUNCTIONS :: 0x0014 = Get/Clear Modbus Plus Statistics\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x2B = Encapsulated Interface Transport\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x0D = CANopen General Reference\n- 4. ENCAPSULATED INTERFACE TRANSPORT :: 0x0E = Read Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x01 = Basic Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x02 = Regular Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x03 = Extended Device Identification\n- 5. READ DEVICE IDENTIFICATION CODES :: 0x04 = Specific Device Identifi",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:c22ca2f57716",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/5.libmodbus/function.txt",
+        "content": "gnostics subfunction.\n\n0x0000 = Return Query Data\n0x0001 = Restart Communications Option\n0x0002 = Return Diagnostic Register\n0x0003 = Change ASCII Input Delimiter\n0x0004 = Force Listen Only Mode\n\n0x0005-0x0009 = Reserved\n\n0x000A = Clear Counters and Diagnostic Register\n0x000B = Return Bus Message Count\n0x000C = Return Bus Communication Error Count\n0x000D = Return Bus Exception Error Count\n0x000E = Return Server Message Count\n0x000F = Return Server No Response Count\n0x0010 = Return Server NAK Count\n0x0011 = Return Server Busy Count\n0x0012 = Return Bus Character Overrun Count\n0x0013 = Clear Overrun Counter and Flag\n0x0014 = Get/Clear Modbus Plus Statistics\n\nDiagnostics subfunction details:\n\n0x0000 Return Query Data\n    Echo the request data in the response.\n\n0x0001 Restart Communications Option\n    Restart communication processing.\n    Data value 0x0000:\n        Clear event log.\n    Data value 0xFF00:\n        Preserve event log where supported.\n\n0x0002 Return Diagnostic Register\n    Return the server diagnostic register.\n\n0x0003 Change ASCII Input Delimiter\n    Change the Modbus ASCII message delimiter.\n\n0x0004 Force Listen Only Mode\n    Place the serial server into listen-only mode.\n\n0x000A Clear Counters and Diagnostic Register\n    Clear communication counters and diagnostic register.\n\n0x000B Return Bus Message Count\n    Return number of messages detected on the bus.\n\n0x000C Return Bus Communication Error Count\n    Return number of communication errors.\n\n0x000D Return Bus Exception Error Count\n    Return number of exception responses.\n\n0x000E Return Server Message Count\n    Return number of messages processed by the server.\n\n0x000F Return Server No Response Count\n    Return number of messages for which no response was sent.",
+        "issue_number": -1,
+        "title": ""
+      }
+    ],
+    "generated_unix_time": 1786132011,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "modbustcp-seed-001: removed unknown evidence ids: function_code:function:function-text:0d07fe14b66a, function_code:function:operation-catalog:0fc31a311d1b, protocol_format:modbustcp:service-or-function-:080a2f1a6d88",
+          "modbustcp-seed-002: removed unknown evidence ids: function_code:function:function-text:ce18d238aecd, function_code:function:function-text:74ceb19d06f8, function_code:function:function-text:0d07fe14b66a",
+          "modbustcp-seed-003: removed unknown evidence ids: function_code:function:function-text:74ceb19d06f8",
+          "modbustcp-seed-004: removed unknown evidence ids: function_code:function:function-text:74ceb19d06f8",
+          "modbustcp-seed-005: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:0d07fe14b66a, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-006: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:0d07fe14b66a, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-007: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:0d07fe14b66a, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-008: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:0d07fe14b66a, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-009: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:0d07fe14b66a, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-010: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-011: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-012: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:ce18d238aecd",
+          "modbustcp-seed-013: removed unknown evidence ids: function_code:function:function-text:ce18d238aecd, function_code:function:operation-catalog:0fc31a311d1b",
+          "modbustcp-seed-014: removed unknown evidence ids: function_code:function:operation-catalog:0fc31a311d1b, function_code:function:function-text:ce18d238aecd"
+        ],
+        "review": {
+          "overall_score": 78,
+          "needs_revision": true,
+          "protocol_validity_score": 72,
+          "seed_utility_score": 80,
+          "diversity_score": 84,
+          "issue_enhancement_score": 0,
+          "global_feedback": [
+            "The library has good functional diversity and mostly uses complete MBAP framing with plausible request PDUs.",
+            "Several seeds correctly target deeper parser entry points: 0x14 Read File Record, 0x15 Write File Record, 0x17 Read/Write Multiple Registers, 0x2B Encapsulated Interface Transport, and multiple 0x08 diagnostics subfunctions.",
+            "The stateful 0x10 -> 0x17 sequence is useful as an initial corpus seed because it sets up register state before the combined read/write operation.",
+            "A major weakness is internal inconsistency between stated constraints and actual on-wire bytes for several seeds, especially MBAP length values and counted record structures. These are practical correctness issues, not just documentation issues.",
+            "Read File Record and Write File Record are the most concerning seeds: the stated byte-count and MBAP length claims do not match the actual hex, making them risky as initial seeds.",
+            "The Encapsulated Interface Transport seed appears structurally plausible for MEI type 0x0E Read Device Identification, but its documented MBAP length claim is wrong; this should be corrected to avoid confusion and validator drift.",
+            "Diagnostics coverage is broad but somewhat redundant for a desired final selected seed count of 12; at least one of the near-identical counter-query diagnostics seeds can be dropped in favor of stronger operation diversity.",
+            "Deterministic validator findings show repeated use of unsupported evidence identifiers. This does not directly break the seed bytes, but it indicates weak grounding hygiene and should be cleaned up.",
+            "Issue enhancement is disabled, and the library appropriately avoids copied crash payloads and overly aggressive malformed inputs."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "modbustcp-seed-001",
+              "score": 95,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as a canonical valid baseline for function 0x03."
+            },
+            {
+              "seed_id": "modbustcp-seed-002",
+              "score": 93,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as one of the strongest seeds; preserve the two-step 0x10 then 0x17 sequence."
+            },
+            {
+              "seed_id": "modbustcp-seed-003",
+              "score": 58,
+              "keep": false,
+              "problems": [
+                "Actual MBAP length in hex is 0x000a, but constraints text claims 0x0009.",
+                "The request uses byte count 0x07 and one file-record subrequest, but accompanying size claims are inconsistent.",
+                "Count/length inconsistencies make this unsafe as an initial high-confidence seed for a complex parser path."
+              ],
+              "recommended_action": "Revise by recomputing MBAP length and all stated structure sizes from the exact hex, then revalidate the 0x14 request layout."
+            },
+            {
+              "seed_id": "modbustcp-seed-004",
+              "score": 78,
+              "keep": true,
+              "problems": [
+                "Actual MBAP length in hex is 0x0005, but constraints text claims 0x0007.",
+                "Documentation says unit_id plus 6-byte PDU, but the actual PDU is 4 bytes after unit_id."
+              ],
+              "recommended_action": "Keep the seed bytes, but fix the recorded length/size claims and explicitly describe it as a minimal 0x2B/0x0E Read Device Identification style request."
+            },
+            {
+              "seed_id": "modbustcp-seed-005",
+              "score": 92,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x06 coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-006",
+              "score": 93,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x05 coverage with a legal coil value."
+            },
+            {
+              "seed_id": "modbustcp-seed-007",
+              "score": 92,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x10 multi-item write coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-008",
+              "score": 91,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x0F packed-coil coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-009",
+              "score": 40,
+              "keep": false,
+              "problems": [
+                "Actual MBAP length in hex is 0x000e, but constraints text claims 0x000b.",
+                "Payload byte count field is 0x0b, but accompanying notes claim 0x07 and a 7-byte group.",
+                "Write File Record subrequest sizing appears inconsistent with the embedded data bytes.",
+                "This seed is too internally inconsistent to trust as an initial valid seed."
+              ],
+              "recommended_action": "Revise the entire 0x15 request from the specification-consistent field layout, ensuring byte count, record length, data bytes, and MBAP length all match."
+            },
+            {
+              "seed_id": "modbustcp-seed-010",
+              "score": 89,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid diagnostics subfunction 0x000F coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-011",
+              "score": 88,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for now, but this is somewhat redundant with the other diagnostics counter seeds."
+            },
+            {
+              "seed_id": "modbustcp-seed-012",
+              "score": 88,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for now, but consider replacing one diagnostics counter seed with a different public function if revising the library."
+            },
+            {
+              "seed_id": "modbustcp-seed-013",
+              "score": 87,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep only if diagnostics subfunction diversity is desired; otherwise this is a candidate to drop to meet the final count."
+            },
+            {
+              "seed_id": "modbustcp-seed-014",
+              "score": 90,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as the strongest diagnostics seed because Return Query Data uses nonzero payload and may exercise echo handling."
+            }
+          ],
+          "coverage_gaps": [
+            "No seed for Read Coils (0x01), Read Discrete Inputs (0x02), or Read Input Registers (0x04), which are useful distinct read parser entries.",
+            "No seed for Mask Write Register (0x16), a structurally distinct write operation with AND/OR masks.",
+            "No seed for Read FIFO Queue (0x18), another deeper parser path named in the supplied sources.",
+            "Encapsulated Interface Transport coverage is limited to one minimal MEI-style request; additional valid Read Device Identification category/object variations would improve parser-depth coverage.",
+            "Diagnostics coverage is concentrated on fixed-length counter subfunctions; there is little diversity beyond selector changes.",
+            "The desired final selected seed count is 12, but two seeds are weak enough to exclude and there are no replacement seeds for uncovered public functions."
+          ]
+        },
+        "candidate_count": 14
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "overall_score": 86,
+          "needs_revision": true,
+          "protocol_validity_score": 78,
+          "seed_utility_score": 88,
+          "diversity_score": 90,
+          "issue_enhancement_score": 0,
+          "global_feedback": [
+            "The library is generally strong on MBAP framing discipline, conservative valid requests, and broad function-code diversity.",
+            "The stateful 0x10 -> 0x17 sequence is useful and better aligned with deeper parser coverage than a set of isolated single-message seeds.",
+            "Several seeds go beyond the supplied plans and add worthwhile public-function diversity, but this also displaced planned diagnostics coverage that was explicitly requested.",
+            "There are protocol-validity problems in at least two advanced seeds where stated MBAP length values do not match the emitted bytes.",
+            "For a desired final selected seed count of 12, two seeds should be dropped or repaired and then re-ranked; currently the best drop candidates are the faulty Write File Record seed and the off-plan combined advanced sequence.",
+            "Issue enhancement was disabled and the library appropriately avoids crash-payload style content."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "modbustcp-seed-001",
+              "score": 95,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as a canonical baseline valid read seed."
+            },
+            {
+              "seed_id": "modbustcp-seed-002",
+              "score": 96,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as one of the strongest seeds due to valid stateful setup before 0x17."
+            },
+            {
+              "seed_id": "modbustcp-seed-003",
+              "score": 90,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for deeper file-record parser coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-004",
+              "score": 92,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for nested 0x2B/MEI parsing coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-005",
+              "score": 89,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as solid single-register write coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-006",
+              "score": 90,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x05 coverage using the legal coil encoding."
+            },
+            {
+              "seed_id": "modbustcp-seed-007",
+              "score": 91,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as valid 0x10 multi-write coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-008",
+              "score": 90,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep as compact but structurally useful packed-coil coverage."
+            },
+            {
+              "seed_id": "modbustcp-seed-009",
+              "score": 35,
+              "keep": false,
+              "problems": [
+                "MBAP length field in the hex is 0x000c but the constraints and actual payload imply 0x000d.",
+                "This framing inconsistency makes the request malformed despite the intent to be repaired and valid."
+              ],
+              "recommended_action": "Drop or fix the MBAP length to match the actual unit_id plus PDU size before inclusion."
+            },
+            {
+              "seed_id": "modbustcp-seed-010",
+              "score": 84,
+              "keep": true,
+              "problems": [
+                "Only one diagnostics seed is retained even though multiple diagnostics subfunctions were explicitly planned."
+              ],
+              "recommended_action": "Keep, but consider adding one planned counter-oriented diagnostics subfunction if a replacement slot is available."
+            },
+            {
+              "seed_id": "modbustcp-seed-011",
+              "score": 82,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for public function entry-point diversity."
+            },
+            {
+              "seed_id": "modbustcp-seed-012",
+              "score": 82,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for public function entry-point diversity."
+            },
+            {
+              "seed_id": "modbustcp-seed-013",
+              "score": 83,
+              "keep": true,
+              "problems": [],
+              "recommended_action": "Keep for read-register coverage complementing 0x03."
+            },
+            {
+              "seed_id": "modbustcp-seed-014",
+              "score": 52,
+              "keep": false,
+              "problems": [
+                "The first message has MBAP length 0x0008, but the emitted 0x16 request contains an 8-byte PDU and should have length 0x0009.",
+                "This sequence does not correspond to any supplied plan and replaces planned diagnostics coverage with an off-plan combined sequence.",
+                "Combining 0x16 and 0x18 in one seed is less clean for corpus curation than selecting one valid operation per planned slot."
+              ],
+              "recommended_action": "Do not select in the final 12 unless repaired and intentionally chosen over a missing planned diagnostics seed."
+            }
+          ],
+          "coverage_gaps": [
+            "Planned diagnostics subfunctions Return Server No Response Count, Return Server NAK Count, Return Server Message Count, and Return Server Busy Count are missing.",
+            "No seed targets the exact planned diagnostics counter-query shapes beyond Return Query Data.",
+            "Because two advanced seeds have framing issues, valid retained coverage for Write File Record and Mask Write Register is currently weaker than intended.",
+            "No clean single planned seed exists for Mask Write Register or Read FIFO Queue; they were introduced off-plan in a combined sequence."
+          ]
+        },
+        "candidate_count": 14
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

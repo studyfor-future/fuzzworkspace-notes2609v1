@@ -1,0 +1,54 @@
+{
+  "seed_id": "ethernetip-seed-004",
+  "title": "Message Router Get_Attributes_All over SendRRData",
+  "strategy": "parser_depth",
+  "target_operation": "Get_Attributes_All",
+  "purpose": "Provide a valid unconnected explicit message using SendRRData carrying a small Message Router request with service 0x01 and a class plus instance style path.",
+  "evidence_ids": [
+    "protocol_format:opener:format-overview:f13102c0754b",
+    "protocol_format:opener:template-catalog:23eee9eb69c4",
+    "function_code:function:function-text:07e39e004b86",
+    "function_code:function:function-text:6607a3373363",
+    "function_code:function:function-text:dac0edf7a66f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "send_rr_data_get_attributes_all",
+      "hex": "6f0016000000000000000000a1a2a3a4a5a6a7a800000000000000000000020000000000b2000800010220012401",
+      "byte_length": 46,
+      "sha256": "3f92911241c9284a46e5cee07bc601ceb4110adb96c9ffcbf99441d48a2d3db5"
+    }
+  ],
+  "expected_behavior": "The target should parse the outer SendRRData frame and CPF items, then attempt to dispatch a Get_Attributes_All Message Router request at CIP level.",
+  "constraints_preserved": [
+    "Encapsulation length is 0x0018 and matches the 24-byte command-specific payload.",
+    "The SendRRData command-specific prefix contains interface handle 0 and timeout 0.",
+    "CPF uses the documented SendRRData item combination of Null Address Item and Unconnected Data Item.",
+    "Unconnected Data Item length is 8 and matches the embedded CIP request.",
+    "Service byte 0x01 is the documented Get_Attributes_All code.",
+    "Path-size byte is 0x02, matching two 16-bit words of path data."
+  ],
+  "issue_safety_notes": "Depth comes from valid nested structure only; no malformed recursion or unsupported issue claim is included.",
+  "sequence_sha256": "e1283658d3253dc31f047163f8cdffa9ce01b7e639bf22f55391ef8ca896c984",
+  "total_bytes": 46,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3f92911241c9284a46e5cee07bc601ceb4110adb96c9ffcbf99441d48a2d3db5",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ]
+  }
+}

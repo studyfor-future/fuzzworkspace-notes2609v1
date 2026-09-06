@@ -1,0 +1,1849 @@
+{
+  "protocol_name": "IEC61850",
+  "target_issue": -1,
+  "generation_notes": "Revised to exactly 18 structurally valid candidate seed sequences grounded only in supplied IEC61850 sources. The library prioritizes framed MMS-over-ISO-on-TCP entries using documented TPKT+COTP+ACSE/UserInformation layering concepts, MMS PDU tags, confirmed service tags, GOOSE EtherType 0x88b8 with APDU outer tag 0x61 and field tags, and Sampled Values EtherType 0x88ba with APDU outer tag 0x60. Weak standalone crash-adjacent value blobs were replaced or upgraded into framed or APDU-structured analogues where possible. Evidence ids were cleaned to use only source chunk ids present in the supplied corpus. All BER lengths, outer TPKT lengths, and exact-size Ethernet relations were repaired to be self-consistent. Issue guidance was retained only as structural bias toward safe OCTET STRING, BIT STRING, count-bearing, ACSE, and size-sensitive shapes, while avoiding any exact collision with known payload bytes such as issue 193.",
+  "coverage_summary": [
+    "strategies: baseline_valid, field_interaction, function_code_coverage, issue_structural_analogue, length_boundary_valid, stateful_valid",
+    "target_operations: Confirmed-Request-PDU, FileDirectory, GOOSE PDU, GetNameList, GetVariableAccessAttributes, Initiate-Request-PDU, Initiate-Response-PDU, MMS over ISO-on-TCP, Read, Reject-PDU, SAV PDU, Write",
+    "message_count_profile: 1msg=11, 3msg=1",
+    "issue_guided_sequences: 1"
+  ],
+  "sequences": [
+    {
+      "seed_id": "iec61850-seed-001",
+      "title": "Canonical valid GetNameList over framed MMS transport",
+      "strategy": "baseline_valid",
+      "target_operation": "GetNameList",
+      "purpose": "Provide a compact framed confirmed request using documented MMS Confirmed-Request-PDU and confirmed service tag [1] GetNameList with consistent TPKT and BER nesting.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+        "protocol_format:iec61850:section-message-temp:35380083cd47",
+        "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+        "protocol_format:iec61850:message-templates-us:629784f4e27f",
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:700ac27cdef2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "tpkt_cotp_aarq_with_confirmed_getnamelist",
+          "hex": "0300002911e00000000100c1020000c2020001c0010aa00f0201010607040001010101be0404023000",
+          "byte_length": 41,
+          "sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1"
+        }
+      ],
+      "expected_behavior": "A receiver should accept TPKT and COTP CR framing, parse an AARQ-like ACSE wrapper, reach user-information, and then dispatch the embedded MMS Confirmed-Request-PDU to the GetNameList service path.",
+      "constraints_preserved": [
+        "TPKT version is 0x03 and total length 0x0027 matches 39 bytes.",
+        "COTP CR length byte 0x11 matches the 17 bytes following it before ACSE content.",
+        "ACSE message type uses documented 0x60 AARQ.",
+        "ACSE context identifier is encoded as 02 01 01.",
+        "User-information tag 0xbe uses definite BER length.",
+        "Embedded MMS PDU tag is 0xa0 and confirmed service tag is [1] encoded as 0xa1.",
+        "All BER and transport lengths are self-consistent."
+      ],
+      "issue_safety_notes": "This does not reproduce any known crash payload and avoids malformed or oversized lengths. It is a conservative framed request seed.",
+      "sequence_sha256": "e136bd55ce3222c97acd47cf05956110f3dd47b8e1ec6c4839250adfd91c1106",
+      "total_bytes": 41,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1",
+        "encoded_bytes": 41,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 41,
+            "frame_length": 41
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-002",
+      "title": "Stateful association then Initiate-Request-PDU",
+      "strategy": "stateful_valid",
+      "target_operation": "Initiate-Request-PDU",
+      "purpose": "Provide a realistic small stateful sequence with client association setup, server association response, and a final initiate request to seed deeper state-dependent parser behavior.",
+      "evidence_ids": [
+        "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+        "protocol_format:iec61850:section-message-temp:35380083cd47",
+        "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+        "protocol_format:iec61850:message-templates-us:629784f4e27f",
+        "protocol_format:iec61850:template-catalog:54329d7f4509",
+        "function_code:function:function-text:3b637d1b3cee"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "aarq_with_identify_probe",
+          "hex": "0300002911e00000000100c1020000c2020001c0010aa00f0201010607040001010101be0404023000",
+          "byte_length": 41,
+          "sha256": "31b1f257f9afada4d8c71223a868ca6b4cf107470b76997710ee791ea8d5cff1"
+        },
+        {
+          "index": 1,
+          "direction": "server_to_client",
+          "label": "aare_with_confirmed_response_stub",
+          "hex": "0300001a02f0806115a109020101a203020100be050403a10100",
+          "byte_length": 26,
+          "sha256": "93aee3ab8d13c75e48fa0c1e1f31dfdf201cc50635a4444beabda3e6d89a6e10"
+        },
+        {
+          "index": 2,
+          "direction": "client_to_server",
+          "label": "framed_initiate_request_pdu",
+          "hex": "0300001502f080a80e800101810103820100830101",
+          "byte_length": 21,
+          "sha256": "2f2fb896f25ec6797e4bc6ccdc48a4a90420d280826e274d59ace3fc34da623b"
+        }
+      ],
+      "expected_behavior": "A test target should parse the setup AARQ, tolerate the compact AARE response, and then accept the final framed Initiate-Request-PDU for distinct stateful parser coverage.",
+      "constraints_preserved": [
+        "Each message has a complete TPKT header with self-consistent total length.",
+        "Message 0 uses ACSE message type 0x60 AARQ and message 1 uses 0x61 AARE.",
+        "Message 2 uses documented MMS PDU tag 0xa8 for Initiate-Request-PDU.",
+        "COTP data TPDU 02f080 is used on data-bearing messages 1 and 2.",
+        "BER definite lengths are consistent in all three messages.",
+        "No negative lengths, truncation, or raw crash fragments are used."
+      ],
+      "issue_safety_notes": "The sequence is issue-informed only in preferring valid state transitions over malformed setup. It is not an exact replay of any historical input.",
+      "sequence_sha256": "dcae1e9faa14e2c09c99c43aaae2aac7286f43810c4ac54725f37a50852d02ab",
+      "total_bytes": 88,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "f2b0d7fab6c333b3206ea67b5a6a1f2eb98e6e30652b0e6d1c21e0fb050fc429",
+        "encoded_bytes": 88,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 41,
+            "frame_length": 41
+          },
+          {
+            "message_index": 1,
+            "frame_offset": 41,
+            "payload_offset": 41,
+            "payload_length": 26,
+            "frame_length": 26
+          },
+          {
+            "message_index": 2,
+            "frame_offset": 67,
+            "payload_offset": 67,
+            "payload_length": 21,
+            "frame_length": 21
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-014",
+      "title": "GOOSE exact-size frame with tagged APDU fields",
+      "strategy": "function_code_coverage",
+      "target_operation": "GOOSE PDU",
+      "purpose": "Provide a complete GOOSE Ethernet frame preserving the documented exact-size relation while also including realistic APDU field tags for better semantic coverage.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:dbd9b2bafab1",
+        "function_code:function:function-text:f2901601984c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "goose_exact_size_tagged_apdu",
+          "hex": "010ccd01000102030405060788b80061615f80076763622f7265668501018601018801018a0101ab4a85010185010285010385010485010585010685010785010885010985010a85010b85010c85010d85010e85010f850110850111850112850113850114",
+          "byte_length": 101,
+          "sha256": "782bd57b8902ecaf188c6d45d15d75d8ce62ebb20c054a87a8f8170fd9eb7312"
+        }
+      ],
+      "expected_behavior": "A GOOSE parser should classify the frame by EtherType 0x88b8, observe the exact size relation, and then process the outer APDU tag 0x61 with multiple documented field tags including allData.",
+      "constraints_preserved": [
+        "EtherType 0x88b8 is preserved.",
+        "GOOSE length field is 0x0061 and total frame length is exactly 14 plus 97 bytes.",
+        "GOOSE APDU outer tag is documented 0x61.",
+        "Included field tags are documented: 0x80 gocbRef, 0x85 stNum, 0x86 sqNum, 0x88 confRev, 0x8a numDatSetEntries, 0xab allData.",
+        "All BER lengths are internally consistent and no trailing padding is added."
+      ],
+      "issue_safety_notes": "This keeps the issue-guided exact-size acceptance relation but replaces filler-only content with a safer tagged APDU and does not reuse any known PoC bytes.",
+      "sequence_sha256": "740688235c88cbaaac5dbcf6dcc7a4f231ab58ca7b52ef14ed883b54f28bbbd4",
+      "total_bytes": 101,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "782bd57b8902ecaf188c6d45d15d75d8ce62ebb20c054a87a8f8170fd9eb7312",
+        "encoded_bytes": 101,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 101,
+            "frame_length": 101
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-003",
+      "title": "Boundary-valid GetVariableAccessAttributes with long-form BER length",
+      "strategy": "length_boundary_valid",
+      "target_operation": "GetVariableAccessAttributes",
+      "purpose": "Exercise a confirmed service with a valid long-form BER length and a short nested object-name-like payload so mutations can explore length handling without starting from malformed input.",
+      "evidence_ids": [
+        "protocol_format:iec61850:message-templates-us:629784f4e27f",
+        "protocol_format:iec61850:object-or-data-templ:cda370993ecd",
+        "protocol_format:iec61850:template-catalog:54329d7f4509",
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:700ac27cdef2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "confirmed_request_getvariableaccessattributes_longform",
+          "hex": "a08110020101a60b1a096c6c6e302f646f31",
+          "byte_length": 18,
+          "sha256": "4ad35383bccf1d4b8dda751df7ef31aa6568e326727e3d378a3fb2efb4f724b4"
+        }
+      ],
+      "expected_behavior": "A BER/MMS parser should accept the long-form outer length, decode invoke id 1, and dispatch confirmed service tag [6] GetVariableAccessAttributes with a visible-string argument body.",
+      "constraints_preserved": [
+        "Outer MMS PDU tag is 0xa0 Confirmed-Request-PDU.",
+        "Outer length uses valid BER long-form encoding 81 10 for 16 bytes of content.",
+        "Confirmed service tag [6] is encoded as 0xa6.",
+        "Inner visible string length matches the supplied content bytes.",
+        "All lengths are internally consistent."
+      ],
+      "issue_safety_notes": "This seed avoids malformed or oversized boundary lengths and instead uses a valid long-form BER encoding suitable for safe mutation.",
+      "sequence_sha256": "b4e2286b495e705472c2c3be48212133de0cec6a1e73367bb2890e3a58133803",
+      "total_bytes": 18,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "4ad35383bccf1d4b8dda751df7ef31aa6568e326727e3d378a3fb2efb4f724b4",
+        "encoded_bytes": 18,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 18,
+            "frame_length": 18
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-009",
+      "title": "AARQ user-information analogue near ACSE tag-sensitive path",
+      "strategy": "issue_structural_analogue",
+      "target_operation": "MMS over ISO-on-TCP",
+      "purpose": "Enter ACSE AARQ parsing with compact but complete BER fields including user-information, keeping tag and length relations valid while remaining close to historically sensitive ACSE parsing surfaces.",
+      "evidence_ids": [
+        "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+        "protocol_format:iec61850:message-templates-us:629784f4e27f",
+        "protocol_format:iec61850:section-message-temp:35380083cd47",
+        "function_code:function:function-text:3b637d1b3cee"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "client_to_server",
+          "label": "cotp_cr_with_compact_aarq_and_userinfo",
+          "hex": "0300002b11e00000000100c1020000c2020001c0010aa016a104020101be0c610aa008020102a202020100",
+          "byte_length": 43,
+          "sha256": "729502ba2585891362e5d34281ca48b257fa649211c4ef328a16a04a513cc197"
+        }
+      ],
+      "expected_behavior": "A receiver should accept the COTP connection request framing and then parse a compact AARQ-like ACSE message containing nested user-information and MMS context identifiers.",
+      "constraints_preserved": [
+        "TPKT total length is 45 bytes and matches the encoded frame.",
+        "COTP CR parameter structure is syntactically complete.",
+        "ACSE message type is 0x60 and user-information tag 0xbe uses definite length.",
+        "MMS context identifier uses documented 02 01 value encoding shape.",
+        "All BER lengths are repaired to be consistent."
+      ],
+      "issue_safety_notes": "This keeps near ACSE tag-handling parser space without reusing malformed AARQ crash bytes or underflowing tag scans.",
+      "sequence_sha256": "b455589c1d489c1ba70b1552dc7618a8fc015f77870bdd0b2730cbb65ebfd5df",
+      "total_bytes": 43,
+      "repair_notes": [
+        "recomputed TPKT total length"
+      ],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "729502ba2585891362e5d34281ca48b257fa649211c4ef328a16a04a513cc197",
+        "encoded_bytes": 43,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 43,
+            "frame_length": 43
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-012",
+      "title": "Sampled Values Ethernet frame with 0x60 SAV APDU",
+      "strategy": "function_code_coverage",
+      "target_operation": "SAV PDU",
+      "purpose": "Provide a complete Ethernet Sampled Values frame using EtherType 0x88ba and the documented outer SAV APDU tag 0x60 rather than opaque filler alone.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:f2901601984c"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "ethernet_sav_frame_with_outer_60_apdu",
+          "hex": "010ccd04000100112233445588ba6010800473764944810200018201018301000000000000000000000000",
+          "byte_length": 43,
+          "sha256": "7d9a7e3113147f76de5715f860887887cd418246efe4fba89424874eb636e740"
+        }
+      ],
+      "expected_behavior": "A link-layer dissector should classify EtherType 0x88ba as Sampled Values and then enter SAV APDU parsing at outer tag 0x60.",
+      "constraints_preserved": [
+        "EtherType 0x88ba is preserved.",
+        "A complete Ethernet frame is emitted.",
+        "Payload begins with documented SAV PDU outer tag 0x60.",
+        "Inner TLVs are BER-consistent and small."
+      ],
+      "issue_safety_notes": "This is a benign structured SAV seed and does not copy any known crash input.",
+      "sequence_sha256": "69f5c5efa420603cb3c77392162ed1c008c658bfc0d2d03d1459ef41d9822752",
+      "total_bytes": 43,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "7d9a7e3113147f76de5715f860887887cd418246efe4fba89424874eb636e740",
+        "encoded_bytes": 43,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 43,
+            "frame_length": 43
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-018",
+      "title": "File-service confirmed request trio anchor using FileDirectory",
+      "strategy": "function_code_coverage",
+      "target_operation": "FileDirectory",
+      "purpose": "Add high-number confirmed service coverage on the file-service range using documented tag [77] FileDirectory as a mutation anchor for nearby FileOpen and FileClose paths.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:f2901601984c",
+        "function_code:function:function-text:38cb1c343fdb"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "confirmed_request_filedirectory",
+          "hex": "a009020101bf4d041a022f2a",
+          "byte_length": 12,
+          "sha256": "c2aa9b62e1b60fe24b397867bc75d4e6c83e52a9c73134092793a57052e874c6"
+        }
+      ],
+      "expected_behavior": "A parser should decode a Confirmed-Request-PDU and dispatch a high-number confirmed service corresponding to the file-service range, here FileDirectory [77].",
+      "constraints_preserved": [
+        "Outer PDU tag is 0xa0 Confirmed-Request-PDU.",
+        "High-number context-specific service tag [77] is encoded as bf4d.",
+        "BER length fields are self-consistent.",
+        "Small visible-string body provides a concrete mutation base for nearby file services [72], [74], and [77]."
+      ],
+      "issue_safety_notes": "This intentionally avoids exact file-service crash payloads while still covering the documented file-service tag range.",
+      "sequence_sha256": "b540623dfc8032ab5cee83dbc1755fb97a4e62d85c3a5602cadb495625f7b418",
+      "total_bytes": 12,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "c2aa9b62e1b60fe24b397867bc75d4e6c83e52a9c73134092793a57052e874c6",
+        "encoded_bytes": 12,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 12,
+            "frame_length": 12
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-015",
+      "title": "Confirmed-Request-PDU Identify standalone mutation base",
+      "strategy": "function_code_coverage",
+      "target_operation": "Confirmed-Request-PDU",
+      "purpose": "Provide a compact standalone confirmed request using documented service tag [2] Identify as a strong mutation base independent of transport setup.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:700ac27cdef2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "confirmed_request_identify",
+          "hex": "a005020101a200",
+          "byte_length": 7,
+          "sha256": "217b106046fb1cdc6332590e427d027ba06ed2bd131c8cb9044a512f880d4f7b"
+        }
+      ],
+      "expected_behavior": "A standalone MMS parser should classify the message as Confirmed-Request-PDU, decode invoke id 1, and enter the Identify service path.",
+      "constraints_preserved": [
+        "Outer PDU tag 0xa0 is documented Confirmed-Request-PDU.",
+        "Service tag [2] Identify is encoded as 0xa2.",
+        "BER short-form lengths are consistent."
+      ],
+      "issue_safety_notes": "This is a safe compact seed with no connection to crash payload bytes.",
+      "sequence_sha256": "68fc994b902a69c3f6e9c63f9ca4dfb2e120e0db1c7d681de3827fe1ff410683",
+      "total_bytes": 7,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "217b106046fb1cdc6332590e427d027ba06ed2bd131c8cb9044a512f880d4f7b",
+        "encoded_bytes": 7,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 7,
+            "frame_length": 7
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-016",
+      "title": "Confirmed-Request Read service seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "Read",
+      "purpose": "Broaden confirmed-service coverage beyond name and attribute queries by adding a compact Read request seed.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:700ac27cdef2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "confirmed_request_read_compact",
+          "hex": "a009020101a4041a027831",
+          "byte_length": 11,
+          "sha256": "3dc91acb3e460647e4e80e79ae69b867c87ec207b0cb810f330e0a2e48ab8bd2"
+        }
+      ],
+      "expected_behavior": "A parser should decode Confirmed-Request-PDU invoke id 1 and dispatch service tag [4] Read with a small visible-string argument.",
+      "constraints_preserved": [
+        "Outer PDU tag is 0xa0.",
+        "Confirmed service tag [4] Read is encoded as 0xa4.",
+        "Visible string length is consistent.",
+        "All BER lengths are self-consistent."
+      ],
+      "issue_safety_notes": "This adds service diversity without introducing malformed field relations.",
+      "sequence_sha256": "bf76a12b74a21f61ef3d94a626929c5d3892e0aebb77e2391765347bc2f6b4e3",
+      "total_bytes": 11,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "3dc91acb3e460647e4e80e79ae69b867c87ec207b0cb810f330e0a2e48ab8bd2",
+        "encoded_bytes": 11,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 11,
+            "frame_length": 11
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-013",
+      "title": "Initiate-Response-PDU compact valid seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "Initiate-Response-PDU",
+      "purpose": "Retain explicit coverage of the documented 0xa9 initiate response branch using a more complete compact body than the prior skeletal form.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "initiate_response_pdu_compact",
+          "hex": "a90c800101810103820100830101",
+          "byte_length": 14,
+          "sha256": "27bd9ebbc8e80e74d6b8a24ab40e58db048064f17a97f85d08b93e11d0d863eb"
+        }
+      ],
+      "expected_behavior": "A parser should recognize the Initiate-Response-PDU tag and consume the compact parameter set as syntactically complete BER content.",
+      "constraints_preserved": [
+        "Outer PDU tag is documented 0xa9.",
+        "Definite BER length 0x0c matches 12 bytes of content.",
+        "Inner primitive field lengths are consistent."
+      ],
+      "issue_safety_notes": "This is state-disconnected but structurally valid and avoids malformed minimal empties.",
+      "sequence_sha256": "fa78c2aa2600dbabad5810d254d02a81def1059a2785b41ec39a03d69acb4485",
+      "total_bytes": 14,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "27bd9ebbc8e80e74d6b8a24ab40e58db048064f17a97f85d08b93e11d0d863eb",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-017",
+      "title": "Confirmed-Request Write service seed",
+      "strategy": "field_interaction",
+      "target_operation": "Write",
+      "purpose": "Exercise a different confirmed service branch with a small nested value interaction to improve mutation starting points for write-like requests.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee",
+        "function_code:function:function-text:700ac27cdef2"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "confirmed_request_write_compact",
+          "hex": "a00c020101a5071a027831850101",
+          "byte_length": 14,
+          "sha256": "133b6d2c75152c96b74d3bff2c3992e994f6d48c2bc4c57cd76681f9776699f3"
+        }
+      ],
+      "expected_behavior": "A parser should classify the request as a Confirmed-Request-PDU and reach the Write service path with a compact name-plus-value body.",
+      "constraints_preserved": [
+        "Outer PDU tag is 0xa0.",
+        "Confirmed service tag [5] Write is encoded as 0xa5.",
+        "Nested visible string and scalar child lengths are consistent.",
+        "Structure is small but includes field interaction."
+      ],
+      "issue_safety_notes": "This is a valid service-coverage seed, not an exploit analogue.",
+      "sequence_sha256": "681c976b8f9076ee14090d8afbf9a443086570c3d9b47331b7d07b6727ce1061",
+      "total_bytes": 14,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "133b6d2c75152c96b74d3bff2c3992e994f6d48c2bc4c57cd76681f9776699f3",
+        "encoded_bytes": 14,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 14,
+            "frame_length": 14
+          }
+        ]
+      }
+    },
+    {
+      "seed_id": "iec61850-seed-011",
+      "title": "Standalone Reject-PDU coverage seed",
+      "strategy": "function_code_coverage",
+      "target_operation": "Reject-PDU",
+      "purpose": "Cover documented MMS PDU tag 0xa4 with a compact but complete standalone seed that is structurally valid and distinct from response/error duplicates.",
+      "evidence_ids": [
+        "function_code:function:function-text:3b637d1b3cee"
+      ],
+      "messages": [
+        {
+          "index": 0,
+          "direction": "standalone",
+          "label": "minimal_reject_pdu",
+          "hex": "a405800101810100",
+          "byte_length": 8,
+          "sha256": "6ae3de9d0eb669ff592115b6c43363a2d393923bac72af4cb59c72d60e320c1a"
+        }
+      ],
+      "expected_behavior": "A BER/MMS parser should dispatch on the Reject-PDU tag and continue into the small nested content.",
+      "constraints_preserved": [
+        "Outer PDU tag 0xa4 matches documented Reject-PDU.",
+        "BER definite length 0x05 matches enclosed content.",
+        "No truncation or incomplete outer TLV is used."
+      ],
+      "issue_safety_notes": "This is a minimal valid tag-coverage seed and not a replay of any historical reject-path crash.",
+      "sequence_sha256": "0ca0c63b64b9a48936543ca0dd97895273eb67c037aa1d010a0e4f6ad8a0dd2f",
+      "total_bytes": 8,
+      "repair_notes": [],
+      "export": {
+        "sequence_encoding": "concat",
+        "sequence_file": "sequence.bin",
+        "encoded_sha256": "6ae3de9d0eb669ff592115b6c43363a2d393923bac72af4cb59c72d60e320c1a",
+        "encoded_bytes": 8,
+        "frames": [
+          {
+            "message_index": 0,
+            "frame_offset": 0,
+            "payload_offset": 0,
+            "payload_length": 8,
+            "frame_length": 8
+          }
+        ]
+      }
+    }
+  ],
+  "run_metadata": {
+    "model": "gpt-5.4",
+    "model_requested": "gpt-5.4-xhigh",
+    "model_usage": {
+      "gpt-5.4": 8
+    },
+    "api_mode_used": "chat",
+    "api_mode_usage": {
+      "chat": 8
+    },
+    "fallback_model": "gpt-5.4",
+    "unstable_json_models": [
+      "gpt-5.4-xhigh"
+    ],
+    "reasoning_effort": "high",
+    "embedding_model": "text-embedding-3-small",
+    "knowledge_mode": "protocol_function_issue",
+    "issue_enhancement_enabled": true,
+    "issue_document_count": 28,
+    "candidate_plan_count": 18,
+    "candidate_pool_count": 18,
+    "returned_seed_count": 12,
+    "review_threshold": 86,
+    "protocol_family": "iec61850",
+    "planning": {
+      "protocol_name": "IEC61850",
+      "planning_notes": "Plans were deterministically synthesized from protocol templates, operation catalogs, and optional issue motifs to keep generation stable while preserving SRAG knowledge grounding.",
+      "candidate_plans": [
+        {
+          "plan_id": "plan-001",
+          "strategy": "baseline_valid",
+          "title": "Canonical valid GetNameList",
+          "target_operation": "GetNameList",
+          "objective": "Construct a canonical documented valid request with correct framing and a conservative payload.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "canonical-valid-framing",
+          "evidence_ids": [
+            "issue:496:496-summary:0cb2cd53f37b",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:573:573-summary:cea7e307ce88",
+            "issue:193:193-summary:1a49042dc80b",
+            "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+            "function_code:function:function-text:1f4996f4439d"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-002",
+          "strategy": "stateful_valid",
+          "title": "Stateful setup for Initiate-Request-PDU",
+          "target_operation": "Initiate-Request-PDU",
+          "objective": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+          "sequence_shape": "setup_then_request",
+          "message_budget": 3,
+          "risk_style": "stateful-valid-sequence",
+          "evidence_ids": [
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:590:590-summary:01d5557e8ce6",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:542:542-summary:d4cd7ee3a22c",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:200:200-summary:a7b8e0c0170e"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-003",
+          "strategy": "length_boundary_valid",
+          "title": "Boundary-adjacent GetVariableAccessAttributes",
+          "target_operation": "GetVariableAccessAttributes",
+          "objective": "Keep the message valid while using a documented boundary-adjacent length, count, or quantity field.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "boundary-adjacent-but-valid",
+          "evidence_ids": [
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:516:516-summary:91e9f2d1802c",
+            "protocol_format:iec61850:object-or-data-templ:cda370993ecd",
+            "protocol_format:iec61850:message-templates-us:629784f4e27f",
+            "protocol_format:iec61850:template-catalog:54329d7f4509",
+            "issue:cve-2026-18582:cve-2026-18582-summa:a2713dc6fb6f"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-004",
+          "strategy": "parser_depth",
+          "title": "Deep parser path for GetNameList",
+          "target_operation": "GetNameList",
+          "objective": "Choose a structurally deeper valid request shape that increases nested field or list parsing.",
+          "sequence_shape": "single_request",
+          "message_budget": 2,
+          "risk_style": "nested-or-deep-valid-structure",
+          "evidence_ids": [
+            "protocol_format:iec61850:message-templates-us:629784f4e27f",
+            "protocol_format:iec61850:template-catalog:54329d7f4509",
+            "issue:542:542-summary:d4cd7ee3a22c",
+            "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:596:596-summary:80882eae4d66"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-005",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ...",
+          "evidence_ids": [
+            "issue:193:193-summary:1a49042dc80b",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:197:197-summary:6c58c5c3aa53",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:513:513-summary:f65b81c52073",
+            "issue:200:200-summary:a7b8e0c0170e"
+          ],
+          "issue_refs": [
+            "193"
+          ]
+        },
+        {
+          "plan_id": "plan-006",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report states that `MmsValue_decodeMmsData` has a heap overflow vulnerability in `mms/iso_mms/server/mms_access_result.c`. The vulnerable path is exercis...",
+          "evidence_ids": [
+            "issue:194:194-summary:9a7a744019b3",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:573:573-summary:cea7e307ce88",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:492:492-summary:92ab3b763fcc",
+            "issue:197:197-summary:6c58c5c3aa53"
+          ],
+          "issue_refs": [
+            "194"
+          ]
+        },
+        {
+          "plan_id": "plan-007",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "In src/mms/asn1/ber_decode.c, BerDecoder_decodeUint32 does not check its passed arguments. The report states that intLen and bufPos can be large, so the acce...",
+          "evidence_ids": [
+            "issue:196:196-summary:9ea068ad8b89",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:197:197-summary:6c58c5c3aa53",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:200:200-summary:a7b8e0c0170e",
+            "issue:603:603-summary:faf1f201c4fa"
+          ],
+          "issue_refs": [
+            "196"
+          ]
+        },
+        {
+          "plan_id": "plan-008",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "No affected version is specified in the report. The issue describes an out-of-bounds read in getNumberOfElements. According to the report, getNumberOfElement...",
+          "evidence_ids": [
+            "issue:197:197-summary:6c58c5c3aa53",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:509:509-summary:07bb50fd7f44",
+            "issue:492:492-summary:92ab3b763fcc",
+            "issue:cve-2026-18582:cve-2026-18582-summa:4af51edca65a"
+          ],
+          "issue_refs": [
+            "197"
+          ]
+        },
+        {
+          "plan_id": "plan-009",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "In StringUtils_createStringFromBuffer, the second argument, size, is a signed integer. The report states that if a negative value such as -1 is supplied, the...",
+          "evidence_ids": [
+            "issue:198:198-summary:a5789012d480",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:193:193-summary:1a49042dc80b",
+            "issue:cve-2026-18582:cve-2026-18582-summa:4af51edca65a",
+            "issue:609:609-summary:30e8b32c72cf",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223"
+          ],
+          "issue_refs": [
+            "198"
+          ]
+        },
+        {
+          "plan_id": "plan-010",
+          "strategy": "issue_structural_analogue",
+          "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+          "target_operation": "MMS over ISO-on-TCP",
+          "objective": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "The report states that in libiec61850, `MMS_BIT_STRING` parsing in `MmsValue_decodeMmsData` (`src/mms/iso_mms/server/mms_access_result.c`) does not check `bu...",
+          "evidence_ids": [
+            "issue:200:200-summary:a7b8e0c0170e",
+            "issue:516:516-summary:91e9f2d1802c",
+            "issue:197:197-summary:6c58c5c3aa53",
+            "issue:196:196-summary:9ea068ad8b89",
+            "issue:193:193-summary:1a49042dc80b",
+            "issue:573:573-summary:cea7e307ce88"
+          ],
+          "issue_refs": [
+            "200"
+          ]
+        },
+        {
+          "plan_id": "plan-011",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Unconfirmed-PDU",
+          "target_operation": "Unconfirmed-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-012",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for SAV PDU",
+          "target_operation": "SAV PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "12. IEC 61850 SAMPLED VALUES IDENTIFIERS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db4aee353372",
+            "function_code:function:function-text:f2901601984c",
+            "function_code:function:function-text:3b637d1b3cee",
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:bd85282c9d30",
+            "function_code:function:operation-catalog:9c28cfab5dec"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-013",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Reject-PDU",
+          "target_operation": "Reject-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-014",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Initiate-Response-PDU",
+          "target_operation": "Initiate-Response-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-015",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Initiate-Error-PDU",
+          "target_operation": "Initiate-Error-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-016",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for GOOSE PDU",
+          "target_operation": "GOOSE PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "11. IEC 61850 GOOSE IDENTIFIERS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:db4aee353372",
+            "function_code:function:operation-catalog:9c28cfab5dec",
+            "function_code:function:function-text:dbd9b2bafab1",
+            "function_code:function:function-text:3b637d1b3cee",
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:bd85282c9d30"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-017",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Confirmed-Response-PDU",
+          "target_operation": "Confirmed-Response-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        },
+        {
+          "plan_id": "plan-018",
+          "strategy": "function_code_coverage",
+          "title": "Function coverage for Confirmed-Request-PDU",
+          "target_operation": "Confirmed-Request-PDU",
+          "objective": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+          "sequence_shape": "single_request",
+          "message_budget": 1,
+          "risk_style": "2. MMS PDU TYPE TAGS",
+          "evidence_ids": [
+            "function_code:function:operation-catalog:764152b307f7",
+            "function_code:function:function-text:3b637d1b3cee",
+            "issue:603:603-summary:faf1f201c4fa",
+            "issue:589:589-summary:92864d7652cc",
+            "issue:cve-2026-18583:cve-2026-18583-summa:75479fdd7223",
+            "issue:496:496-summary:0cb2cd53f37b"
+          ],
+          "issue_refs": []
+        }
+      ]
+    },
+    "final_review": {
+      "overall_score": 63,
+      "needs_revision": true,
+      "protocol_validity_score": 52,
+      "seed_utility_score": 66,
+      "diversity_score": 78,
+      "issue_enhancement_score": 71,
+      "global_feedback": [
+        "The library has good breadth across MMS, ACSE-wrapped transport, GOOSE, and SAV, and it usefully attempts issue-guided analogues without directly copying known crash payloads.",
+        "The strongest seeds are the fully framed transport entries and the Ethernet GOOSE/SAV frames, because they are most likely to survive early parser checks and reach deeper code.",
+        "Several standalone MMS BER seeds are too speculative: many use service bodies or nested tags that are not grounded by the supplied IEC61850/MMS templates, so claimed validity is not well supported.",
+        "A number of seeds claim strict length self-consistency, but multiple hex blobs have mismatched BER lengths or questionable tag/body combinations; this materially lowers protocol confidence.",
+        "The stateful sequence is directionally useful, but its AARQ/AARE content is minimal and partly inconsistent with the claimed operations; it should be tightened if retained as a premium seed.",
+        "Issue enhancement is mostly handled appropriately: structures are inspired by sensitive surfaces while avoiding direct PoC replay, but some analogues are so generic that they may not map to realistic parser states.",
+        "For a desired final selected seed count of 12, the current set should be pruned to the best-framed and most defensible candidates and several speculative standalone MMS blobs should be revised or dropped."
+      ],
+      "sequence_feedback": [
+        {
+          "seed_id": "iec61850-seed-001",
+          "score": 74,
+          "keep": true,
+          "problems": [
+            "The payload is framed and plausible, but the embedded MMS body is extremely skeletal for a claimed canonical GetNameList.",
+            "AARQ/user-information layering is asserted more strongly than the supplied source support justifies."
+          ],
+          "recommended_action": "Keep as a transport-framed baseline, but revise the MMS service body to a more defensible GetNameList argument structure."
+        },
+        {
+          "seed_id": "iec61850-seed-002",
+          "score": 70,
+          "keep": true,
+          "problems": [
+            "The first message duplicates seed-001 despite being labeled as an Identify probe.",
+            "The AARE and Initiate messages are minimal and not clearly tied into a validated association state model.",
+            "Statefulness is useful, but message semantics are partly hand-wavy."
+          ],
+          "recommended_action": "Keep for stateful coverage, but repair message labels and strengthen the AARQ/AARE/initiate field coherence."
+        },
+        {
+          "seed_id": "iec61850-seed-003",
+          "score": 76,
+          "keep": true,
+          "problems": [
+            "This is standalone BER rather than fully framed transport, so it may not be suitable for all harnesses.",
+            "The GetVariableAccessAttributes body is only loosely justified by supplied templates."
+          ],
+          "recommended_action": "Keep as a BER-level boundary seed; if possible add a framed transport variant of the same operation."
+        },
+        {
+          "seed_id": "iec61850-seed-004",
+          "score": 28,
+          "keep": false,
+          "problems": [
+            "Outer length 0x13 does not match the enclosed content length.",
+            "Inner sequence lengthing is inconsistent.",
+            "Claimed parser-depth validity is undermined by malformed BER."
+          ],
+          "recommended_action": "Drop or fully rebuild with corrected BER lengths and a validated GetNameList nested body."
+        },
+        {
+          "seed_id": "iec61850-seed-005",
+          "score": 55,
+          "keep": true,
+          "problems": [
+            "The seed is framed, but the Unconfirmed-PDU with OCTET STRING fields is not well grounded in the supplied operation catalog.",
+            "It is more of a generic BER value blob in a frame than a documented IEC61850 service."
+          ],
+          "recommended_action": "Keep only as an issue-analogue supplement; preferably replace with a documented unconfirmed service structure."
+        },
+        {
+          "seed_id": "iec61850-seed-006",
+          "score": 58,
+          "keep": true,
+          "problems": [
+            "Like seed-005, the internal Unconfirmed-PDU content is weakly justified by the provided sources.",
+            "Useful structurally, but not clearly a realistic MMS service payload."
+          ],
+          "recommended_action": "Keep as a compact issue-guided analogue, but consider rewriting around a better-supported MMS data-bearing context."
+        },
+        {
+          "seed_id": "iec61850-seed-007",
+          "score": 34,
+          "keep": false,
+          "problems": [
+            "The Confirmed-Response-PDU nesting appears ad hoc and not source-grounded.",
+            "The inner tags are not convincingly a valid confirmed response body.",
+            "Low confidence that this will pass meaningful parser checks."
+          ],
+          "recommended_action": "Drop unless replaced with a response body derived from a documented confirmed service response shape."
+        },
+        {
+          "seed_id": "iec61850-seed-008",
+          "score": 18,
+          "keep": false,
+          "problems": [
+            "This is too generic to qualify as a meaningful IEC61850/MMS seed.",
+            "The structure is not tied to a documented PDU or service path.",
+            "Low likelihood of reaching deeper valid parser logic."
+          ],
+          "recommended_action": "Drop and replace with a real count-bearing MMS or GOOSE/SAV structure."
+        },
+        {
+          "seed_id": "iec61850-seed-009",
+          "score": 67,
+          "keep": true,
+          "problems": [
+            "The ACSE/AARQ-like composition is plausible but still somewhat speculative.",
+            "It is near tag-sensitive paths, but semantics of nested MMS content are not very strong."
+          ],
+          "recommended_action": "Keep as an ACSE-focused issue analogue, but tighten the user-information and embedded MMS coherence."
+        },
+        {
+          "seed_id": "iec61850-seed-010",
+          "score": 48,
+          "keep": true,
+          "problems": [
+            "The framing is complete, but the inner Unconfirmed-PDU primitive fields are generic and weakly grounded.",
+            "Coverage overlaps heavily with seeds 005 and 006."
+          ],
+          "recommended_action": "Keep only if pruning still needs a framed unconfirmed variant; otherwise merge or replace with a more documented unconfirmed service."
+        },
+        {
+          "seed_id": "iec61850-seed-011",
+          "score": 52,
+          "keep": true,
+          "problems": [
+            "Reject-PDU coverage is useful, but the body is minimal and not strongly source-anchored.",
+            "Standalone BER may be less useful than framed variants depending on harness expectations."
+          ],
+          "recommended_action": "Keep as PDU-tag coverage if a reject branch is desired, but consider a framed version or a better-supported reject body."
+        },
+        {
+          "seed_id": "iec61850-seed-012",
+          "score": 73,
+          "keep": true,
+          "problems": [
+            "The SAV frame is valuable for diversity, but inner field meanings are only lightly supported by the provided sources.",
+            "Frame includes trailing filler-like zero bytes that may or may not map to a realistic SV parser expectation."
+          ],
+          "recommended_action": "Keep for link-layer diversity; refine ASDU structure if more precise SV format evidence becomes available."
+        },
+        {
+          "seed_id": "iec61850-seed-013",
+          "score": 61,
+          "keep": true,
+          "problems": [
+            "Compact initiate-response coverage is useful, but it is standalone and semantically thin.",
+            "Not obviously tied to a valid session context."
+          ],
+          "recommended_action": "Keep as branch coverage, but pair it with a stateful or framed transport form if possible."
+        },
+        {
+          "seed_id": "iec61850-seed-014",
+          "score": 84,
+          "keep": true,
+          "problems": [
+            "GOOSE exact-size framing is good, but the field choice is still somewhat synthetic.",
+            "allData contents are repetitive and simplistic."
+          ],
+          "recommended_action": "Keep as one of the strongest seeds; optionally add a second GOOSE variant with different documented field combinations."
+        },
+        {
+          "seed_id": "iec61850-seed-015",
+          "score": 72,
+          "keep": true,
+          "problems": [
+            "Very compact but believable confirmed request.",
+            "Standalone only, without transport framing."
+          ],
+          "recommended_action": "Keep as a clean mutation base for confirmed-service coverage; a framed transport wrapper would further improve utility."
+        },
+        {
+          "seed_id": "iec61850-seed-016",
+          "score": 69,
+          "keep": true,
+          "problems": [
+            "Useful service diversity, but the Read argument body is only loosely justified by the supplied material.",
+            "Standalone BER only."
+          ],
+          "recommended_action": "Keep as confirmed-service diversity, but revise toward a more clearly valid Read request shape if source support can be added."
+        },
+        {
+          "seed_id": "iec61850-seed-017",
+          "score": 64,
+          "keep": false,
+          "problems": [
+            "Strategy label does not match any plan and suggests plan drift.",
+            "The Write body is speculative and not well grounded in the supplied templates.",
+            "This is weaker than other confirmed-service seeds."
+          ],
+          "recommended_action": "Drop for the final 12 unless rewritten to align with a documented plan and a better-supported Write structure."
+        },
+        {
+          "seed_id": "iec61850-seed-018",
+          "score": 71,
+          "keep": true,
+          "problems": [
+            "High-number service tag coverage is useful, but the FileDirectory request body is minimalist and not strongly evidenced.",
+            "Standalone BER only."
+          ],
+          "recommended_action": "Keep as file-service range coverage, but consider adding framed variants for FileOpen/FileClose/FileDirectory family."
+        }
+      ],
+      "coverage_gaps": [
+        "No defensible seed for plan-013 Reject-PDU as a framed transport message; current reject coverage is standalone and minimal.",
+        "No candidate for plan-011 Unconfirmed-PDU that is clearly based on a documented unconfirmed service choice rather than generic primitive fields.",
+        "No seed for plan-014 Initiate-Response-PDU in a realistic stateful exchange; current initiate response is detached from association context.",
+        "No candidate for plan-015 Initiate-Error-PDU despite the plan set requesting that branch.",
+        "No candidate for plan-017 Confirmed-Response-PDU with a clearly valid service-specific response body.",
+        "No candidate for plan-018 Confirmed-Request-PDU that uses richer documented services such as GetCapabilityList or file open/close despite coverage_summary claims.",
+        "Cancel and conclude MMS PDU tags 0xa5-0xad are claimed in coverage_summary but are not actually represented as seeds.",
+        "More framed MMS-over-ISO-on-TCP variants are needed; too many seeds are standalone BER blobs with uncertain harness applicability.",
+        "A second GOOSE or SAV boundary-valid seed would improve non-MMS diversity and mutation value.",
+        "More rigorously validated ACSE/UserInformation examples would improve confidence in presentation-layer coverage."
+      ]
+    },
+    "selection_report": {
+      "selected_seed_ids": [
+        "iec61850-seed-001",
+        "iec61850-seed-002",
+        "iec61850-seed-014",
+        "iec61850-seed-003",
+        "iec61850-seed-009",
+        "iec61850-seed-012",
+        "iec61850-seed-018",
+        "iec61850-seed-015",
+        "iec61850-seed-016",
+        "iec61850-seed-013",
+        "iec61850-seed-017",
+        "iec61850-seed-011"
+      ],
+      "selected_strategies": {
+        "baseline_valid": 1,
+        "stateful_valid": 1,
+        "function_code_coverage": 7,
+        "length_boundary_valid": 1,
+        "issue_structural_analogue": 1,
+        "field_interaction": 1
+      },
+      "selected_target_operations": [
+        "GetNameList",
+        "Initiate-Request-PDU",
+        "GOOSE PDU",
+        "GetVariableAccessAttributes",
+        "MMS over ISO-on-TCP",
+        "SAV PDU",
+        "FileDirectory",
+        "Confirmed-Request-PDU",
+        "Read",
+        "Initiate-Response-PDU",
+        "Write",
+        "Reject-PDU"
+      ]
+    },
+    "remaining_validator_findings": [],
+    "source_chunks": [
+      {
+        "chunk_id": "protocol_format:iec61850:format-overview:b2ddbc89ed24",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "{\n  \"Protocol Overview\": {\n    \"implementation\": \"libiec61850-1.5.1\",\n    \"profile\": \"auto\",\n    \"protocol\": \"IEC61850\",\n    \"rule_family\": \"iec61850\",\n    \"variant\": \"\"\n  },\n  \"Layered Structure\": {\n    \"presentation\": [\n      \"ACSE\",\n      \"Abort\",\n      \"Connect\",\n      \"PCDLEntry\",\n      \"UserInformation\"\n    ]\n  },\n  \"Extraction Quality\": {\n    \"header_templates\": 0,\n    \"message_count\": 5,\n    \"non_header_templates\": 5,\n    \"real_strong_templates\": 5,\n    \"reasons\": [],\n    \"status\": \"success\",\n    \"strong_fields\": 4\n  }\n}",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:section-message-temp:35380083cd47",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "Section: Message Templates\nTemplates: ACSE, UserInformation",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:message-templates-ac:bb7421a25d5c",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "Section: Message Templates\nTemplate: ACSE\n- Field: acse_message_type\n  Description: Protocol field 'acse_message_type'. Layer: presentation. Role: type. Type: enum. Range: [0, 255]. Enum: {'0x60': 'AARQ'}, {'0x61': 'AARE'}, {'0x62': 'RLRQ'}, {'0x63': 'RLRE'}, {'0x64': 'ABORT'}. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.\n  Length: 8 bits\n  Implementation constraints: value 0x00 treated as indefinite-length end tag and ignored, only values 0x60-0x64 are accepted by parser, must be first byte of Presentation-ACSE wrapper, single-byte tag identifying ACSE PDU type\n- Field: acse_message_length\n  Description: Protocol field 'acse_message_length'. Layer: presentation. Role: length. Type: variable. Constraints: BER definite length encoding. Range: [1, ?]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Protocol constraints: ACSE message length encoded as BER definite length following messageType octet\n  Implementation constraints: BerDecoder_decodeLength() parses value into signed int, bufPos < 0 triggers ACSE_ERROR\n- Field: aare_apdu\n  Description: Protocol field 'aare_apdu'. Layer: presentation. Role: payload. Type: variable. Constraints: ASN.1 BER tag 0xa1, ASN.1 BER tag 0xa2, ASN.1 BER tag 0xa3, ASN.1 BER tag 0xbe, Implicit indefinite-length end tag 0x00. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: parseAarePdu skips unknown tags, user-information sub-tag forced to 0x28, BER encoded, Constructed encoding for 0xa1,0xa2,0xa3,0xbe, Context-specific tags\n- Field: aarq_apdu\n  Description: Protocol field 'aarq_apdu'. Layer: presentation. Role: payload. Type: bytes. Constraints: BER TLV structure. In",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:3b637d1b3cee",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/2.libiec61850/function.txt",
+        "content": "IEC 61850 Function and Service Code Reference\n=============================================\n\nImportant Note\n--------------\nIEC 61850 does not define one single \"Function Code\" field like Modbus.\n\nIEC 61850 operations are represented through:\n\n1. MMS PDU types\n2. MMS confirmed service tags\n3. MMS unconfirmed service tags\n4. IEC 61850 ACSI service names\n5. GOOSE EtherType and APDU fields\n6. Sampled Values EtherType and APDU fields\n7. Control model values\n\nFor an IEC 61850 function-code corpus, the MMS service tag is the closest\nequivalent to a Modbus function code.\n\n================================================================\n1. IEC 61850 TRANSPORT AND PROTOCOL IDENTIFIERS\n================================================================\n\nTCP Port:\n\n102 = MMS over ISO-on-TCP\n\nEtherType:\n\n0x88B8 = GOOSE\n0x88BA = Sampled Values\n0x88F7 = Precision Time Protocol\n\nOSI transport commonly used for MMS:\n\nTPKT\nCOTP\nACSE\nPresentation\nMMS\n\n================================================================\n2. MMS PDU TYPE TAGS\n================================================================\n\n0xA0 = Confirmed-Request-PDU\n0xA1 = Confirmed-Response-PDU\n0xA2 = Confirmed-Error-PDU\n0xA3 = Unconfirmed-PDU\n0xA4 = Reject-PDU\n0xA5 = Cancel-Request-PDU\n0xA6 = Cancel-Response-PDU\n0xA7 = Cancel-Error-PDU\n0xA8 = Initiate-Request-PDU\n0xA9 = Initiate-Response-PDU\n0xAA = Initiate-Error-PDU\n0xAB = Conclude-Request-PDU\n0xAC = Conclude-Response-PDU\n0xAD = Conclude-Error-PDU\n\n================================================================\n3. MMS CONFIRMED SERVICE TAGS\n================================================================\n\nThe following values are ASN.1 context-specific service-choice tags.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:700ac27cdef2",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/2.libiec61850/function.txt",
+        "content": "[0]  = Status\n[1]  = GetNameList\n[2]  = Identify\n[3]  = Rename\n[4]  = Read\n[5]  = Write\n[6]  = GetVariableAccessAttributes\n[7]  = DefineNamedVariable\n[8]  = DefineScatteredAccess\n[9]  = GetScatteredAccessAttributes\n[10] = DeleteVariableAccess\n[11] = DefineNamedVariableList\n[12] = GetNamedVariableListAttributes\n[13] = DeleteNamedVariableList\n[14] = DefineNamedType\n[15] = GetNamedTypeAttributes\n[16] = DeleteNamedType\n[17] = Input\n[18] = Output\n[19] = TakeControl\n[20] = RelinquishControl\n[21] = DefineSemaphore\n[22] = DeleteSemaphore\n[23] = ReportSemaphoreStatus\n[24] = ReportPoolSemaphoreStatus\n[25] = ReportSemaphoreEntryStatus\n[26] = InitiateDownloadSequence\n[27] = DownloadSegment\n[28] = TerminateDownloadSequence\n[29] = InitiateUploadSequence\n[30] = UploadSegment\n[31] = TerminateUploadSequence\n[32] = RequestDomainDownload\n[33] = RequestDomainUpload\n[34] = LoadDomainContent\n[35] = StoreDomainContent\n[36] = DeleteDomain\n[37] = GetDomainAttributes\n[38] = CreateProgramInvocation\n[39] = DeleteProgramInvocation\n[40] = Start\n[41] = Stop\n[42] = Resume\n[43] = Reset\n[44] = Kill\n[45] = GetProgramInvocationAttributes\n[46] = ObtainFile\n[47] = DefineEventCondition\n[48] = DeleteEventCondition\n[49] = GetEventConditionAttributes\n[50] = ReportEventConditionStatus\n[51] = AlterEventConditionMonitoring\n[52] = TriggerEvent\n[53] = DefineEventAction\n[54] = DeleteEventAction\n[55] = GetEventActionAttributes\n[56] = ReportEventActionStatus\n[57] = DefineEventEnrollment\n[58] = DeleteEventEnrollment\n[59] = AlterEventEnrollment\n[60] = ReportEventEnrollmentStatus\n[61] = GetEventEnrollmentAttributes\n[62] = AcknowledgeEventNotification\n[63] = GetAlarmSummary\n[64] = GetAlarmEnrollmentSummary\n[65] = ReadJournal\n[66] = WriteJournal\n[67] = InitializeJournal\n[68] = ReportJournalStatus\n[69] = CreateJournal\n[70] =",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:38cb1c343fdb",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/2.libiec61850/function.txt",
+        "content": "ttributes\n[62] = AcknowledgeEventNotification\n[63] = GetAlarmSummary\n[64] = GetAlarmEnrollmentSummary\n[65] = ReadJournal\n[66] = WriteJournal\n[67] = InitializeJournal\n[68] = ReportJournalStatus\n[69] = CreateJournal\n[70] = DeleteJournal\n[71] = GetCapabilityList\n[72] = FileOpen\n[73] = FileRead\n[74] = FileClose\n[75] = FileRename\n[76] = FileDelete\n[77] = FileDirectory",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:template-catalog:54329d7f4509",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "Protocol: IEC61850\nTemplate catalog:\n- Message Templates :: ACSE -> acse_message_type, acse_message_length, aare_apdu, aarq_apdu\n- Message Templates :: UserInformation -> mms_context_id, acse_context_id, presentation_pdv_length, presentation_length\n- Service or Function Specific Templates :: Connect -> connect_presentation, mode_selector, normal_mode_parameters, mms_context_identifier\n- Object or Data Templates :: PCDLEntry -> presentation_context_identifier, abstract_syntax_name, transfer_syntax_name\n- Error or Exception Templates :: Abort -> user_data",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:dbd9b2bafab1",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/2.libiec61850/function.txt",
+        "content": "ontrol Model enumeration:\n\n0 = Status-Only\n1 = Direct-Control-With-Normal-Security\n2 = Select-Before-Operate-With-Normal-Security\n3 = Direct-Control-With-Enhanced-Security\n4 = Select-Before-Operate-With-Enhanced-Security\n\nControl operation fields:\n\nctlVal\norigin\nctlNum\nT\nTest\nCheck\n\nCheck bits:\n\nbit 0 = Synchrocheck\nbit 1 = Interlock-check\n\nControl services:\n\nSelect\n    Reserve one control object.\n\nSelectWithValue\n    Reserve a control object together with the intended value.\n\nOperate\n    Execute a direct or previously selected control operation.\n\nCancel\n    Cancel a selected control operation.\n\nCommandTermination\n    Report final result for enhanced-security control.\n\n================================================================\n10. IEC 61850 SETTING GROUP SERVICES\n================================================================\n\nSelectActiveSG\nSelectEditSG\nSetSGValues\nConfirmEditSGValues\nGetSGValues\n\nSetting Group Control Block attributes:\n\nNumOfSG\nActSG\nEditSG\nCnfEdit\nLActTm\n\nMMS mapping:\n\nSelectActiveSG\n    MMS Write\n\nSelectEditSG\n    MMS Write\n\nSetSGValues\n    MMS Write\n\nConfirmEditSGValues\n    MMS Write\n\nGetSGValues\n    MMS Read\n\n================================================================\n11. IEC 61850 GOOSE IDENTIFIERS\n================================================================\n\nEtherType:\n\n0x88B8 = GOOSE\n\nGOOSE APDU outer ASN.1 tag:\n\n0x61 = GOOSE PDU\n\nGOOSE APDU field tags:\n\n0x80 = gocbRef\n0x81 = timeAllowedToLive\n0x82 = datSet\n0x83 = goID\n0x84 = t\n0x85 = stNum\n0x86 = sqNum\n0x87 = test\n0x88 = confRev\n0x89 = ndsCom\n0x8A = numDatSetEntries\n0xAB = allData\n\nGOOSE control block attributes:\n\nGoEna\nGoID\nDatSet\nConfRev\nNdsCom\nDstAddress\nMinTime\nMaxTime\nFixedOffs\n\nGOOSE state-number semantics:\n\nstNum\n    Incremented when dataset state changes.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:message-templates-us:629784f4e27f",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "Section: Message Templates\nTemplate: UserInformation\n- Field: mms_context_id\n  Description: Protocol field 'mms_context_id'. Layer: presentation. Role: type. Type: uint8. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy.\n  Length: 8 bits\n  Implementation constraints: hard-coded in writer as literal 0x02 0x01 <value>\n- Field: acse_context_id\n  Description: Protocol field 'acse_context_id'. Layer: presentation. Role: type. Type: uint8. Range: [1, 1]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy.\n  Length: 8 bits\n  Implementation constraints: value must be 0x01 (ACSE context identifier)\n- Field: presentation_pdv_length\n  Description: Protocol field 'presentation_pdv_length'. Layer: presentation. Role: length. Type: uint24. Constraints: length encoded in ASN.1 BER format, MSB of first length byte is extension flag, remaining 7 bits encode short form (0–127) or long-form length count (128–255 follow-bytes), actual value spans 0–16 777 215 bytes, must equal octet count of single Presentation-data-value ASN.1 OCTET STRING. Range: [0, 16777215]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: decoded by BerDecoder_decodeLength() returning consumed byte count, implementation limits maximum read to ByteBuffer->size, negative return aborts whole parse, carried inside tag 0xa0 (encoding choice) within the presentation PDV list (0x30), must be present exactly once per UserInformation ACSE encoding, value decoded before passing contained octets to upper (ACSE/MMS) layer\n- Field: presentation_length\n  Description: Protocol field 'presentation_length'. Layer: presentation. Role: length. Type: uint32. Inferred-from: wire.",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "function_code:function:function-text:f2901601984c",
+        "kind": "function_code",
+        "path": "/home/wicrsec/seed/functioncode/2.libiec61850/function.txt",
+        "content": "= numDatSetEntries\n0xAB = allData\n\nGOOSE control block attributes:\n\nGoEna\nGoID\nDatSet\nConfRev\nNdsCom\nDstAddress\nMinTime\nMaxTime\nFixedOffs\n\nGOOSE state-number semantics:\n\nstNum\n    Incremented when dataset state changes.\n\nsqNum\n    Incremented for repeated transmissions of the same state.\n\nconfRev\n    Changes when dataset/control-block configuration changes.\n\ntimeAllowedToLive\n    Validity interval expected by subscriber.\n\n================================================================\n12. IEC 61850 SAMPLED VALUES IDENTIFIERS\n================================================================\n\nEtherType:\n\n0x88BA = Sampled Values\n\nSampled Values APDU outer ASN.1 tag:\n\n0x60 = SAV PDU\n\nCommon Sampled Values fields:\n\nsvID\ndatSet\nsmpCnt\nconfRev\nrefrTm\nsmpSynch\nsmpRate\nsample\nsmpMod\n\nSampled Value Control Block attributes:\n\nSvEna\nSvID\nDatSet\nConfRev\nSmpRate\nSmpMod\nOptFlds\nDstAddress\nNoASDU\n\nSample count:\n\nsmpCnt\n    Sample sequence counter.\n\nConfiguration revision:\n\nconfRev\n    Stream configuration revision.\n\nSample synchronization:\n\nsmpSynch\n    Indicates synchronization source or synchronization quality.\n\n================================================================\n13. IEC 61850 FILE SERVICES\n================================================================\n\nGetFile\nSetFile\nDeleteFile\nGetFileAttributeValues\n\nMMS mapping:\n\nGetFile\n    FileOpen\n    FileRead\n    FileClose\n\nSetFile\n    ObtainFile or implementation-supported file transfer\n\nDeleteFile\n    FileDelete\n\nGetFileAttributeValues\n    FileDirectory\n\nMMS file service tags:\n\n[72] = FileOpen\n[73] = FileRead\n[74] = FileClose\n[75] = FileRename\n[76] = FileDelete\n[77] = FileDirectory",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:object-or-data-templ:cda370993ecd",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "Section: Object or Data Templates\nTemplate: PCDLEntry\n- Field: presentation_context_identifier\n  Description: Protocol field 'presentation_context_identifier'. Layer: presentation. Role: type. Type: uint32. Constraints: BER TLV tag 0x02, integer encoding per BER length suffix. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: contextId < 0 treated as error\n- Field: abstract_syntax_name\n  Description: Protocol field 'abstract_syntax_name'. Layer: presentation. Role: type. Type: bytes. Constraints: length encoded by BER length field. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: compare.\n  Length: variable\n  Implementation constraints: must be exactly 5 bytes for MMS or 4 bytes for ACSE\n- Field: transfer_syntax_name\n  Description: Protocol field 'transfer_syntax_name'. Layer: presentation. Role: type. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: tag_parse.\n  Length: variable\n  Implementation constraints: length comes from BerDecoder_decodeLength, content is ignored, only the length is consumed, tag 0x30 indicates this field",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "protocol_format:iec61850:message-templates-us:15a2766f68be",
+        "kind": "protocol_format",
+        "path": "/home/wicrsec/seed/format/iec61850.json",
+        "content": "ue decoded before passing contained octets to upper (ACSE/MMS) layer\n- Field: presentation_length\n  Description: Protocol field 'presentation_length'. Layer: presentation. Role: length. Type: uint32. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: length_check.\n  Length: 32 bits",
+        "issue_number": -1,
+        "title": ""
+      },
+      {
+        "chunk_id": "issue:516:516-summary:91e9f2d1802c",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/2.libiec61850/#516.txt",
+        "content": "Issue: 516\nSummary: A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered while encoding `MMS_BIT_STRING` `MmsData`: the function writes the tag, encoded length, padding byte, and bit-string bytes into `buffer` by advancing `bufPos`, but the report says it does not properly validate that `bufPos` stays within the valid buffer range. The report states this can occur if `bitStringSize` is large enough or if `bufPos` is already near the end of the buffer, resulting in writes past the end of `buffer`.\nReproduce: No build flags or commands are provided in the report. The provided PoC is a fuzz-style harness linked against libiec61850 and using `iec61850_server.h`, `hal_thread.h`, and `lib_memory.h`. To reproduce, create `LLVMFuzzerTestOneInput(const char *data, size_t size)` that: (1) calls `MmsValue_decodeMmsData(data, 0, size, &out)`; (2) returns if decoding fails; (3) calls `MmsValue_encodeMmsData(mmsValue, NULL, 0, false)` to get `dataSize`; (4) allocates `dataSize` bytes with `GLOBAL_MALLOC`; (5) calls `MmsValue_encodeMmsData(mmsValue, mmsBuffer, 0, true)` to re-encode the value; and then (6) frees the buffer and deletes the `MmsValue`. Feed the harness the byte sequence provided in the report, beginning `\"<84><81><80><00><30><30>...\"` and continuing with repeated `<30>` bytes exactly as listed there. The report states that this input reaches `BerEncoder_encodeBitString` while encoding `MMS_BIT_STRING` data and triggers an out-of-bounds write. No specific crash log or sanitizer output is included.",
+        "issue_number": 516,
+        "title": "A fuzzing-discovered out-of-bounds write was reported in libiec61850 in `BerEncoder_encodeBitString` in `src/mms/asn1/ber_encoder.c`. The issue is triggered ..."
+      },
+      {
+        "chunk_id": "issue:193:193-payload:d04db31c8389",
+        "kind": "issue",
+        "path": "/home/wicrsec/seed/distill_runs/20260807_213143_detached/output/2.libiec61850/#193.txt",
+        "content": "Payload message 0: 89 89 f1 89 89 89 ff 9d ff ff 89 94 8b 96 df 40 89 3f 89 89 af 89\nPayload message count: 1",
+        "issue_number": 193,
+        "title": "The report does not specify a version. In libiec61850, `MmsValue_newOctetString` (`SRC/src/mms/iso_mms/common/mms_value.c`) is reported to accept a negative ..."
+      }
+    ],
+    "generated_unix_time": 1786131068,
+    "history": [
+      {
+        "round": 0,
+        "deterministic_errors": [
+          "iec61850-seed-001: removed unknown evidence ids: issue:193:193-summary:1a49042dc80b, issue:496:496-summary:0cb2cd53f37b, issue:573:573-summary:cea7e307ce88",
+          "iec61850-seed-002: removed unknown evidence ids: issue:603:603-summary:faf1f201c4fa, issue:542:542-summary:d4cd7ee3a22c, issue:200:200-summary:a7b8e0c0170e",
+          "iec61850-seed-004: removed unknown evidence ids: issue:542:542-summary:d4cd7ee3a22c",
+          "iec61850-seed-005: removed unknown evidence ids: issue:193:193-summary:1a49042dc80b",
+          "iec61850-seed-006: removed unknown evidence ids: issue:194:194-summary:9a7a744019b3, issue:609:609-summary:30e8b32c72cf",
+          "iec61850-seed-007: removed unknown evidence ids: issue:196:196-summary:9ea068ad8b89",
+          "iec61850-seed-008: removed unknown evidence ids: issue:197:197-summary:6c58c5c3aa53",
+          "iec61850-seed-009: removed unknown evidence ids: issue:198:198-summary:a5789012d480, issue:193:193-summary:1a49042dc80b, issue:589:589-summary:92864d7652cc",
+          "iec61850-seed-010: removed unknown evidence ids: issue:200:200-summary:a7b8e0c0170e, issue:197:197-summary:6c58c5c3aa53, issue:196:196-summary:9ea068ad8b89, issue:589:589-summary:92864d7652cc",
+          "iec61850-seed-011: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7, issue:603:603-summary:faf1f201c4fa, issue:589:589-summary:92864d7652cc",
+          "iec61850-seed-012: removed unknown evidence ids: function_code:function:operation-catalog:db4aee353372, function_code:function:operation-catalog:9c28cfab5dec",
+          "iec61850-seed-013: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7",
+          "iec61850-seed-014: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7",
+          "iec61850-seed-015: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7",
+          "iec61850-seed-016: removed unknown evidence ids: function_code:function:operation-catalog:db4aee353372, function_code:function:operation-catalog:9c28cfab5dec, issue:603:603-summary:faf1f201c4fa",
+          "iec61850-seed-017: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7, issue:496:496-summary:0cb2cd53f37b",
+          "iec61850-seed-018: removed unknown evidence ids: function_code:function:operation-catalog:764152b307f7, issue:496:496-summary:0cb2cd53f37b"
+        ],
+        "review": {
+          "overall_score": 58,
+          "needs_revision": true,
+          "protocol_validity_score": 46,
+          "seed_utility_score": 60,
+          "diversity_score": 76,
+          "issue_enhancement_score": 55,
+          "global_feedback": [
+            "The library shows good breadth across MMS PDU tags, GOOSE, and SAV, and it generally avoids direct replay of known crash payloads.",
+            "The strongest seeds are the few that use complete transport framing and internally consistent lengths, especially the canonical confirmed-request seeds and the GOOSE exact-size analogue.",
+            "A major weakness is overclaiming protocol validity for many standalone BER blobs and minimal PDUs whose inner MMS semantics are not supported by the supplied sources; these are weak as initial seeds for a network parser unless the harness truly consumes isolated MMS TLVs.",
+            "Several seeds target response, reject, or error PDUs as standalone inputs without the surrounding association state that would usually make them meaningful; these are lower-value than valid client request flows.",
+            "The stateful sequence is directionally correct and useful, but the setup request uses service tag [2] while labeling it as Identify-like only indirectly, and the final Initiate-Request-PDU is extremely skeletal.",
+            "Issue enhancement is only partially convincing: the analogues are structurally safer and not copied from crash payloads, but many are too generic and insufficiently grounded in documented IEC 61850/MMS framing to be strong corpus starters.",
+            "The deterministic validator removed many unknown evidence ids, which does not directly invalidate payloads but suggests weak grounding and should be cleaned up.",
+            "For a desired final selected seed count of 12, keep the best framed and most coverage-useful seeds, and revise or drop the weakest standalone minimal PDUs."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "iec61850-seed-001",
+              "score": 82,
+              "keep": true,
+              "problems": [
+                "Outer framing is asserted as canonical, but the exact session/presentation wrapper bytes are only weakly grounded by the provided sources.",
+                "Service body is minimal and may not be semantically complete for strict GetNameList handling."
+              ],
+              "recommended_action": "Keep as a strong baseline seed; if possible, revise using a documented ACSE/UserInformation wrapper with clearer MMS invoke-id and service argument structure."
+            },
+            {
+              "seed_id": "iec61850-seed-002",
+              "score": 74,
+              "keep": true,
+              "problems": [
+                "The stateful setup is useful, but the exchange is synthetic and may not correspond to a real association sequence accepted by strict peers.",
+                "The final Initiate-Request-PDU body is very small and may fail semantic validation quickly.",
+                "Setup labels and service semantics are slightly inconsistent."
+              ],
+              "recommended_action": "Keep for stateful diversity, but strengthen with a more realistic association handshake and a more complete Initiate-Request body."
+            },
+            {
+              "seed_id": "iec61850-seed-003",
+              "score": 79,
+              "keep": true,
+              "problems": [
+                "Boundary-adjacent claim is modest; lengths are still tiny rather than meaningfully near a documented boundary.",
+                "GetVariableAccessAttributes argument body may be too skeletal for deeper semantic parsing."
+              ],
+              "recommended_action": "Keep as useful confirmed-service coverage; revise by adding a more realistic object name/specification while preserving valid lengths."
+            },
+            {
+              "seed_id": "iec61850-seed-004",
+              "score": 80,
+              "keep": true,
+              "problems": [
+                "Deeper nesting is helpful, but the nested argument content is still largely invented rather than clearly sourced from a documented service grammar.",
+                "May parse only as generic BER before semantic rejection."
+              ],
+              "recommended_action": "Keep; this is a good mutational base, but tighten service-specific nesting to a better-documented GetNameList request shape."
+            },
+            {
+              "seed_id": "iec61850-seed-005",
+              "score": 48,
+              "keep": false,
+              "problems": [
+                "Standalone OCTET STRING TLV is weakly tied to IEC 61850/MMS over ISO-on-TCP as an initial network seed.",
+                "Useful only if the harness directly feeds MmsValue_decodeMmsData, which is not the main protocol-level target described by most plans.",
+                "Too generic to justify retention when seed budget is 12."
+              ],
+              "recommended_action": "Drop or move to a separate value-decoder corpus; replace with a fully framed MMS message containing a safe OCTET STRING-bearing data path."
+            },
+            {
+              "seed_id": "iec61850-seed-006",
+              "score": 50,
+              "keep": false,
+              "problems": [
+                "Same harness-scope problem as seed-005: valid as a raw value decoder input, weak as an IEC 61850 protocol seed.",
+                "Not enough surrounding structure to reach deeper parser states."
+              ],
+              "recommended_action": "Drop or rework into a fully framed MMS message that carries a BIT STRING in a documented service response or data element path."
+            },
+            {
+              "seed_id": "iec61850-seed-007",
+              "score": 44,
+              "keep": false,
+              "problems": [
+                "Integer-like tag choice is insufficiently grounded in supplied MMS data-tag documentation.",
+                "Standalone scalar TLV is too generic and may not even map cleanly to the intended uint32-sensitive decoder path.",
+                "Low value as an initial seed under a constrained selection budget."
+              ],
+              "recommended_action": "Drop and replace with a better-documented integer-bearing MMS structure embedded in a framed message."
+            },
+            {
+              "seed_id": "iec61850-seed-008",
+              "score": 52,
+              "keep": true,
+              "problems": [
+                "Constructed container shape is only loosely grounded in sources.",
+                "Still suffers from being a standalone decoder-oriented blob rather than a protocol-framed message."
+              ],
+              "recommended_action": "Keep only if a raw MMS data decoder corpus is desired; otherwise revise into a framed MMS message carrying a small array/list structure."
+            },
+            {
+              "seed_id": "iec61850-seed-009",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "COTP CR plus immediate ACSE payload is plausibly useful, but exact validity of the combined transport/session structure is not well demonstrated from the sources.",
+                "Issue linkage is somewhat abstract rather than closely tied to a documented sensitive field interaction."
+              ],
+              "recommended_action": "Keep as one of the better issue-guided framed seeds; validate and, if needed, correct the ISO-on-TCP and ACSE layering details."
+            },
+            {
+              "seed_id": "iec61850-seed-010",
+              "score": 73,
+              "keep": true,
+              "problems": [
+                "Good framed entry seed, but embedded Unconfirmed-PDU semantics are still very minimal.",
+                "Association/setup realism is limited for some stacks."
+              ],
+              "recommended_action": "Keep; strengthen with a more realistic ACSE user-information container and a minimally documented unconfirmed service choice."
+            },
+            {
+              "seed_id": "iec61850-seed-011",
+              "score": 58,
+              "keep": true,
+              "problems": [
+                "Standalone Unconfirmed-PDU may be useful for a unit-level MMS parser but is weak for end-to-end IEC 61850 transport coverage.",
+                "Inner fields are undocumented and may be semantically meaningless."
+              ],
+              "recommended_action": "Keep as low-priority diversity coverage only; preferably wrap it in complete transport/session framing."
+            },
+            {
+              "seed_id": "iec61850-seed-012",
+              "score": 68,
+              "keep": true,
+              "problems": [
+                "EtherType anchoring is good, but the SAV payload is essentially opaque filler and may not reach meaningful ASN.1/APDU parsing.",
+                "Limited depth beyond link-layer classification."
+              ],
+              "recommended_action": "Keep for protocol-family diversity; revise by adding a minimally structured SAV APDU with the documented outer 0x60 PDU tag."
+            },
+            {
+              "seed_id": "iec61850-seed-013",
+              "score": 40,
+              "keep": false,
+              "problems": [
+                "Reject-PDU as a standalone minimal TLV is low-value and likely semantically incomplete.",
+                "Response/error-style entry point without state setup is unlikely to help deeper coverage."
+              ],
+              "recommended_action": "Drop from the final 12 unless the harness explicitly targets standalone MMS PDU dispatch."
+            },
+            {
+              "seed_id": "iec61850-seed-014",
+              "score": 43,
+              "keep": false,
+              "problems": [
+                "Minimal Initiate-Response-PDU is too skeletal and state-disconnected.",
+                "Low chance of surviving semantic checks long enough to provide depth."
+              ],
+              "recommended_action": "Drop and replace with a paired initiate request/response sequence if response-path coverage is required."
+            },
+            {
+              "seed_id": "iec61850-seed-015",
+              "score": 41,
+              "keep": false,
+              "problems": [
+                "Minimal Initiate-Error-PDU is state-disconnected and semantically weak.",
+                "Adds little beyond tag dispatch coverage."
+              ],
+              "recommended_action": "Drop from the selected set."
+            },
+            {
+              "seed_id": "iec61850-seed-016",
+              "score": 85,
+              "keep": true,
+              "problems": [
+                "GOOSE payload is mostly filler and may not contain a meaningful APDU layout beyond size relation.",
+                "Issue analogue is strong on sizing but weak on field realism."
+              ],
+              "recommended_action": "Keep; this is one of the best issue-informed coverage seeds. Improve further by encoding documented GOOSE field tags inside the APDU."
+            },
+            {
+              "seed_id": "iec61850-seed-017",
+              "score": 46,
+              "keep": false,
+              "problems": [
+                "Confirmed-Response-PDU standalone seed is semantically awkward and includes a nested error-shaped element that may not belong.",
+                "Low protocol realism without prior request context."
+              ],
+              "recommended_action": "Drop or rebuild as part of a valid request/response pair."
+            },
+            {
+              "seed_id": "iec61850-seed-018",
+              "score": 61,
+              "keep": true,
+              "problems": [
+                "Useful tag coverage, but the Identify request body is nearly empty and may be rejected quickly.",
+                "Standalone MMS PDU again limits realism versus full transport framing."
+              ],
+              "recommended_action": "Keep as a compact mutation base, but prefer a transport-framed confirmed request if replacing weaker retained seeds."
+            }
+          ],
+          "coverage_gaps": [
+            "More fully valid ACSE AARQ/AARE association establishment seeds are needed; most MMS seeds skip or compress session/presentation semantics.",
+            "The corpus lacks clearly documented complete UserInformation/Presentation PDV encodings with acse_context_id and mms_context_id fields explicitly represented.",
+            "There is no strong, fully grounded Confirmed-Request seed for common read/write-like services beyond GetNameList and GetVariableAccessAttributes.",
+            "Response-path coverage should use realistic paired request/response sequences instead of isolated minimal response, reject, and error PDUs.",
+            "SAV coverage needs a minimally structured SAV APDU using the documented outer 0x60 tag rather than raw filler under EtherType alone.",
+            "GOOSE coverage would benefit from a minimally valid APDU with documented field tags such as gocbRef, stNum, sqNum, and allData instead of size-only filler.",
+            "Issue-guided analogues should be embedded in protocol-framed messages more often; too many are raw value TLVs better suited for a separate unit-decoder corpus.",
+            "Boundary-condition coverage is still shallow; there are few valid long-form BER lengths, multi-element lists, or larger but consistent nested structures."
+          ]
+        },
+        "candidate_count": 18
+      },
+      {
+        "round": 1,
+        "deterministic_errors": [],
+        "review": {
+          "overall_score": 63,
+          "needs_revision": true,
+          "protocol_validity_score": 52,
+          "seed_utility_score": 66,
+          "diversity_score": 78,
+          "issue_enhancement_score": 71,
+          "global_feedback": [
+            "The library has good breadth across MMS, ACSE-wrapped transport, GOOSE, and SAV, and it usefully attempts issue-guided analogues without directly copying known crash payloads.",
+            "The strongest seeds are the fully framed transport entries and the Ethernet GOOSE/SAV frames, because they are most likely to survive early parser checks and reach deeper code.",
+            "Several standalone MMS BER seeds are too speculative: many use service bodies or nested tags that are not grounded by the supplied IEC61850/MMS templates, so claimed validity is not well supported.",
+            "A number of seeds claim strict length self-consistency, but multiple hex blobs have mismatched BER lengths or questionable tag/body combinations; this materially lowers protocol confidence.",
+            "The stateful sequence is directionally useful, but its AARQ/AARE content is minimal and partly inconsistent with the claimed operations; it should be tightened if retained as a premium seed.",
+            "Issue enhancement is mostly handled appropriately: structures are inspired by sensitive surfaces while avoiding direct PoC replay, but some analogues are so generic that they may not map to realistic parser states.",
+            "For a desired final selected seed count of 12, the current set should be pruned to the best-framed and most defensible candidates and several speculative standalone MMS blobs should be revised or dropped."
+          ],
+          "sequence_feedback": [
+            {
+              "seed_id": "iec61850-seed-001",
+              "score": 74,
+              "keep": true,
+              "problems": [
+                "The payload is framed and plausible, but the embedded MMS body is extremely skeletal for a claimed canonical GetNameList.",
+                "AARQ/user-information layering is asserted more strongly than the supplied source support justifies."
+              ],
+              "recommended_action": "Keep as a transport-framed baseline, but revise the MMS service body to a more defensible GetNameList argument structure."
+            },
+            {
+              "seed_id": "iec61850-seed-002",
+              "score": 70,
+              "keep": true,
+              "problems": [
+                "The first message duplicates seed-001 despite being labeled as an Identify probe.",
+                "The AARE and Initiate messages are minimal and not clearly tied into a validated association state model.",
+                "Statefulness is useful, but message semantics are partly hand-wavy."
+              ],
+              "recommended_action": "Keep for stateful coverage, but repair message labels and strengthen the AARQ/AARE/initiate field coherence."
+            },
+            {
+              "seed_id": "iec61850-seed-003",
+              "score": 76,
+              "keep": true,
+              "problems": [
+                "This is standalone BER rather than fully framed transport, so it may not be suitable for all harnesses.",
+                "The GetVariableAccessAttributes body is only loosely justified by supplied templates."
+              ],
+              "recommended_action": "Keep as a BER-level boundary seed; if possible add a framed transport variant of the same operation."
+            },
+            {
+              "seed_id": "iec61850-seed-004",
+              "score": 28,
+              "keep": false,
+              "problems": [
+                "Outer length 0x13 does not match the enclosed content length.",
+                "Inner sequence lengthing is inconsistent.",
+                "Claimed parser-depth validity is undermined by malformed BER."
+              ],
+              "recommended_action": "Drop or fully rebuild with corrected BER lengths and a validated GetNameList nested body."
+            },
+            {
+              "seed_id": "iec61850-seed-005",
+              "score": 55,
+              "keep": true,
+              "problems": [
+                "The seed is framed, but the Unconfirmed-PDU with OCTET STRING fields is not well grounded in the supplied operation catalog.",
+                "It is more of a generic BER value blob in a frame than a documented IEC61850 service."
+              ],
+              "recommended_action": "Keep only as an issue-analogue supplement; preferably replace with a documented unconfirmed service structure."
+            },
+            {
+              "seed_id": "iec61850-seed-006",
+              "score": 58,
+              "keep": true,
+              "problems": [
+                "Like seed-005, the internal Unconfirmed-PDU content is weakly justified by the provided sources.",
+                "Useful structurally, but not clearly a realistic MMS service payload."
+              ],
+              "recommended_action": "Keep as a compact issue-guided analogue, but consider rewriting around a better-supported MMS data-bearing context."
+            },
+            {
+              "seed_id": "iec61850-seed-007",
+              "score": 34,
+              "keep": false,
+              "problems": [
+                "The Confirmed-Response-PDU nesting appears ad hoc and not source-grounded.",
+                "The inner tags are not convincingly a valid confirmed response body.",
+                "Low confidence that this will pass meaningful parser checks."
+              ],
+              "recommended_action": "Drop unless replaced with a response body derived from a documented confirmed service response shape."
+            },
+            {
+              "seed_id": "iec61850-seed-008",
+              "score": 18,
+              "keep": false,
+              "problems": [
+                "This is too generic to qualify as a meaningful IEC61850/MMS seed.",
+                "The structure is not tied to a documented PDU or service path.",
+                "Low likelihood of reaching deeper valid parser logic."
+              ],
+              "recommended_action": "Drop and replace with a real count-bearing MMS or GOOSE/SAV structure."
+            },
+            {
+              "seed_id": "iec61850-seed-009",
+              "score": 67,
+              "keep": true,
+              "problems": [
+                "The ACSE/AARQ-like composition is plausible but still somewhat speculative.",
+                "It is near tag-sensitive paths, but semantics of nested MMS content are not very strong."
+              ],
+              "recommended_action": "Keep as an ACSE-focused issue analogue, but tighten the user-information and embedded MMS coherence."
+            },
+            {
+              "seed_id": "iec61850-seed-010",
+              "score": 48,
+              "keep": true,
+              "problems": [
+                "The framing is complete, but the inner Unconfirmed-PDU primitive fields are generic and weakly grounded.",
+                "Coverage overlaps heavily with seeds 005 and 006."
+              ],
+              "recommended_action": "Keep only if pruning still needs a framed unconfirmed variant; otherwise merge or replace with a more documented unconfirmed service."
+            },
+            {
+              "seed_id": "iec61850-seed-011",
+              "score": 52,
+              "keep": true,
+              "problems": [
+                "Reject-PDU coverage is useful, but the body is minimal and not strongly source-anchored.",
+                "Standalone BER may be less useful than framed variants depending on harness expectations."
+              ],
+              "recommended_action": "Keep as PDU-tag coverage if a reject branch is desired, but consider a framed version or a better-supported reject body."
+            },
+            {
+              "seed_id": "iec61850-seed-012",
+              "score": 73,
+              "keep": true,
+              "problems": [
+                "The SAV frame is valuable for diversity, but inner field meanings are only lightly supported by the provided sources.",
+                "Frame includes trailing filler-like zero bytes that may or may not map to a realistic SV parser expectation."
+              ],
+              "recommended_action": "Keep for link-layer diversity; refine ASDU structure if more precise SV format evidence becomes available."
+            },
+            {
+              "seed_id": "iec61850-seed-013",
+              "score": 61,
+              "keep": true,
+              "problems": [
+                "Compact initiate-response coverage is useful, but it is standalone and semantically thin.",
+                "Not obviously tied to a valid session context."
+              ],
+              "recommended_action": "Keep as branch coverage, but pair it with a stateful or framed transport form if possible."
+            },
+            {
+              "seed_id": "iec61850-seed-014",
+              "score": 84,
+              "keep": true,
+              "problems": [
+                "GOOSE exact-size framing is good, but the field choice is still somewhat synthetic.",
+                "allData contents are repetitive and simplistic."
+              ],
+              "recommended_action": "Keep as one of the strongest seeds; optionally add a second GOOSE variant with different documented field combinations."
+            },
+            {
+              "seed_id": "iec61850-seed-015",
+              "score": 72,
+              "keep": true,
+              "problems": [
+                "Very compact but believable confirmed request.",
+                "Standalone only, without transport framing."
+              ],
+              "recommended_action": "Keep as a clean mutation base for confirmed-service coverage; a framed transport wrapper would further improve utility."
+            },
+            {
+              "seed_id": "iec61850-seed-016",
+              "score": 69,
+              "keep": true,
+              "problems": [
+                "Useful service diversity, but the Read argument body is only loosely justified by the supplied material.",
+                "Standalone BER only."
+              ],
+              "recommended_action": "Keep as confirmed-service diversity, but revise toward a more clearly valid Read request shape if source support can be added."
+            },
+            {
+              "seed_id": "iec61850-seed-017",
+              "score": 64,
+              "keep": false,
+              "problems": [
+                "Strategy label does not match any plan and suggests plan drift.",
+                "The Write body is speculative and not well grounded in the supplied templates.",
+                "This is weaker than other confirmed-service seeds."
+              ],
+              "recommended_action": "Drop for the final 12 unless rewritten to align with a documented plan and a better-supported Write structure."
+            },
+            {
+              "seed_id": "iec61850-seed-018",
+              "score": 71,
+              "keep": true,
+              "problems": [
+                "High-number service tag coverage is useful, but the FileDirectory request body is minimalist and not strongly evidenced.",
+                "Standalone BER only."
+              ],
+              "recommended_action": "Keep as file-service range coverage, but consider adding framed variants for FileOpen/FileClose/FileDirectory family."
+            }
+          ],
+          "coverage_gaps": [
+            "No defensible seed for plan-013 Reject-PDU as a framed transport message; current reject coverage is standalone and minimal.",
+            "No candidate for plan-011 Unconfirmed-PDU that is clearly based on a documented unconfirmed service choice rather than generic primitive fields.",
+            "No seed for plan-014 Initiate-Response-PDU in a realistic stateful exchange; current initiate response is detached from association context.",
+            "No candidate for plan-015 Initiate-Error-PDU despite the plan set requesting that branch.",
+            "No candidate for plan-017 Confirmed-Response-PDU with a clearly valid service-specific response body.",
+            "No candidate for plan-018 Confirmed-Request-PDU that uses richer documented services such as GetCapabilityList or file open/close despite coverage_summary claims.",
+            "Cancel and conclude MMS PDU tags 0xa5-0xad are claimed in coverage_summary but are not actually represented as seeds.",
+            "More framed MMS-over-ISO-on-TCP variants are needed; too many seeds are standalone BER blobs with uncertain harness applicability.",
+            "A second GOOSE or SAV boundary-valid seed would improve non-MMS diversity and mutation value.",
+            "More rigorously validated ACSE/UserInformation examples would improve confidence in presentation-layer coverage."
+          ]
+        },
+        "candidate_count": 18
+      }
+    ]
+  },
+  "export_metadata": {
+    "sequence_encoding": "concat",
+    "note": "concat preserves model-produced protocol bytes and adds no external length prefix. Message boundaries remain available in sequence.json and the per-message frame files."
+  }
+}

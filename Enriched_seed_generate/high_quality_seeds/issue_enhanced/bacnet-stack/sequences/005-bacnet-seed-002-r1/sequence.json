@@ -1,0 +1,85 @@
+{
+  "seed_id": "bacnet-seed-002-r1",
+  "title": "Stateful ReadProperty with plausible ComplexACK",
+  "strategy": "stateful_valid",
+  "target_operation": "ReadProperty",
+  "purpose": "Exercise a realistic request-response-request dialogue around ReadProperty using a small ComplexACK example instead of an implausible SimpleACK.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:ed1e83cd881d",
+    "protocol_format:bacnet-stack:section-common-heade:d885369e99dd",
+    "protocol_format:bacnet-stack:common-headers-bvlc-:5b5b2b66baa0",
+    "protocol_format:bacnet-stack:template-catalog:c27f874d15d6",
+    "protocol_format:bacnet-stack:message-templates-ap:7f477d1091dc",
+    "function_code:function:function-text:ea07db06bcca",
+    "function_code:function:function-text:30bbed9e7725",
+    "function_code:function:function-text:57965da7c4c0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "initial-readproperty-request",
+      "hex": "810a001201000005100c0c0200000101194b",
+      "byte_length": 18,
+      "sha256": "78290cbb57a6e929f59adef8076e3300f18addb55f464778aa9c3b63a60eb636"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "readproperty-complexack",
+      "hex": "810a0010010030100c0c020000011921",
+      "byte_length": 16,
+      "sha256": "ac9bd772d1f899b2c1564d60b156128d1b3fa6bc34ac9d63a35cce34ef9c5df3"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "followup-readproperty-request",
+      "hex": "810a001201000005110c0c0200000101194d",
+      "byte_length": 18,
+      "sha256": "8cf02c1e48bc57eae4c6716abc6875064a7b4220c4ca1b04b1a58a3e3be2f7ab"
+    }
+  ],
+  "expected_behavior": "The target should parse the client frames as ReadProperty confirmed requests and a bidirectional harness should accept the included ComplexACK as a plausible response-side parser seed tied to the first invoke ID.",
+  "constraints_preserved": [
+    "All messages preserve BVLC type 0x81 and unicast function 0x0a.",
+    "Message lengths are self-consistent: 0x0012 for each request and 0x000f for the ComplexACK.",
+    "Request APDUs use confirmed-request type and service choice 0x0c for ReadProperty.",
+    "Reply APDU uses ComplexACK PDU type 0x30 with matching invoke_id 0x10 and service choice 0x0c."
+  ],
+  "issue_safety_notes": "The ACK example is intentionally small and does not reproduce any oversized closing-tag or buffer-boundary condition from historical ReadProperty-ACK issues.",
+  "sequence_sha256": "956783cd145f2002c79d1009f10f3970613cd2692a65053308a783d97a064973",
+  "total_bytes": 52,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d7d2e47734ea78ccb925372710a49634b2bce288a5cd27d94c794598609a5da8",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 34,
+        "payload_offset": 34,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

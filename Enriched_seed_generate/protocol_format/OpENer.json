@@ -1,0 +1,182 @@
+{
+  "Common Headers": {
+    "Encapsulation Header": {
+      "Field 1": {
+        "Description": "Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'length'. Layer: session. Role: length. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'session_handle'. Layer: session. Role: address. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'status'. Layer: session. Role: meta. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 5": {
+        "Description": "Protocol field 'sender_context'. Layer: session. Role: meta. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "64 bits",
+        "Protocol constraints": ""
+      },
+      "Field 6": {
+        "Description": "Protocol field 'options'. Layer: session. Role: meta. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      }
+    },
+    "Encapsulation_Header": {
+      "Field 1": {
+        "Description": "Protocol field 'encapsulationcommand'. Layer: session. Role: type. Type: uint16. Range: [0, 65535]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": "must be one of the defined EtherNet/IP encapsulation command codes"
+      },
+      "Field 2": {
+        "Description": "Protocol field 'commandspecificdatalength'. Layer: session. Role: length. Type: uint16. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: length_check.",
+        "Implementation constraints": "used as immediate length for payload serialization in GenerateEncapsulationHeader, must be even byte size of command specific data",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'command'. Layer: session. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'sessionhandle'. Layer: session. Role: address. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "coded as CipSessionHandle which is typedef'd from CipUdint, must be 0 in ListServices command, is echoed back in responses",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 5": {
+        "Description": "Protocol field 'encapsulationstatus'. Layer: session. Role: control. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: serializer_order. Evidence-type: offset.",
+        "Implementation constraints": "0 = success, non-zero = specific error code from EncapsulationProtocolErrorCode enum",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 6": {
+        "Description": "Protocol field 'sendercontext'. Layer: session. Role: meta. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy.",
+        "Implementation constraints": "",
+        "Length": "8 bytes",
+        "Protocol constraints": ""
+      },
+      "Field 7": {
+        "Description": "Protocol field 'status'. Layer: session. Role: meta. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 8": {
+        "Description": "Protocol field 'options'. Layer: session. Role: meta. Type: uint32. Range: [0, 4294967295]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "",
+        "Length": "32 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Error or Exception Templates": {},
+  "Extraction Quality": {
+    "header_templates": 1,
+    "message_count": 2,
+    "non_header_templates": 1,
+    "real_strong_templates": 2,
+    "reasons": [],
+    "status": "success",
+    "strong_fields": 2
+  },
+  "Layered Structure": {
+    "payload": [
+      "Common Packet Format",
+      "Message_Router"
+    ],
+    "session": [
+      "Encapsulation Header",
+      "Encapsulation_Header"
+    ]
+  },
+  "Message Templates": {
+    "Common Packet Format": {
+      "Field 1": {
+        "Description": "Protocol field 'cpf_item_count'. Layer: payload. Role: length. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'cpf_item_id'. Layer: payload. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'cpf_item_length'. Layer: payload. Role: length. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "16 bits",
+        "Protocol constraints": ""
+      }
+    }
+  },
+  "Object or Data Templates": {},
+  "Protocol Overview": {
+    "implementation": "OpENer",
+    "profile": "auto",
+    "protocol": "ETHERNETIP",
+    "rule_family": "cip",
+    "variant": ""
+  },
+  "Service or Function Specific Templates": {
+    "Message_Router": {
+      "Field 1": {
+        "Description": "Protocol field 'extended_logical_type'. Layer: payload. Role: qualifier. Type: enum. Range: [0, 255]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "value taken from *(cip_path + 1), only present when LogicalType == kLogicalSegmentLogicalTypeExtendedLogical",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 2": {
+        "Description": "Protocol field 'logical_format'. Layer: payload. Role: qualifier. Type: bytes. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: offset.",
+        "Implementation constraints": "alignment always places logical_format byte immediately before logical value, writer avoids truncation by enforcing max value when logical_format==EightBit/SixteenBit, one-byte code immediately preceding logical value that determines how many payload bytes follow (1, 2-with-pad or 4-with-pad)",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 3": {
+        "Description": "Protocol field 'service_code'. Layer: payload. Role: type. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "8 bits",
+        "Protocol constraints": ""
+      },
+      "Field 4": {
+        "Description": "Protocol field 'logical_value'. Layer: payload. Role: value. Type: variable. Constraints: Length chosen by preceding 2-bit LogicalFormat sub-field. Range: [0, ?]. Inferred-from: wire. Binding-strength: direct_byte_parse. Evidence-type: memcpy|length_check.",
+        "Implementation constraints": "One or two explicit pad bytes inserted for 16-bit/32-bit formats, Value must fit in chosen size (value ≤ 0xFF/0xFFFF/0xFFFFFFFF), Padded to 16-bit boundary for 16-bit and 32-bit formats",
+        "Length": "8|16|32 bits",
+        "Protocol constraints": ""
+      },
+      "Field 5": {
+        "Description": "Protocol field 'request_path'. Layer: payload. Role: address. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "variable",
+        "Protocol constraints": ""
+      },
+      "Field 6": {
+        "Description": "Protocol field 'service_data'. Layer: payload. Role: payload. Inferred-from: protocol-template.",
+        "Implementation constraints": "",
+        "Length": "variable",
+        "Protocol constraints": ""
+      }
+    }
+  }
+}

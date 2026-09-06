@@ -1,0 +1,10 @@
+Number: 573
+
+Summarize:
+The issue report describes a potential stack-buffer overflow in the call path LogicalDevice_getLogicalNode -> ModelNode_getChild in libiec61850/src/iec61850/server/model/model.c. ModelNode_getChild copies the supplied name into fixed-size stack buffer char nameCopy[65] without checking length before terminating at the array separator. A long, malformed name such as 100 'A' characters followed by "()" can overflow nameCopy. The provided testcase says this causes a crash in ModelNode_getChild. The report also notes a similar unbounded write in LogicalDevice_getChildByMmsVariableName.
+
+Reproduce:
+Build and run the provided C++ testcase.cpp against libiec61850, using the headers /fuzz/install/include/libiec61850/iec61850_dynamic_model.h and /fuzz/install/include/libiec61850/iec61850_model.h. In main, create a minimal dynamic model with IedModel_create("M") and LogicalDevice_create("LD1", model). Construct a logical-node name from 100 'A' characters, then append '(' and ')'. Call LogicalDevice_getLogicalNode(ld, lnName.c_str()). The issue report states that this crashes in ModelNode_getChild (model.c) because of the unchecked copy into nameCopy.
+
+Payload:
+41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 28 29

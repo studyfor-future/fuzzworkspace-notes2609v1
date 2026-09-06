@@ -1,0 +1,49 @@
+{
+  "seed_id": "iec61850-seed-014",
+  "title": "GOOSE exact-size frame with tagged APDU fields",
+  "strategy": "function_code_coverage",
+  "target_operation": "GOOSE PDU",
+  "purpose": "Provide a complete GOOSE Ethernet frame preserving the documented exact-size relation while also including realistic APDU field tags for better semantic coverage.",
+  "evidence_ids": [
+    "function_code:function:function-text:3b637d1b3cee",
+    "function_code:function:function-text:dbd9b2bafab1",
+    "function_code:function:function-text:f2901601984c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "goose_exact_size_tagged_apdu",
+      "hex": "010ccd01000102030405060788b80061615f80076763622f7265668501018601018801018a0101ab4a85010185010285010385010485010585010685010785010885010985010a85010b85010c85010d85010e85010f850110850111850112850113850114",
+      "byte_length": 101,
+      "sha256": "782bd57b8902ecaf188c6d45d15d75d8ce62ebb20c054a87a8f8170fd9eb7312"
+    }
+  ],
+  "expected_behavior": "A GOOSE parser should classify the frame by EtherType 0x88b8, observe the exact size relation, and then process the outer APDU tag 0x61 with multiple documented field tags including allData.",
+  "constraints_preserved": [
+    "EtherType 0x88b8 is preserved.",
+    "GOOSE length field is 0x0061 and total frame length is exactly 14 plus 97 bytes.",
+    "GOOSE APDU outer tag is documented 0x61.",
+    "Included field tags are documented: 0x80 gocbRef, 0x85 stNum, 0x86 sqNum, 0x88 confRev, 0x8a numDatSetEntries, 0xab allData.",
+    "All BER lengths are internally consistent and no trailing padding is added."
+  ],
+  "issue_safety_notes": "This keeps the issue-guided exact-size acceptance relation but replaces filler-only content with a safer tagged APDU and does not reuse any known PoC bytes.",
+  "sequence_sha256": "740688235c88cbaaac5dbcf6dcc7a4f231ab58ca7b52ef14ed883b54f28bbbd4",
+  "total_bytes": 101,
+  "repair_notes": [],
+  "export": {
+    "sequence_encoding": "concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "782bd57b8902ecaf188c6d45d15d75d8ce62ebb20c054a87a8f8170fd9eb7312",
+    "encoded_bytes": 101,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 101,
+        "frame_length": 101
+      }
+    ]
+  }
+}

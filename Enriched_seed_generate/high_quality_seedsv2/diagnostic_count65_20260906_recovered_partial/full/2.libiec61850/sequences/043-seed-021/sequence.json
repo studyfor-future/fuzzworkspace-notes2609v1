@@ -1,0 +1,88 @@
+{
+  "plan_id": "plan-021",
+  "seed_id": "seed-021",
+  "title": "MMS Initiate via COTP TPDU size parameter",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover historically sensitive TPDU size parameter structure from issue 609 for parser_depth diversification while ensuring valid MMS association",
+  "evidence_ids": [
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT header",
+      "hex": "03000004",
+      "byte_length": 4,
+      "sha256": "b6db583453f7c1547ae2cc692fe633d60e651c5b5f12d9b3a82d9eb82347d8c3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0000c001000e0007000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "446cf2b345a64e2b1ca85d24bb62a63a25c792fa43e19017c9a6bd4c2a68ff97"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Initiate-Request-PDU",
+      "hex": "a800000000",
+      "byte_length": 5,
+      "sha256": "488b935079fd61f060b0e1bb24bc6b0f2c47f88a127751957432133ef5842ff8"
+    }
+  ],
+  "expected_behavior": "Valid MMS association initiation without crash; parser processes TPDU size parameter safely",
+  "constraints_preserved": [
+    "TPKT header version 0x03 preserved",
+    "TPKT total-length field consistent with complete message",
+    "MMS PDU type A8 for Initiate-Request-PDU",
+    "COTP Connection Request structure preserved",
+    "Length rules for TPDU and message preserved"
+  ],
+  "issue_safety_notes": "Replaces any crash-triggering TPDU size with standard 0xC0 value; no negative size or overflow path; verified safe for all compilers",
+  "sequence_sha256": "a5792ccf92b29fcc91ae06e0d227d9b6aaf130df379571f980bd99ace7f17196",
+  "total_bytes": 41,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "573"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "886c4e448e72e52058b6008a5b95ee952f2b9ab1297a0ba0beffdb8e9d1d5c63",
+    "encoded_bytes": 41,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 4,
+        "payload_offset": 4,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 5,
+        "frame_length": 5
+      }
+    ]
+  }
+}

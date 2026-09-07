@@ -1,0 +1,91 @@
+{
+  "plan_id": "vk-plan-001",
+  "seed_id": "modbustcp-read-coils-repeat-002",
+  "title": "Repeated Read Coils with transaction, unit, and address drift",
+  "strategy": "stateful_valid",
+  "target_operation": "Read Coils",
+  "purpose": "Exercise repeated request handling across three valid Read Coils transactions so a harness can compare first-versus-later processing behavior under stable framing but changing transaction identifiers, unit identifiers, addresses, and quantities.",
+  "evidence_ids": [
+    "issue:279:279-summary:f8623682ccd7",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "initial read coils request",
+      "hex": "110100000006010100020006",
+      "byte_length": 12,
+      "sha256": "06674c656ca4f617c6279a18078a3a759cfafa21fcb3ff769a32669465ccb597"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "second read coils request at nearby address",
+      "hex": "110200000006010100030006",
+      "byte_length": 12,
+      "sha256": "72c488dc293941c906e8841c26d7b9e831fc659cd2e2fa41c1a6717148dc142c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "third read coils request with alternate unit and larger quantity",
+      "hex": "11030000000602010020000c",
+      "byte_length": 12,
+      "sha256": "0ff7f6a0dd29d9b1e631255e2624ce33d664a35c0e676ee64713e25772849323"
+    }
+  ],
+  "expected_behavior": "Each message should parse as an independent valid Read Coils request. A stateful target may service them normally or return bounded protocol exceptions depending on mapping, while the harness observes any inconsistent behavior across repeated transactions.",
+  "constraints_preserved": [
+    "Every message uses a 7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "Each MBAP length is 0006 for unit identifier plus 5-byte PDU",
+    "Function code 01 requests use two-byte address and two-byte quantity fields",
+    "Messages form a repeated client-to-server sequence with valid framing"
+  ],
+  "issue_safety_notes": "This is a safe repeated-operation analogue only. It does not copy any reported write-related payload, does not introduce malformed lengths, and does not claim a crash condition.",
+  "sequence_sha256": "2fba8875fcd90ec4f7ff79b79377e6b46f0e6d56f48fd74ec085b2f67dc6172d",
+  "total_bytes": 36,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "279"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d613bcfda9d9027f90de70a260d3d08552f3226c9c95d9258e270d6ae2cc0557",
+    "encoded_bytes": 36,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "016-modbustcp-read-coils-rep-c460b1de",
+      "corpus_file": "016-c460b1de.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-002-2",
+  "title": "Registered-session bounded attribute-list analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendRRData with GetAttributeList",
+  "purpose": "Reach the valid-session unconnected explicit-message path and the Identity attribute-list response assembly with a small bounded request.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:576:576-summary:bc3710455616"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession_protocol_version_1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData_GetAttributeList_Identity1_count1",
+      "hex": "6f002400000000000000000000000000000000000000000000000000000000000000000000000000020000000000b2000a0003022001240101000100",
+      "byte_length": 60,
+      "sha256": "88b06468ac0af460b8ba0e3f91717f4dae8e4ff0b114c307e45416f1ae311d3e"
+    }
+  ],
+  "expected_behavior": "After the harness substitutes the session handle returned by RegisterSession, the server parses the SendRRData CPF and CIP request and returns a normal response or ordinary CIP/encapsulation error. The bounded request should not require the historical corruption condition.",
+  "constraints_preserved": [
+    "RegisterSession payload is protocol version 1 with zero options",
+    "SendRRData payload length is 0x0018 bytes",
+    "CPF contains a Null Address Item followed by one Unconnected Data Item",
+    "The unconnected data item length is 10 bytes and matches the encoded CIP request",
+    "The GetAttributeList request targets Identity class 1, instance 1, with count 1 and attribute ID 1",
+    "The second frame uses a runtime-substituted negotiated session handle"
+  ],
+  "issue_safety_notes": "Preserves the affected valid-session SendRRData and GetAttributeList structural path while replacing the historical count of 80 with count 1 and omitting the optional sockaddr item combination. No exact historical payload is copied.",
+  "sequence_sha256": "77d262de3f0a35271c51d63862a766261baa1efea2c639d5e7202e086a287d93",
+  "total_bytes": 88,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a4de3d6c5c5d3851a572c1b38ffd7707b9fb03796fc00b61e02329cc78b03ac5",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 60,
+        "frame_length": 60
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "040-seed-revised-002-2-89c7b738",
+      "corpus_file": "040-89c7b738.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

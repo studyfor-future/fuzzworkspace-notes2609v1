@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-013",
+  "seed_id": "p-vcg1-104-001",
+  "title": "Counter Group 1 Requested Integrated Totals Report",
+  "strategy": "function_code_coverage",
+  "target_operation": "Requested by Counter Group 1",
+  "purpose": "Exercise a counter-related I-format ASDU carrying cause 38 in a parseable 104 frame so mutations can vary type, count, and integrated-total payload fields without malformed framing.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:224e76862422",
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:9662ce251be3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "integrated-totals-cause38",
+      "hex": "6813040000000f0126000100010000000000000000",
+      "byte_length": 21,
+      "sha256": "4faf5f7fa08fdfc58da46b3ca59254748fc215e9e35c5704d1dea87d2190fae6"
+    }
+  ],
+  "expected_behavior": "Parses as a 104 I-format ASDU with TypeID 15 (integrated totals) and cause 38, entering the counter-requested monitoring/report path or being rejected only on higher-layer state/policy grounds rather than frame syntax.",
+  "constraints_preserved": [
+    "Uses IEC 60870-5-104 APDU start byte 0x68 from supplied function reference",
+    "Length octet 0x12 matches 18 bytes following it",
+    "Cause of transmission 38 preserved exactly from supplied operation catalog",
+    "Single information object encoded with VSQ=1 and one 3-byte IOA",
+    "Common address kept little-endian 0x0001 as conservative standard 104 layout"
+  ],
+  "issue_safety_notes": "PK-only seed; no vulnerability claim. Payload is a safe structural analogue for counter-group requested traffic and does not reuse the malformed historical blob.",
+  "sequence_sha256": "7bdad3498d7d2406edfe917541bda6aced04246bebed1a63008c69a853fdbe9b",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 94.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4faf5f7fa08fdfc58da46b3ca59254748fc215e9e35c5704d1dea87d2190fae6",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "015-p-vcg1-104-001-85607ba4",
+      "corpus_file": "015-85607ba4.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

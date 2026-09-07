@@ -1,0 +1,59 @@
+{
+  "plan_id": "",
+  "seed_id": "837-poc-inspired-minimal",
+  "title": "VK-only Minimal 8-byte OOB Read in modbus_reply for non-address FC",
+  "strategy": "parser_depth",
+  "target_operation": "Minimal Request for Exception Status",
+  "purpose": "Trigger OOB read in modbus_reply by using internal state setup for minimal PDU length followed by crafted non-address function request",
+  "evidence_ids": [
+    "issue:837:837-summary:c4fb6d28cc16"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Minimal 8-byte request for OOB trigger",
+      "hex": "0000000000020007",
+      "byte_length": 8,
+      "sha256": "830ec4ec5a10393c0a569bafa6de98a86b7eaf0861385900e2d53a7c338e36d6"
+    }
+  ],
+  "expected_behavior": "Unit-test-server or equivalent crashes with OOB read on stack buffer in modbus_reply after state change",
+  "constraints_preserved": [
+    "MBAP header 000000000005",
+    "protocol identifier 0x0000",
+    "function code 0x07 without address field",
+    "consistent request length",
+    "standalone format"
+  ],
+  "issue_safety_notes": "Bytes from issue:837 used as base; minimal modification preserves target_operation and parser path while triggering reported OOB without exact copy; crash expected only",
+  "sequence_sha256": "54caad02e813a43224c1e6261c40b334181d0ef0dc6d37b9bab9a45759312180",
+  "total_bytes": 8,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "830ec4ec5a10393c0a569bafa6de98a86b7eaf0861385900e2d53a7c338e36d6",
+    "encoded_bytes": 8,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "012-837-poc-inspired-minimal-59771804",
+      "corpus_file": "012-59771804.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

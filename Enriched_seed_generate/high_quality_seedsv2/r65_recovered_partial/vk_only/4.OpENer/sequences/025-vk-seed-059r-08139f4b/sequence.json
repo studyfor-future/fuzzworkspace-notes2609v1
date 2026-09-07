@@ -1,0 +1,76 @@
+{
+  "plan_id": "vk-plan-059",
+  "seed_id": "vk-seed-059r",
+  "title": "VK-only stateful_valid ForwardOpen: OpENer multi-step state setup for issue 564 connection-manager path",
+  "strategy": "stateful_valid",
+  "target_operation": "ForwardOpen",
+  "purpose": "Use stateful setup sequence to reach issue 564 ForwardOpenRoutine in cipconnectionmanager.c",
+  "evidence_ids": [
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:cve-2022-43605:cve-2022-43605-summa:0e083bcc56b5"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "0000000000000000000000000000000000000000",
+      "byte_length": 20,
+      "sha256": "de47c9b27eb8d300dbb5f2c353e632c393262cf06340c4fa7f1b40c4cbd36f90"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ForwardOpenStateful",
+      "hex": "000003000000000000000000000000000000000000000000000000",
+      "byte_length": 27,
+      "sha256": "16b49c1256acc9e83db2e77f95706758654500b1fbac9b3776976781d2cf2509"
+    }
+  ],
+  "expected_behavior": "Multi-step session setup reaches malformed CIP ForwardOpen with OOB read in ConnectionObjectInitializeFromMessage",
+  "constraints_preserved": [
+    "multi_step_stateful shape",
+    "message_budget 2",
+    "24-byte encapsulation header",
+    "preserved target_operation"
+  ],
+  "issue_safety_notes": "Stateful sequence only; no external protocol docs",
+  "sequence_sha256": "a54d51de62bac5be849af0708f34a403a95009d70557e7ce74f2cc6da9c2abab",
+  "total_bytes": 47,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2022-43605"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7e134023681aed2fb1a5d1ed983874452142bb62fe5d6d914ebab05e66376850",
+    "encoded_bytes": 47,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 20,
+        "payload_offset": 20,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "025-vk-seed-059r-08139f4b",
+      "corpus_file": "025-08139f4b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

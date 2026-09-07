@@ -1,0 +1,68 @@
+{
+  "plan_id": "vk-plan-021",
+  "seed_id": "498",
+  "title": "VK-only Diagnostics length boundary with minimal FC16 prefix",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Diagnostics",
+  "purpose": "Explore issue-related boundary while retaining built-in basic length consistency and zero external claims",
+  "evidence_ids": [
+    "issue:498:498-summary:43dc6fe7600e",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Diagnostics request with MBAP length boundary",
+      "hex": "000000000009011000000001021234",
+      "byte_length": 15,
+      "sha256": "f50be4cf45ea2bac974d8628613ddb776bfb2d42c3c81a61b4d0b0211968999a"
+    }
+  ],
+  "expected_behavior": "Process valid FC16 prefix; extra bytes covered by MBAP length remain in stream and may trigger parser crash or corruption",
+  "constraints_preserved": [
+    "Modbus/TCP ADU with 7-byte MBAP header",
+    "Protocol identifier 0x0000",
+    "Consistent MBAP length",
+    "Function code 0x10",
+    "Address 0x0000",
+    "Quantity 0x0001",
+    "Data 0x021234"
+  ],
+  "issue_safety_notes": "Preserves length_boundary trigger from issue:498 without copying exact crash bytes; uses model internal prior for minimal frame",
+  "sequence_sha256": "91598a5197d5e7d8a41fdc3a19fe6df33a2d7f0ccb838d9f7e6dc57d16f3d2ac",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "498"
+  ],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f50be4cf45ea2bac974d8628613ddb776bfb2d42c3c81a61b4d0b0211968999a",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "040-498-f138665c",
+      "corpus_file": "040-f138665c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

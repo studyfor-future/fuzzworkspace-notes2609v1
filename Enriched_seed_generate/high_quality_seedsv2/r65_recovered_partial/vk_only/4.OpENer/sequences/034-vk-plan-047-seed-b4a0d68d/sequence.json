@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-047",
+  "seed_id": "vk-plan-047-seed",
+  "title": "VK-only GetAttributeSingle: In OpENer v2.3 / master up to commit 76b95cf, the real TCP explicit...",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:564:564-summary:6b535e1b37b6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSessionReply",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "GetAttributeSingle with TCP path",
+      "hex": "6b000000300000000000000000",
+      "byte_length": 13,
+      "sha256": "f42ee897274a919e7c78621985a30cdd75fdf87df2fbbacf4ba2062ee4740fdc"
+    }
+  ],
+  "expected_behavior": "Setup via RegisterSession/SendRRData state reaches SetAttributeList path on non-settable kCipShortString attribute (issue 572). Out-of-bounds read.",
+  "constraints_preserved": [
+    "prefer EtherNet/IP encapsulation little-endian payload length",
+    "use 24-byte encapsulation header",
+    "diversify discovery/session/explicit paths",
+    "preserve target_operation GetAttributeSingle"
+  ],
+  "issue_safety_notes": "VK-only vulnerability-analogue: TCP explicit path state prerequisite for SetAttributeList; issue:572/573/574; safe for analysis only; no external documents",
+  "sequence_sha256": "3206926ce1e0d2d788432f6b07e85f87721a287c54e0b6235edd7a658d8582b0",
+  "total_bytes": 35,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "572"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "da6665a3aaeb1da853c1761996b73886b50f95a4c17b4665c99a7271a76ed089",
+    "encoded_bytes": 35,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 11,
+        "payload_offset": 11,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "034-vk-plan-047-seed-b4a0d68d",
+      "corpus_file": "034-b4a0d68d.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

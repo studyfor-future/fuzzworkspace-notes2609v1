@@ -1,0 +1,79 @@
+{
+  "plan_id": "plan-043",
+  "seed_id": "seed-r11-003",
+  "title": "Field-interaction pair for Read and Write",
+  "strategy": "field_interaction",
+  "target_operation": "Read/Write",
+  "purpose": "Cover both data retrieval and data modification parser paths using two distinct confirmed services with stable framing.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "function_code:function:function-text:d3f8d07ee099"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Confirmed Read request",
+      "hex": "0300001b02f080610fa10d06052b0e010101be06a004020102a401",
+      "byte_length": 27,
+      "sha256": "4dbc30c48039a11ea797ee9ff0b0b69948570cd95e3f43a2750e4dc38f520700"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Confirmed Write request",
+      "hex": "0300001b02f080610fa10d06052b0e010101be06a004020103a501",
+      "byte_length": 27,
+      "sha256": "026379cfc55fa11229ca95ac62161d97ee7d9048153fdd64f321fc9eba19ae95"
+    }
+  ],
+  "expected_behavior": "Server accepts two separate confirmed-service parses, first for read semantics and then for write semantics, yielding normal response, rejection, or application-specific handling.",
+  "constraints_preserved": [
+    "TPKT version byte is 0x03 on both messages",
+    "TPKT total-length fields match each complete 25-byte message",
+    "ACSE/UserInformation framing is preserved consistently across both operations",
+    "MMS Confirmed-Request-PDU uses documented tag 0xA0",
+    "Service-choice tags [4] and [5] match supplied Read and Write catalog entries",
+    "Read and Write are both listed in the supplied recommended initial seed services"
+  ],
+  "issue_safety_notes": "Safe coverage seed pair only; requests are minimal conservative analogues and do not embed aggressive values, oversized elements, or malformed writes.",
+  "sequence_sha256": "56c246c57daeed10d3cc2ae2f84d4bfe98e4dae543851ff72a3d8f54b750c20a",
+  "total_bytes": 54,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 84.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "48e8a34a641e33bcf3a73b9de06c079e370d72eb7c35d4fd8e3276c0ff20e713",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 27,
+        "payload_offset": 27,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-seed-r11-003-c1e13b08",
+      "corpus_file": "004-c1e13b08.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

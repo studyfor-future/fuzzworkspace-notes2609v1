@@ -1,0 +1,90 @@
+{
+  "plan_id": "",
+  "seed_id": "opener-vk-016-r1",
+  "title": "Connected SendUnitData with bounded CPF data",
+  "strategy": "parser_depth",
+  "target_operation": "SendUnitData",
+  "purpose": "Reach connected CPF parsing with distinct connected-address and connected-data items, a nonminimal connected-data length, and a compact embedded Message Router request.",
+  "evidence_ids": [
+    "issue:568:568-summary:6fa072929d36",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "register_session_response_placeholder",
+      "hex": "65000400444444440000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "4172768877705763519c728dca40521662c4044c57d995b73ae14acaa4245ace"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "sendunitdata_connected_get_attribute_probe",
+      "hex": "70001e0044444444000000000000000000000000000000000000000000000200a10004007856341200b1000a02000e03200624013002",
+      "byte_length": 54,
+      "sha256": "7c734108b479e5f001fbdcd05bb0958a366b3a43745030fd6dad2532e956e6d4"
+    }
+  ],
+  "expected_behavior": "The implementation should parse the connected-address and connected-data CPF items, inspect the embedded bounded GetAttributeSingle request, and return a clean connection or routing error if the synthetic connection identifier is not active.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation headers are used",
+    "Little-endian payload length 0x001e matches the visible body",
+    "CPF item count is two",
+    "Connected address item length is four bytes",
+    "Connected data item length is ten bytes including sequence data",
+    "Connected data length is above the reported one-byte underflow boundary"
+  ],
+  "issue_safety_notes": "The sequence uses a synthetic connection identifier and a ten-byte connected-data item, avoiding ForwardOpen-derived crash payloads, one-byte data lengths, forged large path sizes, and exact historical byte patterns.",
+  "sequence_sha256": "f129406c695b30a97aecb55fc3666d062eb5d049340f3006c9e3922ed36fd743",
+  "total_bytes": 110,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ed18ed924607ba43fbc9c45ed38df67f69a30b1d73c54b00be9d3283b86f77e1",
+    "encoded_bytes": 110,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 54,
+        "frame_length": 54
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "027-opener-vk-016-r1-49920092",
+      "corpus_file": "027-49920092.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

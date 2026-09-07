@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-024",
+  "seed_id": "seed-024-1",
+  "title": "Issue-guided analogue for RemoveListElement",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "RemoveListElement",
+  "purpose": "Recover historically sensitive structure from RemoveListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+  "evidence_ids": [
+    "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+    "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+    "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RemoveListElement request",
+      "hex": "000100010a000000040b00000000000c0900000000000000000000000000",
+      "byte_length": 30,
+      "sha256": "3eebe8da0f1acaa30bc384cecdaae5c21c7e272088814be3ff2dfea61ef425c4"
+    }
+  ],
+  "expected_behavior": "Server removes element from recipient-list without stack overflow or crash",
+  "constraints_preserved": [
+    "BACnet/IP BVLC 4-byte total length preserved",
+    "NPDU and APDU layering followed",
+    "RemoveListElement function code 0x09 respected",
+    "Recipient-list property documented"
+  ],
+  "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47259 with valid element removal; no overflow in Notification_Class_Remove_List_Element",
+  "sequence_sha256": "a24dd5dcff803004bad739a6bfbcea82bc48cb9b8532c1a71a3112646f461cbf",
+  "total_bytes": 30,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-47259"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3eebe8da0f1acaa30bc384cecdaae5c21c7e272088814be3ff2dfea61ef425c4",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-seed-024-1-3811c9c2",
+      "corpus_file": "017-3811c9c2.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "plan_id": "vk-plan-035",
+  "seed_id": "vk-plan-035",
+  "title": "VK-only WriteProperty: In bacnet-stack 1.5.0 (master branch commit 932e347), handler_read_property() constructs a ReadProperty-ACK",
+  "strategy": "stateful_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite on Structured_View path",
+  "evidence_ids": [
+    "issue:1398:1398-summary:200993baa464",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Who-Is",
+      "hex": "810a000a000003000000",
+      "byte_length": 10,
+      "sha256": "6f737840c46a0440228ec4c355d29c309e9d01e72856359e8a5d5ac638dfe361"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "I-Am",
+      "hex": "810a001f00010100000001000000000000000c000101000e0057e100300000",
+      "byte_length": 31,
+      "sha256": "8019be8cdf928590be0a1b168dddef969ffadcb83202e4398fdd4ffa3f497f16"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "ReadProperty",
+      "hex": "810a001e010001000003000400000000000c000101000e0057e100300001",
+      "byte_length": 30,
+      "sha256": "7812ad7cfe7ed1a90b86ad2f3d367cec85e6e52fb2452c0c12add9de766b1b49"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "ReadProperty-ACK",
+      "hex": "810a00120101000100000000000400000000",
+      "byte_length": 18,
+      "sha256": "fee74bae3146a46a3fbf5ea491dc97743135f7e48c5e0c0826735b6e5f6dc9f6"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "WriteProperty",
+      "hex": "810a001e010001000003000500000000000c000101000e0057e100300002",
+      "byte_length": 30,
+      "sha256": "7ae9fe081502922499656a65f55200cdb44cd9026314947e23fe54bb216653c6"
+    },
+    {
+      "index": 5,
+      "direction": "server_to_client",
+      "label": "WriteProperty-ACK",
+      "hex": "810a00120101000100000000000500000000",
+      "byte_length": 18,
+      "sha256": "00f64ad34f15f7223d160b4613debf7c7cf5ea340c817a44638c214f42c0c3f4"
+    }
+  ],
+  "expected_behavior": "WriteProperty issues out-of-bounds read in decode path after prior ReadProperty state setup on Structured_View",
+  "constraints_preserved": [
+    "BVLC total length 4-byte consistent",
+    "NPDU function code BVLC consistent",
+    "APDU min length 3 preserved",
+    "Visible buffer lengths internally consistent"
+  ],
+  "issue_safety_notes": "Safe issue analogue to 1398 handler state; no copy of crash bytes",
+  "sequence_sha256": "f1fa13622f3a2d4b537f37e3980b37315bcad0168bd13f5b20c91ca67ff386b0",
+  "total_bytes": 137,
+  "message_count_hint": 6,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1398"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f78363c820cbd527fdadff1efe2a5bce143ceac0eb02e5786fbe9018002ae86b",
+    "encoded_bytes": 137,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 31,
+        "frame_length": 31
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 41,
+        "payload_offset": 41,
+        "payload_length": 30,
+        "frame_length": 30
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 71,
+        "payload_offset": 71,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 89,
+        "payload_offset": 89,
+        "payload_length": 30,
+        "frame_length": 30
+      },
+      {
+        "message_index": 5,
+        "frame_offset": 119,
+        "payload_offset": 119,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "000-vk-plan-035-d8f7d77c",
+      "corpus_file": "000-d8f7d77c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

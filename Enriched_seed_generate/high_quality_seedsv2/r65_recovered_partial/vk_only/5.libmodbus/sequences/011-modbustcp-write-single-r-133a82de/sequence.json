@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-030",
+  "seed_id": "modbustcp-write-single-register-002-2",
+  "title": "VK-only Write Single Register",
+  "strategy": "other",
+  "target_operation": "Write Single Register",
+  "purpose": "Provide a distinct mutation-friendly register-write request that reaches common receive and reply handling with a compact fixed-size body.",
+  "evidence_ids": [
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:499:499-summary:6268f95751ad"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write single register at address 0x0062",
+      "hex": "000200000006010600621234",
+      "byte_length": 12,
+      "sha256": "94599d8196d0056a46360143b8a58955cb6a66ed426b861bc5272cc049c2cafd"
+    }
+  ],
+  "expected_behavior": "The server should parse the request and normally echo a Write Single Register response or return a protocol exception for unsupported addressing.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the request body.",
+    "Function code 06 carries one address and one 16-bit register value."
+  ],
+  "issue_safety_notes": "The request preserves the issue-relevant server receive/reply pathway without copying any reported crash bytes. Crash behavior is not assumed; issue descriptions and suspected causes remain unverified reference evidence.",
+  "sequence_sha256": "0f68fc9fb59bfc76426bc3a008b27b6bfa7c8af6311034ce8865430611b0ee01",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "750"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "94599d8196d0056a46360143b8a58955cb6a66ed426b861bc5272cc049c2cafd",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "011-modbustcp-write-single-r-133a82de",
+      "corpus_file": "011-133a82de.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

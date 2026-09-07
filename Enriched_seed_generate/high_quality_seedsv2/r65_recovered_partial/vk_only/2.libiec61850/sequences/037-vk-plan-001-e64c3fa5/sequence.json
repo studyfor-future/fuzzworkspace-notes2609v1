@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-001",
+  "seed_id": "vk-plan-001",
+  "title": "VK-only COTP Connection Request: TPDU size shift boundary analogue (issue 589 evidence)",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Combine issue-supported vulnerable structure with conservative model-prior form for TPDU parsing UB analogue without crash payload copy",
+  "evidence_ids": [
+    "issue:589:589-summary:a9c8952234c9",
+    "issue:193:193-summary:1451e58436f0",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:516:516-summary:13bbaeee92c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP CR with malformed TPDU size",
+      "hex": "0300001611e00000000100c1020000c2020001c001a2",
+      "byte_length": 22,
+      "sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd"
+    }
+  ],
+  "expected_behavior": "Server triggers UBSan shift exponent UB on TPDU size parsing",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length consistent with full message",
+    "MMS over RFC1006 model-prior archetype",
+    "IEC61850 family constraints",
+    "Single-request shape",
+    "Message budget 1",
+    "No external protocol documents used"
+  ],
+  "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+  "sequence_sha256": "d6f90c21ae5528e8bb799c8cdb3108ce08b39b38747dca8412f7eb949b8e2b4a",
+  "total_bytes": 22,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": true,
+  "plan_issue_refs": [
+    "193"
+  ],
+  "_selection_score": 79.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "13c52e040fae728f28e2b0609b3a0b5043dffa23c13798ac8dba50f31fbd79cd",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "037-vk-plan-001-e64c3fa5",
+      "corpus_file": "037-e64c3fa5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

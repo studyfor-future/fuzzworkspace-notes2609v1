@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-015",
+  "seed_id": "seed-015-rev",
+  "title": "VK-only WriteProperty: No affected version is specified. In `bacnet-stack`, `src/bacnet/rpm.c` function `rpm_decode_object_id()` checks `apdu_len < 5` even though it then consumes ...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+    "issue:cve-2026-21878:cve-2026-21878-summa:ead18a358e0d",
+    "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "WriteProperty request",
+      "hex": "8100000a000178c0c003",
+      "byte_length": 10,
+      "sha256": "9e35106cc04d2b5ac07922cf404d4210d420269b4524a6158e07776b5b40a101"
+    }
+  ],
+  "expected_behavior": "Single BVLC+NPdu+APdu request reaches rpm_decode_object_id() and succeeds or gracefully fails without crash.",
+  "constraints_preserved": [
+    "Prefer common BACnet/IP BVLC, NPDU and APDU layering",
+    "For BVLC messages, keep the four-byte BVLC total length consistent",
+    "Diversify discovery, property access, file and subscription services",
+    "Model-prior message archetypes: Who-Is I-Am ReadProperty ReadPropertyMultiple WriteProperty SubscribeCOV ReadRange AtomicReadFile AtomicWriteFile DeviceCommunicationControl"
+  ],
+  "issue_safety_notes": "No external protocol document used; model internal prior enforced; no copy of exact crash bytes",
+  "sequence_sha256": "b48f4fd44ba8c833755b521ac20690d5aabfbf17dd3e194edef2ba2d9f13f814",
+  "total_bytes": 10,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-41502"
+  ],
+  "_selection_score": 76.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9e35106cc04d2b5ac07922cf404d4210d420269b4524a6158e07776b5b40a101",
+    "encoded_bytes": 10,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-seed-015-rev-138ea369",
+      "corpus_file": "031-138ea369.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

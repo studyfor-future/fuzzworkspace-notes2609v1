@@ -1,0 +1,59 @@
+{
+  "plan_id": "vk-plan-018",
+  "seed_id": "vk5-seed-018-a",
+  "title": "Minimal Read Command with short object path",
+  "strategy": "other",
+  "target_operation": "Read Command",
+  "purpose": "Create a distinct mutation-friendly read-command style I-frame using conservative short-object encoding so a fuzzer can vary COT, CA, and IOA fields around a valid-looking baseline while staying separate from previously duplicated VSQ-mismatch analogues.",
+  "evidence_ids": [
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:200:200-summary:348db1f37fe8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_command_minimal",
+      "hex": "680c020000006601050100010000",
+      "byte_length": 14,
+      "sha256": "042d147ce9651d42f944b079fc035859d16f6ad090835ec53641bf7ed4830c97"
+    }
+  ],
+  "expected_behavior": "The implementation should parse the short read-command style ASDU, reject unsupported semantics if necessary, and avoid null dereference or out-of-bounds access in downstream object handling.",
+  "constraints_preserved": [
+    "widely recognized IEC 60870-5-104 style APCI/I-frame form",
+    "visible length octet matches frame size",
+    "single request shape maintained",
+    "target_operation preserved as Read Command",
+    "distinct payload from prior library entries",
+    "lowercase hexadecimal only"
+  ],
+  "issue_safety_notes": "Uses a conservative read-command analogue rather than any exact report payload. It is intended for mutation around object address and cause fields, not direct crash reproduction.",
+  "sequence_sha256": "0f7c7f925128fc580ece80aebc7f926ac0772bf6aed446ed674c1513ac6d2fff",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "55"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "042d147ce9651d42f944b079fc035859d16f6ad090835ec53641bf7ed4830c97",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

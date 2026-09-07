@@ -1,0 +1,91 @@
+{
+  "plan_id": "vk-plan-017",
+  "seed_id": "vk5-seed-017-a",
+  "title": "Clock Synchronization after conservative link activation",
+  "strategy": "stateful_valid",
+  "target_operation": "Clock Synchronization",
+  "purpose": "Exercise a plausible prerequisite state transition before a compact clock-sync style I-frame whose trailing time payload is intentionally shorter than a fully populated timestamp analogue, preserving the issue relation to time-field handling without copying known crash bytes.",
+  "evidence_ids": [
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "startdt_act_prereq",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "startdt_con_ack",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "clock_sync_short_time_analogue",
+      "hex": "680f000000006701060100020000112233",
+      "byte_length": 17,
+      "sha256": "a181306c97a30cea11d2ccb13332588feb15c1313feec48b95a1090045d37fb2"
+    }
+  ],
+  "expected_behavior": "The target should either reject the compact clock synchronization style ASDU cleanly or process it without invalid memory access while traversing COT and time-decoding related paths.",
+  "constraints_preserved": [
+    "0x68 framing used throughout",
+    "visible length octets internally consistent",
+    "stateful prerequisite included before target operation",
+    "target_operation preserved as Clock Synchronization",
+    "message hex lowercase without separators",
+    "exact historical crash stream not reused"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue of reported clock/time and ASDU-access issues. It avoids reproducing the published PoC bytes and keeps the payload compact and mutation-friendly.",
+  "sequence_sha256": "7a4b090d84c0e875d07eb20de91186bf445e4223465d633996b20f2f445c9577",
+  "total_bytes": 29,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "54"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ddccf0e032da6f17f960a006c25e1fa126b840155e91eb39c53d8840a1e45e9e",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

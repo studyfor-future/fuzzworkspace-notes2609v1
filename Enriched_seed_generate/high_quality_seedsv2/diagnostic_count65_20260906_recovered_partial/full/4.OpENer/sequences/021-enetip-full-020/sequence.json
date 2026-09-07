@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-020",
+  "seed_id": "enetip-full-020",
+  "title": "Reply-size analogue using moderate unconnected response demand",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Reply Data Too Large",
+  "purpose": "Stimulate reply construction on the unconnected explicit path with a moderate attribute-list request that is larger than minimal but far below the issue's dangerous scale, helping cover response-size and metadata assembly decisions safely.",
+  "evidence_ids": [
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:576:576-summary:bc3710455616",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:568:568-summary:6fa072929d36"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession then moderate SendRRData GetAttributeList analogue",
+      "hex": "650039000000000000000000000000000000000000000000010000006f002600010000000000000000000000000000000000000000000000020000000000b2001603200324010700040001000200030004",
+      "byte_length": 81,
+      "sha256": "1a7d9cf950cf2d981801723dfe9093c44ba27066cb97ad5bf1282d5ac93a211c"
+    }
+  ],
+  "expected_behavior": "Target should build either a bounded success reply or a normal error reply for the requested attribute list and must keep encapsulation and CPF metadata consistent while doing so.",
+  "constraints_preserved": [
+    "Combined seed contains two sequential encapsulation messages: RegisterSession then SendRRData, each with independent 24-byte headers and correct little-endian lengths.",
+    "SendRRData uses Null Address Item plus Unconnected Data Item, matching the documented common CPF combination.",
+    "Embedded GetAttributeList-style request uses count 4 with distinct small attribute IDs to request a moderate reply, not an oversized one.",
+    "The service code and path encoding are conservative inferred CIP conventions used only to drive realistic parsing, not claimed as source-verified."
+  ],
+  "issue_safety_notes": "This seed stays well below the issue's repeated-80-attribute pattern and omits optional socket-address items, reducing amplification while still probing reply-size handling logic.",
+  "sequence_sha256": "670f61eadfcd878677033358765caa56ce86c7d4db2b3b49dc91ab45d41fc2de",
+  "total_bytes": 81,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "571"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1a7d9cf950cf2d981801723dfe9093c44ba27066cb97ad5bf1282d5ac93a211c",
+    "encoded_bytes": 81,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 81,
+        "frame_length": 81
+      }
+    ]
+  }
+}

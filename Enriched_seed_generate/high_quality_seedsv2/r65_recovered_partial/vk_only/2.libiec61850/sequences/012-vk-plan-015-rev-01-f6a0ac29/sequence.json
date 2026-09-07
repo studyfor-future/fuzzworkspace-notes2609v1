@@ -1,0 +1,60 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-plan-015-rev-01",
+  "title": "DefineNamedVariableList boundary with association-specific style name",
+  "strategy": "length_boundary_valid",
+  "target_operation": "DefineNamedVariableList",
+  "purpose": "Exercise server-side named-variable-list creation using a short list name and minimal variable-list content to explore null-or-empty list handling and access-control adjacent paths.",
+  "evidence_ids": [
+    "issue:542:542-summary:a6cc05667747",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "tpkt_cotp_mms_define_nvl_req_like",
+      "hex": "0300001f02f080a016020103a4111a04626f6f6da1091a036c64311a026c6e",
+      "byte_length": 31,
+      "sha256": "200db77f9b6ba3080e7fccaa6fb1d652a68b4239087a6fd801c75bbc75286a59"
+    }
+  ],
+  "expected_behavior": "Server should validate the named-variable-list request and either accept or reject it without dereferencing absent list structures or corrupting stack-backed dataset name buffers.",
+  "constraints_preserved": [
+    "tpkt header begins with 03",
+    "tpkt total-length field is consistent with the complete message",
+    "write/list-management diversity via definenamedvariablelist-style request",
+    "message remains mutation-friendly with short names and nested list fields",
+    "not an exact replay of published poc.bin"
+  ],
+  "issue_safety_notes": "Combines safe analogues of empty-or-short list handling and dynamic dataset creation concerns while intentionally avoiding the exact historical request bytes.",
+  "sequence_sha256": "4a9988e4fefdfc0dd201c33aa4aa00156df30c95ae1c8bd2da7b2c56d0696c65",
+  "total_bytes": 31,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "200db77f9b6ba3080e7fccaa6fb1d652a68b4239087a6fd801c75bbc75286a59",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 31,
+        "frame_length": 31
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "012-vk-plan-015-rev-01-f6a0ac29",
+      "corpus_file": "012-f6a0ac29.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

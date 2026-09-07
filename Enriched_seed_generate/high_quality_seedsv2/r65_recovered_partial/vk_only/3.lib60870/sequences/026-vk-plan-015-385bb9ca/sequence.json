@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-015",
+  "seed_id": "vk-plan-015",
+  "title": "VK-only Double Command: No affected version is specified. The report shows that `./test/iec...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Double Command",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:13:13-summary:187d3c5ead6c",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Double Command request",
+      "hex": "680c000000000068040100000068",
+      "byte_length": 14,
+      "sha256": "686588c3dcb89a08fefcc358f188b128d5f65e7adabb14c9e6997c2c3759e04d"
+    }
+  ],
+  "expected_behavior": "Parser accepts boundary ASDU where claimed object count exactly matches remaining body length; CS101_ASDU_getElement reaches InformationObject_ParseObjectAddress and reads one byte past buffer end (crash in server example)",
+  "constraints_preserved": [
+    "0x68 start/end octets consistent with FT1.1 framing",
+    "APDU length octet L=10 preserved",
+    "Single-request sequence_shape",
+    "message_budget=1",
+    "VSQ=0x01 (1 object claimed)",
+    "Exact length boundary on ASDU body for parser depth path"
+  ],
+  "issue_safety_notes": "Traces exact vulnerability trigger from issue 13 and GHSA-7V97-JMWV-W5J7; no crash bytes copied; uses model-prior conservative form",
+  "sequence_sha256": "409333cea7b94ebb30c8df33ee5ed62ceca2a60c67cdfc36dcd8c8ad389d601e",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "13"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "686588c3dcb89a08fefcc358f188b128d5f65e7adabb14c9e6997c2c3759e04d",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "026-vk-plan-015-385bb9ca",
+      "corpus_file": "026-385bb9ca.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

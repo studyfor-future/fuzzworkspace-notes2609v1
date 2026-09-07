@@ -1,0 +1,57 @@
+{
+  "plan_id": "vk-plan-050",
+  "seed_id": "vk-revised-050-single",
+  "title": "VK-only Single Command with complete address and qualifier interaction",
+  "strategy": "field_interaction",
+  "target_operation": "Single Command",
+  "purpose": "Reach the Single Command information-object parser with interacting COT, common address, IOA, and command qualifier fields, using a compact complete body that can be mutated toward boundary and state variants.",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "vk_task_context:task-contract:e5a446a8785a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "single_command",
+      "hex": "680e080000002d010600010002000001",
+      "byte_length": 16,
+      "sha256": "c1f6fa6340a2058841830cc72a37ac0cd0b3376082b13cb39b55aaa0cf756df0"
+    }
+  ],
+  "expected_behavior": "The server should parse one complete Single Command object, including its three-byte IOA and one-byte command qualifier, or reject it through normal validation. Mutations can independently vary the object address, activation qualifier, COT, common address, and sequence bit while preserving the enclosing frame length.",
+  "constraints_preserved": [
+    "iec60870_5_104_i_frame",
+    "start_byte_is_0x68",
+    "length_octet_0x0e_matches_four_control_and_ten_asdu_bytes",
+    "vsq_count_is_one",
+    "non_sequence_object_contains_complete_ioa_and_command_qualifier"
+  ],
+  "issue_safety_notes": "This preserves the issue-relevant address-parser and declared-count interaction as a bounded analogue, but does not advertise an out-of-bounds read as expected behavior and does not copy the GHSA-7V97-JMWV-W5J7 reproduction bytes.",
+  "sequence_sha256": "8c9e0a1d1c0b7454ed9c803672ac0a4e5fea6b5d99ec0607c280531218b334f9",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c1f6fa6340a2058841830cc72a37ac0cd0b3376082b13cb39b55aaa0cf756df0",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

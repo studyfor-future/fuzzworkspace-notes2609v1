@@ -1,0 +1,97 @@
+{
+  "plan_id": "plan-007",
+  "seed_id": "seed-003",
+  "title": "Issue-guided analogue for Device",
+  "strategy": "baseline_valid",
+  "target_operation": "Device",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+    "issue:1342:1342-summary:cdc7c256554d",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "BVLC Header",
+      "hex": "810b000500",
+      "byte_length": 5,
+      "sha256": "983077b8f4d5fe15903e9feceade19ee4e9466734310f117053365ec5d700a6a"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "NPDU Header",
+      "hex": "01020000020000",
+      "byte_length": 7,
+      "sha256": "2703f96453c3e42d8b0fc5f8e5c9f7313340cf99299353b14834d28efcf01968"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "APDU Confirmed Request",
+      "hex": "000005f00c000201000000000000000000",
+      "byte_length": 17,
+      "sha256": "afc6271e5d949ac47d88d92f25cbae97420092eeca10197043b9a103da1086b7"
+    }
+  ],
+  "expected_behavior": "Valid WriteProperty request targeting Device properties; no NULL pointer dereference in subordinate list processing.",
+  "constraints_preserved": [
+    "BVLC 4-byte total length preserved",
+    "NPDU routing preserved",
+    "APDU confirmed PDU type preserved",
+    "Service choice for WriteProperty preserved",
+    "Property value tag structure preserved",
+    "Order and nesting of APDU/NPDU/BVLC preserved",
+    "All length/count/checksum rules preserved",
+    "Common BACnet/IP layering preserved"
+  ],
+  "issue_safety_notes": "Analogue replaces OBJECT_STRUCTURED_VIEW/PROP_SUBORDINATE_LIST NULL deref trigger with safe value; no exact crash payload copied; does not trigger NULL pointer dereference.",
+  "sequence_sha256": "92a5ad04c0d46f263425a8f28f7a4e49047cdba2f9a0efe4a0d4ff4df2d48975",
+  "total_bytes": 29,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1317"
+  ],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3898966301bee9f930ab57ee02b9524685901a825be5c7b194ddc491500f44ed",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 5,
+        "payload_offset": 5,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-seed-003-d0653367",
+      "corpus_file": "003-d0653367.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

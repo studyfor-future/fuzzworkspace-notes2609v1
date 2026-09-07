@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-006",
+  "seed_id": "modbustcp-write-single-register-002",
+  "title": "VK-only Write Single Register with nondefault transaction and register value",
+  "strategy": "other",
+  "target_operation": "Write Single Register",
+  "purpose": "Provide a distinct mutation-friendly server request for the single-register reply path, retaining a compact valid structure while changing address and data fields.",
+  "evidence_ids": [
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:498:498-summary:43dc6fe7600e",
+    "issue:499:499-summary:6268f95751ad"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write single register at address 100 with patterned value",
+      "hex": "00020000000602060064a55a",
+      "byte_length": 12,
+      "sha256": "772dc1b309229b3cc140957c67abba65223a17b21620a50b1f88e9859bff8ad5"
+    }
+  ],
+  "expected_behavior": "A conforming server should accept or reject the address according to its mapping and return either the normal echoed write response or a Modbus exception response without terminating the connection.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the unit identifier and Write Single Register PDU.",
+    "The request uses a valid two-byte register address and two-byte register value."
+  ],
+  "issue_safety_notes": "The crafted-request and test-server evidence motivates coverage of the reply/parser path, but this candidate is not the documented historical byte sequence and no crash outcome is claimed.",
+  "sequence_sha256": "c902fe2bffb720729c669b82e6407d11a338dd6224d09a2141f54729a7cf736e",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "614"
+  ],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "772dc1b309229b3cc140957c67abba65223a17b21620a50b1f88e9859bff8ad5",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "055-modbustcp-write-single-r-ee87e3ca",
+      "corpus_file": "055-ee87e3ca.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

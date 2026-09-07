@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-023",
+  "seed_id": "seed-023-1",
+  "title": "Issue-guided analogue for AddListElement",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "AddListElement",
+  "purpose": "Recover historically sensitive structure from AddListElement issue while replacing concrete crash trigger with safer valid analogue using single-request sequence",
+  "evidence_ids": [
+    "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-47259:cve-2026-47259-summa:0e395d4daf68",
+    "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+    "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "AddListElement request",
+      "hex": "000100010a000000040b00000000000c0800000000000000000000000000",
+      "byte_length": 30,
+      "sha256": "92b0af00e3bdb2416a70f2cc1127c3ea3117e30205aa7357a3f084b967935bc5"
+    }
+  ],
+  "expected_behavior": "Server adds element to recipient-list without stack overflow or crash",
+  "constraints_preserved": [
+    "BACnet/IP BVLC 4-byte total length preserved",
+    "NPDU and APDU layering followed",
+    "AddListElement function code 0x08 respected",
+    "Recipient-list property documented"
+  ],
+  "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47258 with valid element addition; no overflow in Notification_Class_Add_List_Element",
+  "sequence_sha256": "1295eb913204530fbfbb34e085f17f3c9459f25dc65eaf1534bfc88842c8ae68",
+  "total_bytes": 30,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-47258"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "92b0af00e3bdb2416a70f2cc1127c3ea3117e30205aa7357a3f084b967935bc5",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "013-seed-023-1-d515152b",
+      "corpus_file": "013-d515152b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

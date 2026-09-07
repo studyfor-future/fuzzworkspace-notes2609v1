@@ -1,0 +1,61 @@
+{
+  "plan_id": "plan-051",
+  "seed_id": "plan-051-spontaneous-mstna1-104-001",
+  "title": "Spontaneous step-position report M_ST_NA_1",
+  "strategy": "function_code_coverage",
+  "target_operation": "Spontaneous",
+  "purpose": "Cover monitoring/report parsing with a distinct spontaneous indication path using documented TypeID 5 step-position information.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:83986922f28d",
+    "protocol_format:iec60870:format-overview:6fc14a471f76"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "M_ST_NA_1 spontaneous report",
+      "hex": "680e0000000005010300010200001100",
+      "byte_length": 16,
+      "sha256": "de0ef50fa09d54e9eb046657e23c1a0e9db90841c38a53505d1512d633a0bee5"
+    }
+  ],
+  "expected_behavior": "A 104 receiver should parse this as one spontaneous M_ST_NA_1 information object from common address 1, IOA 2, carrying a step-position value byte and quality byte.",
+  "constraints_preserved": [
+    "TypeID 5 M_ST_NA_1 is taken from supplied source",
+    "Cause of transmission set to spontaneous (3), correcting the prior semantic mismatch",
+    "Direction set server_to_client to reflect monitoring/report style traffic",
+    "APDU length 0x0f equals 4 control bytes plus 11 ASDU bytes",
+    "ASDU keeps single-object ordering with TypeID, VSQ, COT, CA, IOA, then object payload"
+  ],
+  "issue_safety_notes": "PK-only seed; semantic correction only. Uses a safe canonical spontaneous report structure and avoids prior invalid hybrids.",
+  "sequence_sha256": "b4ead7986ca18c8b27d365a1e38849eee9b1e891cd6cf2bf1aacfad3f0698011",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "de0ef50fa09d54e9eb046657e23c1a0e9db90841c38a53505d1512d633a0bee5",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "007-plan-051-spontaneous-mst-e5a55497",
+      "corpus_file": "007-e5a55497.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

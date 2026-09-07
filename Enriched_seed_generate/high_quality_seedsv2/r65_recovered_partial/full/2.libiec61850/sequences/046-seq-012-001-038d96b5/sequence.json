@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-012",
+  "seed_id": "seq-012-001",
+  "title": "MMS GetNameList followed by safe integer-overflow analogue in namelist service",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover historically sensitive integer overflow in mms_get_namelist_service while using safe positive octet-string size in GetNameList service",
+  "evidence_ids": [
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:496:496-summary:0b725b37c953"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MMS GetNameList request",
+      "hex": "030000150701000101000200000500100000000000",
+      "byte_length": 21,
+      "sha256": "a6c158ec7ffcf6e8c7819a389e8aee5fa488646d9df6237828896e34a84f9e25"
+    }
+  ],
+  "expected_behavior": "Server responds with valid GetNameList data using positive octet-string size field",
+  "constraints_preserved": [
+    "TPKT version 0x03, TPKT total-length matches complete message",
+    "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+    "ACSE association preserved",
+    "IEC61850 GetNameList service code 1 used"
+  ],
+  "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+  "sequence_sha256": "8d05c63583139b724293ab41119de657995ab016672ecd702f39f2da576a0e5c",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "492"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a6c158ec7ffcf6e8c7819a389e8aee5fa488646d9df6237828896e34a84f9e25",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "046-seq-012-001-038d96b5",
+      "corpus_file": "046-038d96b5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

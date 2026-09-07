@@ -1,0 +1,78 @@
+{
+  "plan_id": "plan-010",
+  "seed_id": "seq-003",
+  "title": "Issue-guided analogue for Unknown Common Address of ASDU (single_request)",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Unknown Common Address of ASDU",
+  "purpose": "Structural analogue recovery of NULL dereference path in ASDU parsing",
+  "evidence_ids": [
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Single Command with safe common address",
+      "hex": "680a01000000010000000000",
+      "byte_length": 12,
+      "sha256": "ffd03cd4d39f7c1475e005b9ec8817992aa52fe6b7a07b2c7f5f1130e426d238"
+    }
+  ],
+  "expected_behavior": "Client initiates session and sends valid command; parser handles framing without crash",
+  "constraints_preserved": [
+    "IEC 60870-5-104 APCI framing with 0x68 start",
+    "Length octets consistent with frame size",
+    "U-format control bytes for STARTDT/STOPDT/TESTFR",
+    "ASDU function codes and IOA ordering rules"
+  ],
+  "issue_safety_notes": "Analogue structure replaces historical trigger; no exact payload copy",
+  "sequence_sha256": "d58ab2ba6bf7cd5a749cccc132be78d49c25edf4c587ebe9b6aa001a1c4246ca",
+  "total_bytes": 18,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "55"
+  ],
+  "_selection_score": 118.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "987bf33d396f0b5c01a1d7d5d71391e7c0cc2405711a91ec15c961e632404a6b",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-seq-003-bb92b42f",
+      "corpus_file": "004-bb92b42f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

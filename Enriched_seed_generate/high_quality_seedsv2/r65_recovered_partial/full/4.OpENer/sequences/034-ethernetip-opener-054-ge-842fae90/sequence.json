@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-054",
+  "seed_id": "ethernetip-opener-054-get-attribute-single",
+  "title": "Get Attribute Single for a class instance",
+  "strategy": "function_code_coverage",
+  "target_operation": "Get_Attribute_Single",
+  "purpose": "Cover the single-attribute CIP request path with a compact, mutation-friendly unconnected explicit message.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData Get_Attribute_Single request",
+      "hex": "6f001d00010000000000000000000000000000000000000000000000000000000000000000020000000000b20005000e0220042401",
+      "byte_length": 53,
+      "sha256": "cfb8fdc58e9cf37116199ac34d76541c790d0432d54d233d31f648702cdd630a"
+    }
+  ],
+  "expected_behavior": "The receiver should decode the unconnected data item, dispatch CIP service 0x0e for Class 0x04 Instance 0x01, and produce a normal response or ordinary CIP error for the inferred object and attribute context.",
+  "constraints_preserved": [
+    "The 24-byte encapsulation header uses little-endian command and payload length fields.",
+    "The 25-byte payload length equals the interface handle, timeout, CPF items, and five-byte CIP request.",
+    "The CPF item count is two with a zero-length Null Address Item followed by an Unconnected Data Item.",
+    "The CIP request contains service 0x0e, a two-word path, and no trailing request data as expected for this operation.",
+    "The object path and session handle are conservative inferred values and are not verified externally in the supplied sources."
+  ],
+  "issue_safety_notes": "The request avoids the issue 577 structural trigger by using a normal two-word path rather than a consuming padded path, while retaining the same SendRRData parser family for differential comparison.",
+  "sequence_sha256": "589db9f7f51b3564419a4b0b10dde0c73d32e3c091dde36411038ad3b4c8c709",
+  "total_bytes": 53,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cfb8fdc58e9cf37116199ac34d76541c790d0432d54d233d31f648702cdd630a",
+    "encoded_bytes": 53,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "034-ethernetip-opener-054-ge-842fae90",
+      "corpus_file": "034-842fae90.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

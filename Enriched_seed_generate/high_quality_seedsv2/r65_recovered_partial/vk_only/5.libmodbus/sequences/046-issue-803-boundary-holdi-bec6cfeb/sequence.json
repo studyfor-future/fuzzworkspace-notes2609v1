@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-015",
+  "seed_id": "issue-803-boundary-holding-registers-03",
+  "title": "Read Holding Registers quantity boundary",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Explore a conservative high-quantity register-read boundary with a standard fixed-size request to cover issue-related size handling while preserving fully consistent framing.",
+  "evidence_ids": [
+    "issue:803:803-summary:fea416ab8355",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:748:748-summary:90052b7dfbe9",
+    "issue:738:738-summary:a2fd51730f5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "holding_registers_boundary_request",
+      "hex": "330100000006ff030010007d",
+      "byte_length": 12,
+      "sha256": "52a115f68916bfadfc291a3dd0d356c112a8ef45bdf3b44d0836b1109a5943ce"
+    }
+  ],
+  "expected_behavior": "Server should either return a large but normal holding-register response or reject the quantity in a controlled way without memory-management anomalies.",
+  "constraints_preserved": [
+    "7-byte MBAP header",
+    "protocol identifier 0x0000",
+    "MBAP length set consistently to 0x0006",
+    "recognizable Read Holding Registers function code 0x03",
+    "high but internally coherent quantity boundary"
+  ],
+  "issue_safety_notes": "Uses a valid boundary-oriented analogue rather than any historically reported crashing payload, mismatched count field, or duplicated prior-library sequence.",
+  "sequence_sha256": "05cbaf56fb674cf30879373f4b7c5982415725acfa0bffc0d09a5867b8dfb62d",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "803"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "52a115f68916bfadfc291a3dd0d356c112a8ef45bdf3b44d0836b1109a5943ce",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "046-issue-803-boundary-holdi-bec6cfeb",
+      "corpus_file": "046-bec6cfeb.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

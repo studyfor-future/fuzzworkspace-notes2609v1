@@ -1,0 +1,73 @@
+{
+  "plan_id": "plan-022",
+  "seed_id": "seq-022-001-r1",
+  "title": "General interrogation after link activation",
+  "strategy": "stateful_valid",
+  "target_operation": "General Interrogation",
+  "purpose": "Cover a common stateful control path by pairing link activation with an I-format interrogation ASDU using the documented station interrogation qualifier.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:3cbe16bf065a",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "u-format startdt act",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "c_ic_na_1 station interrogation",
+      "hex": "680e0000000064010600010000000014",
+      "byte_length": 16,
+      "sha256": "efc83e888bafb6d83c66ed0fdafccecc0041f03ff8e5d705ba2ff2c5d0c10c03"
+    }
+  ],
+  "expected_behavior": "Peer accepts STARTDT activation and then parses the interrogation ASDU as a valid station interrogation request without abnormal termination.",
+  "constraints_preserved": [
+    "Both messages use IEC 60870-5-104 APDU framing with 0x68",
+    "Second message length 0x0e matches 4 APCI bytes plus 10 ASDU bytes",
+    "Uses TypeID 100 for interrogation with qualifier 20 from supplied sources",
+    "ASDU ordering follows conservative common 104 practice: TypeID, VSQ, COT, common address, IOA, qualifier"
+  ],
+  "issue_safety_notes": "Issue-oriented but non-colliding analogue; uses short valid I-format ASDU instead of the historical malformed long frame.",
+  "sequence_sha256": "1f1601c3adf703a89e85380334096a04c242d3a768cf2beea843e6f4b8d1fc1b",
+  "total_bytes": 22,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": true,
+  "plan_issue_refs": [],
+  "_selection_score": 82.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ab1af3e789988bb48d1f2e62689674459968534bd289bbd6e0ac205baf50728e",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "037-seq-022-001-r1-94bab54e",
+      "corpus_file": "037-94bab54e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

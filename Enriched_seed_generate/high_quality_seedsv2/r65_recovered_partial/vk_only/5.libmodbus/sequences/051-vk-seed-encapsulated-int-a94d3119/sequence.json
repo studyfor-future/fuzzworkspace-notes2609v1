@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-036",
+  "seed_id": "vk-seed-encapsulated-interface-01-2",
+  "title": "VK-only Encapsulated Interface Transport: The Modbus TCP receive path does not use the MBAP Length field to d...",
+  "strategy": "other",
+  "target_operation": "Encapsulated Interface Transport",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing",
+  "evidence_ids": [
+    "issue:867:867-summary:58115ace3a65",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:466:466-summary:691a17c4c14a",
+    "vk_task_context:task-contract:950d6d207e6c",
+    "issue:810:810-summary:da5167fd5137",
+    "issue:738:738-summary:a2fd51730f5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read device identification basic request",
+      "hex": "000400000005012b0e0100",
+      "byte_length": 11,
+      "sha256": "7e853cfbdc21042868eeb2a599556a50128a32ae1360bca4b94e0cd089a89d38"
+    }
+  ],
+  "expected_behavior": "The server should parse the complete Encapsulated Interface Transport request and return device-identification data or a defined exception response",
+  "constraints_preserved": [
+    "7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 0005 equals unit identifier plus the four-byte MEI PDU",
+    "Encapsulated function code 2b, MEI type 0e, read-device-ID code 01, and object selection 00 are structurally present"
+  ],
+  "issue_safety_notes": "This is a conservative structural analogue for receive-path length handling and does not copy the historical extra-byte trigger. Any mutation of declared length or trailing stream bytes should be treated as a separate fuzzing variant",
+  "sequence_sha256": "27d7c249003e162ec28b13221fe9a83dd74dbf5be49a44d1947e3cf05d59c9c1",
+  "total_bytes": 11,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "867"
+  ],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7e853cfbdc21042868eeb2a599556a50128a32ae1360bca4b94e0cd089a89d38",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "051-vk-seed-encapsulated-int-a94d3119",
+      "corpus_file": "051-a94d3119.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

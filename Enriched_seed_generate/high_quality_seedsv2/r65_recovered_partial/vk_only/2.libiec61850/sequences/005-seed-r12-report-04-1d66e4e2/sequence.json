@@ -1,0 +1,75 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-r12-report-04",
+  "title": "Dataset/reporting rebind state analogue",
+  "strategy": "field_interaction",
+  "target_operation": "InformationReport",
+  "purpose": "Cover the reporting-related lifetime interaction by using a small stateful sequence: first establish a lightweight association-like setup, then send a report-style payload with repeated dataset/report identifiers that can be mutated toward stale-binding and re-enable scenarios.",
+  "evidence_ids": [
+    "issue:596:596-summary:baa99ae7e6b9",
+    "vk_task_context:task-contract:56f3666108cf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_cr_setup",
+      "hex": "0300001511e00000000200c1020001c0010aa00100",
+      "byte_length": 21,
+      "sha256": "676126b78f1acd97c8156e89dcd90c5c1269885c8fd063d2eb728294aacc43d8"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "tpkt_information_report_like",
+      "hex": "0300001d22f080a117a0151a066473657441311a067263623031830101",
+      "byte_length": 29,
+      "sha256": "65cdc51bea3e48d355c1c8be70f3d69b3038cb1752b1f3e6a0aabcbee3fbde54"
+    }
+  ],
+  "expected_behavior": "A target that supports reporting should either reject the simplified sequence or process it without dereferencing stale dataset state; a harness may still gain valuable coverage over report/dataset handling and state transitions.",
+  "constraints_preserved": [
+    "tpkt version byte is 0x03 in all messages",
+    "tpkt total lengths match complete messages",
+    "state diversity increased with multi-message sequence",
+    "reporting path included per family constraints",
+    "lowercase hex without separators"
+  ],
+  "issue_safety_notes": "This is a conservative stateful analogue for report/dataset lifetime interaction, not a reproduction of any PoC and not an externally verified protocol transcript.",
+  "sequence_sha256": "7b14b58d5e009f0372fb636e78be4ee0ea1878f5748b7fc4e56209bbe23e8f12",
+  "total_bytes": 50,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "de94d842515964a5c23622d982363a83f790922769afd8437fd63a4a828f9129",
+    "encoded_bytes": 50,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 21,
+        "payload_offset": 21,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-seed-r12-report-04-1d66e4e2",
+      "corpus_file": "005-1d66e4e2.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

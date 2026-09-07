@@ -1,0 +1,92 @@
+{
+  "plan_id": "plan-007",
+  "seed_id": "seq-007-001",
+  "title": "Issue-guided analogue for MMS over ISO-on-TCP (GetNameList)",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP GetNameList operation",
+  "purpose": "Recover historically sensitive structure while replacing unchecked intLen/Uint32 boundary with valid positive value",
+  "evidence_ids": [
+    "issue:196:196-summary:55a2cfa7c1b1",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300000a030500000100",
+      "byte_length": 10,
+      "sha256": "f7044f5b1f93defe2a0522c2eb808180aae1515f3ebd9861aecc4eea7723d232"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ACSE A-ASSOCIATE",
+      "hex": "0101000000",
+      "byte_length": 5,
+      "sha256": "b3844634762d8e075473fc1cd774d0f251c6512e27e67e43e7b9ae69efff56f3"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS GetNameList-Request (valid positive size analogue)",
+      "hex": "a10000000a010101000101",
+      "byte_length": 11,
+      "sha256": "d371c487a8c24f453d5ba4aff948599ab578f908661a890d49c6b1e2df163bfe"
+    }
+  ],
+  "expected_behavior": "Parser accepts valid positive intLen/Uint32 values; complete MMS framing and length rules followed",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths."
+  ],
+  "issue_safety_notes": "Replaces concrete unchecked intLen/Uint32 boundary with valid positive value; no exact historical payload collision; structural analogue only",
+  "sequence_sha256": "ee5074e7408b7bed6c343eee4fba220a84e924b7932a745deaba7d7f66bdb3b4",
+  "total_bytes": 26,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "41b5baf4059d18eaf54093c6982426a57e87a0bdbf1a8fbf812907fe64e98b0a",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-seq-007-001-6aa2a82b",
+      "corpus_file": "001-6aa2a82b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "plan_id": "vk-plan-020",
+  "seed_id": "vk5-seed-020-a",
+  "title": "STOPDT activation with acknowledgement and follow-on TESTFR",
+  "strategy": "field_interaction",
+  "target_operation": "STOPDT activation",
+  "purpose": "Exercise a multi-step stateful control interaction around STOPDT activation, confirmation, and a subsequent test frame to probe state-machine robustness and field interactions in a way that is operationally diverse from the other plans.",
+  "evidence_ids": [
+    "issue:178:178-summary:01c5b607cf00",
+    "issue:197:197-summary:287854ab1555",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "startdt_act_setup",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "startdt_con_setup_ack",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "stopdt_act",
+      "hex": "680413000000",
+      "byte_length": 6,
+      "sha256": "9dfc071e1785e69a36c6baa4cb06d7747baf04eb1ed29d79cb2babbd5545806e"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "stopdt_con_ack",
+      "hex": "680423000000",
+      "byte_length": 6,
+      "sha256": "8f6e3acb539f1f622bc8d8cb1b8bd2c88e2975ab14f8389e430466526c2a9d38"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "testfr_act_after_stop",
+      "hex": "680443000000",
+      "byte_length": 6,
+      "sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc"
+    }
+  ],
+  "expected_behavior": "The implementation should handle the control-frame transitions deterministically, either refusing the follow-on test frame after STOPDT or responding safely, without deadlock, null dereference, or parser misuse.",
+  "constraints_preserved": [
+    "multi-step stateful sequence retained",
+    "pure U-frame control coverage emphasized",
+    "each length octet consistent",
+    "target_operation preserved as STOPDT activation",
+    "distinct sequence from previous duplicated payloads",
+    "lowercase hex without separators"
+  ],
+  "issue_safety_notes": "This sequence stays in the control-plane and uses recognizable frame patterns only. It avoids exact published crash inputs while preserving the issue-related focus on state interaction and robustness.",
+  "sequence_sha256": "1546342caae860b77ae089b83967526162c1667c06615369a0cb9d1ed3ab9f9f",
+  "total_bytes": 30,
+  "message_count_hint": 5,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "178"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "93858df4907835a4eccae8302619694121e0f2bd547f0bccdf2794e4c5ba7c75",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ]
+  }
+}

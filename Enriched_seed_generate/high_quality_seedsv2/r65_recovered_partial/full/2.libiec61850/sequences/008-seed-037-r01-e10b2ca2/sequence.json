@@ -1,0 +1,75 @@
+{
+  "plan_id": "plan-037",
+  "seed_id": "seed-037-r01",
+  "title": "Reporting path with InformationReport then Conclude-Error-PDU",
+  "strategy": "function_code_coverage",
+  "target_operation": "Conclude-Error-PDU",
+  "purpose": "Add explicit reporting-path diversity by sending an Unconfirmed-PDU analogue for InformationReport before exercising Conclude-Error-PDU, satisfying the request to diversify reporting coverage rather than keeping four nearly identical terminal-tag frames.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "function_code:function:function-text:d319479344be"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "Unconfirmed-PDU reporting analogue for InformationReport",
+      "hex": "0300001811e00000000100c1020000c2020001a303020100",
+      "byte_length": 24,
+      "sha256": "cf5dcca5bcd9b64a63ea83bcdd74cc07725035d401e680242c363a69049fe15e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Conclude-Error-PDU",
+      "hex": "0300001811e00000000100c1020000c2020001a2020001ad",
+      "byte_length": 24,
+      "sha256": "2b48327cc4fc87c45574ae820efcd2ec0b1522518b13beb6ece48a137c910b85"
+    }
+  ],
+  "expected_behavior": "The unconfirmed reporting-style frame should exercise a different MMS PDU family from confirmed and cancel traffic, and the concluding error PDU should then reach the documented Conclude-Error-PDU parser entry point. Parser stability and bounded processing are expected even if session semantics are incomplete.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03.",
+    "TPKT total-length fields are consistent with the complete message.",
+    "Reporting-path diversity is added using an Unconfirmed-PDU analogue before conclude-error coverage.",
+    "MMS PDU type tags remain aligned with documented values including 0xa3 and 0xad.",
+    "No exact historical crash payload or duplicate prior seed is reused."
+  ],
+  "issue_safety_notes": "This seed is a safe parser-path expansion only. It does not include dangerous TPDU-size exponents, negative octet-string size patterns, or oversized nested lengths.",
+  "sequence_sha256": "040d597e43306b3bb44c22f225d551b18ab8828d7f255efdb3f051a0249af379",
+  "total_bytes": 48,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "619a3449c75bc6686342ec7bd10656a5141f00acf7e51ed3b164a96786526728",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-seed-037-r01-e10b2ca2",
+      "corpus_file": "008-e10b2ca2.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

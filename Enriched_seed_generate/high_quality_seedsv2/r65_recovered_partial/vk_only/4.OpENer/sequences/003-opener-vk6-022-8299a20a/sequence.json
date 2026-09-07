@@ -1,0 +1,110 @@
+{
+  "plan_id": "vk-plan-022",
+  "seed_id": "opener-vk6-022",
+  "title": "VK-only ListServices with deeper discovery and session prelude",
+  "strategy": "parser_depth",
+  "target_operation": "ListServices",
+  "purpose": "Create four-step mixed sequence that starts with discovery, establishes session, submits one compact SendRRData containing syntactically plausible but path-heavy CIP payload, finishing with second ListServices probe to test parser recovery after deeper handling.",
+  "evidence_ids": [
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:563:563-summary:b783074fb0e0",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "listservices-baseline",
+      "hex": "040000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "registersession-v1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "sendrrdata-path-heavy-analogue",
+      "hex": "6f001f0078563412000000000000000000000000000000000000000000000000020000000000b200100e06200124012800280028002800",
+      "byte_length": 55,
+      "sha256": "d751260259fe3c306d6b70f7e567a4f164ecab196053ada1a78c08e7c60325f9"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "listservices-post-explicit",
+      "hex": "040000000000000000000000aabbccddeeff001100000000",
+      "byte_length": 24,
+      "sha256": "72c6ec7896ee66f703945bd28674a2cad69c13d9e1ff98b317c9ddf3206ff7f3"
+    }
+  ],
+  "expected_behavior": "Expected outcomes range from normal ListServices replies and session registration to rejection of compact explicit-message analogue; final ListServices request helps reveal whether target remains responsive after parsing deeper CPF/CIP structure.",
+  "constraints_preserved": [
+    "Target operation preserved as ListServices",
+    "Plan message budget of four respected",
+    "Discovery, session, and explicit-message paths diversified",
+    "24-byte encapsulation headers used throughout",
+    "All visible length fields kept internally consistent"
+  ],
+  "issue_safety_notes": "Explicit-message frame is conservative structural analogue using moderate path size and compact body, not exact long-path reproducer from any cited report.",
+  "sequence_sha256": "ee071d4031f03661393777f928e4f226cbdcf64b5cc7a7296292732105e4d5c7",
+  "total_bytes": 131,
+  "message_count_hint": 4,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "577"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "044c0b88e45f96144e3eb872bff64a46f99144d42fee35f0242329ea75362564",
+    "encoded_bytes": 131,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 52,
+        "payload_offset": 52,
+        "payload_length": 55,
+        "frame_length": 55
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 107,
+        "payload_offset": 107,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-opener-vk6-022-8299a20a",
+      "corpus_file": "003-8299a20a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

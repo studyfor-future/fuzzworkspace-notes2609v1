@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-006",
+  "seed_id": "vk-seed-006",
+  "title": "VK-only SendUnitData: At OpENer v2.3-558-g1e99582 (commit 1e99582), the report documents CPF parser out-of-bounds read",
+  "strategy": "other",
+  "target_operation": "SendUnitData",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+  "evidence_ids": [
+    "issue:558:558-summary:3490b100b0a5",
+    "issue:558:558-summary:4ff047be0913",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:567:567-summary:1255c28909d7",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:564:564-summary:6b535e1b37b6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendUnitData",
+      "hex": "6f001000010000000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 40,
+      "sha256": "781f684a5eb42bd30885611af29ffb71acd742c6632e7314974a5ad12cd92428"
+    }
+  ],
+  "expected_behavior": "Server crashes under ASan with stack-buffer-overflow read in CPF parser CreateCommonPacketFormatStructure due to malformed item_count/inconsistent length.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when form selected",
+    "Diversified explicit-message path",
+    "Model-prior SendUnitData archetype"
+  ],
+  "issue_safety_notes": "No crash bytes copied; issue 558 trigger relation preserved without exact payload; single-request shape avoids state reuse issues from issue 575.",
+  "sequence_sha256": "344a64755597793f8785fc06d5f93e5101d2abcbbd2ca1dd7035c46f33383caa",
+  "total_bytes": 40,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "558"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "781f684a5eb42bd30885611af29ffb71acd742c6632e7314974a5ad12cd92428",
+    "encoded_bytes": 40,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 40,
+        "frame_length": 40
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "036-vk-seed-006-835da388",
+      "corpus_file": "036-835da388.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

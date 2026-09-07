@@ -1,0 +1,89 @@
+{
+  "plan_id": "plan-005",
+  "seed_id": "seed-005",
+  "title": "Issue-guided analogue for Message Format Error",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Message Format Error",
+  "purpose": "Recover historically sensitive structure from HandleReceivedSendRequestResponseDataCommand (encape.c) overflow risk (send_size assigned to EipStatus return_value) while creating safe valid analogue via adjusted reply path; diversity in multi-step stateful session + CPF item interaction.",
+  "evidence_ids": [
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:576:576-summary:bc3710455616",
+    "issue:532:532-summary:1a523aa7a5f5",
+    "issue:574:574-summary:ec096521bf63"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity",
+      "hex": "63000000000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "35ffd281157d9786f1f3deff62908354d42a1a112044f4b8409f8468b5ae5b99"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "SendRRData reply analogue",
+      "hex": "6f001800000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "8b482bacef4d24f50e2dbc1d29ce28945f561056ff56d82571beffd2a0802d21"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "SendRRData response",
+      "hex": "0000000000000000000000000000000000000000",
+      "byte_length": 20,
+      "sha256": "de47c9b27eb8d300dbb5f2c353e632c393262cf06340c4fa7f1b40c4cbd36f90"
+    }
+  ],
+  "expected_behavior": "Valid ListIdentity + SendRRData sequence with safe CPF payload; no crash or undefined behavior on reply parsing",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header",
+    "Diversify discovery, session and explicit-message paths",
+    "Complete documented framing and preserve length/count/checksum/order rules",
+    "Model internal knowledge may conservatively fill documentation gaps"
+  ],
+  "issue_safety_notes": "Structural analogue only (send_size safely returned as status per issue path); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+  "sequence_sha256": "fb12da1263abe2bddc736744c7be794ebfc2c0fb258313133ee09677a22dcaed",
+  "total_bytes": 52,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "314"
+  ],
+  "_selection_score": 118.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a34ab3730f5ae3627799b8fffbc3818502087bb5d49b1f897803343839d4f906",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

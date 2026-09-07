@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-053",
+  "seed_id": "ethernetip-opener-053-get-attributes-all",
+  "title": "Get Attributes All over unconnected messaging",
+  "strategy": "function_code_coverage",
+  "target_operation": "Get_Attributes_All",
+  "purpose": "Exercise the CIP common-service parser entry point for Get_Attributes_All inside a documented SendRRData CPF structure.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData Get_Attributes_All request",
+      "hex": "6f001d00010000000000000000000000000000000000000000000000000000000000000000020000000000b2000500010220042401",
+      "byte_length": 53,
+      "sha256": "1fb10b182dad3acb02c46d3b320fb95db671fc555af7525df1ce2a901fbcbb02"
+    }
+  ],
+  "expected_behavior": "The receiver should parse the 24-byte encapsulation header and CPF, dispatch CIP service 0x01 for the Class 0x04 Instance 0x01 path, and return a normal success or service-error response without an out-of-bounds read.",
+  "constraints_preserved": [
+    "Encapsulation command is SendRRData 0x006f in little-endian form.",
+    "Encapsulation length is 25 bytes and matches the CPF payload.",
+    "CPF contains two items in Null Address then Unconnected Data order.",
+    "The CIP path size is two 16-bit words and matches the four path bytes.",
+    "Session handle 0x00000001 is an inferred assumption for an active registered session, not verified by the supplied sources."
+  ],
+  "issue_safety_notes": "This seed uses a short ordinary path and includes no oversized padded EPath or empty request body associated with issue 577; it is intended as a non-crashing coverage baseline rather than a reproduction payload.",
+  "sequence_sha256": "bc11845a43936fff037295a2beae7b12edaee1d9f780b0051196ef1cea561c7b",
+  "total_bytes": 53,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1fb10b182dad3acb02c46d3b320fb95db671fc555af7525df1ce2a901fbcbb02",
+    "encoded_bytes": 53,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "035-ethernetip-opener-053-ge-aafc5084",
+      "corpus_file": "035-aafc5084.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

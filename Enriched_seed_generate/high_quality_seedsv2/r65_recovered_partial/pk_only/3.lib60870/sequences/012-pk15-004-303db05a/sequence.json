@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-060",
+  "seed_id": "pk15-004",
+  "title": "M_ST_TB_1 monitored report sample",
+  "strategy": "function_code_coverage",
+  "target_operation": "M_ST_TB_1",
+  "purpose": "Add a monitoring-direction timed measurement/report seed that differs materially from command traffic and reaches CP56Time2a-sized object parsing.",
+  "evidence_ids": [
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:function-text:3cbe16bf065a",
+    "protocol_format:iec60870:format-overview:6fc14a471f76"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "M_ST_TB_1 spontaneous report",
+      "hex": "681600000000200103000100020081000000000001010101",
+      "byte_length": 24,
+      "sha256": "3af4967a9ec7b70c7b2c27f203bd34b22ee79e572b74ba21121cb0bcccb141f1"
+    }
+  ],
+  "expected_behavior": "The peer should parse the APDU as an I-format monitoring ASDU with TypeID 32 M_ST_TB_1, one object, spontaneous cause, common address 1, IOA 2, a one-octet step-position value with transient flag cleared, followed by a 7-octet CP56Time2a-sized timestamp payload.",
+  "constraints_preserved": [
+    "TypeID 32 is preserved for M_ST_TB_1 from the supplied CP56Time2a monitoring catalog",
+    "Length octet 0x14 matches 4 control octets plus 16-byte ASDU",
+    "Single-object VSQ is used to keep object boundaries explicit for mutation",
+    "Monitoring report direction is separated from client command traffic"
+  ],
+  "issue_safety_notes": "This is a passive report-shaped seed for parser coverage; timestamp bytes are benign placeholder values chosen to preserve CP56Time2a-sized structure without reproducing any known issue payload.",
+  "sequence_sha256": "e45126ca0142228a85cbca8a53c99c74ce67ea480654e1a25860719cf00d343b",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3af4967a9ec7b70c7b2c27f203bd34b22ee79e572b74ba21121cb0bcccb141f1",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "012-pk15-004-303db05a",
+      "corpus_file": "012-303db05a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

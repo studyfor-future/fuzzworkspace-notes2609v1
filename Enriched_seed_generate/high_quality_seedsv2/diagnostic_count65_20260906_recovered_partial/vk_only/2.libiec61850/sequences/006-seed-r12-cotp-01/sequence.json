@@ -1,0 +1,54 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-r12-cotp-01",
+  "title": "COTP CR boundary option analogue",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Exercise a pure association-only parser path with a conservative COTP Connection Request carrying a TPDU-size style parameter boundary analogue, keeping outer framing valid and mutation-friendly.",
+  "evidence_ids": [
+    "vk_task_context:task-contract:56f3666108cf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_cr_boundary",
+      "hex": "0300001511e00000000100c1020001c0010aa00100",
+      "byte_length": 21,
+      "sha256": "477fd78473dcce4155d69743721284ba10399bfee284e513599d92aa0ccdc6ab"
+    }
+  ],
+  "expected_behavior": "A parser that accepts RFC1006-style traffic should recognize a plausible connection request and either continue association handling or reject the option values cleanly without over-read or undefined shift behavior.",
+  "constraints_preserved": [
+    "tpkt version byte is 0x03",
+    "tpkt total length matches complete message",
+    "single standalone association message",
+    "lowercase hex without separators",
+    "recognizable iec61850 family framing"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue only. It does not copy any exact historical crash bytes or assert externally verified field semantics.",
+  "sequence_sha256": "0980819efbbee64d31cb8edc855be52d2f9fe4f587bfce98fdc342dbe8b7b125",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 99.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "477fd78473dcce4155d69743721284ba10399bfee284e513599d92aa0ccdc6ab",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-029",
+  "seed_id": "opener-vk8-forwardopen-01",
+  "title": "Registered ForwardOpen with bounded connection path",
+  "strategy": "parser_depth",
+  "target_operation": "ForwardOpen",
+  "purpose": "Reach the Connection Manager ForwardOpen parser after session registration while supplying a complete bounded request whose path and trailing fields are useful mutation anchors.",
+  "evidence_ids": [
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:570:570-summary:0b4cbe808107",
+    "issue:cve-2022-43606:cve-2022-43606-summa:2b6f7064fbc2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession version 1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData carrying bounded ForwardOpen",
+      "hex": "6f00310001000000000000000000000000000000000000000000000000000000000200000000b220005403200624012c64000000000000000000000000000000000000000000000000",
+      "byte_length": 73,
+      "sha256": "0dcbbbc4503c02e811653d6ecbd31cc5c15f88dd97faea003ce3232493492924"
+    }
+  ],
+  "expected_behavior": "The server should parse the registered session and either process the bounded ForwardOpen request or return a deterministic protocol response without reading beyond the declared CPF data item.",
+  "constraints_preserved": [
+    "Both messages use 24-byte EtherNet/IP encapsulation headers.",
+    "Encapsulation payload lengths are little-endian and match the payload byte count.",
+    "The second message reuses the registered session handle.",
+    "CPF contains a Null item followed by a UCMM data item.",
+    "The connection path length is bounded by the supplied path bytes."
+  ],
+  "issue_safety_notes": "This preserves the issue-relevant ForwardOpen and connection-path structure as a safe analogue. It intentionally avoids the documented underflow pattern and exact historical bytes; model-prior ForwardOpen field semantics are not externally verified.",
+  "sequence_sha256": "40ea0bb7592aacd8d24aca57091c2b1ab8d291efc1b3f9207ad9796d05e1fbf7",
+  "total_bytes": 101,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2022-43605"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a85b0a8de61ff87aeeb7d90695773e66ebe5415e278011e6d0f360af3903f3c8",
+    "encoded_bytes": 101,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 73,
+        "frame_length": 73
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "047-opener-vk8-forwardopen-0-24ed7c20",
+      "corpus_file": "047-24ed7c20.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

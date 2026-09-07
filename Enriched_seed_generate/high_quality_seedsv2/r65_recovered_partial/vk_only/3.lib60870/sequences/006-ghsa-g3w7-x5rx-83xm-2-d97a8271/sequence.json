@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-061",
+  "seed_id": "ghsa-g3w7-x5rx-83xm-2",
+  "title": "VK-only Measured Value: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Measured Value",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Measured Value I-frame",
+      "hex": "680a680a004e11e002004e68",
+      "byte_length": 12,
+      "sha256": "c81d3d7da7b0a11a6b8b61e27c2e361a11614837db3a79724ac81a2baacbc2c0"
+    }
+  ],
+  "expected_behavior": "Parser reaches InformationObject_ParseObjectAddress with VSQ N=96 on 4-byte ASDU body; out-of-bounds read detected by ASan",
+  "constraints_preserved": [
+    "IEC 60870-5-104 I-frame APCI",
+    "FT1.2 start/end octets consistent",
+    "Object count vs ASDU size mismatch",
+    "No external protocol docs"
+  ],
+  "issue_safety_notes": "Conservative analogue only; no exact crash bytes copied",
+  "sequence_sha256": "54a77b89f7d567cc33fca6711069ac50592d998609d698ae00d903359507435e",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-G3W7-X5RX-83XM"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c81d3d7da7b0a11a6b8b61e27c2e361a11614837db3a79724ac81a2baacbc2c0",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "006-ghsa-g3w7-x5rx-83xm-2-d97a8271",
+      "corpus_file": "006-d97a8271.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

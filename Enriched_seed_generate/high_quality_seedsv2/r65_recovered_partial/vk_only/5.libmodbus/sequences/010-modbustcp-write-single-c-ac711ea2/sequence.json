@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-029",
+  "seed_id": "modbustcp-write-single-coil-001-2",
+  "title": "VK-only Write Single Coil",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Single Coil",
+  "purpose": "Exercise a conservative single-request write state using an issue-related unit-test-server context and a standard single-coil request shape.",
+  "evidence_ids": [
+    "issue:749:749-summary:29b9071582b0",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:738:738-summary:a2fd51730f5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write single coil at address 0x0062",
+      "hex": "00010000000601050062ff00",
+      "byte_length": 12,
+      "sha256": "fedab765c542117c026a0fabb6963a1df8d23dbcefecc746540b1413923d2737"
+    }
+  ],
+  "expected_behavior": "The server should parse the request and normally return the corresponding Write Single Coil response; harnesses may observe rejection or connection failure depending on server state.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches unit identifier plus six-byte request body.",
+    "Function code 05 and coil value ff00 form a recognizable request."
+  ],
+  "issue_safety_notes": "This is a valid structural analogue and does not reproduce the documented issue payload. The issue describes suspected pointer lifetime or backend-state behavior, not a confirmed root cause.",
+  "sequence_sha256": "60a901acca60351f3ab97c0e3ac2750840329427c575fc352a86fb2602b5a698",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "749"
+  ],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fedab765c542117c026a0fabb6963a1df8d23dbcefecc746540b1413923d2737",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "010-modbustcp-write-single-c-ac711ea2",
+      "corpus_file": "010-ac711ea2.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

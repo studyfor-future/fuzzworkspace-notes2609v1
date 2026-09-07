@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-014",
+  "seed_id": "plan-014-atomicreadfile-record",
+  "title": "AtomicReadFile record-mode coverage seed",
+  "strategy": "function_code_coverage",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Exercise confirmed FILE object read parsing on the record-access path to complement the write-focused issue seeds and broaden file-service coverage.",
+  "evidence_ids": [
+    "function_code:function:function-text:d3664eeda33b",
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "AtomicReadFile-record-access",
+      "hex": "810b001400000504060a00000001010000000001",
+      "byte_length": 20,
+      "sha256": "e806fd99513c98f2674b8234d93ee566c449507d0071b46b9540e56cf4a8e00e"
+    }
+  ],
+  "expected_behavior": "Target parses an AtomicReadFile confirmed request and returns file data, EOF indication, or an application error if the addressed FILE object is absent or not readable.",
+  "constraints_preserved": [
+    "BVLC total length 0x0013 matches message size",
+    "Confirmed service choice 0x06 preserved for AtomicReadFile",
+    "Request framed as BACnet/IP with NPDU followed by APDU",
+    "Record-oriented style kept simple and boundary-adjacent without oversized counts"
+  ],
+  "issue_safety_notes": "Read-only analogue avoids the append and replacement hazards described in the RAMFS write issues.",
+  "sequence_sha256": "1c64be938ffce4400e34cce1419114f0c654eea847d9abdefe8739a6f38c1b6a",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2025-66624"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e806fd99513c98f2674b8234d93ee566c449507d0071b46b9540e56cf4a8e00e",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "014-plan-014-atomicreadfile--832f2d27",
+      "corpus_file": "014-832f2d27.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

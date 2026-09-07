@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-061",
+  "seed_id": "c7d8e9f0a1b2",
+  "title": "VK-only Write: In StringUtils_createStringFromBuffer, the second argument, size, i...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Write",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:198:198-summary:062388f44431",
+    "issue:193:193-summary:1451e58436f0",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:590:590-summary:8f1dbbd54154"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP+MMS Write",
+      "hex": "0300001d0200c0010000c001c10102c101c201c001c3010201c1010001",
+      "byte_length": 29,
+      "sha256": "ed52f8cef33be8b3537c446078cc2adb789d20733bfd346a8c571a8a587986c6"
+    }
+  ],
+  "expected_behavior": "Server processes Write request; size validation triggers early exit or crash in StringUtils_createStringFromBuffer",
+  "constraints_preserved": [
+    "TPKT header version 0x03",
+    "TPKT total-length consistent",
+    "IEC61850 model-prior form",
+    "single message",
+    "length counts internally consistent",
+    "built-in family constraints"
+  ],
+  "issue_safety_notes": "Issue 198 evidence preserved; negative size trigger via plausible Write without copying exact crash bytes",
+  "sequence_sha256": "59d1684d99ad36ca345813e0fba8873b184884b674aa611a0cfe4861ef6cd0c2",
+  "total_bytes": 29,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "198"
+  ],
+  "_selection_score": 82.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ed52f8cef33be8b3537c446078cc2adb789d20733bfd346a8c571a8a587986c6",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ]
+  }
+}

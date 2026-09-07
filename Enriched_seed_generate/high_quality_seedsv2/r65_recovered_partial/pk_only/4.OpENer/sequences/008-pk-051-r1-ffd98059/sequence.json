@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-051",
+  "seed_id": "pk-051-r1",
+  "title": "Unsupported encapsulation protocol revision coverage via session registration",
+  "strategy": "baseline_valid",
+  "target_operation": "Unsupported encapsulation protocol revision",
+  "purpose": "Exercise RegisterSession parsing with a minimal command-specific body so the corpus covers a canonical session-establishment path distinct from discovery and CPF-bearing explicit messaging.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:f14ecde0d175",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession minimal request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    }
+  ],
+  "expected_behavior": "The receiver should parse a valid RegisterSession encapsulation header and command-specific payload analogue, then either establish a session or return an implementation-defined encapsulation status if the revision or options are unsupported.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header used",
+    "Command 0x0065 RegisterSession from supplied command catalog",
+    "Little-endian payload length set to 4 for the command-specific body",
+    "Seed remains conservative because the supplied sources enumerate encapsulation fields and status names but not a full RegisterSession body template",
+    "Lowercase hexadecimal without separators"
+  ],
+  "issue_safety_notes": "PK-only seed; uses a safe, minimal registration analogue and avoids asserting reproduction of any exact unsupported-revision condition.",
+  "sequence_sha256": "914adde531fb6d680e3de8c37d48249a199f6649e495ac1e8993a59ee82c852a",
+  "total_bytes": 28,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-pk-051-r1-ffd98059",
+      "corpus_file": "008-ffd98059.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

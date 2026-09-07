@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-057",
+  "seed_id": "1",
+  "title": "VK-only COTP Connection Request: length_boundary_valid with malformed TPDU-size shift",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Use model-prior COTP CR setup to exercise issue 589 TPDU-size shift boundary while retaining built-in basic length consistency and family constraints.",
+  "evidence_ids": [
+    "issue:589:589-summary:a9c8952234c9",
+    "issue:193:193-summary:1451e58436f0",
+    "issue:198:198-summary:062388f44431",
+    "issue:200:200-summary:d453c5e902cd",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "VK-only COTP Connection Request with malformed TPDU-size (0xc0 01 a2)",
+      "hex": "0300001802f00000000100e00000c1020000c20101c001a2",
+      "byte_length": 24,
+      "sha256": "6fe958f0877bd728936ff787c8ad6d430bea3e196c37a2371ab4c70be13c76f5"
+    }
+  ],
+  "expected_behavior": "server_example_basic_io triggers UBSan runtime error: shift exponent 162 is too large for 32-bit type 'int' at src/mms/iso_cotp/cotp.c:481",
+  "constraints_preserved": [
+    "TPKT version 0x03 preserved",
+    "TPKT total-length consistent with message size",
+    "visible length counts internally consistent",
+    "single_request shape"
+  ],
+  "issue_safety_notes": "Evidence_id 589 used for TPDU-size shift trigger; UBSan diagnostic expected; no definite DoS",
+  "sequence_sha256": "2c8df73c1c0fe1e2737a0e66bfc21e1a82e761e20141667c048cb473c519df45",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "193"
+  ],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6fe958f0877bd728936ff787c8ad6d430bea3e196c37a2371ab4c70be13c76f5",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "042-1-6b86b273",
+      "corpus_file": "042-6b86b273.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

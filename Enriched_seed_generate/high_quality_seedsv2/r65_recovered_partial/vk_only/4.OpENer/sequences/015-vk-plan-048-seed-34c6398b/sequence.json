@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-048",
+  "seed_id": "vk-plan-048-seed",
+  "title": "VK-only SetAttributeSingle: On OpENer v2.3 / master up to commit 76b95cf, the unconnected expli...",
+  "strategy": "other",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+  "evidence_ids": [
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:576:576-summary:bc3710455616",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:557:557-summary:f58da6326195"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSessionReply",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SetAttributeSingle unconnected explicit",
+      "hex": "6c000000300000000000000000",
+      "byte_length": 13,
+      "sha256": "1693455ca36f3209a03e57dfd5a086d9b07be07d7fbbdd510de8da65bbd0715e"
+    }
+  ],
+  "expected_behavior": "Unconnected explicit SendRRData reaches CreateCommonPacketFormatStructure out-of-bounds read in GetIntFromMessage (issue 573/576). Remote crash.",
+  "constraints_preserved": [
+    "prefer EtherNet/IP encapsulation little-endian payload length",
+    "use 24-byte encapsulation header",
+    "diversify discovery/session/explicit paths",
+    "preserve target_operation SetAttributeSingle"
+  ],
+  "issue_safety_notes": "VK-only vulnerability-analogue: CPF parser OOB in SetAttributeSingle unconnected path; issue:573/576/582; safe for analysis only; no external documents",
+  "sequence_sha256": "4e96ed8cbb8b461c6ced6c92f9af9e933fe6f4a76f78b26cc51fb24066c95cc6",
+  "total_bytes": 35,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "573"
+  ],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ed46169291318ec30eb67f6ecc1e9d7c49d2ea5ddd1e26327a8f333e24f6f17c",
+    "encoded_bytes": 35,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 11,
+        "payload_offset": 11,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "015-vk-plan-048-seed-34c6398b",
+      "corpus_file": "015-34c6398b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

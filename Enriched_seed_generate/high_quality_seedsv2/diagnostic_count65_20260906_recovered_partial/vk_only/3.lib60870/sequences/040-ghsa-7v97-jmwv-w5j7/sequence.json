@@ -1,0 +1,57 @@
+{
+  "plan_id": "vk-plan-026",
+  "seed_id": "ghsa-7v97-jmwv-w5j7",
+  "title": "VK-only Clock Synchronization: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+  "strategy": "field_interaction",
+  "target_operation": "Clock Synchronization",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Clock Sync I-frame",
+      "hex": "680e0e680e004e110300002002000000686810ff",
+      "byte_length": 20,
+      "sha256": "d18ac5df0eb08561cc85eeff66227a3396594ae5b2230fbe13552c2428d282c0"
+    }
+  ],
+  "expected_behavior": "Parser processes time2a field with large VSQ leading to InformationObject_ParseObjectAddress out-of-bounds",
+  "constraints_preserved": [
+    "0x68 L octets consistent with frame size",
+    "IEC 60870-5-104 APCI framing",
+    "target_operation: Clock Synchronization"
+  ],
+  "issue_safety_notes": "GHSA-7V97-JMWV-W5J7: InformationObject_ParseObjectAddress reads past buffer end when VSQ claims more objects than ASDU body",
+  "sequence_sha256": "676a001aca11c9cf198a7bc896ee872e0337735e13b98e05df4f1896b526b05c",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d18ac5df0eb08561cc85eeff66227a3396594ae5b2230fbe13552c2428d282c0",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

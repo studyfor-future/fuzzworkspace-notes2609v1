@@ -1,0 +1,68 @@
+{
+  "plan_id": "base-plan-009",
+  "seed_id": "iec61850-base-009-seed-2",
+  "title": "Base COTP Connection Request variant 2",
+  "strategy": "function_code_coverage",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Exercise a conservative RFC1006 plus COTP CR association setup frame with common parameter blocks and a minimal paired response to support later stateful flows.",
+  "evidence_ids": [
+    "base_model_prior:constraints:39ec8f040df1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_cr",
+      "hex": "0300001611e00000000100c1020100c2020101c0010a",
+      "byte_length": 22,
+      "sha256": "6adc228c0498a955d66d2a73efb2f898ade51369f09f6966df5d57c9e3ad0eda"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "tpkt_cotp_cc",
+      "hex": "0300001611d00001000000c1020100c2020101c0010a",
+      "byte_length": 22,
+      "sha256": "a82944212ede6f857318309ac705b99e94e530149dccc96b20f502626ebc8507"
+    }
+  ],
+  "expected_behavior": "A server that accepts RFC1006/COTP association setup may treat the first frame as a plausible connection request and reply with a connection confirm or a clean reject if parameters differ from implementation expectations.",
+  "constraints_preserved": [
+    "Used the specified target operation exactly once.",
+    "Kept TPKT version byte at 0x03.",
+    "Kept TPKT total length fields consistent with complete messages.",
+    "Used lowercase hexadecimal without separators.",
+    "Used a two-message setup_then_request style sequence within budget.",
+    "Cited the supplied base constraint source id."
+  ],
+  "issue_safety_notes": "No external issue knowledge or protocol documents were used. This is a conservative model-prior structural seed, not a reproduction of any known vulnerability condition.",
+  "sequence_sha256": "33bec315fdae45785f51ab4929c6bfe2791d06be0426827d6f764d33c3bb0c3c",
+  "total_bytes": 44,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "262d4356d53b4ba7bb5d1d68fb044f87fee677e645ca4e0d63c012f69971b764",
+    "encoded_bytes": 44,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 22,
+        "frame_length": 22
+      }
+    ]
+  }
+}

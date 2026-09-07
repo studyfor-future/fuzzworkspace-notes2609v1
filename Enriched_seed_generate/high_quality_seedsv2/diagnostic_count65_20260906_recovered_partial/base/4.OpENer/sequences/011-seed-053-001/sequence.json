@@ -1,0 +1,98 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-053-001",
+  "title": "Explicit attribute exchange with non-zero path fields",
+  "strategy": "field_interaction",
+  "target_operation": "GetAttributeSingle and SetAttributeSingle",
+  "purpose": "Exercise explicit-message attribute operations with non-zero class, instance, and attribute selectors and both request and response directions.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "GetAttributeSingle request class 4 instance 1 attribute 3",
+      "hex": "6f00200078563412000000000100000011223344556677880000000000000000000002000000040000000000b20008000e02200424013003",
+      "byte_length": 56,
+      "sha256": "9b5229c31433027d4ded7c97d38fb176839eb8406ecf5e6f2661b0fc2ff6aa47"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "GetAttributeSingle success response",
+      "hex": "6f001e0078563412000000000100000011223344556677880000000000000000000002000000040000000000b20006008e0000003412",
+      "byte_length": 54,
+      "sha256": "594c7439cdd44ed41f6bac32e2de5cc6a86fedc0ebcf0f87715fac13bc4d532c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SetAttributeSingle request with value 0x1234",
+      "hex": "6f00220078563412000000000100000011223344556677880000000000000000000002000000040000000000b2000a0010022004240130033412",
+      "byte_length": 58,
+      "sha256": "d4e3b20d0aac2a5039f101c2614d9588d1b53951c4f0cfebe55eccce0e56c668"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "SetAttributeSingle success response",
+      "hex": "6f001c0078563412000000000100000011223344556677880000000000000000000002000000040000000000b200040090000000",
+      "byte_length": 52,
+      "sha256": "0a0e90f58825595cee00cfeffa92b43dacc6cbd8eb708552dfb857532460f5e9"
+    }
+  ],
+  "expected_behavior": "A conforming parser can process the explicit request and response forms while preserving the non-zero path fields and attribute payload.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers use little-endian payload lengths",
+    "Each selected encapsulation header is 24 bytes before payload",
+    "CPF item counts and item lengths match their encoded contents",
+    "Discovery, session, explicit, and connected paths are diversified across the batch"
+  ],
+  "issue_safety_notes": "This is a model-prior structural seed only; protocol behavior is not externally verified and no vulnerability or issue claim is made.",
+  "sequence_sha256": "841f0676965800296164b21cddd595fc6631c3afb28dca4f04a0c97fd4489670",
+  "total_bytes": 220,
+  "message_count_hint": 4,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 49.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c5475ddb6a0d1f424dc2661e37280b0cd896006861113ad5b33aba3b6d596173",
+    "encoded_bytes": 220,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 56,
+        "frame_length": 56
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 54,
+        "frame_length": 54
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 110,
+        "payload_offset": 110,
+        "payload_length": 58,
+        "frame_length": 58
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 168,
+        "payload_offset": 168,
+        "payload_length": 52,
+        "frame_length": 52
+      }
+    ]
+  }
+}

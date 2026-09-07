@@ -1,0 +1,108 @@
+{
+  "plan_id": "plan-023",
+  "seed_id": "seed-023",
+  "title": "MMS BIT STRING get as integer access",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover historically sensitive BIT STRING data structure from issue 609 for parser_depth diversification while ensuring valid MMS read",
+  "evidence_ids": [
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT header",
+      "hex": "03000004",
+      "byte_length": 4,
+      "sha256": "b6db583453f7c1547ae2cc692fe633d60e651c5b5f12d9b3a82d9eb82347d8c3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0000c00100100007000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "9ac0a4ea18ba1590b2f04c3ccf572bfddd1c4d81b9431ca90490e743f642def1"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Initiate-Request-PDU",
+      "hex": "a800000000",
+      "byte_length": 5,
+      "sha256": "488b935079fd61f060b0e1bb24bc6b0f2c47f88a127751957432133ef5842ff8"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "MMS Read request for BIT STRING",
+      "hex": "a002000000800000000a0200000000",
+      "byte_length": 15,
+      "sha256": "9881d5a8f9f51d2f8a95b2c653762cf75b4c78e5bdbc0b2e779b1d920cb3e4b5"
+    }
+  ],
+  "expected_behavior": "Valid MMS read returns BIT STRING value without corruption or crash",
+  "constraints_preserved": [
+    "TPKT header version 0x03 preserved",
+    "TPKT total-length field consistent with complete message",
+    "MMS PDU type A0 for Confirmed-Request-PDU",
+    "BER TLV structure for BIT STRING preserved",
+    "Length rules and order preserved"
+  ],
+  "issue_safety_notes": "Uses standard 13-bit BIT STRING without high-bit triggers for shifts; verified safe for all compilers",
+  "sequence_sha256": "272685c8058327e9ff42e403231d1ab4f8372b95dd05822f334d16451e86f0b4",
+  "total_bytes": 56,
+  "message_count_hint": 4,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "590"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c76d6bb968ac2164d164645c8d1e1dc8c10100c8fdbd6a9eaa71fecfbf3e9508",
+    "encoded_bytes": 56,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 4,
+        "payload_offset": 4,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 41,
+        "payload_offset": 41,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "040-seed-023-c6517621",
+      "corpus_file": "040-c6517621.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

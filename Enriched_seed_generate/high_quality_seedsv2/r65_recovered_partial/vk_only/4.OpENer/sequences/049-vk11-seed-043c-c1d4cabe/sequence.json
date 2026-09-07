@@ -1,0 +1,89 @@
+{
+  "plan_id": "",
+  "seed_id": "vk11-seed-043c",
+  "title": "RegisterSession then SendRRData SetAttributeSingle-style long-path analogue",
+  "strategy": "field_interaction",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Explore path-size and request-data interactions on the unconnected explicit path with a longer but bounded Message Router request that remains mutation-friendly and distinct from known PoCs.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:567:567-summary:1255c28909d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request alternate options",
+      "hex": "65000400000000000000000000000000000000000000000001000100",
+      "byte_length": 28,
+      "sha256": "cb6c01c4bcd8636141bd5701415259d167562b9c3900f6c9783cc4a5c40a103c"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response analogue with session handle 0x55667788",
+      "hex": "65000400887766550000000000000000000000000000000001000100",
+      "byte_length": 28,
+      "sha256": "5532aa8683788f2603c6709578a9f4bf93a406b5f354a24f9cd1f7a39cf180a6"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData with SetAttributeSingle-style CIP and extended path words",
+      "hex": "6f00200088776655000000000000000000000000000000000000000000000000020000000000b20010001006200124013001030034120000",
+      "byte_length": 56,
+      "sha256": "107bec7452740715d499249aef840e8cb36ef84324ade753b016688a2200a0ae"
+    }
+  ],
+  "expected_behavior": "A robust implementation should parse the session and CPF, then either process or reject the attribute write request cleanly based on object support and length checks.",
+  "constraints_preserved": [
+    "24-byte encapsulation headers used consistently",
+    "little-endian visible lengths retained",
+    "multi-step stateful flow preserved",
+    "CPF and CIP remain bounded and mutation-friendly",
+    "distinct target operation and field interactions from other seeds"
+  ],
+  "issue_safety_notes": "The request is only a structural analogue for SetAttributeSingle and path-length issues; it avoids the very large padded paths and missing trailing bytes described in historical reports.",
+  "sequence_sha256": "a3ec113e0a7b51ad5aa801fc045b2f685d9c82afd95c8ff1fb3655e136b05221",
+  "total_bytes": 112,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "34feba3931f7938a59e228cadacb68e060f3b31a6510d141ed860e0df7a65862",
+    "encoded_bytes": 112,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 56,
+        "frame_length": 56
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "049-vk11-seed-043c-c1d4cabe",
+      "corpus_file": "049-c1d4cabe.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

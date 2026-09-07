@@ -1,0 +1,55 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-002-2",
+  "title": "Single Command activation",
+  "strategy": "function_code_coverage",
+  "target_operation": "C_SC_NA_1 Single Command",
+  "purpose": "Cover the canonical control-direction single-command parser path with an explicit information object address and command qualifier.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:operation-catalog:c32f2366ef50"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "C_SC_NA_1 single command activation",
+      "hex": "68100000000000002d010600010001000001",
+      "byte_length": 18,
+      "sha256": "a42c0feb8860ce850da1b2a70d879606b235018be44317a0ea326850f047a0f8"
+    }
+  ],
+  "expected_behavior": "The peer parses TypeID 45 as a single command with activation cause 6 at common address 1 and information object address 1; the final qualifier requests the ON state without select semantics.",
+  "constraints_preserved": [
+    "The I-format APCI length 0x0e equals four control bytes plus the 10-byte ASDU.",
+    "TypeID 45 is C_SC_NA_1 according to the supplied function reference.",
+    "VSQ is 1 for one information object.",
+    "The ASDU contains cause 6, common address 1, IOA 1, and a one-byte single-command qualifier.",
+    "The control sequence fields are zero-valued and structurally consistent for an initial client transmission."
+  ],
+  "issue_safety_notes": "PK-only valid command analogue with conservative ordinary addresses and qualifier values; it does not reproduce any historical issue payload.",
+  "sequence_sha256": "1a9c1a8157147c116a3814051d4024dee73d46e10b91cebf3ba8e26382762d1d",
+  "total_bytes": 18,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a42c0feb8860ce850da1b2a70d879606b235018be44317a0ea326850f047a0f8",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

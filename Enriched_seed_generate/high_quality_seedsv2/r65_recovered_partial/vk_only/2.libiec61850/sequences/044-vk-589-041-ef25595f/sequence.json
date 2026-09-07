@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-041",
+  "seed_id": "vk-589-041",
+  "title": "VK-only COTP Connection Request: libIEC61850 v1.6_develop HEAD commit 196bb76 contains a heap use-after-free in the MMS file service. During an ObtainFile / set-file transfer, MmsObtainFile... Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:495:495-summary:292e0a30dc47",
+    "issue:368:368-summary:997e8d1338a8",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:542:542-summary:a6cc05667747",
+    "issue:197:197-summary:e3308b450f23"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "c001a2",
+      "byte_length": 3,
+      "sha256": "bd9b39e7c5b6f3be55ccaf3e6935a77af960c8f79eb241c71c863e1557fb4206"
+    }
+  ],
+  "expected_behavior": "Server crashes in MmsObtainFile handler via heap use-after-free",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length consistent",
+    "single MMS message",
+    "IEC61850 MMS family constraints",
+    "distinct frame size/structure"
+  ],
+  "issue_safety_notes": "Issue-supported trigger relations preserved; no crash bytes copied",
+  "sequence_sha256": "7f8ba78bb0039f03a23722dc6ec205283225391b1fa831546d3c7e34bd36caf9",
+  "total_bytes": 3,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "513"
+  ],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bd9b39e7c5b6f3be55ccaf3e6935a77af960c8f79eb241c71c863e1557fb4206",
+    "encoded_bytes": 3,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 3,
+        "frame_length": 3
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "044-vk-589-041-ef25595f",
+      "corpus_file": "044-ef25595f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

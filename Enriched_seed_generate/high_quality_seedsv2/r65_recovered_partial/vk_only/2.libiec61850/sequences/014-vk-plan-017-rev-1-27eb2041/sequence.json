@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-017",
+  "seed_id": "vk-plan-017-rev-1",
+  "title": "VK-only COTP Connection Request: stack-buffer overflow in LogicalDevice_getLogicalNode -> ModelNode_getChild",
+  "strategy": "stateful_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Exercise model-prior setup sequence to reach issue-supported state prerequisite for crash",
+  "evidence_ids": [
+    "issue:573:573-summary:b7b57e9f1653",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:513:513-summary:4a07060941e2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP CR malformed with long name field",
+      "hex": "0300016911e0000000000000c101a200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 361,
+      "sha256": "a50b6cd0414a587f49b273de5e9a2601e1d3605b2f1c326ccc8287924c700a1d"
+    }
+  ],
+  "expected_behavior": "stack-buffer overflow detected in ModelNode_getChild",
+  "constraints_preserved": [
+    "TPKT length consistent with full message",
+    "no external protocol document used",
+    "iec61850 family constraint followed",
+    "state prerequisite reached before crash path"
+  ],
+  "issue_safety_notes": "unsafe malformed input; safety not applicable for fuzzing tool",
+  "sequence_sha256": "26f678cdf576f79df1bcb30d70ee17c69d4279c2d9969c3c56c57068fc22596b",
+  "total_bytes": 361,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "573"
+  ],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a50b6cd0414a587f49b273de5e9a2601e1d3605b2f1c326ccc8287924c700a1d",
+    "encoded_bytes": 361,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 361,
+        "frame_length": 361
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "014-vk-plan-017-rev-1-27eb2041",
+      "corpus_file": "014-27eb2041.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "plan_id": "vk-plan-010",
+  "seed_id": "vk-plan-010-seq-01",
+  "title": "VK-only DeviceCommunicationControl: npdu_is_expected_reply parser depth (plan 010)",
+  "strategy": "parser_depth",
+  "target_operation": "DeviceCommunicationControl",
+  "purpose": "Reach issue-relevant parser path through plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:cve-2025-66624:cve-2025-66624-summa:2000c4141b96",
+    "issue:cve-2025-66624:cve-2025-66624-summa:df0878be970c",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+    "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "DeviceCommunicationControl request",
+      "hex": "810a001701040005020f0c0d40000119553e21013f4910",
+      "byte_length": 23,
+      "sha256": "3a811e89eedece62e870e29599a3c3a3930e45e73a62c20458d29c94acd125c5"
+    }
+  ],
+  "expected_behavior": "MS/TP call path reaches npdu_is_expected_reply() via deeper npdu_is_data_expecting_reply() with malformed control type.",
+  "constraints_preserved": [
+    "BVLC four-byte length consistent",
+    "NPDU/APDU standard layering",
+    "single-request shape",
+    "model internal prior preserved",
+    "visible lengths internally consistent"
+  ],
+  "issue_safety_notes": "Issue 2025-66624 evidence_ids used; parser depth analogue only; does not copy exact crash bytes.",
+  "sequence_sha256": "f2023e1aa318ea734c64fc5367a8e54fbf7df0e7eb92a3faabf47bf77d81b61c",
+  "total_bytes": 23,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2025-66624"
+  ],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3a811e89eedece62e870e29599a3c3a3930e45e73a62c20458d29c94acd125c5",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "plan_id": "plan-057",
+  "seed_id": "seed-057",
+  "title": "Function coverage for Reset",
+  "strategy": "function_code_coverage",
+  "target_operation": "Reset",
+  "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:8c2d1b34818b",
+    "function_code:function:operation-catalog:ecc66f95fee4",
+    "function_code:function:operation-catalog:d64a03d5852a",
+    "function_code:function:operation-catalog:9bb344dfd383",
+    "function_code:function:function-text:d319479344be",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300000a03010002f000",
+      "byte_length": 10,
+      "sha256": "2a98c30bb4c0805c99d10b141f5e30e27a76904a416c747f79ed94dae71838e2"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "MMS Initiate",
+      "hex": "a801000100000101",
+      "byte_length": 8,
+      "sha256": "52684efcb48094c3ee81baa246fa2da7e6f2ca014bc9364f4913d2c388b3377d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Confirmed-Request-PDU for Reset",
+      "hex": "a001000c060400010000010001",
+      "byte_length": 13,
+      "sha256": "70b6dc8b7286bdfde9dbcdf748221fbe4cbac96832c795f7c7dcef81c008e2de"
+    }
+  ],
+  "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for Reset operation correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths."
+  ],
+  "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the reset operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+  "sequence_sha256": "bd393e316f66f494c2207f6e359c6dd5a866573b9968ab416d665c3a10fcc2bb",
+  "total_bytes": 31,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "58c770f050376ca6b07ebea41f6d53545656e4cbcf1a20af9195bded3f455614",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "009-seed-057-83f94a70",
+      "corpus_file": "009-83f94a70.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

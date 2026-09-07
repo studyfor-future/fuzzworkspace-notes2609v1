@@ -1,0 +1,65 @@
+{
+  "plan_id": "base-plan-003",
+  "seed_id": "base-plan-003-seed-2",
+  "title": "Base RegisterSession variant 2",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Setup header",
+      "hex": "0000080000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "4c49b88894d742530818a686961a640ca28692c2e2ad020b7cfd86de3e594068"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "0000080000000031000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "242af7e1abb1c673e2dcecefa33774f5889446965d0cafe95d90eb0c3e735c9b"
+    }
+  ],
+  "expected_behavior": "Two-message sequence: first setup, then RegisterSession request with standard encapsulation header and 0x0031 service code.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when selected",
+    "Diversify session paths"
+  ],
+  "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+  "sequence_sha256": "98a201385b6a1ac2ac892c0ad82209eea8d7de3801829f9b1310292ad6ecbd59",
+  "total_bytes": 64,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 34.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0f5c677553966be350fdea88a2100ec617176cf0fe6944a8e3ada4e38d0f6bdd",
+    "encoded_bytes": 64,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 32,
+        "frame_length": 32
+      }
+    ]
+  }
+}

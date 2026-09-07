@@ -1,0 +1,63 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-r02",
+  "title": "Confirmed GetNameList discovery request over MMS",
+  "strategy": "baseline_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Exercise a common recommended initial discovery operation using MMS Confirmed-Request-PDU service [1] to broaden parser entry coverage beyond setup.",
+  "evidence_ids": [
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "function_code:function:function-text:d3f8d07ee099",
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT+COTP+ACSE user-information carrying Confirmed-Request-PDU GetNameList[1]",
+      "hex": "0300001102f080a00a020101a103800101",
+      "byte_length": 17,
+      "sha256": "abfadcd3985e29ad1f6d13dc49665999c75bcecd6d8bd6bcf496b7c01975096b"
+    }
+  ],
+  "expected_behavior": "The target should parse the framed MMS payload as a confirmed request and route service choice [1] to GetNameList handling for discovery processing.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03",
+    "TPKT total-length field matches the complete message length",
+    "MMS confirmed request PDU tag 0xA0 preserved from supplied source",
+    "Confirmed service tag [1] matches supplied catalog entry for GetNameList",
+    "Message is intentionally compact and mutation-friendly while preserving framing and tag relationships"
+  ],
+  "issue_safety_notes": "No vulnerability analogue used; this is a safe baseline request and not a replay of any prior duplicate seed.",
+  "sequence_sha256": "8278d799a6a8307d9207c34ed95cc43ca3e55e29a9220f9e04c49b730e6f7332",
+  "total_bytes": 17,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "abfadcd3985e29ad1f6d13dc49665999c75bcecd6d8bd6bcf496b7c01975096b",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "053-seed-r02-e69d26d9",
+      "corpus_file": "053-e69d26d9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

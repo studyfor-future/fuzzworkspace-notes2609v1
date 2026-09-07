@@ -1,0 +1,62 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-004",
+  "title": "Connected explicit SendUnitData frame",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendUnitData",
+  "purpose": "Exercise the connected CPF layout with distinct connected address and connected data items, including a bounded sequenced CIP request.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:565:565-summary:9f823d95b613",
+    "issue:574:574-summary:860cad928179"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendUnitData with Connected Address and Connected Data",
+      "hex": "7000250001000000000000000000000000000000000000000000000000000000000000000002000100040001000000b100080000000e02200124010100",
+      "byte_length": 61,
+      "sha256": "7a1b06aa38d0ab2882ac87cc53dfea646cfe21a3cd44cde428ffa1b81220d129"
+    }
+  ],
+  "expected_behavior": "The server validates the SendUnitData encapsulation and CPF item lengths, then may process the connected request or return a normal invalid-session, connection, or CIP error because the connection identifier and service semantics are conservative inferred values.",
+  "constraints_preserved": [
+    "24-byte encapsulation header with command 0x0070 and payload length 0x001c",
+    "SendUnitData payload contains interface handle, timeout, CPF count two, and two ordered CPF items",
+    "Connected Address Item type 0x0100 has a four-byte connection identifier",
+    "Connected Data Item type 0x00B1 has eight bytes consisting of a two-byte sequence value and six-byte CIP data",
+    "All nested item lengths equal the bytes transmitted"
+  ],
+  "issue_safety_notes": "Safe connected-parser analogue informed by the documented SendUnitData path. It uses bounded identifiers and lengths, does not claim a real ForwardOpen-created connection, and does not reproduce malformed connected-data or historical vulnerability payloads.",
+  "sequence_sha256": "fa87f0ec63dc59bc005fd5b57aad003d8e86f2459606a5f76d92ceb2145dbf36",
+  "total_bytes": 61,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7a1b06aa38d0ab2882ac87cc53dfea646cfe21a3cd44cde428ffa1b81220d129",
+    "encoded_bytes": 61,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 61,
+        "frame_length": 61
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "045-seed-revised-004-140deac5",
+      "corpus_file": "045-140deac5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

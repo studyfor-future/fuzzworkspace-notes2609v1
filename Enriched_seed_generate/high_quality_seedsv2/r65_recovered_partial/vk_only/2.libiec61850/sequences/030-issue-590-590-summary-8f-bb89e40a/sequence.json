@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-010",
+  "seed_id": "issue-590-590-summary-8f1dbbd54154",
+  "title": "VK-only MMS Initiate: libIEC61850 v1.6.1 BER long-form length UB",
+  "strategy": "parser_depth",
+  "target_operation": "MMS Initiate",
+  "purpose": "Reach issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:368:368-summary:997e8d1338a8",
+    "issue:495:495-summary:292e0a30dc47",
+    "issue:543:543-summary:be7fbfff0ea5"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "MMS Initiate with malformed BER long-form length",
+      "hex": "0300002302f08001000061081d3020a018020103a40f020123a40a020120a402020120",
+      "byte_length": 35,
+      "sha256": "2fe0d9428acf8ca0bcf932067e503df1370aa154174a72ba854d895498007b47"
+    }
+  ],
+  "expected_behavior": "Signed left-shift overflow before error path in ber_tlv_length.c:43",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length field consistent",
+    "MMS Initiate followed by BER-encoded payload",
+    "no external protocol documents",
+    "model internal prior enforced"
+  ],
+  "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Session setup preserved. UBSan runtime error expected.",
+  "sequence_sha256": "e37fa7e91f158e4be4a833a8c98347c3f4acc453ca8ba4b0d5012324774faf30",
+  "total_bytes": 35,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "496"
+  ],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2fe0d9428acf8ca0bcf932067e503df1370aa154174a72ba854d895498007b47",
+    "encoded_bytes": 35,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 35,
+        "frame_length": 35
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "030-issue-590-590-summary-8f-bb89e40a",
+      "corpus_file": "030-bb89e40a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

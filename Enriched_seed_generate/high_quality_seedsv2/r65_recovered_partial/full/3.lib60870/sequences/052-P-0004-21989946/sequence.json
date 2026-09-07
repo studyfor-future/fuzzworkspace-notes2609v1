@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-008",
+  "seed_id": "P-0004",
+  "title": "Measured short-float indication from server",
+  "strategy": "field_interaction",
+  "target_operation": "Measured Value",
+  "purpose": "Exercise monitoring-direction parsing with M_ME_NC_1 and one short-floating-point value, providing a server-to-client analogue for ASDU field interaction distinct from command traffic.",
+  "evidence_ids": [
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:function-text:3cbe16bf065a",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "M_ME_NC_1 measured value short float",
+      "hex": "6811020000000d010300010002000000803f00",
+      "byte_length": 19,
+      "sha256": "4956f8482662698806a855ce54834db8be5d78f76b52f24b7cbf6ba456f4a3e5"
+    }
+  ],
+  "expected_behavior": "Client or parser accepts a single measured-value indication and processes the monitoring ASDU without read-overrun or null-dereference behavior.",
+  "constraints_preserved": [
+    "APCI I-frame length 0x12 matches 4-byte control field plus 14-byte ASDU",
+    "TypeID 13 matches M_ME_NC_1 from supplied function-code source",
+    "VSQ is one object and body includes one IOA, 4-byte float value, and quality byte",
+    "Monitoring-direction message is directionally distinct from prior client-issued control ASDUs"
+  ],
+  "issue_safety_notes": "This is a safe monitoring-path seed that keeps object sizing internally consistent and avoids the oversized-count patterns implicated by the supplied issue evidence.",
+  "sequence_sha256": "081fdd9334f04382fd0fbc675b60b8f387b4fc099ce3ffdc57e5227e57fb7c50",
+  "total_bytes": 19,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "53"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4956f8482662698806a855ce54834db8be5d78f76b52f24b7cbf6ba456f4a3e5",
+    "encoded_bytes": 19,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "052-P-0004-21989946",
+      "corpus_file": "052-21989946.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

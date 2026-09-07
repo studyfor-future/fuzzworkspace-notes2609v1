@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-060",
+  "seed_id": "modbustcp-encapsulated-interface-01",
+  "title": "VK-only Encapsulated Interface Transport: The report describes a heap-based buffer overflow in libmodbus trig...",
+  "strategy": "other",
+  "target_operation": "Encapsulated Interface Transport",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+  "evidence_ids": [
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:498:498-summary:43dc6fe7600e",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:763:763-summary:e75d690140f2",
+    "issue:683:683-summary:fbe9b8a5a160",
+    "issue:499:499-summary:6268f95751ad"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "VK-only Encapsulated Interface Transport MEI request",
+      "hex": "0000000000042b0e0100",
+      "byte_length": 10,
+      "sha256": "f9978a13a533cff75e5d859e3464576d25586698721f718c5876cb58ba40af90"
+    }
+  ],
+  "expected_behavior": "The server should parse the MEI request and return a device-identification response or a defined exception for unsupported identification details.",
+  "constraints_preserved": [
+    "Uses a 7-byte Modbus/TCP MBAP header.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0005 equals unit identifier plus the four-byte request PDU.",
+    "Uses recognized Encapsulated Interface Transport and MEI fields.",
+    "The message is a complete single request with no undeclared trailing bytes."
+  ],
+  "issue_safety_notes": "This is a distinct issue-related analogue intended for coverage, not an exact historical payload or a claim that a crash will occur. Model-prior protocol details are not externally verified.",
+  "sequence_sha256": "9480b3dd726ec13662ee65e621b65c344b7551b0079e4a083d3c26d4794bc06d",
+  "total_bytes": 10,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "614"
+  ],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f9978a13a533cff75e5d859e3464576d25586698721f718c5876cb58ba40af90",
+    "encoded_bytes": 10,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "018-modbustcp-encapsulated-i-5308d1ac",
+      "corpus_file": "018-5308d1ac.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

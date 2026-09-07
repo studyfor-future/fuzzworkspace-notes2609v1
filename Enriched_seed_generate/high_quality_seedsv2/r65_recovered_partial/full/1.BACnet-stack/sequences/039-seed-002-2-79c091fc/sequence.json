@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-018",
+  "seed_id": "seed-002-2",
+  "title": "Issue-guided analogue for WriteProperty",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "WriteProperty",
+  "purpose": "Recover historically sensitive structure for wpm_decode_object_property() (CVE-2026-41475/CVE-2026-62972/CVE-2026-47711/CVE-2026-41502) while using safer valid analogue",
+  "evidence_ids": [
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC + NPDU + WriteProperty with safe object property field",
+      "hex": "8101000d00000000000a01140f",
+      "byte_length": 13,
+      "sha256": "00eb547a4ec544a2fa5ca0113daa8fa493c2af74b2b9a48293ffa86e76836a55"
+    }
+  ],
+  "expected_behavior": "BVLC length 1 + NPDU function 0x0A + WriteProperty service 0x0F; decodes without crash or invalid state interaction",
+  "constraints_preserved": [
+    "Complete documented framing preserved (BVLC total length 4 bytes)",
+    "Order and checksum rules followed",
+    "Primary sources not contradicted"
+  ],
+  "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+  "sequence_sha256": "d33b30859ba6ba6203c178a5300660f596904e271ffa7e796c2ad77c15edb245",
+  "total_bytes": 13,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-41475"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "00eb547a4ec544a2fa5ca0113daa8fa493c2af74b2b9a48293ffa86e76836a55",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "039-seed-002-2-79c091fc",
+      "corpus_file": "039-79c091fc.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

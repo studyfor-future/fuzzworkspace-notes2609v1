@@ -1,0 +1,93 @@
+{
+  "plan_id": "",
+  "seed_id": "opener-vk-015-r1",
+  "title": "SetAttributeSingle with optional CPF item",
+  "strategy": "field_interaction",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Combine a bounded SetAttributeSingle request with a recognized optional CPF sockaddr-information item to exercise item-count, optional-field, path, and request-data interactions.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:565:565-summary:9f823d95b613",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "register_session_response_placeholder",
+      "hex": "65000400333333330000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "deacd5ab05b2f0e86765528aba5c87b08a47b054d58d1c10189eecece55972fe"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "sendrrdata_set_attribute_single_with_optional_item",
+      "hex": "6f002b003333333300000000000000000000000000000000000000000000030000000000800010000000000000000000000000000000b2000a10032006240130030000",
+      "byte_length": 67,
+      "sha256": "f40d51a57d1400b10d19e80947866fa1732f44a97b7533105ba3aeeb74a92af5"
+    }
+  ],
+  "expected_behavior": "The target should parse all three CPF items, validate or consume the bounded optional item, decode the SetAttributeSingle path, and either apply the two-byte value or reject the request cleanly.",
+  "constraints_preserved": [
+    "24-byte encapsulation header is used",
+    "Payload length 0x002e matches the visible SendRRData body",
+    "CPF item count is three",
+    "Optional item declares sixteen visible bytes",
+    "Unconnected data item declares ten visible bytes",
+    "Session handle is consistent across the stateful exchange"
+  ],
+  "issue_safety_notes": "The optional item is complete and bounded, and the SetAttributeSingle request includes two data bytes. The sequence avoids the reported missing-data condition, extreme path padding, and cross-connection session-handle behavior.",
+  "sequence_sha256": "f57dc55391f3b10b95de9d871a13258fbc7aacc29d96e8ccf3e56c5e6f8d4a6c",
+  "total_bytes": 123,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a3bdbd82c8e2e7480264911d23a6d92e4e8e7726851d513fe9f9c85e8d3c4071",
+    "encoded_bytes": 123,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 67,
+        "frame_length": 67
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "011-opener-vk-015-r1-f562a986",
+      "corpus_file": "011-f562a986.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

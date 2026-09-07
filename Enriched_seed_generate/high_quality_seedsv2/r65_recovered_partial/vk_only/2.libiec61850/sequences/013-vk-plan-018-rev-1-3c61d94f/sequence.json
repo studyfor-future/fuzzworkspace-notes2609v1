@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-018",
+  "seed_id": "vk-plan-018-rev-1",
+  "title": "VK-only MMS Initiate: undefined-behavior in COTP Connection Request parsing",
+  "strategy": "other",
+  "target_operation": "MMS Initiate",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing",
+  "evidence_ids": [
+    "issue:589:589-summary:a9c8952234c9",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:492:492-summary:b5a20a150fa2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MMS Initiate malformed COTP TPDU size",
+      "hex": "0300001811e000000000000100c1020000c2020100c001a2",
+      "byte_length": 24,
+      "sha256": "ecf289f4aec99f4f84ecc8a9d9c7895c6167e27e68d63874ddcb4ef2a165a4ef"
+    }
+  ],
+  "expected_behavior": "undefined-behavior detected in cotp.c line 481",
+  "constraints_preserved": [
+    "TPKT length consistent with full message",
+    "no external protocol document used",
+    "iec61850 family constraint followed",
+    "connection-setup state prerequisite reached"
+  ],
+  "issue_safety_notes": "unsafe malformed input; safety not applicable for fuzzing tool",
+  "sequence_sha256": "ee9e43458c27ae5c05a909870aea5d6614b83c243fb6970379c7edbe9471b9f8",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "589"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ecf289f4aec99f4f84ecc8a9d9c7895c6167e27e68d63874ddcb4ef2a165a4ef",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "013-vk-plan-018-rev-1-3c61d94f",
+      "corpus_file": "013-3c61d94f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "plan_id": "plan-020",
+  "seed_id": "SEED-020-R1",
+  "title": "Stateful Report Server ID request and response exchange",
+  "strategy": "stateful_valid",
+  "target_operation": "Report Server ID",
+  "purpose": "Provide a complete two-message valid exchange around the 0x11 path to exercise both request parsing and response handling while preserving coherent transaction and length relationships.",
+  "evidence_ids": [
+    "issue:810:810-summary:da5167fd5137",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:466:466-summary:691a17c4c14a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Report Server ID request",
+      "hex": "1003000000020611",
+      "byte_length": 8,
+      "sha256": "b3016695da7fbeb46463a3e09d5048646a289bb5c0f836be1dae9273d179f4d8"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Report Server ID response analogue",
+      "hex": "100300000006061104424201",
+      "byte_length": 12,
+      "sha256": "105026e2a061bc5483a0a4309fea1a05f2b305f601c14193a54c778f56662794"
+    }
+  ],
+  "expected_behavior": "Client should correlate the response to the request by transaction and unit identifier and process a normal Report Server ID style payload without desynchronization.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved in both messages",
+    "Protocol identifier set to 0x0000 in both messages",
+    "Request MBAP length 0x0002 matches unit identifier plus 1-byte PDU",
+    "Response MBAP length 0x0006 matches unit identifier plus 5-byte PDU",
+    "Transaction identifier is consistent across request and response",
+    "Function code 0x11 is documented for Report Server ID"
+  ],
+  "issue_safety_notes": "This is a safe stateful analogue for length-handling concerns: both frames have internally consistent MBAP lengths and avoid the incorrect-length forms cited in historical reports.",
+  "sequence_sha256": "dc18f882830847bc80cd43652d77cc10c17877d3093bc90fdce5f18fd35da2c0",
+  "total_bytes": 20,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "810"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "aba2201ee39f5a425374e9009a84b992e31797e2e5579770bc6f3ff41539fc59",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 8,
+        "payload_offset": 8,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "053-SEED-020-R1-e3d68c52",
+      "corpus_file": "053-e3d68c52.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

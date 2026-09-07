@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-060",
+  "seed_id": "vk-rev-060-201-d",
+  "title": "VK-only Double Command with alternate field interaction layout",
+  "strategy": "field_interaction",
+  "target_operation": "Double Command",
+  "purpose": "Provide dedicated field-interaction coverage for a second command archetype using a distinct I-frame shape and altered command payload bytes to broaden mutation starting points.",
+  "evidence_ids": [
+    "issue:201:201-summary:798beefc9cab",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:175:175-summary:1d1910f22105"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "double_command_interaction_iframe",
+      "hex": "680f020000002e01060001000200000200",
+      "byte_length": 17,
+      "sha256": "e6798a93a3d337208f25d4577c43a3fb65cc532aad92e22bbd0ba6a7ed893226"
+    }
+  ],
+  "expected_behavior": "A target should parse this alternate command-form I-frame as a distinct command-path input and handle it without encoder/decoder corruption, queue confusion, or memory safety errors.",
+  "constraints_preserved": [
+    "recognized 0x68 I-frame APCI structure",
+    "length field consistent with frame body",
+    "dedicated field interaction coverage for Double Command",
+    "target operation preserved as Double Command"
+  ],
+  "issue_safety_notes": "This sequence is only an issue-guided analogue. It does not copy any file-transfer overflow payload and intentionally stays outside the exact reported crash shape.",
+  "sequence_sha256": "7bc80dde5b8e28039e0ee05590ece490bf7260813a452cb6cc524debe407c64d",
+  "total_bytes": 17,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "201"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e6798a93a3d337208f25d4577c43a3fb65cc532aad92e22bbd0ba6a7ed893226",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "019-vk-rev-060-201-d-a5bd1ff3",
+      "corpus_file": "019-a5bd1ff3.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

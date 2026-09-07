@@ -1,0 +1,82 @@
+{
+  "plan_id": "vk-plan-045",
+  "seed_id": "vk12-seed-045-r1",
+  "title": "VK-only Read Command with link start prerequisite and compact read ASDU analogue",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Command",
+  "purpose": "Exercise a server-side Read Command path with a valid link-start prerequisite and a short, conservative I-frame whose ASDU remains internally sized but close to minimal parsing boundaries relevant to queue and short-body handling analogues.",
+  "evidence_ids": [
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation request",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Read Command compact I-frame",
+      "hex": "680d00000000660105000100010000",
+      "byte_length": 15,
+      "sha256": "d34a679a43ad3586fc5121e65d2c26a8f047bf9db6e9c0e8f82d62b69c0d1df2"
+    }
+  ],
+  "expected_behavior": "Implementation should accept or cleanly reject the link-start plus Read Command sequence without queue traversal confusion, out-of-bounds access, or malformed short-body acceptance beyond intended parser checks.",
+  "constraints_preserved": [
+    "0x68 IEC 60870-5-104 style framing used",
+    "Visible length octets consistent with frame sizes",
+    "Target operation preserved as Read Command",
+    "Stateful multi-step sequence increases diversity beyond single U-frame",
+    "No exact historical crash payload reused",
+    "Lowercase hexadecimal without separators"
+  ],
+  "issue_safety_notes": "Uses a conservative compact read-style ASDU after activation as a safe structural analogue only; it avoids the reported long crash stream and does not copy any supplied PoC bytes.",
+  "sequence_sha256": "873cc81ad0d813f7cf98d9deed4b8bb90f4ce0366f0c7a0df9eca47639f45e1c",
+  "total_bytes": 21,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "795a15e37ce2c670381cf757a32965a96b221b85b44c8ea207630b027e45808a",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-vk12-seed-045-r1-2ecc5df7",
+      "corpus_file": "003-2ecc5df7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

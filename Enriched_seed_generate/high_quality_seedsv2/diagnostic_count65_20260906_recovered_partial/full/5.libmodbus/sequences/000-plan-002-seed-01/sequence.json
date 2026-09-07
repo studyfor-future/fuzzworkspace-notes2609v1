@@ -1,0 +1,70 @@
+{
+  "plan_id": "plan-002",
+  "seed_id": "plan-002-seed-01",
+  "title": "Stateful setup for Read/Write Multiple Registers",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "issue:738:738-summary:a2fd51730f5d",
+    "function_code:function:function-text:48ef3b4dd565",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:810:810-summary:da5167fd5137",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "function_code:function:function-text:388a9f8cf2ff"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "setup_write_single",
+      "hex": "000100000006060100000001",
+      "byte_length": 12,
+      "sha256": "6155cda239bad0f0fdb3eb380d6f72000b0258b1616f45321ad0f290bff34b79"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "target_read_write",
+      "hex": "0001000000081700000001030001",
+      "byte_length": 14,
+      "sha256": "86371b4cc5b68d7f5c84314f79c683f3bf6f2a444112191722138ac24cf7c60d"
+    }
+  ],
+  "expected_behavior": "Both requests valid and accepted in sequence; final message benefits from prior successful state.",
+  "constraints_preserved": [
+    "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+  ],
+  "issue_safety_notes": "No copy of any historical crash payload; requests are fully canonical and valid per protocol specification.",
+  "sequence_sha256": "6f5a7f5d2e931e26b372c590a5af360c23bb02bead192c003f8d8e06f8454610",
+  "total_bytes": 26,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3f6fdc98bc4f718246917c9c8708afcc8e0ac89de9432bfc60db97b7ee1a67e5",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "plan_id": "plan-049",
+  "seed_id": "iec60870-full-049-cbo-ta1",
+  "title": "CP56Time2a bitstring command request",
+  "strategy": "function_code_coverage",
+  "target_operation": "C_BO_TA_1",
+  "purpose": "Exercise the bitstring command parser with a time-tagged control ASDU and a complete I-format APDU.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:d8995aeae15b",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "I-format C_BO_TA_1 activation request",
+      "hex": "681e000000002101060001000100000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "ee652f4f4e4185f9c5f0ac4ce8eb94846962e95306992a13b7b11d3442b7e079"
+    }
+  ],
+  "expected_behavior": "The receiver should parse the APDU and ASDU as a C_BO_TA_1 activation request with one information object, then handle it according to normal IEC60870 control-direction processing without process termination.",
+  "constraints_preserved": [
+    "0x68 APCI start byte is used.",
+    "The APCI length 0x18 represents the four APCI control bytes plus a 20-byte ASDU.",
+    "The ASDU type identifier 33 denotes C_BO_TA_1 according to supplied function-code documentation.",
+    "The ASDU uses VSQ 1, COT 6 with positive activation semantics, common address 1, and one three-byte information object address.",
+    "The four-byte bitstring and seven-byte CP56Time2a fields are zero-valued boundary-neutral contents; their exact semantic encoding is an inferred assumption, not externally verified by the supplied excerpts.",
+    "The send and receive sequence fields are zero-valued, following the standard I-format layout as an inferred assumption."
+  ],
+  "issue_safety_notes": "This is a structurally guided analogue for parser and dispatch coverage based on issue 13, not a copy of the historical input. It changes the type, length, and payload structure and preserves complete framing.",
+  "sequence_sha256": "5e40bdce93c1f56fa367556b6eca12b6d3343ee775ebdd24897be63eb4fbbb36",
+  "total_bytes": 32,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ee652f4f4e4185f9c5f0ac4ce8eb94846962e95306992a13b7b11d3442b7e079",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      }
+    ]
+  }
+}

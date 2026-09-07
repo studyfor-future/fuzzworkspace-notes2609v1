@@ -1,0 +1,87 @@
+{
+  "plan_id": "plan-002",
+  "seed_id": "p002-1",
+  "title": "Stateful setup for Initiate-Request-PDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "issue:603:603-summary:4d033699b6cd",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:542:542-summary:a6cc05667747",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:200:200-summary:d453c5e902cd"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request (MMS over RFC1006 TPKT v0x03)",
+      "hex": "0300001d030000f0c01101000000000000000000000000000000000000",
+      "byte_length": 29,
+      "sha256": "a50af46dee71b374de7da63f9b4e4bd12cbe937fc0830f14e43caf0679e7016a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "MMS Initiate-Request-PDU",
+      "hex": "0000001002f0a808010000000000000000",
+      "byte_length": 17,
+      "sha256": "1cd9841dba33d40979b60699721f8cf870ec304b10efbe4053b97569646331eb"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS GetNameList (target operation in stateful path)",
+      "hex": "0000004602f08001000100613730020100a030a02e020103ad2980010082248000a1201a1173696d706c65694f",
+      "byte_length": 45,
+      "sha256": "11228984b937d5d9fb3540ea18245e068fcb27c4bf1ab98abce4a6de2dd0731d"
+    }
+  ],
+  "expected_behavior": "Parser accepts the full sequence and processes the final request in a deeper valid state.",
+  "constraints_preserved": [
+    "TPKT header version 0x03 and total-length consistent with complete message",
+    "ACSE UserInformation and MMS PDU tags per protocol_format:iec61850:format-overview:c508483411ac",
+    "No contradictory layer ordering"
+  ],
+  "issue_safety_notes": "Stateful setup avoids direct issue motifs while reaching deeper parser path.",
+  "sequence_sha256": "52f2ee438cdab01d25d84d9bb0f1e9007803fdd090f0ea236f05cccdc07aea97",
+  "total_bytes": 91,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ccbe3a88d4bc1e4a887b0dde79ea16a4c71c845d87afcc7a71159f2990b18360",
+    "encoded_bytes": 91,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 29,
+        "frame_length": 29
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 29,
+        "payload_offset": 29,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 46,
+        "payload_offset": 46,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

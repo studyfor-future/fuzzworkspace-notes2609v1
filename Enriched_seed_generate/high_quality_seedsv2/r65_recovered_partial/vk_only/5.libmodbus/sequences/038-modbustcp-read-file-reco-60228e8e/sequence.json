@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-058",
+  "seed_id": "modbustcp-read-file-record-nested-01",
+  "title": "VK-only Read File Record: The report states that libmodbus V3.1.6 has a heap-use-after-free r...",
+  "strategy": "parser_depth",
+  "target_operation": "Read File Record",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:499:499-summary:6268f95751ad",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:743:743-summary:1fc7e97d059a",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:498:498-summary:43dc6fe7600e",
+    "issue:466:466-summary:691a17c4c14a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "VK-only Read File Record parser-depth nested request",
+      "hex": "000000000009010706000100000002",
+      "byte_length": 15,
+      "sha256": "2c6b0bc4828e72ffe5eeb133dd839c38845b9c233688b83c9752e21ba69119c7"
+    }
+  ],
+  "expected_behavior": "The server should parse the nested reference descriptor and produce a normal file-record response or a defined exception response, without desynchronizing the TCP stream.",
+  "constraints_preserved": [
+    "Uses a 7-byte Modbus/TCP MBAP header.",
+    "Protocol identifier is 0000.",
+    "MBAP length 000a equals unit identifier plus the eight-byte function PDU.",
+    "The request byte count 06 matches the six-byte nested subrequest.",
+    "Uses a recognized file-record function."
+  ],
+  "issue_safety_notes": "The nested structure is a conservative issue-related parser analogue and does not copy historical crash bytes. Any vulnerability relevance is exploratory; model-prior protocol details are not externally verified.",
+  "sequence_sha256": "dc93bc7693b6361151dbfe5d7c20345781dc2211c5a6187649ca5125a4d7af10",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed MBAP length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "499"
+  ],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2c6b0bc4828e72ffe5eeb133dd839c38845b9c233688b83c9752e21ba69119c7",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "038-modbustcp-read-file-reco-60228e8e",
+      "corpus_file": "038-60228e8e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

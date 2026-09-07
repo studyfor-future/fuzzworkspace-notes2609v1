@@ -1,0 +1,83 @@
+{
+  "plan_id": "plan-021",
+  "seed_id": "modbustcp-full-021-rev",
+  "title": "Issue-guided analogue for Read Exception Status with addressed follow-up",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Exception Status",
+  "purpose": "Exercise a request shape that omits the usual address-and-count fields, then follow it with a normal addressed register read to probe safe parser state transitions related to issue evidence about assumptions on request body layout.",
+  "evidence_ids": [
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:764:764-summary:f5885d05eb76",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:869721545c59",
+    "protocol_format:modbustcp:format-overview:9821a13f1ada"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_exception_status_request",
+      "hex": "3101000000022107",
+      "byte_length": 8,
+      "sha256": "ceacca56454da96e82ba641f477f247be366f42d9760c6ee93428163ad967175"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "followup_read_input_registers_request",
+      "hex": "310200000006210400000007",
+      "byte_length": 12,
+      "sha256": "01287282ee3411f23426a8d8c5a7664b67cc814c452691b935e8750d4dfd0a19"
+    }
+  ],
+  "expected_behavior": "The endpoint should either handle or cleanly reject the 0x07 request without desynchronizing the connection, then parse the subsequent valid 0x04 request for starting address 0x0000 and quantity 0x0007 as a normal addressed read.",
+  "constraints_preserved": [
+    "Each ADU uses a 7-byte MBAP header.",
+    "Protocol identifier is 0000 in both messages.",
+    "MBAP Length is 0002 for the 0x07 request and 0006 for the 0x04 request, matching unit identifier plus PDU bytes.",
+    "The follow-up 0x04 request preserves documented Starting Address and Quantity of Registers fields.",
+    "The quantity 0x0007 is aligned with supplied issue evidence describing reads of 7 input registers from address 0.",
+    "All messages are complete and non-truncated."
+  ],
+  "issue_safety_notes": "This is a safe structural analogue only. It preserves full MBAP framing and avoids the malformed short-frame collision patterns associated with historical parser over-read concerns.",
+  "sequence_sha256": "ae1a5c63e3c147cf6284aa11be8706ab9df0ca24a076d3699571a98b94642d16",
+  "total_bytes": 20,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "837"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c6aebee5fe81bb9419c4612df7d2dfcf0179d3ebe80c0671e98def5202c0f6ba",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 8,
+        "payload_offset": 8,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-modbustcp-full-021-rev-295def8f",
+      "corpus_file": "001-295def8f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

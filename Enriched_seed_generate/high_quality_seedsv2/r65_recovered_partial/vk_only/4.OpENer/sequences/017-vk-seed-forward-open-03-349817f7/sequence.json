@@ -1,0 +1,76 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-forward-open-03",
+  "title": "Session-scoped ForwardOpen with bounded connection-manager data",
+  "strategy": "parser_depth",
+  "target_operation": "ForwardOpen",
+  "purpose": "Drive a deeper Connection Manager request path after session registration, providing a distinct parser shape for connection-path and fixed-field mutations.",
+  "evidence_ids": [
+    "issue:570:570-summary:0b4cbe808107",
+    "issue:573:573-summary:f08f497b1daa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000041424344454647480000000001000000",
+      "byte_length": 28,
+      "sha256": "68b1eda0c9ee11a0694c61d82f8fd796ce18a22dd3f6ff3359f8f078c90f1ac9"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_forward_open",
+      "hex": "6f003300010000000000000051525354555657580000000000000000020000000000b21e005402200624010000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 75,
+      "sha256": "c17cbefb3a5f4c4528bb4923387524967f236580f606d0f4c220461d7ff38dac"
+    }
+  ],
+  "expected_behavior": "The server should parse the bounded ForwardOpen envelope and produce a normal success or CIP error response; malformed-but-bounded field combinations may be rejected without reading beyond the declared data item.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP headers",
+    "little-endian payload lengths 4 and 46",
+    "session identifier continuity",
+    "CPF item count 2 with Null Address and Unconnected Data items",
+    "ForwardOpen service and Connection Manager path present",
+    "declared Unconnected Data length of 30 bytes matches the supplied data"
+  ],
+  "issue_safety_notes": "Explores connection-path parser depth as a safe structural analogue to issue 570. The trailing path is bounded and does not copy the reported oversized simple-segment length, exact path, or crash-inducing truncation.",
+  "sequence_sha256": "e516da012be9a2e30dda649b63d908d914e39f4b838e73fc8a20cf02dfa2d51b",
+  "total_bytes": 103,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f7d524abb69034313a81ebeeb59e40fd7412d835cc9d0917615026c0423fdf7e",
+    "encoded_bytes": 103,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 75,
+        "frame_length": 75
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-vk-seed-forward-open-03-349817f7",
+      "corpus_file": "017-349817f7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

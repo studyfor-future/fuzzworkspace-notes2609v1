@@ -1,0 +1,77 @@
+{
+  "plan_id": "vk-plan-058",
+  "seed_id": "vk-rev-058-197-b",
+  "title": "VK-only General Interrogation after STARTDT prerequisite",
+  "strategy": "parser_depth",
+  "target_operation": "General Interrogation",
+  "purpose": "Increase state diversity by using a plausible activation prerequisite before a small interrogation I-frame that can drive ASDU parsing without depending on exact issue payload layouts.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "startdt_act",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "general_interrogation_small_iframe",
+      "hex": "680e0000000064010600010000000014",
+      "byte_length": 16,
+      "sha256": "efc83e888bafb6d83c66ed0fdafccecc0041f03ff8e5d705ba2ff2c5d0c10c03"
+    }
+  ],
+  "expected_behavior": "A server should accept or reject the activation cleanly, then parse the small interrogation I-frame and respond, ignore, or close without deadlock or parser overrun.",
+  "constraints_preserved": [
+    "recognized U-frame followed by I-frame sequence",
+    "length octets internally consistent",
+    "stateful multi-step sequence",
+    "target operation preserved as General Interrogation",
+    "diversified frame types and state progression"
+  ],
+  "issue_safety_notes": "The sequence is a conservative parser-depth analogue and not an exact reproduction of any deadlock or file-segment trigger. The I-frame is intentionally short and mutation-friendly.",
+  "sequence_sha256": "1f1601c3adf703a89e85380334096a04c242d3a768cf2beea843e6f4b8d1fc1b",
+  "total_bytes": 22,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": true,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 86.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ab1af3e789988bb48d1f2e62689674459968534bd289bbd6e0ac205baf50728e",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "052-vk-rev-058-197-b-3d112bdb",
+      "corpus_file": "052-3d112bdb.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

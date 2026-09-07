@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-031",
+  "seed_id": "pk-104-002",
+  "title": "Read command with explicit information object address",
+  "strategy": "function_code_coverage",
+  "target_operation": "C_RD_NA_1",
+  "purpose": "Provide a compact, mutation-friendly read command seed covering a distinct system command path with explicit IOA parsing.",
+  "evidence_ids": [
+    "function_code:function:function-text:9662ce251be3",
+    "function_code:function:function-text:14a1385d5f57",
+    "protocol_format:iec60870:format-overview:6fc14a471f76",
+    "protocol_format:iec60870:section-message-temp:82928a8cc718"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "C_RD_NA_1 read request",
+      "hex": "680d00000000660105000100010000",
+      "byte_length": 15,
+      "sha256": "d34a679a43ad3586fc5121e65d2c26a8f047bf9db6e9c0e8f82d62b69c0d1df2"
+    }
+  ],
+  "expected_behavior": "ASDU should be parsed as C_RD_NA_1 using TypeID 102 with a single addressed information object and no trailing command-specific payload bytes.",
+  "constraints_preserved": [
+    "Uses APCI start byte 0x68 with consistent length 0x0e",
+    "I-format control field kept minimal and valid-looking",
+    "Read command uses documented TypeID 102",
+    "VSQ indicates one object",
+    "Cause of transmission encoded as request 0x0005 by conservative prior",
+    "IOA placeholder encoded as 0x000001 in little-endian order"
+  ],
+  "issue_safety_notes": "No issue targeting enabled. Seed is a conservative structural analogue for read-command parser coverage only.",
+  "sequence_sha256": "9c02a7ee073e168664c10505a7a141598019e635841ec80e8fdfdb3924341759",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 79.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d34a679a43ad3586fc5121e65d2c26a8f047bf9db6e9c0e8f82d62b69c0d1df2",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "019-pk-104-002-f5795c5e",
+      "corpus_file": "019-f5795c5e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

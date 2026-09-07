@@ -1,0 +1,69 @@
+{
+  "plan_id": "base-plan-031",
+  "seed_id": "bacnet-base-031-01",
+  "title": "Base Who-Is variant 4 (revised)",
+  "strategy": "stateful_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Exercise plausible setup-then-target discovery sequence with request then response to encourage stateful parser coverage and improved frame-shape diversity.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "who_is_request",
+      "hex": "810b000a0120ffff1008",
+      "byte_length": 10,
+      "sha256": "f5655045c0d39d9b0db29f42440301d3625e5916025a43de616994c05ba13da5"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "i_am_response",
+      "hex": "810a00120120001000c40200000122040091",
+      "byte_length": 18,
+      "sha256": "4ab8a53ce58e90b24da0cd1aa5ea54c11137b729c744f303c84bde15769fde42"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP implementation may treat the first frame as Who-Is query and the second as plausible I-Am advertisement with device identifier and capability data.",
+  "constraints_preserved": [
+    "BACnet/IP BVLC, NPDU and APDU layering preserved",
+    "BVLC total lengths internally consistent at 0x000c and 0x0012",
+    "Setup-then-request style two-message sequence retained",
+    "Operation kept as Who-Is",
+    "Discovery traffic diversified",
+    "Hex lowercase without separators",
+    "Built-in length and checksum/order consistency enforced"
+  ],
+  "issue_safety_notes": "No external vulnerability issue information available. The response pairing is a plausible model-prior discovery analogue only.",
+  "sequence_sha256": "45214008aef29a3b52ee2abbf1410501c51e6461f6c1d6192798d2dc5e9ec671",
+  "total_bytes": 28,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f292e5ee7f3a2f17d964a32cebaa606ea067160ab0faafa58300c6740569cc03",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

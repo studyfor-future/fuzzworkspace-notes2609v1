@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-017",
+  "seed_id": "enetip-pk-017",
+  "title": "Function coverage analogue for Save via SendRRData explicit request",
+  "strategy": "function_code_coverage",
+  "target_operation": "Save",
+  "purpose": "Provide a structurally valid EtherNet/IP explicit-message seed aligned to the Save plan while preserving documented encapsulation and CPF structure and keeping the CIP body compact for mutation.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:function-text:3b15ec1ab4ca",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "function_code:function:function-text:d62ad498ac4f",
+    "function_code:function:operation-catalog:a6b9b629463c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "sendrrdata-save-analogue",
+      "hex": "6f001500010000000000000000000000000000000000000000000000020000000000b2000a1602200124013001",
+      "byte_length": 45,
+      "sha256": "6b9486d9f9141996a4889ee8110d67a7575f61c2612255edd5601b1536b84edf"
+    }
+  ],
+  "expected_behavior": "Parser should accept the EtherNet/IP encapsulation header, parse two CPF items, and deliver a compact unconnected explicit request to the CIP layer; target application response may vary because the exact Save service code was not documented in the supplied sources.",
+  "constraints_preserved": [
+    "Used encapsulation command 0x006f SendRRData from supplied command list.",
+    "Used 24-byte encapsulation header with little-endian command, length, session handle, status, and options per supplied format.",
+    "Set encapsulation payload length to 0x0016 to match the 22-byte CPF payload that follows.",
+    "Used documented SendRRData CPF item combination: Null Address Item followed by Unconnected Data Item.",
+    "Kept Null Address Item type 0x0000 with zero length.",
+    "Set Unconnected Data Item type 0x00b2 with length 0x000a matching the 10-byte CIP request.",
+    "Used a conservative inferred CIP request layout: service byte, path size in 16-bit words, class segment 0x20 0x01, instance segment 0x24 0x01, one request data byte.",
+    "Used a conservative inferred service byte 0x16 only as a mutation-friendly placeholder for the Save-themed plan because supplied sources name the operation category but do not provide the actual service-code value."
+  ],
+  "issue_safety_notes": "This is a protocol-valid structural seed only. It does not assert any vulnerability, error condition, or guaranteed Save semantics.",
+  "sequence_sha256": "997633e8f628b1e81ea20fa73f486b863603c9ea1c61ee8eb51e6e4891c1698f",
+  "total_bytes": 45,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6b9486d9f9141996a4889ee8110d67a7575f61c2612255edd5601b1536b84edf",
+    "encoded_bytes": 45,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

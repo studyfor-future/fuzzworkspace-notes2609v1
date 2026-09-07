@@ -1,0 +1,61 @@
+{
+  "plan_id": "plan-056",
+  "seed_id": "iec60870-full-056",
+  "title": "Test operation with standard test cause on TypeID 104",
+  "strategy": "function_code_coverage",
+  "target_operation": "Test operation",
+  "purpose": "Provide a well-formed baseline TypeID 104 test-command I-frame that reaches the intended application parser through the most plausible operational cause value, serving as a stable seed for later length and count mutations.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:83986922f28d",
+    "function_code:function:operation-catalog:c32f2366ef50",
+    "function_code:function:operation-catalog:224e76862422",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "i-format-type104-test-cot",
+      "hex": "680e0400000068014000010001000080",
+      "byte_length": 16,
+      "sha256": "bd6bd14f6fa5a8e816e1eb6c7feb286b959309de2ae16472dd89d8b54970a049"
+    }
+  ],
+  "expected_behavior": "Parser should accept the frame as a complete I-format APDU carrying a single TypeID 104 test command and either process it as a test operation or reject it cleanly according to role/configuration.",
+  "constraints_preserved": [
+    "Complete IEC 60870-5-104 I-frame with 0x68 start and consistent 0x0e length.",
+    "ASDU uses TypeID 104 with VSQ 1 and one object payload, matching the issue-relevant command family while remaining well-formed.",
+    "Cause value 0x40 is chosen as a conservative test-operation analogue based on common IEC 60870 conventions; this exact octet mapping is an inferred assumption, not explicitly verified by the supplied snippets.",
+    "Message differs materially from the GHSA PoC in control bytes, cause, object bytes, and overall layout while preserving valid structure."
+  ],
+  "issue_safety_notes": "Safe baseline near the issue surface: TypeID 104 is exercised, but lengths are internally consistent and the single-object declaration exactly matches the available bytes to avoid out-of-bounds reads.",
+  "sequence_sha256": "7ec28bc0bc3c3e5e59bdc8fa5af923491343ac49ef607e7a83613a91115a391e",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bd6bd14f6fa5a8e816e1eb6c7feb286b959309de2ae16472dd89d8b54970a049",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "033-iec60870-full-056-ae7fdec9",
+      "corpus_file": "033-ae7fdec9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

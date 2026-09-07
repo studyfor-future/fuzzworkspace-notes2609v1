@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-054",
+  "seed_id": "vk-054-r1",
+  "title": "Discovery response analogue with shortened domain-specific item name",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "GetVariableAccessAttributes",
+  "purpose": "Provide a standalone server-to-client style discovery response analogue that contains a very short visible name component, supporting mutation toward issue-599 style fixed-offset assumptions on returned item identifiers.",
+  "evidence_ids": [
+    "issue:599:599-summary:806eef562ec3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "short_name_discovery_response_analogue",
+      "hex": "0300001a02f080a118020106a113a11180024c448103241a0161",
+      "byte_length": 26,
+      "sha256": "a581e97f6a341b1ce2323c6f97fe54067c141df21028c2df25997a05fa25542e"
+    }
+  ],
+  "expected_behavior": "A client-side parser may accept the compact response shape and then process an unusually short name field. Further mutation of the visible-string length and contents can probe assumptions about internal name layout and suffix expectations.",
+  "constraints_preserved": [
+    "tpkt version starts with 03",
+    "tpkt total length matches full frame",
+    "single standalone response remains recognizable as mms-like over rfc1006",
+    "short field is an analogue not a direct reproduced patched packet",
+    "hex is lowercase and even-length"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue for the shortened itemId condition and does not reproduce an exact intercepted or patched GetNamedVariableListAttributesResponse from the report.",
+  "sequence_sha256": "78f6b11e9718e592e5898535f2797079699b2ad87090a160219762fd2e9ed1b8",
+  "total_bytes": 26,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2024-36702"
+  ],
+  "_selection_score": 82.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a581e97f6a341b1ce2323c6f97fe54067c141df21028c2df25997a05fa25542e",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 26,
+        "frame_length": 26
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "026-vk-054-r1-1783496f",
+      "corpus_file": "026-1783496f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

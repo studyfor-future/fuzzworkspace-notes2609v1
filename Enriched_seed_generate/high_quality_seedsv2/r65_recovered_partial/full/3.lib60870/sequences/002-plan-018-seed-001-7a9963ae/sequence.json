@@ -1,0 +1,92 @@
+{
+  "plan_id": "plan-018",
+  "seed_id": "plan-018-seed-001",
+  "title": "STOPDT control exchange with command-path follow-up",
+  "strategy": "stateful_valid",
+  "target_operation": "Single Command",
+  "purpose": "Cover STOPDT U-format activation and confirmation, then exercise a distinct control-direction Single Command with a normal-operation cause and nonzero object address.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:operation-catalog:b0db75237939",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STOPDT activation",
+      "hex": "68051300000000",
+      "byte_length": 7,
+      "sha256": "1bf72c9ebeb38de1ed1de7cfbc8236613c23785bdc521dc8e1c0c9ee9c93f512"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STOPDT confirmation",
+      "hex": "68051700000000",
+      "byte_length": 7,
+      "sha256": "e8475c3297c0d033cdda1bfef8d6c87969f65212df0662c82d37c25c86229db5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Single command normal operation",
+      "hex": "680e000000002d010000010100000001",
+      "byte_length": 16,
+      "sha256": "8206f15fddf61d0674b13703c07e4e4698d38abc00138a02223e828f842bc15e"
+    }
+  ],
+  "expected_behavior": "The peer processes the STOPDT exchange and parses the subsequent Single Command frame as a distinct control-direction application path; malformed or disallowed state handling should return an error or protocol response rather than terminate the process.",
+  "constraints_preserved": [
+    "U-format STOPDT activation and confirmation use four control octets and length 0x04.",
+    "Type 45 is the documented Single Command identifier.",
+    "The command ASDU preserves type, VSQ, two-octet cause, common address, three-octet IOA, and command qualifier ordering.",
+    "The I-format length 0x0e matches four control octets plus ten ASDU octets.",
+    "The payload is synthetic and does not copy issue 13 input."
+  ],
+  "issue_safety_notes": "The sequence intentionally combines a link-state transition with a command parser path, but uses a short, nonhistorical payload and no oversized or repeated-zero body from the reported crash.",
+  "sequence_sha256": "cf3e34151927f6dc2af0b9cf08b4054e240b94afaeba158727c936e683b706a5",
+  "total_bytes": 30,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 119.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "225c548736ea78cf0a1314a39813c2dedb162aaf9104cf5d16056db5e3112412",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-plan-018-seed-001-7a9963ae",
+      "corpus_file": "002-7a9963ae.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-001-2",
+  "title": "Discovery command pair for identity and services",
+  "strategy": "baseline_valid",
+  "target_operation": "ListIdentity and ListServices",
+  "purpose": "Exercise two independent EtherNet/IP discovery parser entry points using complete zero-payload requests.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity_request",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ListServices_request",
+      "hex": "040000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "b97f04a7b2553ffe229deb26f42ff91ee2eab9e5f91c5761f898e52f8d7e5a2c"
+    }
+  ],
+  "expected_behavior": "The server parses each discovery request and may return the corresponding discovery response or an ordinary encapsulation error; no response success is assumed.",
+  "constraints_preserved": [
+    "Encapsulation command and length fields are little-endian",
+    "Each message has a complete 24-byte encapsulation header",
+    "Both requests declare zero payload length and contain no trailing bytes",
+    "Messages are separate transport frames rather than concatenated bytes"
+  ],
+  "issue_safety_notes": "Discovery-only baseline; it does not enter the affected SendRRData response-assembly path and contains no historical issue payload.",
+  "sequence_sha256": "5bf54a9314626f40c496b72d5921ee53680be0be84930f8d0f340b41898113e0",
+  "total_bytes": 48,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 81.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0f58b32e2ab9ad701b76854d1579e1a5506ff0abd2471cd13d64604d2a4c5388",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "039-seed-revised-001-2-202b5f33",
+      "corpus_file": "039-202b5f33.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

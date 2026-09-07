@@ -1,0 +1,106 @@
+{
+  "plan_id": "",
+  "seed_id": "vk11-seed-044d",
+  "title": "Cross-state session lifecycle with SendUnitData and UnregisterSession analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendUnitData",
+  "purpose": "Increase frame and state diversity by combining session setup, a connected-explicit style SendUnitData CPF, and a later UnregisterSession, covering issue-related state reuse and session handling without reproducing exact vulnerable traffic.",
+  "evidence_ids": [
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:565:565-summary:9f823d95b613",
+    "issue:567:567-summary:1255c28909d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request for connected path seed",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response analogue with session handle 0xa1b2c3d4",
+      "hex": "65000400d4c3b2a10000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "f38d6f6a87ef4ebdb8bb3943b93cf24b743764d1ef4e5e29b8db9dfbd2e3b9cd"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendUnitData with connection address item and small connected data item",
+      "hex": "70001700d4c3b2a10000000000000000000000000000000000000000010000a100040044332211b100040052022001",
+      "byte_length": 47,
+      "sha256": "0f2eda23a58965b5fc76ef2cec7da4ef9fea4f8a1a1265b3c3438206d091f974"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "UnregisterSession using same handle",
+      "hex": "66000000d4c3b2a100000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "bd504d08161aa03d7f780f5f2069094818d23f9f5d085bcee0372d595735350a"
+    }
+  ],
+  "expected_behavior": "The target should parse a small connected CPF frame and then allow orderly session teardown; any rejection should be graceful and state-aware rather than memory-unsafe.",
+  "constraints_preserved": [
+    "24-byte encapsulation headers used",
+    "little-endian lengths and handles visible",
+    "explicit connected path included for coverage diversity",
+    "session lifecycle includes register and unregister",
+    "no duplicate payloads across sequences"
+  ],
+  "issue_safety_notes": "This sequence safely analogizes CPF state reuse and session-handle handling. It does not depend on stale-pointer reuse, cross-socket hijacking, or copied historical crash payloads.",
+  "sequence_sha256": "5bf629f6a16c34872cc0afbdffa62eda6b3a23ed67d90c204f081f14d835f27a",
+  "total_bytes": 127,
+  "message_count_hint": 4,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "578f47a93d975fc868ae1b59a8aff7ad70d8c5499147181b33883bfaa6272877",
+    "encoded_bytes": 127,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 47,
+        "frame_length": 47
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 103,
+        "payload_offset": 103,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "039-vk11-seed-044d-01369fbb",
+      "corpus_file": "039-01369fbb.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

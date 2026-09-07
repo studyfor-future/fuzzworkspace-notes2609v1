@@ -1,0 +1,79 @@
+{
+  "plan_id": "plan-007",
+  "seed_id": "seed-007",
+  "title": "Issue-guided analogue for Service Fragmentation Sequence Not In Progress",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Service Fragmentation Sequence Not In Progress",
+  "purpose": "Recover historically sensitive structure from UDP ListServices stack-overflow bug while creating safe valid analogue via valid fragmentation flag sequence; diversity in single-request discovery path with nested Message Router parsing.",
+  "evidence_ids": [
+    "issue:445:445-summary:c1784b774e94",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:532:532-summary:1a523aa7a5f5",
+    "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:568:568-summary:6fa072929d36"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListServices",
+      "hex": "04000000000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "6b6f14e6af2627186bf8a55e474dcf6ef3f6ce81af560da871ec51eb670171a9"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "SendRRData fragmentation analogue",
+      "hex": "6f001800000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "8b482bacef4d24f50e2dbc1d29ce28945f561056ff56d82571beffd2a0802d21"
+    }
+  ],
+  "expected_behavior": "Valid ListServices + SendRRData sequence; no stack overflow or crash",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header",
+    "Diversify discovery, session and explicit-message paths",
+    "Complete documented framing and preserve length/count/checksum/order rules",
+    "Model internal knowledge may conservatively fill documentation gaps"
+  ],
+  "issue_safety_notes": "Structural analogue only (valid fragmentation flag sequence); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+  "sequence_sha256": "eca7ebc0491edd270e407492f917b7157075a66736c7d3f6012aca286f68633e",
+  "total_bytes": 32,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "445"
+  ],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "feb3067f9be7f183d624530bd23fd6def2758307021ecf9c87b010a75c5a1d22",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "011-seed-007-5ffddb32",
+      "corpus_file": "011-5ffddb32.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

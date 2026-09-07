@@ -1,0 +1,109 @@
+{
+  "plan_id": "vk-plan-063",
+  "seed_id": "seed-063",
+  "title": "VK-only ReadProperty: A reported remotely reachable denial-of-service in bacnet-stack v1.5.0 affects the default demo server",
+  "strategy": "length_boundary_valid",
+  "target_operation": "ReadProperty",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency and increasing real operation/frame/state diversity through signed offsets and array sizes.",
+  "evidence_ids": [
+    "issue:1342:1342-summary:cdc7c256554d",
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "ReadProperty request",
+      "hex": "810b0014000100fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "f4ef0fda9d5de787c1d27b0f1ecee7e43b4ca7600718fb03026745db83b8d3ed"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "ReadProperty request",
+      "hex": "810b0014000200fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "d2a56cb2b05b0122a64830c1a7d08ed4c71f86efe9a3aff6fe82911a8188f31a"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "ReadProperty request",
+      "hex": "810b0014000300fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "5e6f6bb89a537b0a24675c2a74dd32b44583bb996e2e8a0457c47f61a8860dc1"
+    },
+    {
+      "index": 3,
+      "direction": "standalone",
+      "label": "ReadProperty request",
+      "hex": "810b0014000400fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "80b683fe95ebb884f7ea3b104eefa38f3b1d6b16ba1a7f09a4b01ee803e1a5d7"
+    }
+  ],
+  "expected_behavior": "Denial of service via Timer object implementation boundary",
+  "constraints_preserved": [
+    "BVLC NPDU APDU layering",
+    "BACnet/IP consistency",
+    "visible lengths/counts",
+    "no external documents",
+    "lowercase hex no separators"
+  ],
+  "issue_safety_notes": "Pseudocode only; real payloads may crash server but are not provided. Safe issue analogue: boundary-length with signed offsets (even chars only, no crash bytes). Increased real operation/frame/state diversity through signed offsets and array sizes.",
+  "sequence_sha256": "5275811968082a365c260fe46efd2b52580a3cbae4cf0c4f170a171b9df05773",
+  "total_bytes": 80,
+  "message_count_hint": 4,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1342"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "70e9088a3ae81326a149471ed8186e104c36729997272f670d3fcad9c41f5a79",
+    "encoded_bytes": 80,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 20,
+        "payload_offset": 20,
+        "payload_length": 20,
+        "frame_length": 20
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 40,
+        "payload_offset": 40,
+        "payload_length": 20,
+        "frame_length": 20
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 60,
+        "payload_offset": 60,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-seed-063-dd530132",
+      "corpus_file": "017-dd530132.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

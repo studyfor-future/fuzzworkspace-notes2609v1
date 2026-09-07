@@ -1,0 +1,65 @@
+{
+  "plan_id": "plan-047",
+  "seed_id": "seed-047",
+  "title": "Function coverage for ON",
+  "strategy": "function_code_coverage",
+  "target_operation": "ON",
+  "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+  "evidence_ids": [
+    "issue:837:837-summary:c4fb6d28cc16",
+    "function_code:function:operation-catalog:403195f9db74",
+    "function_code:function:function-text:8c5aec6d88bd",
+    "issue:867:867-summary:58115ace3a65",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:388a9f8cf2ff"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ON operation request",
+      "hex": "0000000000070500000000ff00",
+      "byte_length": 13,
+      "sha256": "b9174dba57c01befee7a257c11259913534f76176da366696403561b00ac6ff4"
+    }
+  ],
+  "expected_behavior": "Server processes the Modbus TCP request using the function code entry point; response returned or handled per standard mapping.",
+  "constraints_preserved": [
+    "Complete documented framing and preserve length/count/checksum/order rules",
+    "Prefer Modbus/TCP ADUs with a 7-byte MBAP header",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions",
+    "Supplied protocol sources are primary and must not be contradicted",
+    "Model internal knowledge may conservatively fill documentation gaps; record inferred assumptions in constraints_preserved and do not call them verified",
+    "Maximize real diversity across operations, frame structures, sizes, directions, state sequences and nested parser paths",
+    "Avoid cosmetic byte-only variants and exact issue payload copies"
+  ],
+  "issue_safety_notes": "Structural analogue of 837's short-frame parser path (minimal MBAP + FC) using documented ON operation (legal value 0xFF00); no copied exact issue payload, no memory access triggered, fully valid per protocol specification",
+  "sequence_sha256": "4567ed55ac19b370db087ffce0b55fa7cf8268c85a1bdd7dac9127d552dadbe7",
+  "total_bytes": 13,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b9174dba57c01befee7a257c11259913534f76176da366696403561b00ac6ff4",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "020-seed-047-1b4d5cab",
+      "corpus_file": "020-1b4d5cab.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

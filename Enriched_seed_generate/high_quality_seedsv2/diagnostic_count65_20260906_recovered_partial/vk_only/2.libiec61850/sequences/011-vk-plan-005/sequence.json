@@ -1,0 +1,57 @@
+{
+  "plan_id": "vk-plan-005",
+  "seed_id": "vk-plan-005",
+  "title": "VK-only Write: In StringUtils_createStringFromBuffer, the second argument, size, i...",
+  "strategy": "stateful_valid",
+  "target_operation": "Write",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:198:198-summary:062388f44431",
+    "issue:193:193-summary:1451e58436f0",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:590:590-summary:8f1dbbd54154"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "WriteRequest",
+      "hex": "0300000d000000000f00010000",
+      "byte_length": 13,
+      "sha256": "303f7bcdd1cbe35dd7c46f8f2a634dd4288d140a32587261bcdb3190945404b0"
+    }
+  ],
+  "expected_behavior": "single valid Write request exercising StringUtils_createStringFromBuffer with negative size argument in model internal state",
+  "constraints_preserved": [
+    "TPKT header version 0x03",
+    "TPKT total-length field consistent with complete message",
+    "diversified write path in MMS over RFC1006"
+  ],
+  "issue_safety_notes": "Issue 198 evidence_id used; negative size triggers potential negative length handling without copying exact crash bytes; no external protocol details copied",
+  "sequence_sha256": "e27346fc821d26e66e3fabf0a7591faecd7961adc54a6da00ff04155e1b878df",
+  "total_bytes": 13,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "198"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "303f7bcdd1cbe35dd7c46f8f2a634dd4288d140a32587261bcdb3190945404b0",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ]
+  }
+}

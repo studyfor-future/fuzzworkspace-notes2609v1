@@ -1,0 +1,80 @@
+{
+  "plan_id": "plan-023",
+  "seed_id": "full-576-plan023-001-rev",
+  "title": "RegisterSession then SendRRData with deeper bounded CIP path",
+  "strategy": "parser_depth",
+  "target_operation": "Path Segment Error",
+  "purpose": "Exercise a slightly deeper unconnected explicit-message parser path after RegisterSession using a bounded CIP route shape that may elicit a normal path or service error without relying on truncation.",
+  "evidence_ids": [
+    "issue:576:576-summary:bc3710455616",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:section-common-heade:540b84623d2f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData with bounded deeper CIP path",
+      "hex": "6f001700010000000000000000000000000000000000000000000000020000000000b20e0005042006240130013001",
+      "byte_length": 47,
+      "sha256": "9a99ca4ef56a0c1cad369eea6bfbec5218b426d4c933306e9270e52809cf7114"
+    }
+  ],
+  "expected_behavior": "Server should accept the encapsulation framing and CPF structure, then either route the CIP request or return a normal path/service error. No truncation, length mismatch, or parser overrun should occur.",
+  "constraints_preserved": [
+    "Encapsulation header uses documented 24-byte form",
+    "RegisterSession precedes session-bearing SendRRData",
+    "SendRRData uses the documented common CPF item combination for unconnected data",
+    "Payload lengths and item lengths are internally consistent",
+    "CIP path remains bounded and even-byte aligned",
+    "Session handle field is a placeholder for negotiated runtime substitution"
+  ],
+  "issue_safety_notes": "This preserves a nearby explicit-message parsing context with increased path depth but avoids malformed or overlong segment constructions and does not reproduce any historical crashing path bytes.",
+  "sequence_sha256": "c8141139c126cdb4614cbdbbe0928fb9793d3807e1f6b5749b048697b9b8c418",
+  "total_bytes": 75,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "574"
+  ],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b63030172d14c924e5cf6912ede9a8753b6de0c872a9193b94c9743cd07fad67",
+    "encoded_bytes": 75,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 47,
+        "frame_length": 47
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "009-full-576-plan023-001-rev-0acf5d23",
+      "corpus_file": "009-0acf5d23.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-037",
+  "seed_id": "vk-seed-037",
+  "title": "VK-only ReadRange: bacnet-stack 1.5.0 (master branch commit 932e347) contains a heap out-of-bounds read in the RAMFS-backed FILE record-replacement path.",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Combine issue-supported vulnerable structure (record-replacement path) with conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:1399:1399-summary:0436f55c6893",
+    "issue:cve-2026-58265:cve-2026-58265-summa:8f24d69e6c6a",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "AtomicReadFile record-access request",
+      "hex": "810b0027001120fffe000100c4020003e82205c491021005000100010100000001010101010100",
+      "byte_length": 39,
+      "sha256": "f46446b896d556c11a27caff5c40428af2d221b1610246a4c1745fe9d60ecce8"
+    }
+  ],
+  "expected_behavior": "server-side heap out-of-bounds read in bacfile_ramfs_write_record_data via stale tail_record_len and memmove after realloc in record replacement path",
+  "constraints_preserved": [
+    "bvlu/npdu/apdu layering",
+    "bacnet/ip bvlc 4-byte length consistency",
+    "model internal prior for file record access",
+    "single request shape",
+    "internal length consistency"
+  ],
+  "issue_safety_notes": "No crash bytes copied; uses internal prior. Heap OOB read may cause crash/DoS but does not expose methods for weapons or similar.",
+  "sequence_sha256": "d32dad42730e8efdd1172d344f0b56fee526bfcac58c988147cfb477e33764a0",
+  "total_bytes": 39,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1400"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f46446b896d556c11a27caff5c40428af2d221b1610246a4c1745fe9d60ecce8",
+    "encoded_bytes": 39,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 39,
+        "frame_length": 39
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-vk-seed-037-ac2ff94e",
+      "corpus_file": "005-ac2ff94e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

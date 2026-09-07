@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-019",
+  "seed_id": "enetip-pk-019",
+  "title": "Function coverage analogue for Restore with parameter bytes",
+  "strategy": "function_code_coverage",
+  "target_operation": "Restore",
+  "purpose": "Supply a structurally valid explicit request variant for the Restore plan with multiple request-data bytes to exercise field interaction between CPF lengths and CIP body size.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:function-text:3b15ec1ab4ca",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "function_code:function:operation-catalog:a6b9b629463c",
+    "function_code:function:function-text:578655b8e58e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "sendrrdata-restore-analogue",
+      "hex": "6f001700030000000000000000000000000000000000000000000000020000000000b2000c15022001240130010001",
+      "byte_length": 47,
+      "sha256": "d80638d5c15d540e036ea2e0e1b6f7716199406708d43683f468fcf4232829e3"
+    }
+  ],
+  "expected_behavior": "Parser should successfully process the encapsulation header and CPF items and expose a slightly longer explicit request to the CIP parser; application-level acceptance depends on implementation support for the implied service.",
+  "constraints_preserved": [
+    "Used little-endian encapsulation command and length fields with 24-byte header.",
+    "Set encapsulation payload length to 0x0018 corresponding to 24 CPF bytes.",
+    "Used documented item types 0x0000 and 0x00b2 in the documented SendRRData combination.",
+    "Set Unconnected Data Item length 0x000c to match the embedded 12-byte CIP request.",
+    "Used a conservative inferred explicit-request layout and EPATH encoding to Identity Object class 0x01 instance 0x01.",
+    "Used conservative inferred service byte 0x15 as a Restore-themed placeholder because the supplied sources do not provide the actual Restore service code."
+  ],
+  "issue_safety_notes": "This seed preserves protocol structure and avoids any claim that the target supports or will execute a Restore operation.",
+  "sequence_sha256": "6dbc7dfbae35beec46dba2684a46c1c0179a932f0134580dae4366c29bcde3a6",
+  "total_bytes": 47,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d80638d5c15d540e036ea2e0e1b6f7716199406708d43683f468fcf4232829e3",
+    "encoded_bytes": 47,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 47,
+        "frame_length": 47
+      }
+    ]
+  }
+}

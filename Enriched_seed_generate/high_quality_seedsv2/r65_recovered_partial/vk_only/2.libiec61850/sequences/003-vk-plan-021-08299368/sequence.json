@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-021",
+  "seed_id": "vk-plan-021",
+  "title": "VK-only Write: libIEC61850 v1.6_develop HEAD commit 196bb76 contains a heap use-after-free in the MMS file service. During an ObtainFile / set-file transfer, MmsObtainFileT...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Write",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:597:597-summary:4fb3ca566b9b",
+    "issue:597:597-summary:f39c49c0ddef",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "mms_write_request",
+      "hex": "e2070283000102040000",
+      "byte_length": 10,
+      "sha256": "d3227d53a1a9999cd3587c25b8f5269441a75d9082fcde6d2bbd8d4d197bcc20"
+    }
+  ],
+  "expected_behavior": "length_boundary_valid triggers heap use-after-free in MmsObtainFileT transfer path",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length matches complete message",
+    "IEC 61850 $FC$ suffix trigger preserved",
+    "message budget 1",
+    "single_request shape"
+  ],
+  "issue_safety_notes": "Uses documented proxy rewrite of first itemId TLV to \"$\" from issue 599; no external protocol doc used; TPKT/ASN.1 lengths internally consistent; target_operation preserved",
+  "sequence_sha256": "7c6f9269f228f1c026dd8538212f4b62a0b27c6c4cbb9fe54f122428ac1c7996",
+  "total_bytes": 10,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "597"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d3227d53a1a9999cd3587c25b8f5269441a75d9082fcde6d2bbd8d4d197bcc20",
+    "encoded_bytes": 10,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-vk-plan-021-08299368",
+      "corpus_file": "003-08299368.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

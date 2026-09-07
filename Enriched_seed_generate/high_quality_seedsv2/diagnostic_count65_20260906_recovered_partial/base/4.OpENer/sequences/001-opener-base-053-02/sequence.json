@@ -1,0 +1,66 @@
+{
+  "plan_id": "base-plan-053",
+  "seed_id": "opener-base-053-02",
+  "title": "Base RegisterSession variant 7",
+  "strategy": "length_boundary_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "register_session_response",
+      "hex": "65000400785634120000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "7eaa4db40ae3e1ce8536b2bad1aa183177ba1027551d9b4ede21b1f2b31c66ce"
+    }
+  ],
+  "expected_behavior": "A plausible server accepts the RegisterSession request and returns success with a newly assigned nonzero session handle and matching 4-byte command-specific payload.",
+  "constraints_preserved": [
+    "Uses EtherNet/IP-style 24-byte encapsulation header.",
+    "Uses little-endian payload length of 0004 matching the 4-byte RegisterSession command data.",
+    "Keeps command-specific payload size internally consistent across request and response.",
+    "Follows requested setup_then_request shape within the 2-message budget."
+  ],
+  "issue_safety_notes": "No external issue knowledge is available. This seed is a conservative model-prior session-establishment example and is not based on any verified vulnerability details.",
+  "sequence_sha256": "f104730f1794a937d271efea48ab9eff1a0eb73ad9b2e084ff3e0934a33483ec",
+  "total_bytes": 56,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 97.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1c08bcc92e722271ec2f97ec5fdc9cad71098036f15666e58e88e5cc5d0d42f4",
+    "encoded_bytes": 56,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ]
+  }
+}

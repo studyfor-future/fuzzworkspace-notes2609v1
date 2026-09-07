@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-013",
+  "seed_id": "seed-013-001",
+  "title": "Issue-guided analogue for Confirmed-Request-PDU",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Confirmed-Request-PDU",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:cve-2019-12480:cve-2019-12480-summa:a62c738611ad",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "malformed UCOV analogue - safe tag decoding",
+      "hex": "810000150101000c2007001001f522ff2101210e2d",
+      "byte_length": 21,
+      "sha256": "6bea2b50305391ec5f136f3dee8c46d6181f21d613e39a6dd2aa4f9b97200d4c"
+    }
+  ],
+  "expected_behavior": "Decoder accepts the malformed extended application length but produces safe parse without out-of-bounds access or SEGV on bacapp_decode_application_data / bacapp_decode_data / host_n_port_decode / bacnet_tag_number_decode path",
+  "constraints_preserved": [
+    "BVLC length field must be exactly 0x0000000f",
+    "NPDU priority, network, destination address ordering preserved",
+    "APDU service choice 0x01 (SubscribeCOV) + property-value tag structure",
+    "APDU byte count and order rules intact"
+  ],
+  "issue_safety_notes": "All inferred assumptions documented in constraints_preserved; no copy of original crash payload bytes used",
+  "sequence_sha256": "98b0a0b96c10ac550ce3d632e5655c338bf57b70dfd564ee2019f0275242d64b",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2019-12480"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6bea2b50305391ec5f136f3dee8c46d6181f21d613e39a6dd2aa4f9b97200d4c",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "011-seed-013-001-d31af45c",
+      "corpus_file": "011-d31af45c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

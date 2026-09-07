@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-056",
+  "seed_id": "vk_seed_56_001",
+  "title": "VK-only STOPDT activation: No affected version is documented. A NULL pointer dereference in In...",
+  "strategy": "field_interaction",
+  "target_operation": "STOPDT activation",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:178:178-summary:01c5b607cf00",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:13:13-summary:187d3c5ead6c",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "stopdt_1",
+      "hex": "68330f00000000000000000000008300fa000000008300fa00e26808000000008300fa00e2eb0080000000000001000083000483f0",
+      "byte_length": 53,
+      "sha256": "0532b87c43312146c61455e60d2288d9ea2973bad49a044e136042331e167bd2"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "stopdt_2",
+      "hex": "68330f00000000000000000000008300fa000000008300fa00e26808000000008300fa00e2eb0080000000000001000083000483f0",
+      "byte_length": 53,
+      "sha256": "0532b87c43312146c61455e60d2288d9ea2973bad49a044e136042331e167bd2"
+    }
+  ],
+  "expected_behavior": "Model-prior server processes STOPDT with field interaction triggering InformationObject_ParseObjectAddress OOB (issue:178 analogue)",
+  "constraints_preserved": [
+    "0x68 length octet consistent with 26-byte frame",
+    "FT1.1 APCI header preserved",
+    "TypeID 104 with sequence-bit set, VSQ=1, COT=0",
+    "Sequence-form IOA structure respected",
+    "Multi-step stateful shape"
+  ],
+  "issue_safety_notes": "Multi-step field interaction in plausible structure; no exact crash bytes copied from any issue",
+  "sequence_sha256": "ba595251d47dab831b9326311405e6e67c0dfa800e25f9e91748aa464d4060c5",
+  "total_bytes": 106,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "178"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4f510b857a00e807368867e6f8e8448aeec380ba6cfba6e72f67980c55b26683",
+    "encoded_bytes": 106,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 53,
+        "frame_length": 53
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 53,
+        "payload_offset": 53,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "023-vk_seed_56_001-009e9bda",
+      "corpus_file": "023-009e9bda.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

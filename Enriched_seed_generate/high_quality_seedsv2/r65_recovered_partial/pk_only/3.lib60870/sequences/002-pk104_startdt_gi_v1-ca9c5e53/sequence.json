@@ -1,0 +1,91 @@
+{
+  "plan_id": "",
+  "seed_id": "pk104_startdt_gi_v1",
+  "title": "STARTDT handshake followed by General Interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "C_IC_NA_1",
+  "purpose": "Exercise both U-format and I-format parser/state transitions using a conservative STARTDT exchange before a general interrogation request.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:9662ce251be3",
+    "protocol_format:iec60870:format-overview:6fc14a471f76"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT act",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT con",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 general interrogation request",
+      "hex": "680d00000000640106000100000014",
+      "byte_length": 15,
+      "sha256": "76845e55d165a7c274af0f67d4c8b9ab63143ac8e16c1d8d1e0efebc412ae72f"
+    }
+  ],
+  "expected_behavior": "After STARTDT activation/confirmation, parser accepts the I-format ASDU as TypeID 100 general interrogation with activation cause and qualifier 20.",
+  "constraints_preserved": [
+    "Pure 104 APCI framing used for all messages",
+    "U-format frames keep fixed 4-byte control payload with matching length 0x04",
+    "General interrogation ASDU uses TypeID 100 from supplied recommended system ASDUs",
+    "Cause of transmission encoded as activation in a standard two-octet COT field",
+    "Single information object with IOA zero and interrogation qualifier 20"
+  ],
+  "issue_safety_notes": "Safe stateful seed; structurally valid handshake and request only, avoiding malformed control combinations and historical collisions.",
+  "sequence_sha256": "a29b928fa77681712ce1c3992ae7c135c93f1b20267f9abe7c7a8708700d6f07",
+  "total_bytes": 27,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "39f75ca6f71da293c8383ebcba1d2feeeccb445ac7172ee6ee14655dc96b39e1",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-pk104_startdt_gi_v1-ca9c5e53",
+      "corpus_file": "002-ca9c5e53.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-052",
+  "seed_id": "vk-revised-052-measured",
+  "title": "VK-only Measured Value parser-depth sequence with complete quality fields",
+  "strategy": "parser_depth",
+  "target_operation": "Measured Value",
+  "purpose": "Exercise a measurement information-object path distinct from command and interrogation paths, including IOA, normalized value, and quality descriptor fields within a consistent I-frame.",
+  "evidence_ids": [
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "vk_task_context:task-contract:e5a446a8785a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "measured_value_normalized",
+      "hex": "68100c000000090103000100010000341200",
+      "byte_length": 18,
+      "sha256": "2233997740a9f9d194ce5bb60b5765ad798c996085279da4955479f0d2e37885"
+    }
+  ],
+  "expected_behavior": "The server should parse or safely reject one complete measured-value object and its quality descriptor after the link is ready. The distinct type, COT, IOA, value, and quality fields provide parser-depth mutation points without depending on a missing field.",
+  "constraints_preserved": [
+    "iec60870_5_104_i_frame",
+    "start_byte_is_0x68",
+    "length_octet_0x10_matches_four_control_and_twelve_asdu_bytes",
+    "vsq_count_is_one",
+    "measurement_object_contains_complete_ioa_value_and_quality_descriptor"
+  ],
+  "issue_safety_notes": "The sequence is guided by reports involving deep information-object and time-related parser paths, while remaining a complete bounded measurement analogue. It does not copy the reported Clock Synchronization stream or either GHSA payload, and no specific vulnerability outcome is asserted.",
+  "sequence_sha256": "9ddcc85406622317717f18844616fffa4c68508cc43ab1097857f7cac00a0de3",
+  "total_bytes": 18,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "53"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2233997740a9f9d194ce5bb60b5765ad798c996085279da4955479f0d2e37885",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "043-vk-revised-052-measured-b58180aa",
+      "corpus_file": "043-b58180aa.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

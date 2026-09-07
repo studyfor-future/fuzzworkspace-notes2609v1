@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-011",
+  "seed_id": "seed-read-write-registers-repeat-02",
+  "title": "Repeated compound register transactions",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Exercise repeated compound read/write processing with different ranges and payload widths, exposing transaction-state and counted-data interactions across two complete requests.",
+  "evidence_ids": [
+    "issue:749:749-summary:29b9071582b0",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:748:748-summary:90052b7dfbe9",
+    "issue:750:750-summary:3dcb92ca7c5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_write_registers_four_byte_write",
+      "hex": "30010000000f031700100002002000020411223344",
+      "byte_length": 21,
+      "sha256": "cf5419524115e6e8a7ce388ce4c318b42851ffda099453a876f1b7fa60dd334f"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "read_write_registers_two_byte_write",
+      "hex": "30020000000d0417000000010010000102a55a",
+      "byte_length": 19,
+      "sha256": "f3ebdedc74d3ab6e372e871005e50d10fa27af16e9de4f6cdccf5b61c31b5897"
+    }
+  ],
+  "expected_behavior": "The server should parse each compound request, apply or reject the write range according to normal device policy, and produce a normal read response or a standard exception while maintaining transaction boundaries.",
+  "constraints_preserved": [
+    "Each message has a seven-byte Modbus/TCP MBAP header",
+    "Protocol identifier is 0000",
+    "The first MBAP length 000f matches a unit identifier plus fourteen-byte PDU",
+    "The second MBAP length 000d matches a unit identifier plus twelve-byte PDU",
+    "Read and write quantities match their corresponding address fields",
+    "Each write byte count matches the number of encoded register data bytes",
+    "Transaction identifiers and unit identifiers differ between messages"
+  ],
+  "issue_safety_notes": "These are fresh compound request analogues for repeated server processing and state-sensitive handling. They do not reproduce the reported multi-request stream or assume the suspected use-after-free cause is confirmed.",
+  "sequence_sha256": "11eee63c71ef93e25048b11654aac12e3cc6cdfea13b656ce5e5860a8a9a1ec2",
+  "total_bytes": 40,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "749"
+  ],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2ad5e75a26a5a3220fd597271dc054655b8133ca92effa422be2e344f93e2ee1",
+    "encoded_bytes": 40,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 21,
+        "payload_offset": 21,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-seed-read-write-register-a02ae2f9",
+      "corpus_file": "001-a02ae2f9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "plan_id": "plan-017",
+  "seed_id": "plan-017-seed-001",
+  "title": "STARTDT followed by station interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "General Interrogation",
+  "purpose": "Exercise link activation followed by a documented station interrogation request and its parser transition from U-format control to I-format ASDU processing.",
+  "evidence_ids": [
+    "protocol_format:iec60870:format-overview:6fc14a471f76",
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:operation-catalog:b0db75237939",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation",
+      "hex": "68050700000000",
+      "byte_length": 7,
+      "sha256": "5b0d6816aa8a81e79bcc30757390c476f1b291b6166b6862c7f7c5eb3b50f8c3"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT confirmation",
+      "hex": "68050b00000000",
+      "byte_length": 7,
+      "sha256": "e4d8a88a6a2355e6e9d5842320c3e8f9f7db99b55ce75a772810f7a311e6110d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Station interrogation activation",
+      "hex": "680e0000000064010600010000000014",
+      "byte_length": 16,
+      "sha256": "efc83e888bafb6d83c66ed0fdafccecc0041f03ff8e5d705ba2ff2c5d0c10c03"
+    }
+  ],
+  "expected_behavior": "The peer accepts the STARTDT exchange and processes the following I-format ASDU as a station General Interrogation request with interrogation qualifier 20.",
+  "constraints_preserved": [
+    "Every APDU begins with 0x68.",
+    "The U-format frames use a 0x04 length for four control octets.",
+    "The interrogation ASDU uses type 100, one information object, cause 6, one common address, one three-octet IOA, and qualifier 20.",
+    "The I-format length 0x0e equals four control octets plus ten ASDU octets.",
+    "No exact historical issue payload is used."
+  ],
+  "issue_safety_notes": "This is a benign stateful analogue for the I-format processing path implicated by issue 13. It does not reproduce the historical 0xe0-length payload, control fields, or repeated zero-filled body.",
+  "sequence_sha256": "c5967c105f3085ad71efc3c4c679012094789a963a3e2a82a0cc15a060e46446",
+  "total_bytes": 30,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 120.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2d2857c46ce510ad0e79b65c9da48bf13cd09bfe30cc9fcbb0e52f68d74349b8",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

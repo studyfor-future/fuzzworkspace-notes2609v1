@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-009",
+  "seed_id": "vk-plan-009-seq-01",
+  "title": "VK-only AtomicWriteFile: RAMFS record-replacement tail_record_len OOB read (plan 009)",
+  "strategy": "length_boundary_valid",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Explore RAMFS record-replacement OOB read boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "AtomicWriteFile record replacement - length boundary",
+      "hex": "810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+      "byte_length": 33,
+      "sha256": "547ccf5a609fa3133e59e8315872446350147569e4da67e4bfd8633f40cb2f05"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ACK",
+      "hex": "810a0009010020010f",
+      "byte_length": 9,
+      "sha256": "6d764325cc3c7db329b6d947003947569b19a9a626816f31cf52515d0840a937"
+    }
+  ],
+  "expected_behavior": "First AtomicWriteFile with fileStartRecord=0 replaces longer record with shorter data; tail_record_len stale before realloc triggers memmove OOB read past resized heap block.",
+  "constraints_preserved": [
+    "BVLC four-byte length consistent",
+    "NPDU/APDU standard layering",
+    "single-request shape",
+    "model internal prior preserved",
+    "visible lengths internally consistent"
+  ],
+  "issue_safety_notes": "Issue 1399/1400 evidence_ids used; OOB read reachable via normal AtomicWriteFile path; does not copy exact crash bytes; safety via length boundary analogue only.",
+  "sequence_sha256": "6b21f17afc09b6d024a61ad3c58600086f2263af37df254da27b18912030b5bc",
+  "total_bytes": 42,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2019-12480"
+  ],
+  "_selection_score": 83.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "218e07d98c89f434c46c2cf09fd3204428bbd915678d927697eea2e920c525f9",
+    "encoded_bytes": 42,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 33,
+        "frame_length": 33
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 33,
+        "payload_offset": 33,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "025-vk-plan-009-seq-01-8a82d1f8",
+      "corpus_file": "025-8a82d1f8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

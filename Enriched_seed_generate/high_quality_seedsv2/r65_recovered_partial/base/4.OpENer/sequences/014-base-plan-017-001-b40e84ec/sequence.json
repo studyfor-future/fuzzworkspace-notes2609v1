@@ -1,0 +1,74 @@
+{
+  "plan_id": "base-plan-017",
+  "seed_id": "base-plan-017-001",
+  "title": "Base GetAttributeSingle variant 2",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required, while adding non-zero instance coverage in the explicit request path.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData GetAttributeSingle request",
+      "hex": "6f001c00112233440000000000000000000000000000000000000000000000000200000000000000b2000a000e03200424013001",
+      "byte_length": 52,
+      "sha256": "b4f13a5fa90d3e2f4b84304bbb0344960ec55dbe387266f5bd09880bc5ec865c"
+    }
+  ],
+  "expected_behavior": "A conservative stateful sequence should first establish a session and then deliver an unconnected explicit GetAttributeSingle request with a short non-zero-instance path. Parser should accept framing and either process the service or return a protocol-level status without transport desynchronization.",
+  "constraints_preserved": [
+    "exactly one sequence for the supplied plan_id",
+    "24-byte encapsulation header used for each EtherNet/IP-style frame",
+    "little-endian encapsulation length fields are internally consistent",
+    "lowercase hexadecimal without separators",
+    "stateful setup_then_request shape preserved"
+  ],
+  "issue_safety_notes": "This sequence is based on fallible model prior only. It avoids vulnerability claims and keeps lengths and item counts conservative for safe corpus seeding.",
+  "sequence_sha256": "89e805ff43da914523a71d1ae2fa241b0182fe8108e5560c63bbb80b55994d29",
+  "total_bytes": 80,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 96.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "de75e8f3a6ee2a37c6fa7baf209db18088d0896f7457898d5cdb4033636cad54",
+    "encoded_bytes": 80,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 52,
+        "frame_length": 52
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "014-base-plan-017-001-b40e84ec",
+      "corpus_file": "014-b40e84ec.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

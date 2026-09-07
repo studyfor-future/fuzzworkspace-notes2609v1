@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-022",
+  "seed_id": "modbustcp-full-022-rev",
+  "title": "Issue-guided analogue for diagnostics bus-message-count path",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Return Bus Message Count",
+  "purpose": "Exercise a diagnostics request with explicit subfunction and data fields so the parser traverses a control-function path distinct from addressed read and write requests while keeping length and field sizes internally consistent.",
+  "evidence_ids": [
+    "issue:867:867-summary:58115ace3a65",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:810:810-summary:da5167fd5137",
+    "function_code:function:function-text:feea6cf87ab2",
+    "function_code:function:function-text:c093c4ea4f67",
+    "protocol_format:modbustcp:format-overview:9821a13f1ada"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "diagnostics_return_bus_message_count_request",
+      "hex": "3201000000062208000b0000",
+      "byte_length": 12,
+      "sha256": "4eeec662801ee4bed51327dde9830fc6dcf8879da1118f37302d22d4c895e728"
+    }
+  ],
+  "expected_behavior": "A Modbus/TCP implementation should delimit the ADU using the stated MBAP length, parse function 0x08 with a 2-byte subfunction and 2-byte data field, and then either process the diagnostics request or return a clean exception response.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP Length is 0006, matching unit identifier plus the 5-byte diagnostics PDU.",
+    "Diagnostics request layout is preserved as function code plus 2-byte subfunction plus 2-byte data.",
+    "The frame is complete and contains no trailing bytes beyond the declared ADU length.",
+    "Where exact Modbus/TCP support for this diagnostics subfunction is not fully specified by supplied sources, the seed remains a conservative full-frame analogue intended to test controlled handling."
+  ],
+  "issue_safety_notes": "The seed is length-consistent and fully framed. It does not use underlength MBAP values, extra trailing bytes, or any exact prior issue payload.",
+  "sequence_sha256": "16ee8a5609e4aa83ee744a0b38ce88073b389ad44aba42b063ae1bc1221e17cf",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "867"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4eeec662801ee4bed51327dde9830fc6dcf8879da1118f37302d22d4c895e728",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

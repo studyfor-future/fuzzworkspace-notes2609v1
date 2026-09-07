@@ -1,0 +1,57 @@
+{
+  "plan_id": "vk-plan-025",
+  "seed_id": "ghsa-g3w7-x5rx-83xm",
+  "title": "VK-only Measured Value: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for TypeID 104 (C_TS_NA_1) with a VSQ/object count larger than the ASDU body can hold can mak...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Measured Value",
+  "purpose": "Combine issue-supported vulnerable structure (large VSQ) with conservative model-prior protocol form without copying crash payload.",
+  "evidence_ids": [
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Measured Value I-frame",
+      "hex": "680a0a680a004e11e002004e686810ff",
+      "byte_length": 16,
+      "sha256": "dbd1546a0e7cfa6c7d46fe47d8131d0de80c28547965fa735014d613553d6425"
+    }
+  ],
+  "expected_behavior": "Parser accepts malformed VSQ while reaching InformationObject_ParseObjectAddress and TestCommand_getFromBuffer paths",
+  "constraints_preserved": [
+    "0x68 L octets consistent with frame size",
+    "IEC 60870-5-104 APCI framing",
+    "target_operation: Measured Value"
+  ],
+  "issue_safety_notes": "GHSA-G3W7-X5RX-83XM: VSQ/object count larger than ASDU body for TypeID 104 triggers heap-buffer-over-read in InformationObject_ParseObjectAddress (no msgSize check)",
+  "sequence_sha256": "eeb3ca2edb9b5e6628843d66127c6391fe42ef46208f88b338e26bb677eb9c7a",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-G3W7-X5RX-83XM"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "dbd1546a0e7cfa6c7d46fe47d8131d0de80c28547965fa735014d613553d6425",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

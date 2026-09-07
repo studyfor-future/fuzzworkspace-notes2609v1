@@ -1,0 +1,62 @@
+{
+  "plan_id": "vk-plan-040",
+  "seed_id": "modbustcp-read-input-registers-depth-01",
+  "title": "Read Input Registers with seven-register payload expectation",
+  "strategy": "parser_depth",
+  "target_operation": "Read Input Registers",
+  "purpose": "Reach the Read Input Registers parser and response-storage path using the issue-associated quantity of seven registers, with a valid request that can exercise response decoding at a nontrivial size.",
+  "evidence_ids": [
+    "issue:499:499-summary:6268f95751ad",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:750:750-summary:3dcb92ca7c5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Input Registers request, unit 02, address 0, quantity 7",
+      "hex": "000600000006020400000007",
+      "byte_length": 12,
+      "sha256": "fbf05113afde467bfec44376364e7c0ec9499fd24e87fd97a782ac8ff54f9546"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the complete request and return seven input registers, or return a normal protocol exception when the selected unit or address is unavailable.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the unit identifier and five-byte FC04 request PDU.",
+    "Quantity 0007 matches the issue-associated operation size and is positive.",
+    "Function code 04 matches Read Input Registers.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "The candidate targets parser and response-storage depth using a valid FC04 request inspired by issue-reported operation size. It does not copy a crash payload, omit required request fields, or assert that model-prior behavior is verified.",
+  "sequence_sha256": "841619e22d581f9d28fa5b2d74bc29988cd9b0b4bc77e3ddf0f0276fbf2b52fe",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "499"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fbf05113afde467bfec44376364e7c0ec9499fd24e87fd97a782ac8ff54f9546",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "023-modbustcp-read-input-reg-ef2a1431",
+      "corpus_file": "023-ef2a1431.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-r12-acse-02",
+  "title": "Deep AARQ-style initiate parser analogue",
+  "strategy": "parser_depth",
+  "target_operation": "MMS Initiate",
+  "purpose": "Drive deeper BER-like association parsing using a compact AARQ-style payload with nested tags and a short constructed tail, inspired by unchecked length/tag advancement issues while remaining distinct from known examples.",
+  "evidence_ids": [
+    "issue:512:512-summary:b25e9a524acd",
+    "vk_task_context:task-contract:56f3666108cf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_acse_aarq_deep",
+      "hex": "03000016226015020101300630043002a602a700be00",
+      "byte_length": 22,
+      "sha256": "3eb50d8a0cf5a2d577e63f232874df3c60be416641424b4039fab187be2b013f"
+    }
+  ],
+  "expected_behavior": "An implementation should parse or reject the nested association request safely, especially around zero-length or short constructed elements, without reading beyond the provided buffer.",
+  "constraints_preserved": [
+    "tpkt version byte is 0x03",
+    "tpkt total length matches complete message",
+    "association/discovery coverage expanded",
+    "message remains mutation-friendly with visible nesting",
+    "lowercase hex without separators"
+  ],
+  "issue_safety_notes": "The bytes are a non-colliding parser-depth analogue and intentionally differ from issue-reported reproducer content.",
+  "sequence_sha256": "dbaf8654666c382d2969944a4f3d0041b4c6d6572c9098b348e5e23dfd949c2c",
+  "total_bytes": 22,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3eb50d8a0cf5a2d577e63f232874df3c60be416641424b4039fab187be2b013f",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      }
+    ]
+  }
+}

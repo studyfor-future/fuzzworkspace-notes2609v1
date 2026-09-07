@@ -1,0 +1,62 @@
+{
+  "plan_id": "vk-plan-038",
+  "seed_id": "modbustcp-read-discrete-inputs-high-address-01",
+  "title": "Read Discrete Inputs with high address and minimal quantity",
+  "strategy": "field_interaction",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Combine a high register-like address with a minimal quantity and a non-default unit identifier to explore address, quantity, and unit-field interactions in a valid Read Discrete Inputs request.",
+  "evidence_ids": [
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:837:837-summary:c4fb6d28cc16"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Discrete Inputs request, unit 01, address 64715, quantity 1",
+      "hex": "0004000000060102fc9b0001",
+      "byte_length": 12,
+      "sha256": "56c788f6c63b896588196fec45d0952538167d1aca2196d98cc7cb84ee31ab46"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the request as one Read Discrete Inputs operation at the high address and either return one input bit or a normal exception response if the address is outside its mapping.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the unit identifier and five-byte request PDU.",
+    "Address fc9b represents 64715 and quantity is 0001.",
+    "Function code 02 matches Read Discrete Inputs.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "The high address and quantity-one combination is an issue-guided field interaction, not a reproduction of the DWord register trace. No response-length mismatch or truncated request is introduced.",
+  "sequence_sha256": "c7ae9f20be2fa607943b62bd51124e662f37e11c6203b7d6c08e8b42f238c13b",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "466"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "56c788f6c63b896588196fec45d0952538167d1aca2196d98cc7cb84ee31ab46",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "014-modbustcp-read-discrete--465cce67",
+      "corpus_file": "014-465cce67.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

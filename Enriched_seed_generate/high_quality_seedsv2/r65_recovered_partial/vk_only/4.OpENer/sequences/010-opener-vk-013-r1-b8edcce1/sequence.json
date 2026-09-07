@@ -1,0 +1,91 @@
+{
+  "plan_id": "",
+  "seed_id": "opener-vk-013-r1",
+  "title": "UnconnectedSend after registered session",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Establish a session and route a bounded UnconnectedSend-style CIP request through SendRRData to exercise nested CPF and Message Router parsing associated with the reported unconnected explicit-message issues.",
+  "evidence_ids": [
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "register_session_response_placeholder",
+      "hex": "65000400111111110000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "b37fa306b5e3b631eb3cf36448e096241551275b873d4ac15534d6662a702d27"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "sendrrdata_unconnected_send_request",
+      "hex": "6f001b001111111100000000000000000000000000000000000000000000020000000000b2000c520220062401000000000000",
+      "byte_length": 51,
+      "sha256": "97db5981ae46c8018b28638cb6da96b2cfa1c0887c592c548a7275da882fdef6"
+    }
+  ],
+  "expected_behavior": "The implementation should parse the registered-session request and the two-item SendRRData CPF, then either process the bounded UnconnectedSend request or return a clean protocol error without memory-safety failure.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation headers are used",
+    "Encapsulation payload lengths are little-endian and match the visible bodies",
+    "RegisterSession precedes the session-bound SendRRData request",
+    "CPF item count and item lengths match the visible items",
+    "Target operation is preserved as UnconnectedSend"
+  ],
+  "issue_safety_notes": "The nested request uses a short bounded path and four bytes of request data. It does not reproduce the reported trailing optional-item, empty-body, oversized-path, or exact crash-byte patterns.",
+  "sequence_sha256": "352475969daf1d34960ebc91fe6b16940bd761e0fe3d548a1f7a1afb1620e4b1",
+  "total_bytes": 107,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9436b609b41f69126bdb4293804347ff7a0231d6291be827dee793a6d513500f",
+    "encoded_bytes": 107,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 51,
+        "frame_length": 51
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "010-opener-vk-013-r1-b8edcce1",
+      "corpus_file": "010-b8edcce1.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

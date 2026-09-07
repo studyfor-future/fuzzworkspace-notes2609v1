@@ -1,0 +1,64 @@
+{
+  "plan_id": "plan-024",
+  "seed_id": "modbustcp-full-024-rev",
+  "title": "Function coverage for Write Single Coil",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Single Coil",
+  "purpose": "Cover the addressed coil-write path with a valid legal ON value to exercise a boolean-output parser branch distinct from register-oriented operations.",
+  "evidence_ids": [
+    "function_code:function:function-text:388a9f8cf2ff",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:operation-catalog:403195f9db74",
+    "function_code:function:function-text:8c5aec6d88bd",
+    "function_code:function:function-text:48ef3b4dd565",
+    "function_code:function:function-text:869721545c59",
+    "protocol_format:modbustcp:format-overview:9821a13f1ada"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_single_coil_request",
+      "hex": "340100000006240500130000",
+      "byte_length": 12,
+      "sha256": "e5ce9d34b7474ad0cea9a7ac48e7e32e6dc0f4e1853a3d05538a9d05c4de956f"
+    }
+  ],
+  "expected_behavior": "The endpoint should parse function 0x05, target coil address 0x0013, and process the documented legal OFF value 0x0000, typically echoing the request on success or returning a standard exception if the address is not supported.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP Length is 0006, matching unit identifier plus 5-byte PDU.",
+    "Function 0x05 is used as documented for Write Single Coil.",
+    "The output value uses a documented legal coil encoding: 0x0000 for OFF.",
+    "Unit identifier, transaction identifier, and payload values are diversified from the other seeds."
+  ],
+  "issue_safety_notes": "This is a fully valid coil-write request using a documented legal value and avoids malformed or historical collision payloads.",
+  "sequence_sha256": "867c3a72fc8f40231e8a00b89e82aef6d459bf0e73558c4dbf5c31573509e472",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e5ce9d34b7474ad0cea9a7ac48e7e32e6dc0f4e1853a3d05538a9d05c4de956f",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "007-modbustcp-full-024-rev-51e4fb2e",
+      "corpus_file": "007-51e4fb2e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

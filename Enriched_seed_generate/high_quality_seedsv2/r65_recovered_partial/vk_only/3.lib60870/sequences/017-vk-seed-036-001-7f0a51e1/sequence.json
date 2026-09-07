@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-036",
+  "seed_id": "vk-seed-036-001",
+  "title": "VK-only General Interrogation: single I-frame with L=8 and minimal TypeID=100",
+  "strategy": "parser_depth",
+  "target_operation": "General Interrogation",
+  "purpose": "Exercise issue-supported parser depth in General Interrogation path using conservative model-prior framing and sequence-form analogue without copying exact crash payload.",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "general_interrogation_Iframe",
+      "hex": "681000000000000000000100000083000000",
+      "byte_length": 18,
+      "sha256": "50240d34e1d618d5d00520c65104b5c245b3d5eea965ab7a5ab3879d1601b217"
+    }
+  ],
+  "expected_behavior": "I-frame General Interrogation accepted by parser; triggers parser depth in InformationObject_ParseObjectAddress path leading to SEGV on malformed structure",
+  "constraints_preserved": [
+    "iec60870 family constraints",
+    "0x68 length octets consistent",
+    "FT1.2 / iec104 framing preferred",
+    "single_request shape",
+    "message budget 1"
+  ],
+  "issue_safety_notes": "Issue-supported parser depth preserved; no exact crash bytes copied; distinct from other plans; VK-only",
+  "sequence_sha256": "988d0873347a0718153a56c2bd814a1492c8c4313b58a5e81c8dcb7d3bd6b65b",
+  "total_bytes": 18,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "201"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "50240d34e1d618d5d00520c65104b5c245b3d5eea965ab7a5ab3879d1601b217",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-vk-seed-036-001-7f0a51e1",
+      "corpus_file": "017-7f0a51e1.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

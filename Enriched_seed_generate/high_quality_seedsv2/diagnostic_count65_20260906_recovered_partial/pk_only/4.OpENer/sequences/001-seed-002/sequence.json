@@ -1,0 +1,86 @@
+{
+  "plan_id": "plan-002",
+  "seed_id": "seed-002",
+  "title": "Stateful setup for RegisterSession",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "function_code:function:function-text:3b15ec1ab4ca",
+    "protocol_format:opener:template-catalog:a7f05bcffdbd",
+    "protocol_format:opener:common-headers-encap:32026d320478",
+    "function_code:function:function-text:578655b8e58e",
+    "function_code:function:function-text:40a9289da660",
+    "function_code:function:operation-catalog:f14ecde0d175"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "ListServices setup",
+      "hex": "04000c000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 36,
+      "sha256": "44cbdd69a899d96cd00010f9d1e17f24e4a9dda778f93326064fc47ac3f4c556"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "ListIdentity setup",
+      "hex": "63000c000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 36,
+      "sha256": "5f680dd3ec0c903394ca338bc0fbaa41b11fdbbb50bb335868b09075c2ae0625"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "RegisterSession target",
+      "hex": "65000c000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 36,
+      "sha256": "70e6725b076968417d128b3a8e42b3db6d07bf65777a8d0cefc69add7ec68f22"
+    }
+  ],
+  "expected_behavior": "Sequential valid requests establish state; final RegisterSession parsed in deeper valid state with correct encapsulation.",
+  "constraints_preserved": [
+    "ETHERNETIP encapsulation headers with little-endian payload length",
+    "Complete documented framing and preserve length/count/checksum/order rules",
+    "24-byte encapsulation header when form selected",
+    "Diverted discovery session and explicit-message paths"
+  ],
+  "issue_safety_notes": "PK-only candidate; no vulnerability claims; conservatively valid framing only.",
+  "sequence_sha256": "94fc2992cdb17146ee35784d26b071b52d7bbae64e9064a241b8e762d41868d3",
+  "total_bytes": 108,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "36a88163d7e3f7f03cb313987a7aab1796cc76c2c554364d1ed987cd34fb2409",
+    "encoded_bytes": 108,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 72,
+        "payload_offset": 72,
+        "payload_length": 36,
+        "frame_length": 36
+      }
+    ]
+  }
+}

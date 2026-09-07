@@ -1,0 +1,98 @@
+{
+  "plan_id": "plan-005",
+  "seed_id": "seed-001",
+  "title": "Issue-guided analogue for Property",
+  "strategy": "baseline_valid",
+  "target_operation": "Property",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:1270:1270-summary:f10b3cba62a1",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-62972:cve-2026-62972-summa:6cabce51ad0a",
+    "issue:cve-2026-41503:cve-2026-41503-summa:324815060097"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "BVLC Header",
+      "hex": "810b000500",
+      "byte_length": 5,
+      "sha256": "983077b8f4d5fe15903e9feceade19ee4e9466734310f117053365ec5d700a6a"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "NPDU Header",
+      "hex": "01020000020000",
+      "byte_length": 7,
+      "sha256": "2703f96453c3e42d8b0fc5f8e5c9f7313340cf99299353b14834d28efcf01968"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "APDU Confirmed Request",
+      "hex": "000005f022ff2101210e2dff00e6",
+      "byte_length": 14,
+      "sha256": "26139287ede37df7e6e2949e4cc592fdf274b419d466d876aea171fee196f4a1"
+    }
+  ],
+  "expected_behavior": "Valid UCOV/property-value request with host-n-port analogue; bacapp_decode_application_data accepts length, bacnet_tag_number_decode completes without SEGV.",
+  "constraints_preserved": [
+    "BVLC 4-byte total length preserved",
+    "NPDU routing preserved",
+    "APDU confirmed PDU type preserved",
+    "Service choice for Property preserved",
+    "Property value tag structure preserved",
+    "Host-n-port application tag structure preserved",
+    "Order and nesting of APDU/NPDU/BVLC preserved",
+    "All length/count/checksum rules preserved",
+    "Common BACnet/IP layering preserved"
+  ],
+  "issue_safety_notes": "Analogue replaces oversized length trigger with safe value; no exact crash payload copied; does not trigger SEGV or buffer over-read.",
+  "sequence_sha256": "82655945e87fd0c581a4ab9100647107075fe984e5681d9109b35a376214e488",
+  "total_bytes": 26,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1270"
+  ],
+  "_selection_score": 119.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "13427b79702a9526942476e7826220b9df4ff0c16a823e2d09e0151830ab0d4b",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 5,
+        "payload_offset": 5,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-seed-001-4ecfc002",
+      "corpus_file": "001-4ecfc002.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

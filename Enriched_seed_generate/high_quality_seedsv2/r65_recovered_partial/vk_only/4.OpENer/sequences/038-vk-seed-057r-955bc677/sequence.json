@@ -1,0 +1,59 @@
+{
+  "plan_id": "vk-plan-057",
+  "seed_id": "vk-seed-057r",
+  "title": "VK-only length_boundary_valid GetAttributeSingle: OpENer 2.3/8c73bf3 UDP handler integer-conversion bug analogue via malformed UDP length boundary",
+  "strategy": "length_boundary_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Reach issue 564 UDP path via UDP handler length boundary to test integer-conversion underflow in generic_networkhandler.c",
+  "evidence_ids": [
+    "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+    "issue:564:564-summary:6b535e1b37b6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "UDPLengthBoundaryMalformed",
+      "hex": "00000000000000000000000000000000000000000000",
+      "byte_length": 22,
+      "sha256": "6a4875ddaceaa91fb3369f0f6d962f77442daf1b1d97733457d12bcabdf79441"
+    }
+  ],
+  "expected_behavior": "Parser underflow jumps backward ~32k bytes causing stack underflow or crash in UDP handler",
+  "constraints_preserved": [
+    "24-byte encapsulation header",
+    "little-endian payload length",
+    "single_request shape",
+    "message_budget 1"
+  ],
+  "issue_safety_notes": "Safe length-boundary analogue; no crash on valid builds",
+  "sequence_sha256": "fe09a79b2df93053166b7c2ed59f3a01a5ebab48fd05c29a8db26460f0ed9017",
+  "total_bytes": 22,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2021-21777"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6a4875ddaceaa91fb3369f0f6d962f77442daf1b1d97733457d12bcabdf79441",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "038-vk-seed-057r-955bc677",
+      "corpus_file": "038-955bc677.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

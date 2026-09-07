@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-055",
+  "seed_id": "iec60870-full-055",
+  "title": "Unknown-cause handling on valid TypeID 104 test command",
+  "strategy": "function_code_coverage",
+  "target_operation": "Unknown Cause of Transmission",
+  "purpose": "Target the same general parser family implicated by the supplied issue using a valid TypeID 104 I-frame, but keep object count and body length consistent while setting an unusual cause to cover unsupported-cause branches safely.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:operation-catalog:224e76862422",
+    "function_code:function:operation-catalog:c32f2366ef50",
+    "function_code:function:function-text:83986922f28d",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "i-format-type104-unknown-cot",
+      "hex": "680e0200000068012c00010001000000",
+      "byte_length": 16,
+      "sha256": "73c7548d5f6d1cfe33c07059919cc125c809931094d1b5bd6a35ec3dfdc6ccb6"
+    }
+  ],
+  "expected_behavior": "Implementation should parse a complete Test Command ASDU for TypeID 104, then reject, log, or classify it as unknown/unsupported because of the nonstandard cause value, without reading past the end of the message.",
+  "constraints_preserved": [
+    "TypeID 104 is selected directly from the supplied GHSA issue description.",
+    "APCI length 0x0e is consistent with a single-object TypeID 104 ASDU of 10 bytes after the control field.",
+    "VSQ/object count is 1 and the message includes one full 3-octet information object address plus one command octet, maintaining internal size consistency.",
+    "Control field uses a simple I-frame sequence pattern with N(S)=1 and N(R)=0 encoded conservatively from IEC 60870-5-104 prior knowledge.",
+    "Cause value 0x2c is used as an unusual/unknown-style code by conservative assumption; the supplied sources indicate unknown-cause handling as a target concept but do not define this exact byte mapping."
+  ],
+  "issue_safety_notes": "This is a structural analogue to the documented bug path because it uses TypeID 104, but it deliberately avoids the vulnerable shape: no inflated VSQ, no body truncation, and no copied PoC bytes.",
+  "sequence_sha256": "d5793c80d9235dc658ad0386023281863f06da9fe49840f8cd22593b80fdf54a",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "73c7548d5f6d1cfe33c07059919cc125c809931094d1b5bd6a35ec3dfdc6ccb6",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-iec60870-full-055-014193fd",
+      "corpus_file": "031-014193fd.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

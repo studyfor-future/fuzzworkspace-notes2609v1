@@ -1,0 +1,54 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-plan-014-rev-01",
+  "title": "Discovery request with bit-string leaning attribute query fields",
+  "strategy": "field_interaction",
+  "target_operation": "GetVariableAccessAttributes",
+  "purpose": "Probe attribute-query handling with a compact confirmed-request style payload whose nested fields are chosen to be mutation-friendly for later bit-string and length interactions.",
+  "evidence_ids": [
+    "issue:516:516-summary:13bbaeee92c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "tpkt_cotp_mms_getvaa_req_like",
+      "hex": "0300001902f080a010020101a10b1a036c64311a04646f2431",
+      "byte_length": 25,
+      "sha256": "cef9349ba07a631132ecbd9464cb2af6908b06238d1c8604cd2bb4bb6fa6bdde"
+    }
+  ],
+  "expected_behavior": "Endpoint should parse or reject the request cleanly; subsequent mutational growth of the value-specifier area may help reach encoding and field-interaction logic related to issue-guided bit-string handling.",
+  "constraints_preserved": [
+    "tpkt header begins with 03",
+    "tpkt total-length field is consistent with the complete message",
+    "discovery path diversity via getvariableaccessattributes-style request",
+    "single-message sequence",
+    "hex is lowercase and even-length"
+  ],
+  "issue_safety_notes": "This is a safe protocol-level analogue only; it does not embed the standalone fuzz-harness payload reported for issue 516.",
+  "sequence_sha256": "28a39bef98cb008825c248f1a4f4c23d7be23ac6d6d6abd0c881465d38d35b7d",
+  "total_bytes": 25,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cef9349ba07a631132ecbd9464cb2af6908b06238d1c8604cd2bb4bb6fa6bdde",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ]
+  }
+}

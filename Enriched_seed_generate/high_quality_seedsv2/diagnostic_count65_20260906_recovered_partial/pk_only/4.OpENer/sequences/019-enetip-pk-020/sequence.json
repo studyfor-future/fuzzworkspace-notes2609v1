@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-020",
+  "seed_id": "enetip-pk-020",
+  "title": "Function coverage analogue for Reset with minimal parameter",
+  "strategy": "function_code_coverage",
+  "target_operation": "Reset",
+  "purpose": "Create another valid SendRRData explicit-message seed with a different inferred service byte and small request body to diversify service dispatch while preserving all documented framing rules.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:function-text:3b15ec1ab4ca",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "function_code:function:operation-catalog:a6b9b629463c",
+    "function_code:function:function-text:578655b8e58e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "sendrrdata-reset-analogue",
+      "hex": "6f001500040000000000000000000000000000000000000000000000020000000000b2000b0520012401300100",
+      "byte_length": 45,
+      "sha256": "915126f5a2b9ab0e8198f7b524c4f0628d9873edc8629e8fb80a5015e43ac1d0"
+    }
+  ],
+  "expected_behavior": "Parser should accept a compact but complete explicit-message request over SendRRData and route it through CPF parsing into the CIP layer; final service handling is implementation dependent.",
+  "constraints_preserved": [
+    "Used EtherNet/IP encapsulation command 0x006f and the documented 24-byte header.",
+    "Set payload length 0x0017 to exactly match the CPF bytes following the header.",
+    "Preserved documented CPF structure with two items: Null Address Item and Unconnected Data Item.",
+    "Set the unconnected item length to 0x000b matching the 11-byte CIP request.",
+    "Used a conservative inferred CIP service byte 0x05 as a Reset-themed placeholder because the exact Reset service code is not present in supplied sources.",
+    "Used conservative inferred EPATH bytes 0x20 0x01 0x24 0x01 and path-size value 0x02; this assumption is recorded rather than presented as source-verified."
+  ],
+  "issue_safety_notes": "No vulnerability, fault, or reset effect is asserted. This is a safe structural corpus seed for parser and dispatcher coverage.",
+  "sequence_sha256": "16614e0dab3ca89ac77c935764bd17a735e3276bddd8ded9db05447795bf5be3",
+  "total_bytes": 45,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "915126f5a2b9ab0e8198f7b524c4f0628d9873edc8629e8fb80a5015e43ac1d0",
+    "encoded_bytes": 45,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 45,
+        "frame_length": 45
+      }
+    ]
+  }
+}

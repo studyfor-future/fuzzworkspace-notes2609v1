@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-055",
+  "seed_id": "ethernetip-opener-055-get-attribute-list",
+  "title": "Get Attribute List with two requested attributes",
+  "strategy": "field_interaction",
+  "target_operation": "Get_Attribute_List",
+  "purpose": "Exercise interaction between the CIP service path, attribute-count field, and multiple attribute identifiers within an unconnected CPF item.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:314:314-summary:3abfe4f839d0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData Get_Attribute_List request",
+      "hex": "6f002300010000000000000000000000000000000000000000000000000000000000000000020000000000b2000c00030220042401020001000200",
+      "byte_length": 59,
+      "sha256": "e44fc6f0d579d00be528545f9c7e17b96b95ad85a29b2efac4ff3ee9f11a4a2e"
+    }
+  ],
+  "expected_behavior": "The receiver should parse a 32-byte encapsulation payload, decode the two CPF items, and process CIP service 0x03 with an attribute count of two and attribute identifiers 0x0001 and 0x0002, returning a normal response or service error.",
+  "constraints_preserved": [
+    "Encapsulation length is 32 bytes and covers the complete CPF and CIP request.",
+    "The unconnected-data item length is 12 bytes, matching the CIP service, path, count, and two 16-bit attribute identifiers.",
+    "The path-size field is two words and corresponds to Class 0x04 and Instance 0x01 logical segments.",
+    "Attribute count and identifiers are encoded as little-endian 16-bit values, following the supplied little-endian encapsulation and item conventions.",
+    "The exact CIP attribute-list request layout is treated as a conservative model inference because the supplied excerpts do not specify its complete body grammar."
+  ],
+  "issue_safety_notes": "This seed explores count and field interactions with bounded values and does not copy the historical issue payload or use a path that consumes all remaining data; issue 314 is cited only as evidence for exercising valid-session SendRRData handling.",
+  "sequence_sha256": "d1f8d5d08bec83de46ad234ecd7de68a81ca5bc7fba7f4539c7d86d3404d7ef4",
+  "total_bytes": 59,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e44fc6f0d579d00be528545f9c7e17b96b95ad85a29b2efac4ff3ee9f11a4a2e",
+    "encoded_bytes": 59,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 59,
+        "frame_length": 59
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "033-ethernetip-opener-055-ge-e633885d",
+      "corpus_file": "033-e633885d.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

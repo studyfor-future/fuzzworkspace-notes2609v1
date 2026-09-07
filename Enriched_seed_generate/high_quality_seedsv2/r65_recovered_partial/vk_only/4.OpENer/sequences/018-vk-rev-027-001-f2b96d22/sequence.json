@@ -1,0 +1,123 @@
+{
+  "plan_id": "vk-plan-027",
+  "seed_id": "vk-rev-027-001",
+  "title": "Discovery plus explicit GetAttributeSingle state chain",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Provide a fuller state chain including discovery and later explicit request so the harness can mutate across discovery-to-session-to-explicit transitions while covering GetAttributeSingle.",
+  "evidence_ids": [
+    "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+    "issue:567:567-summary:1255c28909d7",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity request",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ListIdentity response placeholder with small body",
+      "hex": "630004000000000000000000000000004c4953544944454e00000000",
+      "byte_length": 28,
+      "sha256": "37a394ea7e74a3d2fd61afbcf4e81d14229939ce88d787faea45f534ee039f0a"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "RegisterSession response",
+      "hex": "65000400ddccbbaa0000000000000000616263646566676801000000",
+      "byte_length": 28,
+      "sha256": "c704ff7059e75b755eda2cfbe6da75e946f8c6c1cb1ba70dc6adbcb5ccf0f254"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "SendRRData carrying GetAttributeSingle with slightly deeper path",
+      "hex": "6f001d00ddccbbaa00000000000000006a6b6c6d6e6f707100000000000000000200000000000000b2000a0e042001240130032001",
+      "byte_length": 53,
+      "sha256": "0969c0ff84aaf35cc3405de9d8079d9d43aac218cfe383830d311ed25c893879"
+    }
+  ],
+  "expected_behavior": "Discovery should be parsed independently, then the later explicit request should exercise a session-based GetAttributeSingle path with a deeper but still bounded route. Clean reject or normal handling is expected.",
+  "constraints_preserved": [
+    "Includes discovery, session, and explicit-message phases",
+    "24-byte encapsulation headers throughout",
+    "Visible payload lengths are little-endian and consistent",
+    "Distinct command and context values from other sequences",
+    "No duplicate payloads across plans"
+  ],
+  "issue_safety_notes": "This sequence emphasizes state diversity rather than malformed extremes. The explicit message is a safe analogue that can be mutated further without embedding known issue-trigger bytes verbatim.",
+  "sequence_sha256": "f7b586f2e56afbdc6faae0318d0bf7160ed57cdb882fcfe93ee64a0b3f068bf6",
+  "total_bytes": 161,
+  "message_count_hint": 5,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2021-21777"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "905f8bdd32ebce2af5a7f420538a69ffa3498120928783b3f19a10963de0166d",
+    "encoded_bytes": 161,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 52,
+        "payload_offset": 52,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 80,
+        "payload_offset": 80,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 108,
+        "payload_offset": 108,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "018-vk-rev-027-001-f2b96d22",
+      "corpus_file": "018-f2b96d22.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

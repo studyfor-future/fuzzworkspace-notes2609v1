@@ -1,0 +1,54 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-plan-013-rev-01",
+  "title": "Association response analogue with bounded 0xbe user-information tail",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS Initiate",
+  "purpose": "Exercise the association parser path using an AARE-like ACSE structure that conservatively mirrors the reported 0xbe user-information boundary condition without copying the historical trigger bytes.",
+  "evidence_ids": [
+    "issue:513:513-summary:4a07060941e2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "tpkt_cotp_acse_aare_like",
+      "hex": "0300001502f080610c800101a103020100be020001",
+      "byte_length": 21,
+      "sha256": "582d79ad715b45109d48f11cf907eab5e189f8c9b74a1f08299718cfba06411e"
+    }
+  ],
+  "expected_behavior": "Parser should either reject or safely consume the association response analogue without reading past the provided user-information region.",
+  "constraints_preserved": [
+    "tpkt header begins with 03",
+    "tpkt total-length field is consistent with the complete message",
+    "single complete framed message suitable for stdin byte-sequence concatenation",
+    "association path covered with conservative acse-like structure",
+    "no exact historical crash payload copied"
+  ],
+  "issue_safety_notes": "Uses a shortened structural analogue for the 0xbe parsing condition from issue 513, but avoids the published exact ending sequence and keeps the framing recognizable.",
+  "sequence_sha256": "aab5121d1d0c709bd0e5efac492175be42e614e3e437388c955fe71c57bc8b35",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 96.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "582d79ad715b45109d48f11cf907eab5e189f8c9b74a1f08299718cfba06411e",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "plan_id": "plan-060",
+  "seed_id": "ethernetip-rev-060",
+  "title": "RegisterSession then UnregisterSession lifecycle pair",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession / UnregisterSession",
+  "purpose": "Cover encapsulation session establishment and teardown with an explicit runtime session-handle transition instead of a static placeholder-only request.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession-request",
+      "hex": "650004000000000000000000a1a2a3a4a5a6a7a80000000001000000",
+      "byte_length": 28,
+      "sha256": "3b86a816441ae7ec574633250b09e4d629d0bf53fcbd34428cc028729477eee9"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "unregistersession-request-with-runtime-handle",
+      "hex": "66000000ffffffff00000000b1b2b3b4b5b6b7b800000000",
+      "byte_length": 24,
+      "sha256": "1a0389ad5410617fbfb5304153b914518fc33e9cddd2f1096e546d4a0f04b7e6"
+    }
+  ],
+  "expected_behavior": "The first message should be parsed as a valid RegisterSession request. If the target allocates a session, the harness should substitute the returned nonzero session handle into message 1 in place of ffffffff before sending UnregisterSession. The parser should then accept a normal unregister path.",
+  "constraints_preserved": [
+    "RegisterSession uses command 0x0065 and 4 bytes of payload, matching Length 0x0004.",
+    "The RegisterSession payload is conservatively encoded as protocol version 0x0001 and option flags 0x0000, a common EtherNet/IP form inferred from standard behavior.",
+    "UnregisterSession uses command 0x0066 with zero payload length.",
+    "Both messages use full 24-byte encapsulation headers.",
+    "Message 1 contains a deliberate runtime substitution point for the negotiated Session Handle; the literal ffffffff is a placeholder for harness replacement, not a claim of validity if sent unchanged."
+  ],
+  "issue_safety_notes": "Safe stateful coverage only. This sequence does not enter CPF or CIP parsing and is unrelated to the historical malformed ForwardOpen underlength trigger.",
+  "sequence_sha256": "2933ba0c413b7e7f10c88642ce8a0ab114d5608ad7f65398357718cc82bda903",
+  "total_bytes": 52,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 116.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "253c0b4302d3067a182a68f4a0d2037e85d953d7aeb158b1ab0fa6c9ce9dac49",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

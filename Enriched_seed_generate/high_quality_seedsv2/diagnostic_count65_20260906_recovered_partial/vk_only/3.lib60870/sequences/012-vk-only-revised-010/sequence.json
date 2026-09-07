@@ -1,0 +1,73 @@
+{
+  "plan_id": "vk-plan-010",
+  "seed_id": "vk-only-revised-010",
+  "title": "VK-only STARTDT activation: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave imple...",
+  "strategy": "parser_depth",
+  "target_operation": "STARTDT activation",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:178:178-summary:01c5b607cf00"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT",
+      "hex": "68050700000000",
+      "byte_length": 7,
+      "sha256": "5b0d6816aa8a81e79bcc30757390c476f1b291b6166b6862c7f7c5eb3b50f8c3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "STARTDT",
+      "hex": "68050700000000",
+      "byte_length": 7,
+      "sha256": "5b0d6816aa8a81e79bcc30757390c476f1b291b6166b6862c7f7c5eb3b50f8c3"
+    }
+  ],
+  "expected_behavior": "lib60870 2.4.0 CS104 slave deadlock in connectionEventHandler while holding internal state.",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "prefer FT1.2/IEC 60870-5-104 APCI framing",
+    "ASDU family length validation",
+    "IEC 60870-5-104 I-frame"
+  ],
+  "issue_safety_notes": "Issue 197 reproducible deadlock in CS104 slave; issue 201 heap overflow in FileSegment path; multi-step stateful sequence reaches parser depth.",
+  "sequence_sha256": "d502ea7e20630d3c515e8a7e9fd1cb3c827974e83cafec38330e2ad2bda483d9",
+  "total_bytes": 14,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "62bf4f360b8cead82ce448d74e0f408debe9f750087a96b94a535c235acd11ba",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

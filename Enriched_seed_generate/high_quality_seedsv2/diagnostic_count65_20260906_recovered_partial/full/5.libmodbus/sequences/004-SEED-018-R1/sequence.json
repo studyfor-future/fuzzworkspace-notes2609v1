@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-018",
+  "seed_id": "SEED-018-R1",
+  "title": "Single-request Report Server ID analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Report Server ID",
+  "purpose": "Cover the Report Server ID parser entry with a minimal valid MODBUS/TCP ADU and preserve issue-guided focus on historically sensitive non-address-based function handling.",
+  "evidence_ids": [
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Report Server ID request",
+      "hex": "1002000000020511",
+      "byte_length": 8,
+      "sha256": "1241d773556cc85ee7df9477a4ff085c6450a10ad4635d6f6263ca7b8316bf81"
+    }
+  ],
+  "expected_behavior": "Server should accept the valid 0x11 request and return server identifier and run-state information if supported, or a clean exception if not supported.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0002 matches unit identifier plus 1-byte PDU",
+    "Function code 0x11 is documented for Report Server ID",
+    "Request contains no extraneous padding bytes",
+    "Unit identifier diversified from other seeds"
+  ],
+  "issue_safety_notes": "Keeps only the safe minimal valid request shape for Report Server ID and avoids the exact malformed packet forms associated with historical invalid-pointer and parser issues.",
+  "sequence_sha256": "e8c2a0aa72fddc258358f8d788c60a9ccc942599746b9015e0ff5eab93ac7add",
+  "total_bytes": 8,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "764"
+  ],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1241d773556cc85ee7df9477a4ff085c6450a10ad4635d6f6263ca7b8316bf81",
+    "encoded_bytes": 8,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ]
+  }
+}

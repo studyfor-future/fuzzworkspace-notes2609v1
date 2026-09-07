@@ -1,0 +1,113 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-054-001",
+  "title": "UnconnectedSend with error response and teardown",
+  "strategy": "stateful_valid",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Cover session setup, an unconnected routed request, explicit error response handling, and orderly session teardown in one stateful sequence.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request protocol version 1",
+      "hex": "6500080000000000000000000000000000000000000000000100000000000000",
+      "byte_length": 32,
+      "sha256": "e629eb827fc9400a43e80b94152ebc2c9be43b2268817145adffc5edb774dc78"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response",
+      "hex": "65000c000000000000000000000000000000000000000000010000000000000001000000",
+      "byte_length": 36,
+      "sha256": "82d4e043148d0bea1f6de537237ed5b95490ed09849de28f008bfc7b7ea9c3f4"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnconnectedSend request with embedded routed operation",
+      "hex": "6f00200078563412010000000100000021223344556677880000000000000000000002000000040000000000b20008005202200224010a00",
+      "byte_length": 56,
+      "sha256": "aa7b6cb65bf1b3340bdd5d4d35801681fdd8a04a4d67cd321503a92b264a2af7"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "UnconnectedSend error response general status 8",
+      "hex": "6f001c0078563412010000000100000021223344556677880000000000000000000002000000040000000000b2000400d2000800",
+      "byte_length": 52,
+      "sha256": "3381b2182d39b88fdfa3882e3b3434c2db702690abe0e2df1746956889de5974"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request",
+      "hex": "6600080001000000000000000000000021223344556677880000000000000000",
+      "byte_length": 32,
+      "sha256": "96b019f9a031a958cd2bf4cb8b605397b6311af6f40851cfdd09bf65b3bbee52"
+    }
+  ],
+  "expected_behavior": "The parser can observe a valid session setup, process an UnconnectedSend-shaped CPF request and error response, then process the session teardown command.",
+  "constraints_preserved": [
+    "RegisterSession and UnregisterSession use 24-byte encapsulation headers",
+    "All encapsulation payload lengths are little-endian and match payload sizes",
+    "CPF item counts and item lengths are internally consistent",
+    "The sequence preserves client/server direction and setup/request/response/teardown order"
+  ],
+  "issue_safety_notes": "The error status is included for response-path diversity only; it is not associated with any external issue or vulnerability claim.",
+  "sequence_sha256": "c43e6d4dc35d8656b8307be8be558241cc9f3eeb9ff59b515708e89e21648e63",
+  "total_bytes": 208,
+  "message_count_hint": 5,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 58.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "07413cd4ac88d02c48dadc63e9bac9c5b4ba4680e6f6de7d8dd346cdc3030ebf",
+    "encoded_bytes": 208,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 68,
+        "payload_offset": 68,
+        "payload_length": 56,
+        "frame_length": 56
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 124,
+        "payload_offset": 124,
+        "payload_length": 52,
+        "frame_length": 52
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 176,
+        "payload_offset": 176,
+        "payload_length": 32,
+        "frame_length": 32
+      }
+    ]
+  }
+}

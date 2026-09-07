@@ -1,0 +1,89 @@
+{
+  "plan_id": "plan-024",
+  "seed_id": "full-576-plan024-001-rev",
+  "title": "Registered-session SendUnitData with connected item pairing and cleanup",
+  "strategy": "stateful_valid",
+  "target_operation": "SendUnitData",
+  "purpose": "Add a distinct connected-data parser path using the documented Connected Address Item plus Connected Data Item combination, followed by UnregisterSession cleanup.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendUnitData with connected address and connected data items",
+      "hex": "70001600010000000000000000000000000000000000000000000000020000000100040078563412b10002000100",
+      "byte_length": 46,
+      "sha256": "7351d1155fedd77974e8fe85622de3e0d31c0e4929207ff57e349566dfb3e0e9"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request",
+      "hex": "660000000100000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "0e7273a12208c55b76c5b0cee0f1380ec21168702a4fbb87b5a1a7d1098c940a"
+    }
+  ],
+  "expected_behavior": "Server should process RegisterSession, then parse SendUnitData through the connected CPF pairing. In the absence of a real established connection, a normal invalid-connection or related protocol error is acceptable. UnregisterSession should then cleanly terminate the session.",
+  "constraints_preserved": [
+    "Encapsulation header uses documented 24-byte form",
+    "RegisterSession and UnregisterSession use commands 0x0065 and 0x0066",
+    "SendUnitData command 0x0070 uses documented Connected Address Item 0x0100 and Connected Data Item 0x00B1 pairing",
+    "CPF item count and item lengths are internally consistent",
+    "Connected path is structurally distinct from SendRRData unconnected paths",
+    "Session handle field is a placeholder for negotiated runtime substitution"
+  ],
+  "issue_safety_notes": "This sequence targets connected CPF handling only as a safe structural analogue. It does not claim a real ForwardOpen-created connection and therefore expects ordinary protocol rejection rather than successful data transfer.",
+  "sequence_sha256": "713bc266a56b9d6017da93bca67a4ccae8403cb9af35552c831863ad9547ad84",
+  "total_bytes": 98,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "575"
+  ],
+  "_selection_score": 119.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9d0634ceac94dcb2ba2dd6c28184fefcd8f577e6dbdecf3b587c44f6b48f8106",
+    "encoded_bytes": 98,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 46,
+        "frame_length": 46
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 74,
+        "payload_offset": 74,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

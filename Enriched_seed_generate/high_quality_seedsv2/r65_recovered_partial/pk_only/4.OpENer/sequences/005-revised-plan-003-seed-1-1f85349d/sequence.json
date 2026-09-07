@@ -1,0 +1,63 @@
+{
+  "plan_id": "",
+  "seed_id": "revised-plan-003-seed-1",
+  "title": "SendRRData unconnected explicit request",
+  "strategy": "field_interaction",
+  "target_operation": "SendRRData",
+  "purpose": "Exercise the unconnected data path by combining encapsulation fields, interface and timeout fields, CPF item ordering, and a nested explicit-message payload.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:f14ecde0d175",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData with Null Address and Unconnected Data items",
+      "hex": "6f0021000000000000000000000000000000000000000000000000000000000000000000000000020000000000b20008000e03200124013001",
+      "byte_length": 57,
+      "sha256": "5479f9155d4c7fc07a107c06eac17eae122e1f31df5f440b4d712225ce370da4"
+    }
+  ],
+  "expected_behavior": "The server parses a SendRRData payload containing interface handle and timeout fields, a two-item CPF, the documented Null Address Item first, and an Unconnected Data Item carrying a nested explicit request.",
+  "constraints_preserved": [
+    "SendRRData command is 0x006f in a 24-byte encapsulation header",
+    "Encapsulation payload length is 24 bytes",
+    "CPF item count is two",
+    "CPF item order is Null Address Item followed by Unconnected Data Item",
+    "Unconnected Data Item length is 8 bytes and matches its nested payload",
+    "Nested path bytes use a word-count-prefixed EPATH structure as a conservative model-prior encoding"
+  ],
+  "issue_safety_notes": "No issue evidence is enabled. The nested CIP service and path are structural coverage material; inferred details are explicitly treated as fallible model-prior completion.",
+  "sequence_sha256": "09894a33d24eee1303d1a26b68133d833f1a08ecbf512ec09c875e3e3dcdc89e",
+  "total_bytes": 57,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5479f9155d4c7fc07a107c06eac17eae122e1f31df5f440b4d712225ce370da4",
+    "encoded_bytes": 57,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 57,
+        "frame_length": 57
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-revised-plan-003-seed-1-1f85349d",
+      "corpus_file": "005-1f85349d.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

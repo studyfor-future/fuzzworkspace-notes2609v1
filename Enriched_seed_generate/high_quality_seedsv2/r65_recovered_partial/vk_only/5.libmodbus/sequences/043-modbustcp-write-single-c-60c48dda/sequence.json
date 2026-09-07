@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-041",
+  "seed_id": "modbustcp-write-single-coil-0001",
+  "title": "VK-only Write Single Coil: stateful_valid protocol sequence for issue #612 reply-path analogue",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Single Coil",
+  "purpose": "Provide model-prior state prerequisite for reply handling path using conservative coil value and non-default unit identifier.",
+  "evidence_ids": [
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:279:279-summary:f8623682ccd7",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:748:748-summary:90052b7dfbe9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write single coil at address 0x0024, ON",
+      "hex": "00010000000612050024ff00",
+      "byte_length": 12,
+      "sha256": "70cc301c1b03ce7f40000a64dcc9373fa2170aab8fa30bb5cc4ab7e107b1eebb"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the request and return a normal Write Single Coil confirmation echoing the unit, address, and value; malformed or unsupported handling should produce a protocol exception rather than memory corruption.",
+  "constraints_preserved": [
+    "Modbus/TCP ADU with a 7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 0007 equals one unit byte plus a six-byte PDU",
+    "Function code 05 and coil value ff00 are structurally consistent"
+  ],
+  "issue_safety_notes": "This is a valid structural analogue for issue 612 reply processing. It does not reproduce the reported trigger bytes, and any crash or abnormal reply is an observation for the harness rather than an expected result.",
+  "sequence_sha256": "146a36ff74044dec41a874ce6f6c4addaccbb52e1ebd39035a4b82faeceebbe3",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "612"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "70cc301c1b03ce7f40000a64dcc9373fa2170aab8fa30bb5cc4ab7e107b1eebb",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "043-modbustcp-write-single-c-60c48dda",
+      "corpus_file": "043-60c48dda.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

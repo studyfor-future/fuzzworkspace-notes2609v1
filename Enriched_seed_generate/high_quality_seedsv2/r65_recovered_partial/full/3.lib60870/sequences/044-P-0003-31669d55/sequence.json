@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-007",
+  "seed_id": "P-0003",
+  "title": "Single command execute to one information object",
+  "strategy": "function_code_coverage",
+  "target_operation": "Single Command",
+  "purpose": "Cover a control-direction command path using C_SC_NA_1 with a single IOA and a compact command qualifier, distinct from interrogation and setup traffic.",
+  "evidence_ids": [
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:function-text:3cbe16bf065a",
+    "protocol_format:iec60870:section-message-temp:82928a8cc718"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "C_SC_NA_1 single command execute",
+      "hex": "680d020000002d0106000100010001",
+      "byte_length": 15,
+      "sha256": "613748787afaaa3c24f13d49c8a287b60aa47434d320a686db93746878526987"
+    }
+  ],
+  "expected_behavior": "Server parses the single-command ASDU and either acknowledges or routes it to command handling logic without transport or parser failure.",
+  "constraints_preserved": [
+    "APCI I-frame length 0x0e matches 4-byte control field plus 10-byte ASDU",
+    "TypeID 45 matches C_SC_NA_1 from supplied function-code source",
+    "VSQ declares one object and exactly one IOA/payload is present",
+    "Common address and IOA fields are kept fixed-width under conservative 104 assumptions"
+  ],
+  "issue_safety_notes": "Safe valid control-path seed; no oversized VSQ, truncated IOA, or copied issue bytes.",
+  "sequence_sha256": "4a680efe9226fbe5339877bc0fa82d8afe98f32583c3eb29035152e0dfc11354",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "13"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "613748787afaaa3c24f13d49c8a287b60aa47434d320a686db93746878526987",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "044-P-0003-31669d55",
+      "corpus_file": "044-31669d55.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-020",
+  "seed_id": "plan-020-seed-001",
+  "title": "Unknown-cause single command analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Unknown Cause of Transmission",
+  "purpose": "Exercise documented unknown-cause handling while retaining a complete Single Command structure with altered addressing and qualifier fields.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:operation-catalog:b0db75237939",
+    "protocol_format:iec60870:format-overview:6fc14a471f76",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Single command with unknown cause",
+      "hex": "680e000000002d012d00020300000081",
+      "byte_length": 16,
+      "sha256": "3e05aca0e045789de30ac38ac2c1b1ed5fb43ea99d0943a28d53c653f08285fb"
+    }
+  ],
+  "expected_behavior": "The peer recognizes the complete APCI and ASDU structure, then handles documented cause 45 as Unknown Cause of Transmission through its normal validation or error-response path without process termination.",
+  "constraints_preserved": [
+    "Cause 45 is the documented Unknown Cause of Transmission value.",
+    "Type 45 is the documented Single Command identifier.",
+    "The ASDU preserves type, VSQ, two-octet cause, common address, three-octet IOA, and command qualifier order.",
+    "The I-format length 0x0e is consistent with four control octets plus ten ASDU octets.",
+    "The frame is a structural analogue only and does not reproduce issue 13 exact bytes, length 0xe0, or zero-filled payload."
+  ],
+  "issue_safety_notes": "This is an issue-focused parser analogue using a documented exceptional cause with a compact, fully length-consistent frame. It avoids the exact historical crash input and does not claim to reproduce the reported root cause.",
+  "sequence_sha256": "500f46ad49d5ed27dd23923e9ffe9ec41adf398c48ada2f03d5eda00d19fd5f0",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3e05aca0e045789de30ac38ac2c1b1ed5fb43ea99d0943a28d53c653f08285fb",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "047-plan-020-seed-001-a1342bf5",
+      "corpus_file": "047-a1342bf5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

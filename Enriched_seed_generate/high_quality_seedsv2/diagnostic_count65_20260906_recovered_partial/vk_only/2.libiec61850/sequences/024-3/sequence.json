@@ -1,0 +1,74 @@
+{
+  "plan_id": "vk-plan-059",
+  "seed_id": "3",
+  "title": "VK-only GetNameList: stateful_valid with itemId suffix mutation analogue",
+  "strategy": "stateful_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Use stateful_valid strategy with model-prior association setup then GetNamedVariableListAttributesResponse analogue to exercise issue 599 parser path on itemId without $FC$ suffix.",
+  "evidence_ids": [
+    "issue:196:196-summary:55a2cfa7c1b1",
+    "issue:200:200-summary:d453c5e902cd",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:198:198-summary:062388f44431",
+    "issue:599:599-summary:806eef562ec3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "VK-only MMS association setup (TPKT + COTP + ACSE)",
+      "hex": "0300000e02f00000000100e00000",
+      "byte_length": 14,
+      "sha256": "5a9ab473bbe0b28e75919474638d7d149c0550b4cdd14738cc9841547b3131df"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "VK-only GetNamedVariableListAttributesRequest with malformed itemId $",
+      "hex": "030000120300000c0f020f0000000100c102",
+      "byte_length": 18,
+      "sha256": "3ad3cc00887b1346e48441d9e5d5bfad11b7f4441ce3e6e2e891dced4d0a8564"
+    }
+  ],
+  "expected_behavior": "client crash with AddressSanitizer heap-buffer-overflow read through MmsMapping_varAccessSpecToObjectReference after proxy-style rewrite",
+  "constraints_preserved": [
+    "TPKT version 0x03 preserved",
+    "TPKT total-length consistent with message size",
+    "visible length counts internally consistent",
+    "stateful association prerequisite preserved"
+  ],
+  "issue_safety_notes": "Evidence_id 599 used for itemId suffix mutation trigger; ASan heap-buffer-overflow expected; no definite DoS",
+  "sequence_sha256": "6f1fc226ae44e0a2a64264d0ccfc8d28a37980b7727d3ed087ff3b8eba583266",
+  "total_bytes": 32,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 82.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9b7f82c39c1894fb6900595a2a904c44c09dddc509c3b20ac563d252674346cc",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

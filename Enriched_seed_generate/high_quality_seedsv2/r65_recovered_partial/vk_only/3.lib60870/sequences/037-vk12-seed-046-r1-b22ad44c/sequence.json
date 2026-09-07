@@ -1,0 +1,80 @@
+{
+  "plan_id": "vk-plan-046",
+  "seed_id": "vk12-seed-046-r1",
+  "title": "VK-only STARTDT activation pure U-frame control transition",
+  "strategy": "parser_depth",
+  "target_operation": "STARTDT activation",
+  "purpose": "Reach connection and event-handling logic through a recognizable STARTDT activation exchange while keeping the sequence short, mutation-friendly, and distinct from I-frame parser analogues.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:178:178-summary:01c5b607cf00"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation request",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT confirmation analogue",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    }
+  ],
+  "expected_behavior": "Implementation should transition the connection into started data-transfer state or reject safely; no deadlock or stuck mutex condition should arise during connection event processing.",
+  "constraints_preserved": [
+    "Pure U-frame link-control archetype retained",
+    "0x68 length octets consistent with 4-byte control body",
+    "Target operation preserved as STARTDT activation",
+    "Multi-step stateful exchange retained",
+    "Distinct from STOPDT and TESTFR sequences",
+    "Lowercase hexadecimal without separators"
+  ],
+  "issue_safety_notes": "This is a safe control-path analogue for deadlock-oriented evidence, not a copied reproducer. It intentionally avoids malformed ASDU bodies and focuses on state transition handling.",
+  "sequence_sha256": "c3b9aaf1dea7ddaea211c0003050c3cb9f5d025f4ddd37eb4240c4d2a4368d8d",
+  "total_bytes": 12,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "21856332f3312203c075eb60e75278a23f234bb34c82f8db91a39fbfed30444f",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "037-vk12-seed-046-r1-b22ad44c",
+      "corpus_file": "037-b22ad44c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

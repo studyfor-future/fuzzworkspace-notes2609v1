@@ -1,0 +1,72 @@
+{
+  "plan_id": "base-plan-010",
+  "seed_id": "seq-010-r1",
+  "title": "Base UnconnectedSend variant 1",
+  "strategy": "stateful_valid",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Use a plausible setup-then-target sequence with session establishment followed by an explicit SendRRData request carrying an UnconnectedSend-like nested CIP payload.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession_Request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData_UnconnectedSend_Request",
+      "hex": "6f00260001000000000000000000000000000000000000000000000000000000000000020000000000b2001800520220062401062c016603200124013001",
+      "byte_length": 62,
+      "sha256": "99b254624da6876ce0217adc1cb8b3db23b1fa9e9d927a2c75c5814cb6c78ef7"
+    }
+  ],
+  "expected_behavior": "Parser handles a stateful-looking sequence by first processing session registration and then parsing a nested explicit request with CPF and UnconnectedSend-like CIP service content.",
+  "constraints_preserved": [
+    "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header when that form is selected",
+    "Diversify discovery, session and explicit-message paths"
+  ],
+  "issue_safety_notes": "Sequence is conservative and mutation-friendly, with only client-originated messages and no assumed server response semantics. Knowledge is model-prior and not externally verified.",
+  "sequence_sha256": "a7785ae1f4374849dc64850e84ff7e715d012594c60233ca9b79208c30c6c549",
+  "total_bytes": 90,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 92.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6800f33ecefcab4832afeb58078f2c695743948bac4fda84bacfecaa8ff444a7",
+    "encoded_bytes": 90,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 62,
+        "frame_length": 62
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-seq-010-r1-c66da1e6",
+      "corpus_file": "005-c66da1e6.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

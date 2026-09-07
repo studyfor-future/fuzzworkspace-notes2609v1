@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-023",
+  "seed_id": "vk-plan-023",
+  "title": "VK-only DefineNamedVariableList: On branches v1.6_develop and v1.6, client-side handling of GetNamed...",
+  "strategy": "stateful_valid",
+  "target_operation": "DefineNamedVariableList",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:599:599-summary:806eef562ec3",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:598:598-summary:43fd2ace5ec4",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:599:599-summary:444fce66a8cc",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "association_request",
+      "hex": "603e0201008302010102020100040000",
+      "byte_length": 16,
+      "sha256": "8c6dbd5fd1b93d209c016df5d9b154334cdc373047d4a12b729cbd3f2a043d74"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "mms_define_named_variable_list_request",
+      "hex": "e2070283000102040000",
+      "byte_length": 10,
+      "sha256": "d3227d53a1a9999cd3587c25b8f5269441a75d9082fcde6d2bbd8d4d197bcc20"
+    }
+  ],
+  "expected_behavior": "stateful_valid reaches GetNamedVariableListAttributesResponse parse path with $FC$ suffix violation leading to heap-buffer-overflow",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length matches complete message",
+    "IEC 61850 $FC$ suffix trigger preserved",
+    "message budget 1",
+    "single_request shape"
+  ],
+  "issue_safety_notes": "Uses documented proxy rewrite of first itemId TLV to \"$\" from issue 599; no external protocol doc used; TPKT/ASN.1 lengths internally consistent; target_operation preserved",
+  "sequence_sha256": "5a07be2ffe32dfaea626d9cb1460969c5f7d2f77c835f7e12b2777f532cccc5f",
+  "total_bytes": 26,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "599"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a2ce66345851084263638aa3e07a2748dac4d173f0de8ed9c50d486140f9cb62",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 10,
+        "frame_length": 10
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-vk-plan-023-039ad865",
+      "corpus_file": "001-039ad865.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

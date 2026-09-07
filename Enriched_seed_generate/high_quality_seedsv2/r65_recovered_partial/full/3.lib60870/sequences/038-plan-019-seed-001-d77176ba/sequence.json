@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-019",
+  "seed_id": "plan-019-seed-001",
+  "title": "Measured value response with counter-interrogation cause",
+  "strategy": "field_interaction",
+  "target_operation": "Measured Value",
+  "purpose": "Exercise the server-to-client monitoring path with a documented short floating-point measurement type and a documented counter-interrogation cause.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:operation-catalog:b0db75237939",
+    "protocol_format:iec60870:format-overview:6fc14a471f76",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "Short floating-point measured value",
+      "hex": "6812000000000d01030001020000000000803f00",
+      "byte_length": 20,
+      "sha256": "dcd4020d070e2260fb95b025eac9637900244fd2a2380b480fc995aacf2926f1"
+    }
+  ],
+  "expected_behavior": "The peer parses the server-to-client I-format ASDU as one short floating-point measured value associated with cause 3, preserving the measurement value and quality descriptor fields.",
+  "constraints_preserved": [
+    "Type 13 is the documented M_ME_NC_1 short floating-point measured value.",
+    "The ASDU retains type, VSQ, two-octet cause, common address, three-octet IOA, four-octet value, and one-octet quality descriptor ordering.",
+    "The I-format length 0x12 equals four control octets plus fourteen ASDU octets.",
+    "The frame uses a nonzero IOA and a finite IEEE-754 value rather than the historical issue body."
+  ],
+  "issue_safety_notes": "This covers a server-to-client I-format path structurally related to the reported crash call chain without using the historical payload or its length/control-field combination.",
+  "sequence_sha256": "49f40334d516e3dc5545e6512f69a11166cab4935280e9c1165e7aa361628310",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "dcd4020d070e2260fb95b025eac9637900244fd2a2380b480fc995aacf2926f1",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "038-plan-019-seed-001-d77176ba",
+      "corpus_file": "038-d77176ba.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "plan_id": "plan-038",
+  "seed_id": "seed-038-r01",
+  "title": "Association-style initiate then Cancel-Response-PDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Cancel-Response-PDU",
+  "purpose": "Provide a more realistic association-to-MMS progression by sending an ACSE/UserInformation-shaped initiate frame before a server-to-client Cancel-Response-PDU, increasing direction and state diversity beyond isolated single-PDU seeds.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Association-style ACSE with embedded Initiate-Request-PDU",
+      "hex": "0300001811e00000000100c1020000c2020001a803020100",
+      "byte_length": 24,
+      "sha256": "2f3721145850866e12a0bc34289df478791fe516ca83f205454608e321893e1c"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Cancel-Response-PDU",
+      "hex": "0300001811e00000000100c1020000c2020001a2020001a6",
+      "byte_length": 24,
+      "sha256": "19367c1d9aff24dbb996cd4b11981ab971b5eb06dc57b62e243adb64e504ed6b"
+    }
+  ],
+  "expected_behavior": "The first frame should drive association/initiate-oriented decoding through the documented ACSE/UserInformation layered presentation and MMS initiate tag coverage. The second frame should exercise Cancel-Response-PDU parsing as a server-originated MMS PDU without relying on an identical single-frame cosmetic variant.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03.",
+    "TPKT total-length fields are consistent with the complete message.",
+    "Layer order remains compatible with TPKT/COTP and documented ACSE/UserInformation presentation.",
+    "Directionality is diversified with a client-to-server setup message followed by a server-to-client MMS response.",
+    "Only conservative model-prior completion is used for minimal initiate embedding."
+  ],
+  "issue_safety_notes": "No malformed TPDU-size parameter, no copied crash trigger, and no oversized BER length or octet-string allocation analogue. This seed is intended as a valid/stateful parser-path expansion.",
+  "sequence_sha256": "0de6fc4f0eb5c2cb0afca3c5465b365bc2aadc0dd604a4a253de1e9b9193bc60",
+  "total_bytes": 48,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d9b357d52f27ed8e7862f03c5a9fbac6531214b3bb91c65dbdfbd27518a814e8",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

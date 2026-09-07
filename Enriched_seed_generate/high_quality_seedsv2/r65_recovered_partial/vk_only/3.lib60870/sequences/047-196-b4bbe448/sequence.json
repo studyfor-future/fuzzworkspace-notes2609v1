@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-033",
+  "seed_id": "196",
+  "title": "VK-only Double Command: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Double Command",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "length_boundary_double_command",
+      "hex": "680707000000006830",
+      "byte_length": 9,
+      "sha256": "8e541b070d40453a733f8f4a209e1f96b6b9f8d9ce7c09a942c19b18cd645efe"
+    }
+  ],
+  "expected_behavior": "server crashes with heap-buffer-overflow in HighPriorityASDUQueue_hasUnconfirmedIMessages() due to ASDU queue format mismatch from crafted double command payload",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "IEC 60870-5-104 APCI framing preferred",
+    "Diversify command paths",
+    "Preserve target_operation Double Command"
+  ],
+  "issue_safety_notes": "Trigger in cs104_server/simple_server example path; issue-supported boundary relation preserved without exact crash bytes",
+  "sequence_sha256": "df24ee42f791f17d3adabb5b904b83fff6fe9e4485d2ded0f19484586fb5c53f",
+  "total_bytes": 9,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8e541b070d40453a733f8f4a209e1f96b6b9f8d9ce7c09a942c19b18cd645efe",
+    "encoded_bytes": 9,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "047-196-b4bbe448",
+      "corpus_file": "047-b4bbe448.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

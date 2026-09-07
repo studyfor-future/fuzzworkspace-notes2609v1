@@ -1,0 +1,62 @@
+{
+  "plan_id": "plan-013",
+  "seed_id": "plan-013-whois-discovery",
+  "title": "Baseline BACnet/IP Who-Is discovery",
+  "strategy": "baseline_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Provide a compact unconfirmed discovery seed that exercises BACnet/IP BVLC plus NPDU plus APDU parsing before any confirmed service interaction.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Who-Is-unconfirmed",
+      "hex": "810b000800101008",
+      "byte_length": 8,
+      "sha256": "8136a9271a40a2d4e38e77ea61e1f0c64bd7b9c85543114488b155ff2cffc450"
+    }
+  ],
+  "expected_behavior": "Target accepts an unconfirmed discovery request and may respond separately with an I-Am message if configured to do so.",
+  "constraints_preserved": [
+    "BVLC function 0x0b used with four-byte total length 0x000a",
+    "NPDU retained as a minimal routed-free control form",
+    "APDU high nibble 0x10 preserved for Unconfirmed-Request-PDU",
+    "Service payload kept minimal to avoid undocumented field speculation"
+  ],
+  "issue_safety_notes": "No oversized lengths, nested tags, or issue-triggering property-value payloads are used.",
+  "sequence_sha256": "c33b558a199c089754f9136164d5ac3e83bfa777d7ae5cd3b837e46b99b4a9c0",
+  "total_bytes": 8,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2019-12480"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8136a9271a40a2d4e38e77ea61e1f0c64bd7b9c85543114488b155ff2cffc450",
+    "encoded_bytes": 8,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 8,
+        "frame_length": 8
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "010-plan-013-whois-discovery-70850416",
+      "corpus_file": "010-70850416.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-046",
+  "seed_id": "vk12-modbustcp-046-01",
+  "title": "VK-only Read File Record nested single-subrequest parser walk",
+  "strategy": "parser_depth",
+  "target_operation": "Read File Record",
+  "purpose": "Reach a deeper parser structure with one coherent file-record subrequest, using conservative nested lengths to exercise record parsing paths related to prior crash reports involving mixed multi-message and complex request structures.",
+  "evidence_ids": [
+    "issue:748:748-summary:90052b7dfbe9",
+    "issue:763:763-summary:e75d690140f2",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:279:279-summary:f8623682ccd7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read-file-record-one-subrequest",
+      "hex": "12020000000a2a140706000200030002",
+      "byte_length": 16,
+      "sha256": "eae6ad2b30d18d2d4cb707e9b5c219b3817a0cf993a9e63e8a114e81216509cd"
+    }
+  ],
+  "expected_behavior": "A compliant implementation should parse the nested byte-count and subrequest descriptor consistently, then either service or reject the file/record access without overrunning internal buffers.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes",
+    "Protocol identifier set to 0000",
+    "MBAP length 000a matches unit identifier plus 9-byte PDU",
+    "Read File Record function preserved",
+    "Nested request byte count 07 matches one 7-byte subrequest"
+  ],
+  "issue_safety_notes": "The frame is a conservative structural analogue and not a copy of any reported PoC; it intentionally uses a single coherent subrequest to focus on parser depth rather than overt corruption.",
+  "sequence_sha256": "cd0d21b31b01e57a30c0d8b739bc3f517f20fb113c69e23953770234eda2a7c5",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "748"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "eae6ad2b30d18d2d4cb707e9b5c219b3817a0cf993a9e63e8a114e81216509cd",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "042-vk12-modbustcp-046-01-32b6dc14",
+      "corpus_file": "042-32b6dc14.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

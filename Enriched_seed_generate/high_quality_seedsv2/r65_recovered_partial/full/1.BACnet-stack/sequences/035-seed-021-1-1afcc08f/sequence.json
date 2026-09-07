@@ -1,0 +1,78 @@
+{
+  "plan_id": "plan-021",
+  "seed_id": "seed-021-1",
+  "title": "Issue-guided analogue for WriteProperty",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "WriteProperty",
+  "purpose": "Recover historically sensitive structure from WriteProperty issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+  "evidence_ids": [
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:1304:1304-summary:e1e381ed7daa"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "WriteProperty initial request",
+      "hex": "000100010a000000040b00000000000c0f00",
+      "byte_length": 18,
+      "sha256": "7d660e03e1dc1f5df4a960ccc75842711e62b936512bde3c6eaede46374b51bc"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "WriteProperty follow-up property update",
+      "hex": "000100010a000000040b00000000000c0f0100000000000000000000000000",
+      "byte_length": 31,
+      "sha256": "400e839bf4cbef9b9afe22606f4f0a79cd9254f1a5e08f9112ef2d643ed90252"
+    }
+  ],
+  "expected_behavior": "Server accepts write and returns SimpleACK without crash or recursion",
+  "constraints_preserved": [
+    "BACnet/IP BVLC 4-byte total length preserved",
+    "NPDU and APDU layering followed",
+    "WriteProperty function code 0x0F respected",
+    "Array index ALL and property identifier documented"
+  ],
+  "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47217 and CVE-2026-47711 with valid property update; no unbounded recursion or stack overflow",
+  "sequence_sha256": "f6204b6b66ad01742eb136fbc07b934ce930eb2d5532929ebadad6af8375b213",
+  "total_bytes": 49,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-47217"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b396b22b962ba11c8f8695967de9e0042f1526289fdb29c16c83aade740ea23e",
+    "encoded_bytes": 49,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 31,
+        "frame_length": 31
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "035-seed-021-1-1afcc08f",
+      "corpus_file": "035-1afcc08f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

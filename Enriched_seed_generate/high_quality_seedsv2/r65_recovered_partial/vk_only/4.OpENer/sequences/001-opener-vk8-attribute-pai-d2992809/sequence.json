@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-031",
+  "seed_id": "opener-vk8-attribute-pair-03",
+  "title": "Stateful GetAttributeSingle and SetAttributeSingle pair",
+  "strategy": "stateful_valid",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Cover two explicit Message Router service codes in one registered session and provide a compact baseline for mutating class, instance, attribute, and value fields.",
+  "evidence_ids": [
+    "issue:cve-2022-43605:cve-2022-43605-summa:0e083bcc56b5",
+    "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+    "issue:567:567-summary:1255c28909d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession version 1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData GetAttributeSingle",
+      "hex": "6f00170001000000000000000000000000000000000000000000000000000000000200000000b206000e0220042401",
+      "byte_length": 47,
+      "sha256": "2be980ba084380d77342864a1de98b8dbdf10bdb10e12002f7b753692383dee0"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData SetAttributeSingle with two-byte value",
+      "hex": "6f001a00010000000000000000000000000000000000000000000000000000000200000000b20a0010022004240130013412",
+      "byte_length": 50,
+      "sha256": "c341cfeaa2c74da19d89364376034220872492d2ca3647ece7df80bf6302424f"
+    }
+  ],
+  "expected_behavior": "The server should process or reject each explicit request independently while retaining the session, with response construction bounded by the declared request and CPF lengths.",
+  "constraints_preserved": [
+    "All frames use 24-byte EtherNet/IP headers with little-endian payload lengths.",
+    "The session handle is reused for both explicit requests.",
+    "Each CPF has a Null item and one UCMM data item.",
+    "GetAttributeSingle and SetAttributeSingle use distinct service codes and paths.",
+    "The SetAttributeSingle data item length includes exactly the two value bytes."
+  ],
+  "issue_safety_notes": "This supplies safe service-code and field-interaction coverage related to attribute-count and response-construction issues without using SetAttributeList or any exact historical trigger payload.",
+  "sequence_sha256": "1138c53a07cf6f00c61ce0835337772da47382a0a3ff465fe0b36e2225b3f4f8",
+  "total_bytes": 125,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "314"
+  ],
+  "_selection_score": 116.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cf652fef38a80c29d292acf33f33c898368f3889fae13866ca5465c352b489ce",
+    "encoded_bytes": 125,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 47,
+        "frame_length": 47
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 75,
+        "payload_offset": 75,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-opener-vk8-attribute-pai-d2992809",
+      "corpus_file": "001-d2992809.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

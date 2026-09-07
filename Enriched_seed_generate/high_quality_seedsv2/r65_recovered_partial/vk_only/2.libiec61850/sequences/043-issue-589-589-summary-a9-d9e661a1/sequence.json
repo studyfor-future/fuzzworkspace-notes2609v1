@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-009",
+  "seed_id": "issue-589-589-summary-a9c8952234c9",
+  "title": "VK-only COTP Connection Request: libIEC61850 v1.6.1 TPDU size option parsing UB",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Explore issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:589:589-summary:a9c8952234c9",
+    "issue:495:495-summary:292e0a30dc47",
+    "issue:368:368-summary:997e8d1338a8",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:542:542-summary:a6cc05667747",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "COTP CR TPDU size option malformed",
+      "hex": "0300001511e000000100c1020000c2020001c001a2",
+      "byte_length": 21,
+      "sha256": "cd073fa537762e7a5fc5c64d4970954146b626035bc83d442386ddb22af99671"
+    }
+  ],
+  "expected_behavior": "Runtime error: shift exponent too large for 32-bit type 'int' in cotp.c:481",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length field consistent",
+    "COTP CR variable part with TPDU-size option",
+    "no external protocol documents",
+    "model internal prior enforced"
+  ],
+  "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Remote connection trigger preserved. UBSan runtime error expected.",
+  "sequence_sha256": "60f8e73c0b7d3ea435abbf111772eb2857fa62699d95dacde6e8550b09b932b6",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "495"
+  ],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cd073fa537762e7a5fc5c64d4970954146b626035bc83d442386ddb22af99671",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "043-issue-589-589-summary-a9-d9e661a1",
+      "corpus_file": "043-d9e661a1.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

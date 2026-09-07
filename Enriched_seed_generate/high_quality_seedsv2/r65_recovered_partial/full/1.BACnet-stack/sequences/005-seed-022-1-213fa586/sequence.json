@@ -1,0 +1,78 @@
+{
+  "plan_id": "plan-022",
+  "seed_id": "seed-022-1",
+  "title": "Issue-guided analogue for ReinitializeDevice",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "ReinitializeDevice",
+  "purpose": "Recover historically sensitive structure from ReinitializeDevice issue while replacing concrete crash trigger with safer valid analogue using multi-step stateful sequence",
+  "evidence_ids": [
+    "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ReinitializeDevice initial request",
+      "hex": "000100010a000000040b00000000000c140001000000000000000000000000",
+      "byte_length": 31,
+      "sha256": "8c98522f874714960ab89f369726b6c9792e43b72fdf226c192a51b27a655490"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ReinitializeDevice backup restore request",
+      "hex": "000100010a000000040b00000000000c140002000000000000000000000000",
+      "byte_length": 31,
+      "sha256": "0e35a3e3f4db78fd76facf4e7c24dbad514a2663343cdbad047d4a7f9098cd3e"
+    }
+  ],
+  "expected_behavior": "Server handles backup restore without binding file object or crash",
+  "constraints_preserved": [
+    "BACnet/IP BVLC 4-byte total length preserved",
+    "NPDU and APDU layering followed",
+    "ReinitializeDevice function code 0x14 respected",
+    "Backup restore service documented"
+  ],
+  "issue_safety_notes": "Analogue replaces concrete trigger in CVE-2026-47257 with valid backup restore request; no file binding or stack overflow",
+  "sequence_sha256": "5d1cc586059f019bfdf04e071afa72739787a3eed2ba4c1bb9ac1bf255a9bb80",
+  "total_bytes": 62,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-47257"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "487720578d6723e62eebdee88edcd510ed7353db323c1b80bd26afa278fdc8d1",
+    "encoded_bytes": 62,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 31,
+        "frame_length": 31
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 31,
+        "payload_offset": 31,
+        "payload_length": 31,
+        "frame_length": 31
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-seed-022-1-213fa586",
+      "corpus_file": "005-213fa586.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

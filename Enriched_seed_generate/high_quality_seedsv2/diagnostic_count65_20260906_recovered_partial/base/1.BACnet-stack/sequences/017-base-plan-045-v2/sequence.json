@@ -1,0 +1,141 @@
+{
+  "plan_id": "base-plan-045",
+  "seed_id": "base-plan-045-v2",
+  "title": "Base WriteProperty variant 5",
+  "strategy": "stateful_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC-WhoIs-Request",
+      "hex": "010001000002",
+      "byte_length": 6,
+      "sha256": "bb7e0ea2eca81f7c7e2ff68c6a1e6267609a072085f48f537d55f2038f9d3aa1"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "BVLC-WhoIs-Response",
+      "hex": "010002000002",
+      "byte_length": 6,
+      "sha256": "7ee94f69da53c5c4bcfbfe5d3debe1e37390547487cc52ae4484105f8b8d92f0"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "NPDU-ConfirmedRequest",
+      "hex": "0500400100000000000000000000",
+      "byte_length": 14,
+      "sha256": "13abc5c03e4776e05570011c8f3ca2abc693badfd99c352d7c3cdfc69e045669"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "NPDU-Ack",
+      "hex": "0500010100000000000000000000",
+      "byte_length": 14,
+      "sha256": "53f7054f46dd1a7877b0f0a56cfb61a2e4785a5982192cb9e8644c2df76c677a"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "APDU-WriteProperty-Setup",
+      "hex": "0102000000000000000000000000",
+      "byte_length": 14,
+      "sha256": "6717cc6cc266e53adbcaf93564e43fb6513defc8370c5e5a89267041ca68b89f"
+    },
+    {
+      "index": 5,
+      "direction": "server_to_client",
+      "label": "APDU-ConfirmedServiceAck",
+      "hex": "0400000100000000000000000000",
+      "byte_length": 14,
+      "sha256": "0083f7b5198c17289d99597ae043f9cae2aa69e5a817280c752434f18aab7acd"
+    },
+    {
+      "index": 6,
+      "direction": "client_to_server",
+      "label": "APDU-WriteProperty-Target",
+      "hex": "0102000000000000000000000000",
+      "byte_length": 14,
+      "sha256": "6717cc6cc266e53adbcaf93564e43fb6513defc8370c5e5a89267041ca68b89f"
+    }
+  ],
+  "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with setup WriteProperty followed by target WriteProperty; server responds with BVL B-WhoIs-Response and NPDU-Ack for each; state transitions to property write mode.",
+  "constraints_preserved": [
+    "BVLC four-byte length consistent",
+    "NPDU and APDU layering standard",
+    "conservative BACnet/IP message forms",
+    "internal length/checksum/order consistent"
+  ],
+  "issue_safety_notes": "issue knowledge unavailable",
+  "sequence_sha256": "cf2c00d32e628f6a1ea96c311d5826137a4ea3030423b28ec853bdfad4097ef4",
+  "total_bytes": 82,
+  "message_count_hint": 7,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b23455e75c50ca23a46e223e952548ecbb2af54be9705bc68036d70fb3b29a4a",
+    "encoded_bytes": 82,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 26,
+        "payload_offset": 26,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 40,
+        "payload_offset": 40,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 5,
+        "frame_offset": 54,
+        "payload_offset": 54,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 6,
+        "frame_offset": 68,
+        "payload_offset": 68,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

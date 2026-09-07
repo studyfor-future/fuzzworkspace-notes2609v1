@@ -1,0 +1,59 @@
+{
+  "plan_id": "base-plan-020",
+  "seed_id": "base-plan-020-001",
+  "title": "Base UnconnectedSend variant 2",
+  "strategy": "parser_depth",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Use a deeper nested explicit-message form with conservative timeout fields and an embedded service request to reach additional parser logic.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData UnconnectedSend request with nested explicit payload",
+      "hex": "6f002500556677880000000000000000000000000000000000000000000000000200000000000000b2001652042006240124040a000e03200424023001",
+      "byte_length": 61,
+      "sha256": "bdc1f8033a779f6786f80fa5ceb8d3dacca7f44de92505330571742ef1e2ef1d"
+    }
+  ],
+  "expected_behavior": "The request should be framed as an unconnected explicit send carrying an inner GetAttributeSingle-style payload. A target may parse nested content, reject at service level, or return an encapsulation/CIP error while maintaining synchronization.",
+  "constraints_preserved": [
+    "exactly one sequence for the supplied plan_id",
+    "24-byte encapsulation header used",
+    "little-endian payload length matches payload bytes",
+    "single_request parser_depth shape preserved",
+    "nested inner explicit payload kept short and internally consistent"
+  ],
+  "issue_safety_notes": "Only model-prior plausibility is assumed. The nested payload is intentionally compact to preserve safe, mutation-friendly structure without relying on externally verified OpENer specifics.",
+  "sequence_sha256": "dcdff64d17ccc615c6576694fa475d1b29483739cf677a9446fb19810e2d8c69",
+  "total_bytes": 61,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 87.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bdc1f8033a779f6786f80fa5ceb8d3dacca7f44de92505330571742ef1e2ef1d",
+    "encoded_bytes": 61,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 61,
+        "frame_length": 61
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-base-plan-020-001-c15d617c",
+      "corpus_file": "017-c15d617c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "plan_id": "vk-plan-055",
+  "seed_id": "vk-055-r1",
+  "title": "Association-specific dataset creation sequence with compact named variable list",
+  "strategy": "field_interaction",
+  "target_operation": "DefineNamedVariableList",
+  "purpose": "Exercise the dynamic dataset creation path using a multi-step client sequence that reaches defineNamedVariableList with a short association-scoped list name and compact member specification, matching the issue-supported state dependency while remaining conservative and mutation-friendly.",
+  "evidence_ids": [
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cotp_connection_request",
+      "hex": "0300001611e00000000200c1020100c2020102c0010b",
+      "byte_length": 22,
+      "sha256": "4eabc1a4b4ae5627ef2b45cf0abbdebffe84d88e06e99876e1abdc0d103d629c"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "initiate_like_request",
+      "hex": "0300001902f080610fa10d020101a208020103020101be0000",
+      "byte_length": 25,
+      "sha256": "505903bfddcb0e91275db49282802168722674108532ae5da2688737de2665cf"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "define_named_variable_list_assoc_scope",
+      "hex": "0300003802f080a033020107a02ea10a1a086173736f633031a220a01e80044c443031a1161a044c4c4e301a0e2444532431303031245354",
+      "byte_length": 56,
+      "sha256": "026f22e85f69347f7f4424339086010c8771d894fa680fc6e4a9f6ba2ee7f3a7"
+    }
+  ],
+  "expected_behavior": "A server with dynamic dataset support may parse the stateful define request and pass the association-specific list name through access-control and copy logic. Mutating list-name length, scope indicators, or embedded member references can explore the affected branch conditions.",
+  "constraints_preserved": [
+    "tpkt version starts with 03",
+    "tpkt total lengths are consistent per message",
+    "multi-step state progression mirrors issue-supported association prerequisite",
+    "operation diversity includes dynamic dataset creation path",
+    "hex is lowercase and even-length"
+  ],
+  "issue_safety_notes": "Preserves the vulnerable path analogue without using the reported crashing dataset name or exact PoC bytes.",
+  "sequence_sha256": "7c156797f7465e588766ae4b07940997526f59e07745b4ffb20ffc3a8e36e6a4",
+  "total_bytes": 103,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-18582"
+  ],
+  "_selection_score": 86.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1b63a5de7755e5adaa9cde87c193e43afc6eaefdd4c204963ffffcad3b56228a",
+    "encoded_bytes": 103,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 25,
+        "frame_length": 25
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 47,
+        "payload_offset": 47,
+        "payload_length": 56,
+        "frame_length": 56
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "017-vk-055-r1-ae2090b3",
+      "corpus_file": "017-ae2090b3.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

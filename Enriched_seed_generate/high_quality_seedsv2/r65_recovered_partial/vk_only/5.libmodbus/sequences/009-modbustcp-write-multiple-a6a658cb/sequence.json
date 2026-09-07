@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-008",
+  "seed_id": "modbustcp-write-multiple-registers-004",
+  "title": "VK-only Write Multiple Registers with seven-register payload",
+  "strategy": "field_interaction",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Exercise interaction among a seven-register quantity, fourteen-byte payload, byte count, address, and MBAP length while covering the write confirmation path associated with repeated-operation evidence.",
+  "evidence_ids": [
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:279:279-summary:f8623682ccd7",
+    "issue:683:683-summary:fbe9b8a5a160"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write seven consecutive registers with fourteen-byte payload",
+      "hex": "0004000000150310002000070e0001000200030004000500060007",
+      "byte_length": 27,
+      "sha256": "9a280d6a3b595b608d8a5e2d4cf9db27a73b9a46f2589ff2851a72a64d533a46"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse the complete fourteen-byte register payload and return the normal Write Multiple Registers acknowledgment or a mapping-related exception response; a stateful harness may repeat the request to observe consistency.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0015 equals unit identifier plus the twenty-byte Write Multiple Registers PDU.",
+    "Quantity 0007 and byte count 0e agree, with fourteen payload bytes present.",
+    "The transaction identifier and unit identifier differ from the other candidates."
+  ],
+  "issue_safety_notes": "Seven-register coverage is an analogue to the quantity reported in issue 738, while repeated-write behavior is informed by issue 279. Neither issue is claimed to be reproduced, and no exact historical crash payload is used.",
+  "sequence_sha256": "807b132fc8f8d0aaefecfed74de549bec89c42875dc55f02c3f75f01c50946e4",
+  "total_bytes": 27,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "738"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9a280d6a3b595b608d8a5e2d4cf9db27a73b9a46f2589ff2851a72a64d533a46",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "009-modbustcp-write-multiple-a6a658cb",
+      "corpus_file": "009-a6a658cb.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

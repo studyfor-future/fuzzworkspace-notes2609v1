@@ -1,0 +1,77 @@
+{
+  "plan_id": "vk-plan-011",
+  "seed_id": "vk-plan-011-seed-ga-03",
+  "title": "GetAttributeSingle explicit request baseline",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Provide a compact stateful explicit-message baseline for attribute routing, suitable for mutations to class, instance, attribute, session handle, and CPF lengths.",
+  "evidence_ids": [
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:564:564-summary:6b535e1b37b6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData-GetAttributeSingle",
+      "hex": "6f00240004000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000006000e0220042401",
+      "byte_length": 60,
+      "sha256": "7425f156c6e2bd0388ac6e293ef909eefde6662273f2f5c91fad10e90293f816"
+    }
+  ],
+  "expected_behavior": "The server should process the registered-session GetAttributeSingle request and produce a normal response or a deterministic CIP error for the selected object path, without reading beyond the declared request.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "RegisterSession to SendRRData state transition",
+    "CPF null-address and unconnected-data items",
+    "CIP service and path are fully contained by the declared data-item length"
+  ],
+  "issue_safety_notes": "This sequence targets attribute-routing and explicit-message coverage while remaining bounded. It is not a reproduction of any historical crash and does not rely on undocumented external protocol material.",
+  "sequence_sha256": "2fbc794a97b7539f66b5f78dfd74c6673d8a117ed96e16d0d2194d991eef9f97",
+  "total_bytes": 88,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "566"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "53e425b18b0ec3a85a15849c63a3472d7f5691f86da474b933e72e8ca963e184",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 60,
+        "frame_length": 60
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "050-vk-plan-011-seed-ga-03-f660e7ff",
+      "corpus_file": "050-f660e7ff.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

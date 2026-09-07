@@ -1,0 +1,91 @@
+{
+  "plan_id": "vk-plan-037",
+  "seed_id": "modbustcp-read-coils-repeat-01",
+  "title": "Repeated Read Coils with varied units and address ranges",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Coils",
+  "purpose": "Exercise repeated Read Coils transactions across different unit identifiers and address ranges while preserving the issue-supported relation that repeated operations may behave differently after an initially normal call.",
+  "evidence_ids": [
+    "issue:279:279-summary:f8623682ccd7",
+    "issue:683:683-summary:fbe9b8a5a160",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "initial Read Coils request, unit ff, address 0, quantity 9",
+      "hex": "000100000006ff0100000009",
+      "byte_length": 12,
+      "sha256": "36f92d1404f2964a43a1b104056884d954712c1fe7c7de506b85de4364557371"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "repeated Read Coils request, unit 7c, address 16, quantity 16",
+      "hex": "0002000000067c0100100010",
+      "byte_length": 12,
+      "sha256": "d4fae8f644f9bd4091fb794ae39e7ea7e2baf897f41294c4214e6356cd3d4651"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "follow-up Read Coils request, unit 01, address 240, quantity 1",
+      "hex": "000300000006010100f00001",
+      "byte_length": 12,
+      "sha256": "8d9d69d66892ebe02c9ff964ade0f1454187c7505f5dd8d5318e00692449012e"
+    }
+  ],
+  "expected_behavior": "Each request is a syntactically complete Read Coils transaction; a conforming server should parse the three requests independently and return a normal response or a protocol-level exception for an unsupported unit or address.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "Each MBAP length is 0006, matching one unit byte plus the five-byte Read Coils PDU.",
+    "All quantities are positive and within the conventional Read Coils range.",
+    "Hex is lowercase and contains no separators."
+  ],
+  "issue_safety_notes": "This is a valid structural analogue of repeated operations and unit/address variation. It does not copy the reported response bytes or intentionally create an inconsistent length, malformed PDU, or known crash payload.",
+  "sequence_sha256": "83888e6b31ba38f24da200081221bac1ffdf6ac5fa44b1e6ca344055f250e051",
+  "total_bytes": 36,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "279"
+  ],
+  "_selection_score": 116.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e05c6cf80657104714af77c4f164a2b1b17402833358edff70cefb5bb5c74547",
+    "encoded_bytes": 36,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "000-modbustcp-read-coils-rep-c84e14d8",
+      "corpus_file": "000-c84e14d8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "plan_id": "",
+  "seed_id": "SEED-021-RF1",
+  "title": "Valid Read File Record subrequest",
+  "strategy": "function_code_coverage",
+  "target_operation": "Read File Record",
+  "purpose": "Increase operation and field-layout diversity with a valid 0x14 request that includes a byte-counted file-record subrequest, covering a more nested parser shape than simple register reads.",
+  "evidence_ids": [
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:869721545c59",
+    "protocol_format:modbustcp:format-overview:9821a13f1ada",
+    "protocol_format:modbustcp:section-common-heade:efc691d867a7",
+    "issue:614:614-summary:e89105d3aaf7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read File Record request",
+      "hex": "10040000000a07140706000100000002",
+      "byte_length": 16,
+      "sha256": "96bcc148c8a1936cddb8b2ea7f6a234dc7cb6e78ecb48580d75cf2b7a1caead9"
+    }
+  ],
+  "expected_behavior": "Server should parse the Read File Record request with one subrequest item and either return file-record data if supported or a clean exception response.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0009 matches unit identifier plus 8-byte PDU",
+    "Function code 0x14 is documented for Read File Record",
+    "Byte count 0x06 matches one complete file-record subrequest body",
+    "Subrequest preserves reference type plus file number, record number, and record length field ordering"
+  ],
+  "issue_safety_notes": "Chosen as a safe structural broadening seed with nested length-bearing fields; it is fully framed and not an exact reproduction of any historical crafted overflow payload.",
+  "sequence_sha256": "348f765f5daeab81e6c6718d5b018e80039b3d61165b1971f9a1aa39001a7a15",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed MBAP length",
+    "recomputed Modbus file-record byte count"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "96bcc148c8a1936cddb8b2ea7f6a234dc7cb6e78ecb48580d75cf2b7a1caead9",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

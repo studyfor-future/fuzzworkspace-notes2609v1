@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-035",
+  "seed_id": "vkplan-035-revised",
+  "title": "VK-only SendRRData: OpENer’s explicit messaging path has a remotely reachable out-of-bo...",
+  "strategy": "stateful_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite with varied path sizes.",
+  "evidence_ids": [
+    "issue:557:557-summary:f58da6326195",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:569:569-summary:84e873f1b910",
+    "issue:575:575-summary:e8df4ac3993c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "650003000000000000000000000000000000000000000001000000",
+      "byte_length": 27,
+      "sha256": "bd5cca03aa2761eca7b436377d52870a88a9288dc35473dd3b3495551efa88ff"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData",
+      "hex": "6f0003000000000000000000000000000000000000000001000000",
+      "byte_length": 27,
+      "sha256": "1235b2e022b1bb918b04747280d8beb0790ec72447fb9b0089ac3feda4e03636"
+    }
+  ],
+  "expected_behavior": "Valid RegisterSession followed by SendRRData that reaches the out-of-bounds read in DecodePaddedEPath.",
+  "constraints_preserved": [
+    "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header when that form is selected",
+    "Diversify discovery, session and explicit-message paths",
+    "Model-prior message archetypes"
+  ],
+  "issue_safety_notes": "Crashes the server (intended). Session setup ensures explicit-messaging path for issue 557 out-of-bounds read in DecodePaddedEPath. Varied field values for diversity.",
+  "sequence_sha256": "65366f55e32ac1b3fb98c0fab290cffda28d43509468a3b0bd89fa2e11fcfed4",
+  "total_bytes": 54,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "557"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ec0b88f98abe6d9fde8035bb6e0a01542d744ce62dcf5a556ec0fa9244b65a39",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 27,
+        "payload_offset": 27,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "033-vkplan-035-revised-010321ea",
+      "corpus_file": "033-010321ea.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

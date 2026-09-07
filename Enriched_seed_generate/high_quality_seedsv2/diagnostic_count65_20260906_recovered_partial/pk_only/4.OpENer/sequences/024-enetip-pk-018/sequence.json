@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-018",
+  "seed_id": "enetip-pk-018",
+  "title": "Routing-failure-status-themed large explicit request analogue",
+  "strategy": "function_code_coverage",
+  "target_operation": "Routing Failure Request Packet Too Large",
+  "purpose": "Exercise larger yet internally consistent SendRRData and CPF lengths with a longer unconnected explicit payload, using the documented general-status name only as thematic coverage rather than an expected result.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a6b9b629463c",
+    "function_code:function:function-text:40a9289da660",
+    "function_code:function:operation-catalog:e8810af4c6bf",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:b3c070259d0a",
+    "function_code:function:function-text:d62ad498ac4f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "sendrrdata-large-explicit-analogue",
+      "hex": "6f002500020000000000000000000000000000000000000000000000020000000000b200190e02200124013001000102030405060708090a0b0c0d0e0f",
+      "byte_length": 61,
+      "sha256": "45b864bcdcb15c0cefd9586b1c41c04a39c60a34ab84e4fca8b2105e80c205f5"
+    }
+  ],
+  "expected_behavior": "Parser should accept the encapsulation and CPF framing and pass a larger unconnected explicit request upward; any returned CIP general status is implementation dependent and not prescribed by this seed.",
+  "constraints_preserved": [
+    "Used encapsulation command 0x006f SendRRData and documented 24-byte header form.",
+    "Set encapsulation payload length to 0x0025 matching the CPF payload byte count.",
+    "Used documented CPF pair Null Address Item plus Unconnected Data Item.",
+    "Set Unconnected Data Item length to 0x0019 matching the 25-byte CIP request carried inside.",
+    "Used a conservative inferred CIP message layout with service byte 0x0e, path size 2 words, path to class 0x01 instance 0x01, and 16 bytes of request data to increase parser coverage.",
+    "Referenced the documented status name 'Routing Failure Request Packet Too Large' only as plan context; this request is not claimed to produce that status."
+  ],
+  "issue_safety_notes": "No issue behavior is claimed. The sequence is intended only to broaden parser coverage with a larger valid frame.",
+  "sequence_sha256": "b0bf1b25d2e9d7eae91e76bdf10ae11c14287b35e035efff22b0262dfc8b031e",
+  "total_bytes": 61,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "45b864bcdcb15c0cefd9586b1c41c04a39c60a34ab84e4fca8b2105e80c205f5",
+    "encoded_bytes": 61,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 61,
+        "frame_length": 61
+      }
+    ]
+  }
+}

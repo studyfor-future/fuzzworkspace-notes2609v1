@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-014",
+  "seed_id": "issue-764-field-interaction-discrete-inputs-02",
+  "title": "Repeated Read Discrete Inputs interaction",
+  "strategy": "field_interaction",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Probe field interactions across two valid requests by varying unit identifier, address, and quantity in a repeated sequence that can expose state-sensitive handling without copying any known crash packet.",
+  "evidence_ids": [
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:612:612-summary:7b008d4bca1d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "discrete_inputs_probe_a",
+      "hex": "220100000006110200200001",
+      "byte_length": 12,
+      "sha256": "38445067d937b3ecbe6be00268b38a336fe9216b57b7d2d41b6668769f4c7350"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "discrete_inputs_probe_b",
+      "hex": "2202000000067c0200210003",
+      "byte_length": 12,
+      "sha256": "a678f8c9ab26296b96f5d1702aaa36f5756a313960373aa554e88a490f809126"
+    }
+  ],
+  "expected_behavior": "Server should process both read-discrete-input requests independently, returning valid data or bounded exceptions with stable connection behavior across the repeated transaction pair.",
+  "constraints_preserved": [
+    "7-byte MBAP header in each message",
+    "protocol identifier 0x0000 in each message",
+    "MBAP length set consistently to 0x0006 for each fixed-size read request",
+    "recognizable Read Discrete Inputs function code 0x02",
+    "stateful repeated-request shape with valid framing"
+  ],
+  "issue_safety_notes": "The sequence borrows only safe field-interaction themes and repeated-processing coverage; it does not reuse the documented issue 764 function code, payload body, or exact transaction layout.",
+  "sequence_sha256": "81e11695db3fe77b30dcf920a9d076048e1b5ee18475bc1f35e5d7f003848349",
+  "total_bytes": 24,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "764"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fbd7255d1b1b9b50edfb0b880c3396fcd1fdc163c1af79fa0fad6d326cf2c083",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "021-issue-764-field-interact-2f55525f",
+      "corpus_file": "021-2f55525f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

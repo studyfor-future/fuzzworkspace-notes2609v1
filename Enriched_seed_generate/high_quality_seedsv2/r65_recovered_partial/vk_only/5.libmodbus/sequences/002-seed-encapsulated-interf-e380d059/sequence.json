@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-012",
+  "seed_id": "seed-encapsulated-interface-dispatch-02",
+  "title": "Encapsulated Interface Transport identification variants",
+  "strategy": "function_code_coverage",
+  "target_operation": "Encapsulated Interface Transport",
+  "purpose": "Cover the MEI-based device-identification dispatch path with repeated valid requests that vary unit, transaction, read-code, and object-id fields.",
+  "evidence_ids": [
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:803:803-summary:fea416ab8355",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "device_identification_basic",
+      "hex": "400100000005052b0e0100",
+      "byte_length": 11,
+      "sha256": "96fe81e6ca47a66bc495d0472bcdcb076de90329a750c4e89f5c230bcc77ac3a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "device_identification_regular",
+      "hex": "400200000005062b0e0200",
+      "byte_length": 11,
+      "sha256": "ea45531fb75cd9001cadc8963c327f4940ae48b6cd16fe6f2e8c89af4e87f1e6"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "device_identification_object_variant",
+      "hex": "400300000005072b0e0101",
+      "byte_length": 11,
+      "sha256": "055c889c1ac746241c874c24c9c47cab295a12b37585dc05e42d12a9a6061e3b"
+    }
+  ],
+  "expected_behavior": "The server should parse each complete Encapsulated Interface Transport request and return device-identification data or a standard exception when the requested service is unavailable.",
+  "constraints_preserved": [
+    "Each message has a seven-byte Modbus/TCP MBAP header",
+    "Protocol identifier is 0000",
+    "Each MBAP length 0005 equals the unit identifier plus the four-byte PDU",
+    "Each PDU contains function code 2b, MEI type 0e, a read-code byte, and an object-id byte",
+    "Transaction identifiers and unit identifiers vary across messages",
+    "No message contains trailing bytes beyond its declared ADU"
+  ],
+  "issue_safety_notes": "This sequence targets receive and function dispatch with conservative MEI-shaped requests. The bytes are newly constructed, not copied from any historical report, and the model-prior interpretation of the fields is not externally verified.",
+  "sequence_sha256": "c15a68acab600abd691f0605eee03f880595eadb9afe76574f91f008d50ac750",
+  "total_bytes": 33,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "750"
+  ],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "35f9a38f5bea2a53b12cdda043f1fffe088e6aa72a046f744f14080952e9607d",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 11,
+        "payload_offset": 11,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-seed-encapsulated-interf-e380d059",
+      "corpus_file": "002-e380d059.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

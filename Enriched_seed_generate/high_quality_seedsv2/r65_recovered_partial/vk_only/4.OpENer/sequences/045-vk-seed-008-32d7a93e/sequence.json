@@ -1,0 +1,95 @@
+{
+  "plan_id": "vk-plan-008",
+  "seed_id": "vk-seed-008",
+  "title": "VK-only SetAttributeSingle: OpENer 2.3.0 (commit 76b95cf) is reported vulnerable during incoming CIP packet parsing",
+  "strategy": "field_interaction",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:563:563-summary:b783074fb0e0",
+    "issue:568:568-summary:6fa072929d36",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:cve-2021-21777:cve-2021-21777-summa:e2d86555bd49",
+    "issue:562:562-summary:96e1239066fb",
+    "issue:566:566-summary:204619312f9d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "00000010000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "c20b8d84748bc316bc183e115720b53abb530f7ced5debb8928f835c8efd1b54"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData",
+      "hex": "6f001000010000000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 40,
+      "sha256": "781f684a5eb42bd30885611af29ffb71acd742c6632e7314974a5ad12cd92428"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SetAttributeSingle",
+      "hex": "6f001000010000000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 40,
+      "sha256": "781f684a5eb42bd30885611af29ffb71acd742c6632e7314974a5ad12cd92428"
+    }
+  ],
+  "expected_behavior": "Server crashes under ASan with stack-buffer-overflow read in cipmessagerouter.c due to inconsistent length types and missing bounds checks on CIP padded EPath.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when form selected",
+    "Diversified explicit-message path",
+    "Model-prior SetAttributeSingle archetype"
+  ],
+  "issue_safety_notes": "No crash bytes copied; issue 563 trigger relation preserved without exact payload; multi-step stateful shape exercises field interactions across plans.",
+  "sequence_sha256": "8b3208b55adde9d7620af11d71360c824c500bc8c5b9a6ef88621bfa85e2a278",
+  "total_bytes": 96,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "563"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ef42a5bccdbb535e76a8853bd54df0a7b1f93ac7a07524a9818eab07560141d0",
+    "encoded_bytes": 96,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 40,
+        "frame_length": 40
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 40,
+        "frame_length": 40
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "045-vk-seed-008-32d7a93e",
+      "corpus_file": "045-32d7a93e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-058r1",
+  "title": "AtomicReadFile stream-access signed-offset analogue",
+  "strategy": "parser_depth",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Exercise deeper file-service parsing with a stream-style request carrying a visibly unusual signed offset and modest requested length to support mutations around negative and oversized positions.",
+  "evidence_ids": [
+    "issue:cve-2026-49990:cve-2026-49990-summa:2ede86add71d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "atomicreadfile-stream-offset-probe",
+      "hex": "810b00180120ffff00ff0602c4028000013f7ffffff00010",
+      "byte_length": 24,
+      "sha256": "b1d9d28384b8335e3a9a15f2dcbc420717228933fe9fbf004c55c3ec05003eb4"
+    }
+  ],
+  "expected_behavior": "A robust target should validate the stream offset and requested byte count, returning an error or no data rather than performing unsafe pointer or size arithmetic.",
+  "constraints_preserved": [
+    "common BACnet/IP BVLC NPDU APDU layering",
+    "four-byte BVLC total length consistent",
+    "single request shape preserved",
+    "lowercase even-length hexadecimal",
+    "target operation retained as AtomicReadFile"
+  ],
+  "issue_safety_notes": "Focuses on the signed fileStartPosition analogue from issue evidence while avoiding verbatim backend-only reproduction details.",
+  "sequence_sha256": "f8e4d818fb510e60f675ea739b313af2c8bd13e1e0b2f8ee30a92584e26276e0",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b1d9d28384b8335e3a9a15f2dcbc420717228933fe9fbf004c55c3ec05003eb4",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "021-vk-seed-058r1-78b4947f",
+      "corpus_file": "021-78b4947f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

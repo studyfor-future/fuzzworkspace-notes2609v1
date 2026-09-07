@@ -1,0 +1,86 @@
+{
+  "plan_id": "plan-040",
+  "seed_id": "seed-040-r01",
+  "title": "Discovery/read pair ending in Cancel-Error-PDU",
+  "strategy": "function_code_coverage",
+  "target_operation": "Cancel-Error-PDU",
+  "purpose": "Replace a cosmetic singleton with a deeper confirmed-service sequence that touches discovery and read-style confirmed-request paths before reaching Cancel-Error-PDU coverage.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Confirmed-Request-PDU service-choice analogue for GetNameList",
+      "hex": "0300001811e00000000100c1020000c2020001a003020101",
+      "byte_length": 24,
+      "sha256": "62cec5a2326c1732ac216c4c75c14ac038a4330686f803fc1b8b2d3daaec7b55"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Confirmed-Request-PDU service-choice analogue for Read",
+      "hex": "0300001811e00000000100c1020000c2020001a003020104",
+      "byte_length": 24,
+      "sha256": "f5a1d80f58f6aa8e59daede29aa7179b1f8e0d33d4a6e61249af829bbc3f7bba"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "Cancel-Error-PDU",
+      "hex": "0300001811e00000000100c1020000c2020001a2020001a7",
+      "byte_length": 24,
+      "sha256": "b071e854144fad6da891db5d1e1030e9dfcf7486320775902d92a9f382675c16"
+    }
+  ],
+  "expected_behavior": "The first two confirmed requests should traverse the generic Confirmed-Request-PDU parser with distinct service-choice values aligned to documented GetNameList and Read service codes, then the final frame should cover Cancel-Error-PDU handling as a separate MMS PDU type. Clean acceptance or graceful semantic rejection is expected, with no parser overrun or undefined behavior.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03.",
+    "TPKT total-length fields are consistent with each complete message.",
+    "MMS confirmed service diversification uses documented service-code references for GetNameList and Read.",
+    "Sequence explicitly expands discovery and read paths before cancel-error coverage.",
+    "Frames are structurally distinct rather than one-byte cosmetic tag swaps only."
+  ],
+  "issue_safety_notes": "No issue-trigger bytes are mirrored. Service-choice analogues remain short and bounded, intended to increase parser coverage while staying safely away from historical malformed-length or allocation motifs.",
+  "sequence_sha256": "34cc0750857d43892569a4bfedd96ac7129c969f4c761018db4f97a2e2cd8d83",
+  "total_bytes": 72,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6669458392908c01a561b25d810451048ee5b04af702e8d622fce394c44ba3eb",
+    "encoded_bytes": 72,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 48,
+        "payload_offset": 48,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-050",
+  "seed_id": "vk-plan-050-seq-1",
+  "title": "VK-only UnconnectedSend: OpENer v2.3 CPF field interaction analogue",
+  "strategy": "field_interaction",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Diversify CPF item-count and data-item reuse path via multi-step explicit Send with plausible model-prior structure",
+  "evidence_ids": [
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:575:575-summary:3b6824be82b5",
+    "issue:577:577-summary:f41c11d4b1b8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "656e6970000000000000000000000000000000",
+      "byte_length": 19,
+      "sha256": "8adac4aa07d9ba036610f998b0fee2129bb29f796faa56bdf666768cc0460b4e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData cpf interaction",
+      "hex": "006f1700000000000000000000000000000000b2000000000100000000000000000000000000000000000000000000",
+      "byte_length": 47,
+      "sha256": "fc7733c442a8f7ffeec56ce1cb5b1b45d23017961761ca1474cb1ec46016a2c4"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnitData reuse",
+      "hex": "006b0e00000000000000000000000000000000b2000000000000000000000000000000000000",
+      "byte_length": 38,
+      "sha256": "332529896b86132d64a24fb47f8fef8c233550f349362ee9d84f957bf3a3f752"
+    }
+  ],
+  "expected_behavior": "CPF item count variation leaves stale data_item; subsequent packet reuses UDP-stack pointer in TCP path",
+  "constraints_preserved": [
+    "24-byte ENIP header",
+    "little-endian length",
+    "stateful multi-step",
+    "internal length consistency",
+    "safe field interaction"
+  ],
+  "issue_safety_notes": "Safe interaction analogue; no crash payload; opener family constraints",
+  "sequence_sha256": "5900d7375949d7163f335a61b60f73f6da2dae3496aec023f9b5fe19f6d7c1d9",
+  "total_bytes": 104,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "575"
+  ],
+  "_selection_score": 116.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d9309c1c6807050c0198641c62cf8fa3a3952b4f18a568f3387264b428c90455",
+    "encoded_bytes": 104,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 19,
+        "frame_length": 19
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 19,
+        "payload_offset": 19,
+        "payload_length": 47,
+        "frame_length": 47
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 66,
+        "payload_offset": 66,
+        "payload_length": 38,
+        "frame_length": 38
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-vk-plan-050-seq-1-584a4c4b",
+      "corpus_file": "002-584a4c4b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-025",
+  "seed_id": "seq-025-01",
+  "title": "Issue-guided analogue for MMS over ISO-on-TCP",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:589:589-summary:a9c8952234c9",
+    "issue:597:597-summary:4fb3ca566b9b",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MMS-CR-analogue",
+      "hex": "030000190e0000000001e0000100c1020000c2020000c00122",
+      "byte_length": 25,
+      "sha256": "aa18f4274425af68851ae6b06e1b6fc87cec5706b8b0ec25bd4b3643219e3e8d"
+    }
+  ],
+  "expected_behavior": "Server accepts connection and processes MMS-CR without triggering heap use-after-free or shift-exponent UB in COTP/MMS paths; parser entry point for further testing.",
+  "constraints_preserved": [
+    "MMS over RFC1006 with TPKT header beginning with version 0x03",
+    "Keep the TPKT total-length field consistent with the complete message"
+  ],
+  "issue_safety_notes": "Replaces the 0xa2 shift exponent with 0x22 to avoid overflow while preserving the exact parameter length and COTP TPDU-size option structure from the original issue evidence.",
+  "sequence_sha256": "de07ef60055af759b6620d66b830630eeda2acea7cfe62a514823b6fd4fdf992",
+  "total_bytes": 25,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "597"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "aa18f4274425af68851ae6b06e1b6fc87cec5706b8b0ec25bd4b3643219e3e8d",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "052-seq-025-01-2315686c",
+      "corpus_file": "052-2315686c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

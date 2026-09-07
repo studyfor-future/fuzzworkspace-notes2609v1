@@ -1,0 +1,52 @@
+{
+  "plan_id": "base-plan-025",
+  "seed_id": "base-plan-025-r1",
+  "title": "Base WriteProperty variant 3 revised",
+  "strategy": "length_boundary_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Exercise a conservative confirmed WriteProperty request with a compact real-valued property payload and explicit priority while keeping nested tags and total frame length internally consistent.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet/IP Confirmed WriteProperty request",
+      "hex": "810a0019010402000fc400080001910c3e4442c800003f4901",
+      "byte_length": 25,
+      "sha256": "232fdced3e4ff791ee87a15802babf3dd985626578935db716ebd782ea892be8"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP server should parse the frame as a confirmed WriteProperty request and then return an acknowledgment or a protocol-conforming error depending on object, property, value, and access state.",
+  "constraints_preserved": [
+    "BVLC uses BACnet/IP original-unicast framing with a four-byte header",
+    "BVLC total length 0x0019 matches the full encoded message length",
+    "NPDU precedes the confirmed-request APDU and service parameters",
+    "Opening and closing tags in the property value portion are balanced",
+    "Hex is lowercase and has an even number of characters"
+  ],
+  "issue_safety_notes": "No vulnerability issue knowledge is used. This is a conservative model-prior seed for parser and operation coverage only.",
+  "sequence_sha256": "33a19634b888cb0bc81d2b33d751f761793830986ba2b86aec2a52178483be3f",
+  "total_bytes": 25,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "232fdced3e4ff791ee87a15802babf3dd985626578935db716ebd782ea892be8",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ]
+  }
+}

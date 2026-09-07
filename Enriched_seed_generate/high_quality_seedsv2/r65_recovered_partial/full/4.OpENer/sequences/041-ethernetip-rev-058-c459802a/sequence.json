@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-058",
+  "seed_id": "ethernetip-rev-058",
+  "title": "ListServices discovery request",
+  "strategy": "baseline_valid",
+  "target_operation": "ListServices",
+  "purpose": "Provide a minimal, source-backed discovery frame with no payload to exercise encapsulation-command parsing independently of session or CPF handling.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "listservices-request",
+      "hex": "040000000000000000000000112233445566778800000000",
+      "byte_length": 24,
+      "sha256": "137cb157e1193d75e85b35152ecd123be1e2c2a7bd860c0e0d5d6f44a6b3f199"
+    }
+  ],
+  "expected_behavior": "A compliant parser should accept the 24-byte encapsulation header, recognize ListServices, and either generate a normal service-list response or ignore it according to transport context; framing itself should be valid.",
+  "constraints_preserved": [
+    "Command 0x0004 ListServices encoded little-endian as 04 00.",
+    "Length is 0, so the frame is exactly the 24-byte encapsulation header with no trailing payload.",
+    "Session Handle, Status, and Options are zeroed for a simple discovery request.",
+    "Sender Context is present as 8 bytes as required by the 24-byte header form."
+  ],
+  "issue_safety_notes": "Not issue-guided; this seed is a simple valid discovery request and does not touch the vulnerable connection-manager parser path.",
+  "sequence_sha256": "bbd052143ca1e713ddafb52b6b7e2bac21472c4d01bd79028f6e914fcaf2cba1",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "137cb157e1193d75e85b35152ecd123be1e2c2a7bd860c0e0d5d6f44a6b3f199",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "041-ethernetip-rev-058-c459802a",
+      "corpus_file": "041-c459802a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

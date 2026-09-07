@@ -1,0 +1,70 @@
+{
+  "plan_id": "base-plan-004",
+  "seed_id": "base-plan-004-seed-2",
+  "title": "Base UnregisterSession variant 2",
+  "strategy": "length_boundary_valid",
+  "target_operation": "UnregisterSession",
+  "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Setup header",
+      "hex": "0000080000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "4c49b88894d742530818a686961a640ca28692c2e2ad020b7cfd86de3e594068"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request",
+      "hex": "0000080000000032000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "755e01af4b1ae842935c4d520b69cd363589fd1d803738360d2f6354c966e157"
+    }
+  ],
+  "expected_behavior": "Two-message sequence: first setup, then UnregisterSession request with standard encapsulation header and 0x0032 service code, length consistency preserved.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when selected",
+    "Diversify session paths"
+  ],
+  "issue_safety_notes": "Issue knowledge is unavailable. This is model-prior plausibility only; treat protocol validity as internal prior, not external verification.",
+  "sequence_sha256": "3f029719b3bb2398c705df67d07f7fe69ca994b0cc8d39cedb6bfd3025a209b9",
+  "total_bytes": 64,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 32.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ceefc933bf90ea76566e28b7e221611465aa5ee39aa8e1990b47a5535b88370a",
+    "encoded_bytes": 64,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 32,
+        "frame_length": 32
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "022-base-plan-004-seed-2-ae6f13f4",
+      "corpus_file": "022-ae6f13f4.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

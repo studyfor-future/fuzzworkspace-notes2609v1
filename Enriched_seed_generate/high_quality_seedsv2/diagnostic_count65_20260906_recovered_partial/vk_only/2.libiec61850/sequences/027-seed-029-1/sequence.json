@@ -1,0 +1,73 @@
+{
+  "plan_id": "vk-plan-029",
+  "seed_id": "seed-029-1",
+  "title": "VK-only Write: The report does not specify a version. In libiec61850, `MmsValue_ne...",
+  "strategy": "stateful_valid",
+  "target_operation": "Write",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:193:193-summary:1451e58436f0",
+    "issue:198:198-summary:062388f44431",
+    "issue:200:200-summary:d453c5e902cd",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:609:609-summary:a7f14e01134e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "TPKT + COTP + MMS Initiate",
+      "hex": "0300000c03e8000000030000",
+      "byte_length": 12,
+      "sha256": "4a462ec3fadf615ddbbfef97a326810235dec0cc92aba936bbb03afa4ba9a36d"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "Write Request with negative octet string size",
+      "hex": "0300000c03e8000000030000",
+      "byte_length": 12,
+      "sha256": "4a462ec3fadf615ddbbfef97a326810235dec0cc92aba936bbb03afa4ba9a36d"
+    }
+  ],
+  "expected_behavior": "Server processes malformed Write request leading to oversized allocation in MmsValue_newOctetString via MmsValue_decodeMmsData",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length matches message",
+    "MMS archetype preserved",
+    "IEC61850 family constraints"
+  ],
+  "issue_safety_notes": "Preserves issue:193 negative maxSize trigger in model-prior Write path; no external protocol documents used.",
+  "sequence_sha256": "258a92f44b4d9cacd344a92a77a335b1225ff959f2b95c007d431e22c1c315bd",
+  "total_bytes": 24,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "193"
+  ],
+  "_selection_score": 81.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a9156e512e3d845e88380419573bbde079187e8f789765a4333d0022cd252038",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

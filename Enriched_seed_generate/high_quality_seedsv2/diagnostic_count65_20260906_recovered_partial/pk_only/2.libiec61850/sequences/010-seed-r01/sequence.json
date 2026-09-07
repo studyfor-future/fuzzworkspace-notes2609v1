@@ -1,0 +1,56 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-r01",
+  "title": "RFC1006 association setup with MMS Initiate-Request-PDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Provide a compact valid-looking association/setup seed that exercises RFC1006, COTP, ACSE/UserInformation carriage, and MMS initiate parsing before confirmed services.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT+COTP+ACSE user-information carrying MMS Initiate-Request-PDU",
+      "hex": "0300000f02f080a807020100800101",
+      "byte_length": 15,
+      "sha256": "b9aaae4f5e9bec5118dc8c1fbc1704b72f158600b51eb0916a292bc727853eb2"
+    }
+  ],
+  "expected_behavior": "The target should accept the RFC1006/ISO-on-TCP framing, enter the MMS association setup path, and dispatch the inner 0xA8 Initiate-Request-PDU for initiate negotiation handling.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03",
+    "TPKT total-length field matches the complete message length",
+    "OSI layering kept consistent with supplied overview: TPKT, COTP, ACSE, Presentation/UserInformation, MMS",
+    "MMS PDU type tag 0xA8 preserved exactly from supplied function reference",
+    "Inner BER structure is minimal and conservatively inferred only because full ASN.1 templates were not supplied"
+  ],
+  "issue_safety_notes": "PK-only seed with no issue payloads; uses a minimal structural association analogue and avoids malformed lengths, duplicate content, and any historical exploit-style collision.",
+  "sequence_sha256": "11839e91fe357a6fe4cc74615f98893feb97e0138b934c33863d0c1ef5c7d226",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b9aaae4f5e9bec5118dc8c1fbc1704b72f158600b51eb0916a292bc727853eb2",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

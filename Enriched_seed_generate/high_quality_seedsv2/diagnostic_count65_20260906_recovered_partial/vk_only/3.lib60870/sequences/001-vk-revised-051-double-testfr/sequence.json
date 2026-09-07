@@ -1,0 +1,88 @@
+{
+  "plan_id": "vk-plan-051",
+  "seed_id": "vk-revised-051-double-testfr",
+  "title": "VK-only Double Command with two-object field interaction after TESTFR",
+  "strategy": "field_interaction",
+  "target_operation": "Double Command",
+  "purpose": "Provide dedicated Double Command coverage with two independently addressable objects and a preceding TESTFR activation/confirmation exchange to vary link state and parser entry conditions.",
+  "evidence_ids": [
+    "issue:13:13-summary:187d3c5ead6c",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "vk_task_context:task-contract:e5a446a8785a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "testfr_activation",
+      "hex": "680443000000",
+      "byte_length": 6,
+      "sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "testfr_confirmation",
+      "hex": "680483000000",
+      "byte_length": 6,
+      "sha256": "54ea5a2733da8909fcac91ad2ac0763f45c0f70a0edfb50e593a30fee0277b6e"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "double_command_two_objects",
+      "hex": "6812040000002e02060001000100000102000000",
+      "byte_length": 20,
+      "sha256": "30f93ef6fd556d805896890199b3b6076e2d48e657aa281e8f9e9dfb1765d803"
+    }
+  ],
+  "expected_behavior": "The peer should handle the TESTFR exchange and then parse or reject the complete two-object Double Command frame according to its normal state and validation rules. The two distinct IOAs and qualifiers create mutation points for object-count, address, and command-state interactions.",
+  "constraints_preserved": [
+    "iec60870_5_104_u_and_i_frame_archetypes",
+    "start_byte_is_0x68",
+    "u_frame_length_is_four",
+    "i_frame_length_octet_0x12_matches_four_control_and_fourteen_asdu_bytes",
+    "vsq_non_sequence_count_two_matches_two_complete_objects"
+  ],
+  "issue_safety_notes": "The short-ASDU and parser-boundary reports motivate this bounded analogue, but the frame contains all declared object fields and uses new bytes rather than any supplied issue payload. A crash is not assumed; the harness should record safe rejection, acceptance, or diagnostic behavior.",
+  "sequence_sha256": "9d4ac25d8e884d4819792e178a8f82c6547d99aa75307ba542be4bf750d2eddd",
+  "total_bytes": 32,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "13"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2fc61d69524124219565a388224bed7f4d4af7d8d39e69ced96533e61eef2191",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

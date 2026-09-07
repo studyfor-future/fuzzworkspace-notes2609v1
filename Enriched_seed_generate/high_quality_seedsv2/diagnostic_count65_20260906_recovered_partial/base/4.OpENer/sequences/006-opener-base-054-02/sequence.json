@@ -1,0 +1,66 @@
+{
+  "plan_id": "base-plan-054",
+  "seed_id": "opener-base-054-02",
+  "title": "Base UnregisterSession variant 7",
+  "strategy": "field_interaction",
+  "target_operation": "UnregisterSession",
+  "purpose": "Vary a meaningful pair of fields while preserving likely structural relationships.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "prior_register_session_response",
+      "hex": "65000400214365870000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "adcfed9a3e55979c4dc58feae281b31b3b7eb0db03b19f25299162e2b215c07b"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "unregister_session_request",
+      "hex": "660000002143658700000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "3cabb9a94e72e90aa79b6affd543c949259078bf0fb69b406de19e553262b52f"
+    }
+  ],
+  "expected_behavior": "A plausible server interprets the nonzero session handle from prior setup state and accepts the UnregisterSession request with no command-specific payload.",
+  "constraints_preserved": [
+    "Uses EtherNet/IP-style 24-byte encapsulation header for both messages.",
+    "Uses little-endian payload length 0004 for the setup RegisterSession response and 0000 for UnregisterSession.",
+    "Preserves the same session handle value across the setup message and the UnregisterSession request.",
+    "Maintains requested 2-message setup_then_request structure."
+  ],
+  "issue_safety_notes": "No external issue knowledge is available. This seed only explores a plausible field relationship between session setup state and teardown, without any claim of verified protocol or issue behavior.",
+  "sequence_sha256": "097feb898fadb457a1229f2b554d988f6d197791e6a9032e52cea81029663a63",
+  "total_bytes": 52,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 92.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6a7d94c0c936b5d3b4ecb96db1b20a92936c39ce6b35235096e7ddf790ff1307",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

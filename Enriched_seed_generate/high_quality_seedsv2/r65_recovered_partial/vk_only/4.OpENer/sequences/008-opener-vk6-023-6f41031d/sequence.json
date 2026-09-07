@@ -1,0 +1,80 @@
+{
+  "plan_id": "vk-plan-023",
+  "seed_id": "opener-vk6-023",
+  "title": "VK-only RegisterSession prerequisite sequence",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Provide compact mutation-friendly state prerequisite by registering session and issuing SendRRData with very short unconnected CIP body whose path-size byte claims more words than available, mirroring issue-supported state relation without reusing documented reproducer shape.",
+  "evidence_ids": [
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:557:557-summary:f58da6326195",
+    "issue:572:572-summary:4cac5b77f97f",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession-prereq",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata-short-cip-forged-pathsize",
+      "hex": "6f00170078563412000000000000000000000000000000000000000000000000020000000000b200080e1020012401",
+      "byte_length": 47,
+      "sha256": "c307ad03ec4c8c8912cf100528c6503893abea95aaa989c69c2f4d639686e73f"
+    }
+  ],
+  "expected_behavior": "Robust target should either reject malformed CIP request within SendRRData or return error while keeping session path stable; issue-affected builds may exhibit out-of-bounds read symptoms when path decoding trusts path-size byte too far.",
+  "constraints_preserved": [
+    "Target operation preserved as RegisterSession",
+    "Two-step stateful sequence retained",
+    "RegisterSession precedes explicit-message analogue",
+    "Encapsulation and CPF lengths internally consistent",
+    "Conservative session handle placeholder reused for mutation"
+  ],
+  "issue_safety_notes": "Seed intentionally avoids exact historical oversized path-word count and packet padding pattern; keeps only issue-supported prerequisite relation of RegisterSession followed by short CIP body with misleading path-size.",
+  "sequence_sha256": "a5718f2315221b89830a8516ed48ce2ae0c5aa8f0f368762f92f944888db83f9",
+  "total_bytes": 75,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "582"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1e5ad1b62c1f29dc4c913c3ead567019e011cae8eddfc4128ee0abe23bb3e9b8",
+    "encoded_bytes": 75,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 47,
+        "frame_length": 47
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-opener-vk6-023-6f41031d",
+      "corpus_file": "008-6f41031d.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

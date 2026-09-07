@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-033",
+  "seed_id": "seed-033-rev3",
+  "title": "Confirmed request attribute/read-adjacent path using variable access attributes",
+  "strategy": "field_interaction",
+  "target_operation": "Confirmed-Request-PDU",
+  "purpose": "Increase confirmed-service diversity by steering into another documented service-choice branch, adjacent to read-style object handling, using GetVariableAccessAttributes.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "CR plus Confirmed-Request-PDU carrying service tag 6 GetVariableAccessAttributes",
+      "hex": "0300001c11e00000000100c1020000c2020001c00108a004a6018500",
+      "byte_length": 28,
+      "sha256": "f1b0a12233dae80548be591e1eae3ab8306e450462075314e8e4105c8b28158e"
+    }
+  ],
+  "expected_behavior": "Parser accepts transport framing, enters Confirmed-Request-PDU processing, and takes the GetVariableAccessAttributes service dispatch branch without undefined behavior or memory faults.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03",
+    "TPKT total-length field matches the full message length 0x001b",
+    "COTP Connection Request archetype preserved",
+    "Safe TPDU-size option value used",
+    "MMS PDU tag 0xA0 is used for Confirmed-Request-PDU",
+    "Service-choice context tag [6] is used for GetVariableAccessAttributes per supplied catalog"
+  ],
+  "issue_safety_notes": "Uses the same safe CR structure family for coverage of the COTP option parser, but excludes the issue 589 trigger value and any exact reproduction bytes.",
+  "sequence_sha256": "2afad744e46dfa02cec5c403b512078c4fb17cd284ba853aa6985a06808ef389",
+  "total_bytes": 28,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f1b0a12233dae80548be591e1eae3ab8306e450462075314e8e4105c8b28158e",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "042-seed-033-rev3-dc402e31",
+      "corpus_file": "042-dc402e31.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

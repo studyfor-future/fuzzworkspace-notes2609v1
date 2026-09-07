@@ -1,0 +1,70 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-001-2",
+  "title": "STARTDT activation followed by General Interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "General Interrogation",
+  "purpose": "Exercise link activation state and then enter the I-format interrogation path with a station interrogation qualifier.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:operation-catalog:c32f2366ef50"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation U-format",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 General Interrogation activation",
+      "hex": "681000000000000064010600010000000014",
+      "byte_length": 18,
+      "sha256": "712e35f523202a551f09dc6fc185ed371b241c7940712237823384e724548274"
+    }
+  ],
+  "expected_behavior": "The peer may confirm STARTDT activation, after which it parses the I-format C_IC_NA_1 activation request with cause of transmission 6 and qualifier of interrogation 20.",
+  "constraints_preserved": [
+    "IEC 60870-5-104 APCI start byte 0x68 is used for both frames.",
+    "The STARTDT U-format control field is 07 00 00 00.",
+    "The I-format frame length 0x0e equals four APCI control bytes plus the 10-byte ASDU.",
+    "TypeID 100 is C_IC_NA_1; the ASDU uses VSQ 1, cause 6, common address 1, IOA 0, and QOI 20.",
+    "All multibyte address and cause fields use ordinary low-byte-first IEC 60870 ordering."
+  ],
+  "issue_safety_notes": "PK-only valid-structure seed; no vulnerability claim, malformed length, or historical payload collision is intentionally included.",
+  "sequence_sha256": "846d53208e4fbbecaa72b321cb3bdec3387f29be97443c39ed1421398fbc63ee",
+  "total_bytes": 24,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "cd7b6ef47c573249f1cceb11af9ef52fa215195f5dff1101617d09e66f24787c",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ]
+  }
+}

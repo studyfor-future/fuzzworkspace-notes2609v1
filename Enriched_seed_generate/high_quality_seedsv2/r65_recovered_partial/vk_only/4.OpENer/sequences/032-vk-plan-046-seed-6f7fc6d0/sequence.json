@@ -1,0 +1,93 @@
+{
+  "plan_id": "vk-plan-046",
+  "seed_id": "vk-plan-046-seed",
+  "title": "VK-only SendUnitData: In OpENer v2.3 / master branch up to commit `76b95cf`, `ParseConnec...",
+  "strategy": "parser_depth",
+  "target_operation": "SendUnitData",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:570:570-summary:0b4cbe808107",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:568:568-summary:6fa072929d36"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSessionReply",
+      "hex": "6565000000100000000000",
+      "byte_length": 11,
+      "sha256": "ebbe50c7c16017d784f0a831f84985a2f3ed79d6747db2ad86c41cd9a41ba39d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendUnitData deeper CIP parser",
+      "hex": "6a000000300000000000000000",
+      "byte_length": 13,
+      "sha256": "e98811bfc1fda1e48738de1add54ae88c7584bf8c02e99157c85da32577901a0"
+    }
+  ],
+  "expected_behavior": "Deeper traversal in ParseConnectionPath via SendUnitData triggers mishandling of connection-path accounting (Kevas). Out-of-bounds read.",
+  "constraints_preserved": [
+    "prefer EtherNet/IP encapsulation little-endian payload length",
+    "use 24-byte encapsulation header",
+    "diversify discovery/session/explicit paths",
+    "preserve target_operation SendUnitData"
+  ],
+  "issue_safety_notes": "VK-only vulnerability-analogue: deeper CIP parser depth in SendUnitData; issue:571/574; safe for analysis only; no external documents",
+  "sequence_sha256": "4d10166f55c72f0b531636729fac40289a8195bb7c32e21fd442bfa66ae1b319",
+  "total_bytes": 35,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "571"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ae7d5bc4397daf5cde758e29bd95e49914061d84d3722432bc484d9ddb83b555",
+    "encoded_bytes": 35,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 11,
+        "payload_offset": 11,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "032-vk-plan-046-seed-6f7fc6d0",
+      "corpus_file": "032-6f7fc6d0.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "plan_id": "vk-plan-020",
+  "seed_id": "seq-004",
+  "title": "VK-only Write Multiple Registers: libmodbus TCP v3.0.6 reports an error when modbus_read_registers is...",
+  "strategy": "field_interaction",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:743:743-summary:1fc7e97d059a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Multiple Registers Request",
+      "hex": "00000000000bff10ff0000000404000001",
+      "byte_length": 17,
+      "sha256": "36f9f13662b607e4ce6d2216d268d6ef34a52015938188080b5d362f55695063"
+    }
+  ],
+  "expected_behavior": "Request exercises field interactions leading to error or timeout as in reported PLC/high-speed counter case.",
+  "constraints_preserved": [
+    "Prefer Modbus/TCP ADUs with 7-byte MBAP header",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+  ],
+  "issue_safety_notes": "Preserves issue-supported trigger relations (field interactions in write path) without copying exact crash bytes; model-prior framing ensures consistent lengths/counts with basic repair runs possible.",
+  "sequence_sha256": "3d36e15b2990c459646d8f97142f80764c299b150ea09127c647b6ff37e0b3fb",
+  "total_bytes": 17,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "466"
+  ],
+  "_selection_score": 95.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "36f9f13662b607e4ce6d2216d268d6ef34a52015938188080b5d362f55695063",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "056-seq-004-7ef83411",
+      "corpus_file": "056-7ef83411.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

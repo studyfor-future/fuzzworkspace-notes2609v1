@@ -1,0 +1,87 @@
+{
+  "plan_id": "vk-plan-023",
+  "seed_id": "2026-09-06-4",
+  "title": "VK-only ReadProperty: In bacnet-stack 1.6.0-rc1 on the current master branch, `Device_Wri...",
+  "strategy": "stateful_valid",
+  "target_operation": "ReadProperty",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:cve-2026-47711:cve-2026-47711-summa:0ab647776e0e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Device WriteProperty",
+      "hex": "810a000b010001000006c0",
+      "byte_length": 11,
+      "sha256": "cc45386369c50566bcf2784d1c2d6b41b5cf2f6288fb49f0e204d6dcea7b7df6"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ReadProperty on stale device prop",
+      "hex": "810a000b010001000006c0",
+      "byte_length": 11,
+      "sha256": "cc45386369c50566bcf2784d1c2d6b41b5cf2f6288fb49f0e204d6dcea7b7df6"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Follow-up ReadProperty after Write",
+      "hex": "810a000b010001000006c0",
+      "byte_length": 11,
+      "sha256": "cc45386369c50566bcf2784d1c2d6b41b5cf2f6288fb49f0e204d6dcea7b7df6"
+    }
+  ],
+  "expected_behavior": "Stale dangling pointer in Device state leads to stack-use-after-return on follow-up ReadProperty.",
+  "constraints_preserved": [
+    "multi_step_stateful setup",
+    "Device object prior",
+    "WriteProperty then ReadProperty sequence",
+    "family constraints enforced"
+  ],
+  "issue_safety_notes": "Evidence: CVE-2026-52790 retained; 3-step cycle for increased state diversity; no exact crash bytes",
+  "sequence_sha256": "98af8fed0a122108d4c144c949da671b788ae0a9a6075876467078d5ba6032a4",
+  "total_bytes": 33,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-52790"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "53f1915968ca70812401db483e9b519638d5889bbea76c8a0dc9679866908a29",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 11,
+        "payload_offset": 11,
+        "payload_length": 11,
+        "frame_length": 11
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "plan_id": "plan-048",
+  "seed_id": "seed-048-01",
+  "title": "Registered-session SendRRData carrying inferred Large Forward Open request",
+  "strategy": "function_code_coverage",
+  "target_operation": "Large_Forward_Open",
+  "purpose": "Reach a deeper explicit-message parsing path by first registering a session and then sending a structurally consistent SendRRData CPF frame whose unconnected CIP payload targets the Connection Manager Large Forward Open service without the forged EPath condition from the issue.",
+  "evidence_ids": [
+    "function_code:function:function-text:d62ad498ac4f",
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:operation-catalog:e8810af4c6bf",
+    "function_code:function:function-text:515064cfcdad",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:574:574-summary:ec096521bf63",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:314:314-summary:3abfe4f839d0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession_request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_large_forward_open_request_with_placeholder_session",
+      "hex": "6f00270078563412000000000000000000000000000000000000000000000000020000000000b20012005b0220062401050001000000000000000000000000",
+      "byte_length": 63,
+      "sha256": "8ffebb39d7b00aa75f93cad3a6192f73b4a59dbdd3b0ef82ad63a2e1a6a2786d"
+    }
+  ],
+  "expected_behavior": "If the placeholder session handle is replaced with a valid registered session from the server response, the target should parse the SendRRData command, CPF item list, and contained CIP request, then either process or reject the Large Forward Open request cleanly. Without replacement, invalid-session handling is expected.",
+  "constraints_preserved": [
+    "RegisterSession command 0x0065 uses a 4-byte payload 01000000 as shown in supplied issue reproduction text.",
+    "SendRRData command 0x006f uses a documented 24-byte encapsulation header with little-endian payload length 0x0022.",
+    "SendRRData payload begins with 6 zero command-specific bytes, matching the issue summary structure.",
+    "CPF item count is 2, followed by a Null Address item (type 0x0000, length 0) and an Unconnected Data item (type 0x00b2) as documented common SendRRData combination.",
+    "Unconnected Data item length is 0x0012 and exactly matches the contained 18-byte CIP payload.",
+    "CIP payload is internally length-consistent: service 0x5b, path size 0x02 words, path bytes 20062401, followed by 14 bytes of request data.",
+    "Path size is small and matched to actual provided path bytes, avoiding the forged oversized path-size pattern from issue 582.",
+    "Connection Manager class path and Large Forward Open service encoding are inferred from common CIP conventions and the supplied operation catalogs, not fully verified by the supplied text.",
+    "The second message intentionally contains a placeholder session handle 0x12345678 because no server response bytes were provided; harness should patch in the negotiated handle for fully valid stateful replay."
+  ],
+  "issue_safety_notes": "Uses the issue as high-level guidance to exercise SendRRData and CIP path parsing, but avoids malformed item counts, avoids undersized declared CIP data, and avoids any exaggerated path size. Payload is shorter, internally consistent, and not an exact reproduction of the historical PoC.",
+  "sequence_sha256": "86a4cf2f562c2e872ba4f70906cdbedf6db4495ad2aa07109f61af47c8672aa2",
+  "total_bytes": 91,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "82e41dca431090237b308d0029c750839e3be06b1872f4fd6d17f27545d4dd9d",
+    "encoded_bytes": 91,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 63,
+        "frame_length": 63
+      }
+    ]
+  }
+}

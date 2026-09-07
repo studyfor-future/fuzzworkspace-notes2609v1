@@ -1,0 +1,75 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-sendrrdata-cip-01",
+  "title": "RegisterSession then SendRRData with bounded unconnected GetAttributeSingle",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendRRData,GetAttributeSingle",
+  "purpose": "Reach the explicit-message unconnected parsing path safely using the issue-relevant RegisterSession to SendRRData progression, but keep CPF and CIP lengths internally consistent and path_size bounded.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf",
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:582:582-summary:a17fd2adbb9f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData with Null Address Item and bounded Unconnected Data Item carrying CIP GetAttributeSingle",
+      "hex": "6f001a0001000000000000000000000000000000000000000000000000000000020000000000b2000a000e03200124013001",
+      "byte_length": 50,
+      "sha256": "19dfe92efa639ebc7b62e1ed768a196a2a7d03e5c53068a49ef92a6fff2f3dff"
+    }
+  ],
+  "expected_behavior": "The peer should parse a valid SendRRData encapsulation body and CPF. The embedded CIP request may succeed or may return an ordinary CIP error depending on object support, but it should not require out-of-bounds parsing.",
+  "constraints_preserved": [
+    "SendRRData command 0x006F uses a 22-byte encapsulated payload matching the actual body",
+    "Command-specific SendRRData prefix is 6 zero bytes as implied by supplied issue reproduction text",
+    "CPF item count is 2",
+    "Item 1 is Null Address Item type 0x0000 length 0",
+    "Item 2 is Unconnected Data Item type 0x00B2 length 10",
+    "Embedded CIP request uses service 0x0E with path_size 3 words and exactly 6 path bytes plus 1-byte attribute segment, matching the declared item length",
+    "Session handle is a placeholder for substitution after successful RegisterSession"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue for issue 582: it follows the same broad RegisterSession-to-SendRRData-to-explicit-message path but removes the exact historical collision by keeping the Unconnected Data Item length consistent and the CIP path_size small and satisfied by present bytes.",
+  "sequence_sha256": "bc5e93c7b9ef0dcde41f365eaef5e94cae33c7021df6c9ea06d65c96d9741c66",
+  "total_bytes": 78,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fc1ec9738a30c57c17b83d7239de4c3d45fa72ec620c7f1d3742140ed84e58c2",
+    "encoded_bytes": 78,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ]
+  }
+}

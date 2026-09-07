@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-011",
+  "seed_id": "vk-only-revised-011",
+  "title": "VK-only STOPDT activation: lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU wh...",
+  "strategy": "stateful_valid",
+  "target_operation": "STOPDT activation",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:53:53-summary:9148432dbf39"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STOPDT",
+      "hex": "68050700000000",
+      "byte_length": 7,
+      "sha256": "5b0d6816aa8a81e79bcc30757390c476f1b291b6166b6862c7f7c5eb3b50f8c3"
+    }
+  ],
+  "expected_behavior": "lib60870-C accepts short sequence M_SP_NA_1 ASDU (VSQ elements > body) leading to InformationObject_ParseObjectAddress out-of-bounds read.",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "prefer FT1.2/IEC 60870-5-104 APCI framing",
+    "ASDU family length validation",
+    "IEC 60870-5-104 I-frame"
+  ],
+  "issue_safety_notes": "Issue 200 sequence-form M_SP_NA_1 validation bypass (no base IOA); issue 196 heap overflow in CS104 server; state prerequisite via model-prior STARTDT/STOPDT setup.",
+  "sequence_sha256": "e1f2452daf7494b0837ff55d19f0d4dce051085fdbea943037a69e95075836b0",
+  "total_bytes": 7,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "200"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5b0d6816aa8a81e79bcc30757390c476f1b291b6166b6862c7f7c5eb3b50f8c3",
+    "encoded_bytes": 7,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "027-vk-only-revised-011-44171848",
+      "corpus_file": "027-44171848.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

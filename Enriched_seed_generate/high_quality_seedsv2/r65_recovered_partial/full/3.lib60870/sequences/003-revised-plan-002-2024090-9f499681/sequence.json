@@ -1,0 +1,93 @@
+{
+  "plan_id": "plan-002",
+  "seed_id": "revised-plan-002-20240906-002",
+  "title": "Stateful setup for C_IC_NA_1",
+  "strategy": "stateful_valid",
+  "target_operation": "C_IC_NA_1",
+  "purpose": "Use setup or sequential valid requests before the target operation so the final message lands in a deeper valid parser state.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "TESTFR activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 request",
+      "hex": "680f04008301000000000000010000001b",
+      "byte_length": 17,
+      "sha256": "35f173ba0d3b2fe41cb322dd9f8c93600bfe8cdbc3d637f9d9972278fc6a3187"
+    }
+  ],
+  "expected_behavior": "Parser accepts STARTDT/TESTFR then fully valid C_IC_NA_1 ASDU; sequence reaches deeper nested state without crash",
+  "constraints_preserved": [
+    "IEC 60870-5-101 ASDU structure",
+    "0x68 length octets consistent with frame size",
+    "FT1.2 or IEC 60870-5-104 APCI framing preferred",
+    "ASDU header length/count rules preserved",
+    "C_IC_NA_1 Type Identification 100 documented",
+    "stateful sequence via control-direction messages"
+  ],
+  "issue_safety_notes": "Stateful path using STARTDT/TESTFR; no exact payload copy; reduces to no crash but documents valid parser depth",
+  "sequence_sha256": "6737dbdfeeeff538c4afbad3d9f9eb7ff225425f20ec5eb74fd596cb891fe256",
+  "total_bytes": 29,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 118.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d35696996735f3fc95df5fdbd9d24acdd84091212605f879e46e2d0d93f0dbd0",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-revised-plan-002-2024090-9f499681",
+      "corpus_file": "003-9f499681.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

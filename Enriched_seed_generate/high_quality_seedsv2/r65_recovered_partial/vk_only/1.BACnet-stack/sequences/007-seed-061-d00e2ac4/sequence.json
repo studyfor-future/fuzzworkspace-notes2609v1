@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-061",
+  "seed_id": "seed-061",
+  "title": "VK-only Who-Is: In bacnet-stack v1.5.0, a WriteProperty request that updates OBJECT_STRUCTURED_VIEW / PROP_SUBORDINATE_LIST can trigger NULL pointer dereference without copying crash payload",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Who-Is",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload while increasing real frame diversity through varied instance numbers and tag counts.",
+  "evidence_ids": [
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+    "issue:1342:1342-summary:cdc7c256554d",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "Who-Is request",
+      "hex": "810c0014000100fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "83da1c309c96e8a961e1954ab73adbed75e78e682a5c21af7a15faf4d16f5926"
+    }
+  ],
+  "expected_behavior": "NULL pointer dereference in bacnet_device_object_reference_decode() on structured-view subordinate list member decode",
+  "constraints_preserved": [
+    "BVLC NPDU APDU layering",
+    "BACnet/IP consistency",
+    "visible lengths/counts",
+    "no external documents",
+    "lowercase hex no separators"
+  ],
+  "issue_safety_notes": "Pseudocode only; real payloads may crash server but are not provided. Safe issue analogue: malformed UCOV/property-value length (even chars only, no crash bytes). Increased real operation/frame/state diversity via varied instance numbers and tag counts.",
+  "sequence_sha256": "6707b6b301990d4e7c7c407d0dc6b0863d845e3ca704c3a7518c8680887e0a95",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1317"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "83da1c309c96e8a961e1954ab73adbed75e78e682a5c21af7a15faf4d16f5926",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "007-seed-061-d00e2ac4",
+      "corpus_file": "007-d00e2ac4.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

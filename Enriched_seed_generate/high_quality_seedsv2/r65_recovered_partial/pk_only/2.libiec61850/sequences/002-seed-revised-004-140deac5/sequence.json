@@ -1,0 +1,61 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-004",
+  "title": "GOOSE state and control fields",
+  "strategy": "function_code_coverage",
+  "target_operation": "GOOSE PDU",
+  "purpose": "Exercise the standalone GOOSE parser path with the documented EtherType, APDU wrapper, control-block reference, state number, and ndsCom field.",
+  "evidence_ids": [
+    "function_code:function:function-text:1a3220f52e74",
+    "function_code:function:function-text:d319479344be",
+    "protocol_format:iec61850:format-overview:c508483411ac"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "IEC 61850 GOOSE APDU with gocbRef, stNum, and ndsCom",
+      "hex": "88b8610a80024743850101890100",
+      "byte_length": 14,
+      "sha256": "b8ff9870c3ea5ff0bc1ec28681c3296dada6a086b95582f64370cf76e0ae67da"
+    }
+  ],
+  "expected_behavior": "The receiver should identify EtherType 0x88B8 and decode the GOOSE APDU outer tag 0x61 with gocbRef, stNum, and ndsCom fields whose lengths match their contents.",
+  "constraints_preserved": [
+    "GOOSE EtherType is 0x88B8.",
+    "GOOSE APDU outer tag is 0x61.",
+    "Field tag 0x80 is used for gocbRef.",
+    "Field tag 0x85 is used for stNum.",
+    "Field tag 0x89 is used for ndsCom.",
+    "The APDU length is 0x0a and matches the ten bytes following the outer tag.",
+    "Each nested field length matches its encoded value."
+  ],
+  "issue_safety_notes": "No issue evidence is supplied and no historical payload is reproduced; this is a distinct standalone frame analogue.",
+  "sequence_sha256": "0f357cfe35b0bd61213914874d3cca78d4d6872693f8c94ae7e0fb985108f796",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b8ff9870c3ea5ff0bc1ec28681c3296dada6a086b95582f64370cf76e0ae67da",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-seed-revised-004-140deac5",
+      "corpus_file": "002-140deac5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

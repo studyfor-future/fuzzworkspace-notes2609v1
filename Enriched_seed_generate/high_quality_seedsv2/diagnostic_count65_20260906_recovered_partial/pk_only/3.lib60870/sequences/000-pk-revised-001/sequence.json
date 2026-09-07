@@ -1,0 +1,83 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-001",
+  "title": "STARTDT handshake followed by station interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "STARTDT activation and General Interrogation",
+  "purpose": "Exercise a valid IEC 60870-5-104 U-format session activation followed by an I-format station interrogation request, covering control-state transition and ASDU parsing.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:3cbe16bf065a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation request",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT activation confirmation",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "General Interrogation activation, station qualifier",
+      "hex": "680e0000000064010600010000000014",
+      "byte_length": 16,
+      "sha256": "efc83e888bafb6d83c66ed0fdafccecc0041f03ff8e5d705ba2ff2c5d0c10c03"
+    }
+  ],
+  "expected_behavior": "The peer accepts STARTDT activation and then parses the I-format ASDU as a General Interrogation activation with TypeID 100, one information object, activation cause, common address 1, information object address 0, and station interrogation qualifier 20.",
+  "constraints_preserved": [
+    "IEC 60870-5-104 APDU start byte 0x68",
+    "U-format STARTDT activation and confirmation control values",
+    "I-format send and receive sequence fields are both zero",
+    "Length 0x0e covers four APCI control bytes plus the ten-byte interrogation ASDU",
+    "TypeID 100, activation cause, common address, information object address, and qualifier are kept in ASDU order"
+  ],
+  "issue_safety_notes": "PK-only seed with no vulnerability assertion and no exact historical payload collision; values are ordinary protocol-valid session and interrogation fields.",
+  "sequence_sha256": "6d370c91f8f303413afa1c6c9da46880723d03c14fde557b516224baf9a0a3f2",
+  "total_bytes": 28,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d0f4928cb7476ffe64d05e42af28ab6c89c45027368ff525f9d19085e4404083",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-session-lifecycle-01",
+  "title": "RegisterSession followed by UnregisterSession",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession,UnregisterSession",
+  "purpose": "Exercise session creation and teardown with correct encapsulation commands and the documented RegisterSession protocol version/options payload.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:314:314-summary:3abfe4f839d0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request protocol_version_1 options_0",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request using placeholder negotiated handle",
+      "hex": "660000000100000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "0e7273a12208c55b76c5b0cee0f1380ec21168702a4fbb87b5a1a7d1098c940a"
+    }
+  ],
+  "expected_behavior": "A conforming peer should accept the RegisterSession request or reject it with a normal encapsulation status if unsupported. If a session is established, the UnregisterSession frame should be accepted for teardown when the harness substitutes the returned handle for 01000000.",
+  "constraints_preserved": [
+    "RegisterSession command 0x0065 and UnregisterSession command 0x0066 come from supplied sources",
+    "RegisterSession payload length is 4 and encodes protocol version 1 plus options 0",
+    "UnregisterSession uses a 24-byte header with zero payload length",
+    "Session handle field is a static placeholder intended for runtime substitution from the RegisterSession response"
+  ],
+  "issue_safety_notes": "Safe stateful coverage only; avoids oversized or inconsistent command data and does not rely on vulnerable CPF parsing.",
+  "sequence_sha256": "a413d6d528acdb1157f4ba3c17c2560749e0041a3d43e696bc5d0e00bbfd0b27",
+  "total_bytes": 52,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d494a744b97d1dab23e3075bde31a294b5901d9ebb339130f9a36b3dbef33166",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

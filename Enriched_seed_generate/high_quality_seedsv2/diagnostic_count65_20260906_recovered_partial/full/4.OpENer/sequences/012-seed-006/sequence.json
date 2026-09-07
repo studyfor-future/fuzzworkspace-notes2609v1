@@ -1,0 +1,74 @@
+{
+  "plan_id": "plan-006",
+  "seed_id": "seed-006",
+  "title": "Issue-guided analogue for Object Does Not Exist",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Object Does Not Exist",
+  "purpose": "Recover historically sensitive structure from stack-overflow bug (no specific component identified) while creating safe valid analogue via oversized attribute_count_request + inner response copy; diversity in single-request explicit-message with CPF socket item interaction.",
+  "evidence_ids": [
+    "issue:374:374-summary:3d44e552a6bc",
+    "issue:cve-2020-13530:cve-2020-13530-summa:2a952fbf7b78",
+    "issue:445:445-summary:c1784b774e94",
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+    "issue:582:582-summary:a17fd2adbb9f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity",
+      "hex": "63000000000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "35ffd281157d9786f1f3deff62908354d42a1a112044f4b8409f8468b5ae5b99"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData with oversized attribute",
+      "hex": "6f001800000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "8b482bacef4d24f50e2dbc1d29ce28945f561056ff56d82571beffd2a0802d21"
+    }
+  ],
+  "expected_behavior": "Valid ListIdentity + SendRRData sequence; no stack overflow or crash",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header",
+    "Diversify discovery, session and explicit-message paths",
+    "Complete documented framing and preserve length/count/checksum/order rules",
+    "Model internal knowledge may conservatively fill documentation gaps"
+  ],
+  "issue_safety_notes": "Structural analogue only (oversized attribute_count_request safely handled); no concrete crash trigger or payload reproduction; safer valid sequence with no undefined behavior or memory corruption risk",
+  "sequence_sha256": "155dc5eeb47c77e920fc22f905a74f569e8c023780b3b57a54e11df2dadbb829",
+  "total_bytes": 32,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "374"
+  ],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e6756711bc8cb6c741db325569bbc8a33620d88687b6b698672742e7e332a645",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

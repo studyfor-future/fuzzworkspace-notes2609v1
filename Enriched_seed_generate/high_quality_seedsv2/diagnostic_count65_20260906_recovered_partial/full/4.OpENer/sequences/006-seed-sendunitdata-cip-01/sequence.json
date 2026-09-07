@@ -1,0 +1,74 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-sendunitdata-cip-01",
+  "title": "RegisterSession then SendUnitData with connected-style SetAttributeSingle transport",
+  "strategy": "field_interaction",
+  "target_operation": "SendUnitData,SetAttributeSingle",
+  "purpose": "Add connected explicit-message transport coverage distinct from SendRRData by using the documented Connected Address Item plus Connected Data Item CPF shape with a compact CIP service payload.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendUnitData with Connected Address Item and Connected Data Item carrying CIP SetAttributeSingle",
+      "hex": "700023000100000000000000000000000000000000000000000000000000000002000100040044332211b1000e00010000001003200124013001aa",
+      "byte_length": 59,
+      "sha256": "2ecb218d0ac94611740b7c04ba6ef9a66073a9ebacb6e46312fae1f6e9c9c228"
+    }
+  ],
+  "expected_behavior": "The peer should parse the SendUnitData encapsulation and CPF item structure. The connected transport or embedded service may be rejected with ordinary protocol or CIP status if no matching connection context exists, but the frame remains structurally valid for parser coverage.",
+  "constraints_preserved": [
+    "SendUnitData command 0x0070 is used as documented",
+    "Encapsulated payload length is 30 bytes and matches the actual body",
+    "CPF item count is 2",
+    "Item 1 is Connected Address Item type 0x0100 with 4-byte connection identifier",
+    "Item 2 is Connected Data Item type 0x00B1 with 14-byte payload",
+    "Connected Data payload begins with a 2-byte sequence count followed by a compact CIP request",
+    "Embedded CIP uses service 0x10 SetAttributeSingle with path_size 3 words and one byte of attribute data",
+    "Session handle is a placeholder for substitution after successful RegisterSession"
+  ],
+  "issue_safety_notes": "Safe connected-path coverage only. No attempt is made to forge connection state, inflate lengths, or reproduce any historical malformed payload; ordinary invalid-connection responses are acceptable.",
+  "sequence_sha256": "d5c1bbe4f31a5256b7c6b6ba690d297241505f14ed6e294206e4f941bab591b1",
+  "total_bytes": 87,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 118.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c6533e816002d41e267b061dd24f9f7a0b77213851ec7f18b5a239d6cb94acf8",
+    "encoded_bytes": 87,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 59,
+        "frame_length": 59
+      }
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "plan_id": "base-plan-027",
+  "seed_id": "base-plan-027-seed-1",
+  "title": "Session setup followed by nested attribute request",
+  "strategy": "parser_depth",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Reach session-dependent explicit-message parsing with a non-zero class, instance, and attribute path after a valid session setup exchange.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000c000000000000000000000000000000000000000000000000000100000000000000",
+      "byte_length": 36,
+      "sha256": "f303aa495752845df842c9d8bca56b675748b616634635626bac36eb38b68e53"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response",
+      "hex": "65000c007856341200000000000000000000000000000000000000000100000000000000",
+      "byte_length": 36,
+      "sha256": "bdd8a2b0c5654d33055eeb4a227efcb9512d429c661a1248581a979c7327fbe0"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData GetAttributeSingle request for non-zero path",
+      "hex": "6f001a0078563412000000000000000000000000000000000000000000000000020000000000b20008000e06200624023003",
+      "byte_length": 50,
+      "sha256": "1142f7f35837a699ac9104c0ff518b8498a7eddb6b9e5567061d501946658083"
+    }
+  ],
+  "expected_behavior": "The endpoint establishes the session, accepts the session identifier on the subsequent SendRRData request, and returns the requested attribute or a protocol status.",
+  "constraints_preserved": [
+    "RegisterSession payload contains protocol version and options fields",
+    "Session identifier is reused consistently after setup",
+    "24-byte EtherNet/IP encapsulation headers",
+    "CPF count, item ordering, and item lengths are internally consistent",
+    "Non-zero CIP class, instance, and attribute path fields"
+  ],
+  "issue_safety_notes": "No external issue knowledge or vulnerability claims are used; the sequence is intended only to exercise ordinary session and parser state.",
+  "sequence_sha256": "14a126019f61816edc8b112ccd5c4ad1ce477631188f2f243cec7ae0ed866222",
+  "total_bytes": 122,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b812c7d8104e8165fe6c2a82a5e28b84d47f9d31d2ea42f5ad8abf3b3451a6bb",
+    "encoded_bytes": 122,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 72,
+        "payload_offset": 72,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "plan_id": "vk-plan-038",
+  "seed_id": "1",
+  "title": "VK-only STOPDT activation: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+  "strategy": "field_interaction",
+  "target_operation": "STOPDT activation",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STOPDT activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    }
+  ],
+  "expected_behavior": "Parses as valid STOPDT activation; no crash or deadlock triggered in lib60870-C v2.4.0 CS104 paths",
+  "constraints_preserved": [
+    "0x68 framing with consistent length octets",
+    "U-frame format per model prior",
+    "target_operation preserved"
+  ],
+  "issue_safety_notes": "Uses STOPDT_ACT U-frame only; avoids direct out-of-bounds reads from GHSA-G3W7-X5RX-83XM or GHSA-7V97-JMWV-W5J7 by staying at control U-frame level",
+  "sequence_sha256": "795a1925169dcbdef6d48f05fb1641a71136da1a81e04afd02ceb03f33f9f589",
+  "total_bytes": 6,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a",
+    "encoded_bytes": 6,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "038-1-6b86b273",
+      "corpus_file": "038-6b86b273.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-045",
+  "seed_id": "vk12-modbustcp-045-01",
+  "title": "VK-only Diagnostics boundary probe with minimal data field",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Diagnostics",
+  "purpose": "Explore a short valid Diagnostics request that stays internally consistent while stressing dispatch and length handling paths adjacent to issue reports involving malformed or undersized request processing.",
+  "evidence_ids": [
+    "issue:743:743-summary:1fc7e97d059a",
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:683:683-summary:fbe9b8a5a160"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "diagnostics-subfunction-echo-minimal",
+      "hex": "120100000006f50800000000",
+      "byte_length": 12,
+      "sha256": "653806c82c0bfa2bc8144a1007678a3c0f5fb3ebcae5069cb92b1fc2fa3c9543"
+    }
+  ],
+  "expected_behavior": "A parser that supports this operation should accept or cleanly reject the request without desynchronization, and any reply path should remain bounded on the fixed-size PDU.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes",
+    "Protocol identifier set to 0000",
+    "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+    "Single-request sequence preserved per plan",
+    "Target operation remains Diagnostics"
+  ],
+  "issue_safety_notes": "This is an issue analogue only: it keeps a valid fixed-format Diagnostics layout and avoids reproducing any historical crashing byte stream while still probing short-length request handling.",
+  "sequence_sha256": "94c71ca4b5f28c08806ceb08902ec82c5cd0cbdceaa74f2b29c30ac51d82b284",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "743"
+  ],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "653806c82c0bfa2bc8144a1007678a3c0f5fb3ebcae5069cb92b1fc2fa3c9543",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "049-vk12-modbustcp-045-01-616db975",
+      "corpus_file": "049-616db975.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

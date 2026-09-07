@@ -1,0 +1,69 @@
+{
+  "plan_id": "vk-plan-035",
+  "seed_id": "200",
+  "title": "VK-only Clock Synchronization: lib60870-C does not validate that a sequence-form M_SP_NA_1 ASDU wh...",
+  "strategy": "stateful_valid",
+  "target_operation": "Clock Synchronization",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "stateful_clock_sync_setup",
+      "hex": "680707000000006830",
+      "byte_length": 9,
+      "sha256": "8e541b070d40453a733f8f4a209e1f96b6b9f8d9ce7c09a942c19b18cd645efe"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "stateful_clock_sync_body",
+      "hex": "68070a000000006830",
+      "byte_length": 9,
+      "sha256": "810c801c2704f2fc41e15c99bd42f5a3525643220b2649d5f0404a8c7ce9ac71"
+    }
+  ],
+  "expected_behavior": "server accepts malformed sequence-form M_SP_NA_1 ASDU with missing IOA bytes leading to OOB access in CS101_ASDU_getElement iteration",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "IEC 60870-5-104 APCI framing preferred",
+    "Stateful multi-step sequences",
+    "Preserve target_operation Clock Synchronization"
+  ],
+  "issue_safety_notes": "Issue-supported structural analogue preserved; stateful setup reaches parser path without exact crash bytes",
+  "sequence_sha256": "76e923ae9ce5f3178b9412836775aa56fc14a01e8e509b77e708edab6f16a16d",
+  "total_bytes": 18,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "200"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "903715f47781747bfe5885f792bb11a441335f0a7d80d8930c24cfeba8f34c5a",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 9,
+        "frame_length": 9
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 9,
+        "payload_offset": 9,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ]
+  }
+}

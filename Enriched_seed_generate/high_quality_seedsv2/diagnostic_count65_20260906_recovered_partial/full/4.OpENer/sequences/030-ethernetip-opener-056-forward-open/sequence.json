@@ -1,0 +1,54 @@
+{
+  "plan_id": "plan-056",
+  "seed_id": "ethernetip-opener-056-forward-open",
+  "title": "Forward Open with explicit connection parameters",
+  "strategy": "parser_depth",
+  "target_operation": "Forward_Open",
+  "purpose": "Drive the deeper Connection Manager service parser with a complete Forward_Open request carried through SendRRData and a connected-path payload.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:577:577-summary:f41c11d4b1b8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendRRData Forward_Open request",
+      "hex": "6f004500010000000000000000000000000000000000000000000000000000000000000000020000000000b2002a005402200624010a0e1122334455667788010234120102030401000000401f00000000401f00000000020020042401",
+      "byte_length": 93,
+      "sha256": "46b69dbf27169d8078fcdedfb2710061a95c32897701c326ca46ee05d5843f3f"
+    }
+  ],
+  "expected_behavior": "The receiver should traverse SendRRData, the unconnected-data item, Message Router, and Connection Manager service 0x54, then return a normal Forward_Open response or a protocol-level connection rejection for the supplied inferred parameters.",
+  "constraints_preserved": [
+    "Encapsulation payload length is 62 bytes and matches the CPF plus 42-byte CIP request.",
+    "CPF uses the documented Null Address Item followed by Unconnected Data Item combination.",
+    "The CIP request has service 0x54 and a two-word Connection Manager Class 0x06 Instance 0x01 path.",
+    "The Forward_Open body uses bounded connection identifiers, serial values, RPIs, parameters, and a two-word connection path.",
+    "Forward_Open body field ordering and values beyond the supplied service-code evidence are conservative model-prior assumptions, not externally verified by the supplied excerpts."
+  ],
+  "issue_safety_notes": "This is a deep-parser structural analogue for the affected SendRRData family, but it does not target ForwardClose, GetConnectionData, or SearchConnectionData, and it avoids the oversized padded EPath and zero-byte request body described in issue 577.",
+  "sequence_sha256": "36d7b8e7eef1e6db644658cd8c086a2ea0d01c890ef6157f11b3859db16ce36f",
+  "total_bytes": 93,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "46b69dbf27169d8078fcdedfb2710061a95c32897701c326ca46ee05d5843f3f",
+    "encoded_bytes": 93,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 93,
+        "frame_length": 93
+      }
+    ]
+  }
+}

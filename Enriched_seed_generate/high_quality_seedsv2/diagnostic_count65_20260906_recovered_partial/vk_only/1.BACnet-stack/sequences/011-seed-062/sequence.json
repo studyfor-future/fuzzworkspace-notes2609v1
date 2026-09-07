@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-062",
+  "seed_id": "seed-062",
+  "title": "VK-only I-Am: bacnet-stack 1.5.0 has a reproducible server-side stack-based out-of-bounds write during Atomic-Read-File processing",
+  "strategy": "field_interaction",
+  "target_operation": "I-Am",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure while increasing real operation/frame/state diversity through varied priority fields and record lengths.",
+  "evidence_ids": [
+    "issue:1339:1339-summary:cc4c43a5d389",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:1399:1399-summary:0436f55c6893",
+    "issue:cve-2026-47217:cve-2026-47217-summa:e189d9036078"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "I-Am request",
+      "hex": "810d0014000100fffe0000000100000000000000",
+      "byte_length": 20,
+      "sha256": "753cf099b4e418db0daa8c381fa5fc120b78b48164932f07d9cd6ae58f60ba10"
+    }
+  ],
+  "expected_behavior": "Out-of-bounds write in Atomic-Read-File record access mode",
+  "constraints_preserved": [
+    "BVLC NPDU APDU layering",
+    "BACnet/IP consistency",
+    "visible lengths/counts",
+    "no external documents",
+    "lowercase hex no separators"
+  ],
+  "issue_safety_notes": "Pseudocode only; real payloads may crash server but are not provided. Safe issue analogue: priority-field interaction with varied record lengths (even chars only, no crash bytes). Increased real operation/frame/state diversity via varied priority fields and record lengths.",
+  "sequence_sha256": "53ca5eae051fd91f1d2b1a210300cb4cf8a61992a3da8430181627e335ea963a",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1339"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "753cf099b4e418db0daa8c381fa5fc120b78b48164932f07d9cd6ae58f60ba10",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ]
+  }
+}

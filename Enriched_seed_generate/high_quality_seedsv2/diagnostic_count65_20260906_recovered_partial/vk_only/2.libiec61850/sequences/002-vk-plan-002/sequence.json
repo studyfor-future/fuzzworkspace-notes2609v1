@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-002",
+  "seed_id": "vk-plan-002",
+  "title": "VK-only MMS Initiate: Heap overflow field interaction (issue 194 evidence)",
+  "strategy": "field_interaction",
+  "target_operation": "MMS Initiate",
+  "purpose": "Exercise issue-supported field interactions in plausible model-prior MMS structure",
+  "evidence_ids": [
+    "issue:194:194-summary:4277018cff9d",
+    "issue:196:196-summary:55a2cfa7c1b1",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:198:198-summary:062388f44431"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "MMS Initiate with vulnerable field",
+      "hex": "0300001711e00000000100c1020000c2020001a0010001",
+      "byte_length": 23,
+      "sha256": "f2949450dc88ddb943e0082954ad233da99f3e457d449a32c36ab2209338714d"
+    }
+  ],
+  "expected_behavior": "Heap overflow triggered in MmsValue_decodeMmsData path",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length consistent with full message",
+    "MMS over RFC1006 model-prior archetype",
+    "IEC61850 family constraints",
+    "Single-request shape",
+    "Message budget 1",
+    "No external protocol documents used"
+  ],
+  "issue_safety_notes": "Safe issue analogue only; no exact historical payload or crash bytes; family constraints enforced",
+  "sequence_sha256": "6f208c8dc17a66dbe6b89930cac6b06ca03ed8e1da923d11c0be52aab281039a",
+  "total_bytes": 23,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "194"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f2949450dc88ddb943e0082954ad233da99f3e457d449a32c36ab2209338714d",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ]
+  }
+}

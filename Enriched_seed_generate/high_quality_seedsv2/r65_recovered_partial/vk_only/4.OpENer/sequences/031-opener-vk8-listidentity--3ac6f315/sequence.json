@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-032",
+  "seed_id": "opener-vk8-listidentity-response-04",
+  "title": "ListIdentity discovery request with framed response",
+  "strategy": "function_code_coverage",
+  "target_operation": "ListIdentity",
+  "purpose": "Exercise discovery dispatch and response-data handling using a complete request header followed by a distinct, length-consistent response frame.",
+  "evidence_ids": [
+    "issue:314:314-summary:3abfe4f839d0",
+    "issue:374:374-summary:3d44e552a6bc",
+    "issue:445:445-summary:c1784b774e94"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity empty discovery request",
+      "hex": "63000400000000000000000000000000000000000000000000000000",
+      "byte_length": 28,
+      "sha256": "9e2de27b4cdcc1829ebd1e1f72bd70c96caa50fe66dc67c99e82b70ca30e6bf9"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ListIdentity response with one compact payload item",
+      "hex": "6300050000000000000000000000000000000000000000000001000000",
+      "byte_length": 29,
+      "sha256": "4e16e4379cdcdfa5006e0dcf6e707576b00e71dafb1b1f6734460f0c6a08d68e"
+    }
+  ],
+  "expected_behavior": "The server should dispatch ListIdentity and emit a properly framed discovery response, or reject the request cleanly if discovery is unavailable.",
+  "constraints_preserved": [
+    "Both messages contain complete 24-byte EtherNet/IP encapsulation headers.",
+    "The request declares a zero-byte payload.",
+    "The response declares and carries exactly four payload bytes.",
+    "Request and response directions are explicit and indices are ordered.",
+    "The discovery path is distinct from session and explicit-message paths."
+  ],
+  "issue_safety_notes": "This is a conservative response-handling analogue informed by the supplied issue reports. The compact response payload is a mutation seed, not a claim of a fully populated device identity, and no historical crash stream is copied.",
+  "sequence_sha256": "2c5673e49fa9aba50c6632aaf5ece8702697d69e43a7dcb680cd5cdbaa1b2987",
+  "total_bytes": 57,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "374"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8d3942aea03ad782af206aa685fb3f2d5f35cca580d8ed591853b7ba85a5ac59",
+    "encoded_bytes": 57,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-opener-vk8-listidentity--3ac6f315",
+      "corpus_file": "031-3ac6f315.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

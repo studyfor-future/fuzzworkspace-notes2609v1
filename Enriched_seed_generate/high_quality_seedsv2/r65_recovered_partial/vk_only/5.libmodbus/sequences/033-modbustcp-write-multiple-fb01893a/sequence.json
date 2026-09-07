@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-031",
+  "seed_id": "modbustcp-write-multiple-coils-003-2",
+  "title": "VK-only Write Multiple Coils",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Exercise variable-length coil data, quantity-to-byte-count interaction, and server reply construction using a small valid payload.",
+  "evidence_ids": [
+    "issue:763:763-summary:e75d690140f2",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:279:279-summary:f8623682ccd7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write eight coils with one data byte",
+      "hex": "000300000008010f0062000801a5",
+      "byte_length": 14,
+      "sha256": "19dafeb180b5dd01d16ee77e92b715a6036f0fb9452e8f38144e64fbc95733bb"
+    }
+  ],
+  "expected_behavior": "The server should consume the complete request, apply or reject the eight-coil write, and produce a fixed response containing the starting address and quantity.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0008 equals unit identifier plus the seven-byte PDU.",
+    "Function code 0f has quantity 8 and byte count 1, with matching data length."
+  ],
+  "issue_safety_notes": "This explores the issue-related variable-length write and reply structure but uses independently chosen address, transaction, and data values. It does not copy historical crash payloads or assert that the reported memory fault is reproduced.",
+  "sequence_sha256": "3cf2f8287077745dcdfe5c277385b48bd1fdacc93c7625681f5b9f652c14fcbe",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "763"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "19dafeb180b5dd01d16ee77e92b715a6036f0fb9452e8f38144e64fbc95733bb",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "033-modbustcp-write-multiple-fb01893a",
+      "corpus_file": "033-fb01893a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

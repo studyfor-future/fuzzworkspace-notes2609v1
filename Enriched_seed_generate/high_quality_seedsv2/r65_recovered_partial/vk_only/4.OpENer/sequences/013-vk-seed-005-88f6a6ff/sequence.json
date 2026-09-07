@@ -1,0 +1,80 @@
+{
+  "plan_id": "vk-plan-005",
+  "seed_id": "vk-seed-005",
+  "title": "VK-only SendRRData: OpENer’s explicit messaging path has a remotely reachable out-of-bounds read",
+  "strategy": "stateful_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:557:557-summary:f58da6326195",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:569:569-summary:84e873f1b910",
+    "issue:575:575-summary:e8df4ac3993c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "00000010000000000000000000000000",
+      "byte_length": 16,
+      "sha256": "c20b8d84748bc316bc183e115720b53abb530f7ced5debb8928f835c8efd1b54"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData",
+      "hex": "6f005d01010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 373,
+      "sha256": "b8aabe9112899ffd2e7efbcf79ac53e883f828a0ba9a4de7106ebedd9d95aa7f"
+    }
+  ],
+  "expected_behavior": "Server crashes under ASan with SEGV in AddIntToMessage at endianconv.c:136 due to oversized attribute_count_request and message_buffer[512] overrun in EncodeMessageRouterResponseData.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers with little-endian payload length",
+    "24-byte encapsulation header when form selected",
+    "Diversified explicit-message path",
+    "Model-prior SendRRData archetype"
+  ],
+  "issue_safety_notes": "No crash bytes copied; issue 567 trigger relation preserved without exact payload; stateful setup from RegisterSession enforces valid session prerequisite.",
+  "sequence_sha256": "9427fb0abc814103c1416b9189a52c9faed1182b2ba76a613db6a37322fac7c1",
+  "total_bytes": 389,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "557"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c5c4e4359f58567df3890b70b1f7c4f911bcf6fe02103502631e25dc6fe23f82",
+    "encoded_bytes": 389,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 373,
+        "frame_length": 373
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "013-vk-seed-005-88f6a6ff",
+      "corpus_file": "013-88f6a6ff.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

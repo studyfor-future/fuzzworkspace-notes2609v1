@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-013",
+  "seed_id": "issue-763-issue-analogue-read-coils-01",
+  "title": "Read Coils analogue with small range",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Coils",
+  "purpose": "Exercise a recognizable read-bits request shape related to issue-reported repeated processing paths while avoiding minimal malformed or historically colliding bytes.",
+  "evidence_ids": [
+    "issue:763:763-summary:e75d690140f2",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:743:743-summary:1fc7e97d059a",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:738:738-summary:a2fd51730f5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_coils_request",
+      "hex": "110100000006010100130009",
+      "byte_length": 12,
+      "sha256": "006772b147b2583701426e6b5ff7e8f182e305432bdc5f72b81913470e71207d"
+    }
+  ],
+  "expected_behavior": "Server should either return a normal read-coils response or a handled exception without desynchronizing parser state.",
+  "constraints_preserved": [
+    "7-byte MBAP header",
+    "protocol identifier 0x0000",
+    "MBAP length set consistently to 0x0006",
+    "recognizable Read Coils function code 0x01",
+    "address and quantity fields present in a conservative fixed-size read request"
+  ],
+  "issue_safety_notes": "Uses only a safe structural analogue of issue-related repeated read handling and avoids exact historical issue bytes, truncated minimal forms, and malformed length tricks.",
+  "sequence_sha256": "b69089336b25697b3aece2aad8ff00c51825d3c1fc884a3a512290f546efeeb8",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "763"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "006772b147b2583701426e6b5ff7e8f182e305432bdc5f72b81913470e71207d",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "034-issue-763-issue-analogue-166be9f7",
+      "corpus_file": "034-166be9f7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

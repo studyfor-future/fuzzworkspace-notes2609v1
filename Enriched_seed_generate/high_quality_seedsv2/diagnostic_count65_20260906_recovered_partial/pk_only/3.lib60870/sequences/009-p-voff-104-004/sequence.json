@@ -1,0 +1,55 @@
+{
+  "plan_id": "plan-016",
+  "seed_id": "p-voff-104-004",
+  "title": "Double Command OFF Variant Request",
+  "strategy": "field_interaction",
+  "target_operation": "OFF",
+  "purpose": "Differentiate control coverage from the single-command seed by using TypeID 46 double command semantics and a different command byte, creating a distinct command parser path rather than a cosmetic ON/OFF duplicate.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:dba2914dfe00",
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:function-text:3cbe16bf065a",
+    "protocol_format:iec60870:service-or-function-:a22193b216a5",
+    "function_code:function:function-text:14a1385d5f57"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "double-command-off-variant",
+      "hex": "680e000000002e010600010002000002",
+      "byte_length": 16,
+      "sha256": "0417f7bd3a8c07d6f433b1c59cb561943461b5ea41e1e77f1463cc8042ae2264"
+    }
+  ],
+  "expected_behavior": "Parses as a 104 I-format C_DC_NA_1 double command request carrying one information object and a command-state byte distinct from the single-command seed, exercising a separate control ASDU path.",
+  "constraints_preserved": [
+    "TypeID 46 for C_DC_NA_1 taken from supplied function reference",
+    "Length octet 0x0e matches 14 bytes following it",
+    "ASDU field order preserved with VSQ, COT, common address, IOA, and one command byte",
+    "Uses a different IOA and TypeID from the single-command seed to avoid cosmetic duplication"
+  ],
+  "issue_safety_notes": "PK-only seed; no vulnerability analogue required. Uses safe structural diversity by switching command family and payload semantics instead of replaying malformed OFF data.",
+  "sequence_sha256": "02cfadcc64e925d9a89d2b32526a527fa6fc6b7cc9528aedd0d1c9db59f0f410",
+  "total_bytes": 16,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0417f7bd3a8c07d6f433b1c59cb561943461b5ea41e1e77f1463cc8042ae2264",
+    "encoded_bytes": 16,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ]
+  }
+}

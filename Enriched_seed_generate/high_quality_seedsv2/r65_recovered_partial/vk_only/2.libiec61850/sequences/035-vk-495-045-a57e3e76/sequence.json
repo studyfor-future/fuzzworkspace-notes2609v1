@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-045",
+  "seed_id": "vk-495-045",
+  "title": "VK-only Write: In libIEC61850 version 1.5.3, sending the provided proof-of-concept input to the `server_example_substitution` example causes a crash in `mmsServer_handleDel...`",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Write",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:495:495-summary:292e0a30dc47",
+    "issue:368:368-summary:997e8d1338a8",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:542:542-summary:a6cc05667747",
+    "issue:197:197-summary:e3308b450f23"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "WriteRequest MMS",
+      "hex": "0300001200e00000000000000100000000f3",
+      "byte_length": 18,
+      "sha256": "be6ac741c476c16fa8ecfa9d8956abe6fba34f4d82a3659e016169c67aa34933"
+    }
+  ],
+  "expected_behavior": "Server crashes in mmsServer_handleWriteRequest via NULL dereference in substitution handler",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length consistent",
+    "single MMS message",
+    "IEC61850 MMS family constraints",
+    "distinct frame size/structure"
+  ],
+  "issue_safety_notes": "Issue-supported trigger relations preserved; no crash bytes copied",
+  "sequence_sha256": "983b1d6ebb132e6257e4415302a1061b8fe80bdc3fe8b678b99630e864b96e9a",
+  "total_bytes": 18,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "573"
+  ],
+  "_selection_score": 81.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "be6ac741c476c16fa8ecfa9d8956abe6fba34f4d82a3659e016169c67aa34933",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 18,
+        "frame_length": 18
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "035-vk-495-045-a57e3e76",
+      "corpus_file": "035-a57e3e76.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

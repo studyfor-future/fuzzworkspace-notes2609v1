@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-051",
+  "seed_id": "modbustcp-read-holding-registers-minqty",
+  "title": "VK-only Read Holding Registers minimal quantity",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Probe the smallest ordinary register-read quantity while maintaining a fully consistent request length and a conventional address field.",
+  "evidence_ids": [
+    "issue:803:803-summary:fea416ab8355",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:750:750-summary:3dcb92ca7c5d",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:748:748-summary:90052b7dfbe9",
+    "issue:738:738-summary:a2fd51730f5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Holding Registers address 256 quantity 1",
+      "hex": "300100000006030301000001",
+      "byte_length": 12,
+      "sha256": "c6e89c89efaecaf2cdd7eb94848a2817994f35651837018d11956de510b0ba91"
+    }
+  ],
+  "expected_behavior": "The server should parse the request as a valid one-register Read Holding Registers operation and return two data bytes or a protocol-level exception.",
+  "constraints_preserved": [
+    "7-byte MBAP header is present.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0006 matches the unit identifier plus the five-byte request PDU.",
+    "Quantity is the valid single-register boundary value 0001.",
+    "Hex is lowercase with no separators."
+  ],
+  "issue_safety_notes": "This remains a valid boundary candidate rather than a malformed overflow reproducer; it does not copy historical crash bytes or claim the cited issue behavior is verified here.",
+  "sequence_sha256": "64d5a3291cd1aaa9030942fb56557eb0a6699b72b0221974292db0cf0eb8534c",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "803"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c6e89c89efaecaf2cdd7eb94848a2817994f35651837018d11956de510b0ba91",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "044-modbustcp-read-holding-r-19a1fdc7",
+      "corpus_file": "044-19a1fdc7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "plan_id": "vk-plan-065",
+  "seed_id": "c7cf29fd27a9",
+  "title": "VK-only WriteProperty: In bacnet-stack 1.5.0 (master branch commit 932e347), the RAMFS-bac...",
+  "strategy": "stateful_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:1399:1399-summary:0436f55c6893",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "setup_sequence_client",
+      "hex": "810b001b0120ffff00ff100000c4020003e82205c4910302210104",
+      "byte_length": 27,
+      "sha256": "d21de351eafb59192b9f85014b1fbab3440e2a792124f48668f579e9fb172305"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "write_property_client",
+      "hex": "810a001b190020ff00ff100000c4020003e82205c4910302210104",
+      "byte_length": 27,
+      "sha256": "154feb5e4d2d04120f821a561c27dfbc7ffb28dc58af6d517517a46ee7cdd387"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "closing_tag_cycle_client",
+      "hex": "810a001b190020ff00ff100000c4020003e82205c4910302210104",
+      "byte_length": 27,
+      "sha256": "154feb5e4d2d04120f821a561c27dfbc7ffb28dc58af6d517517a46ee7cdd387"
+    }
+  ],
+  "expected_behavior": "server processes stateful WritePropertyMultiple/WriteProperty with annotation setup and ReadProperty closing tag write; buffer underflow in decode path; stack-use-after-return in characterstring_init_ansi via stale pointer; recursive writeback in Timer state; out-of-bounds read in wpm_decode_object_property priority field; record count/storage mismatch in RAMFS FILE; NULL deref in device_object_reference_decode on Structured_View_SUBORDINATE_LIST; UBASIC tokenizer max-length off-by-one; alarm tag parsing invalid read; MSTP reply expected check; poc readfile posix comma parse; all crash on unmodified demo server over BACnet/IP.",
+  "constraints_preserved": [
+    "BVLC 4-byte length consistent",
+    "NPDU/APDU layering preferred",
+    "message hex lowercase no separators",
+    "visible lengths/counts internally consistent",
+    "issue-supported trigger relations preserved",
+    "no external protocol document used",
+    "model internal prior enforced",
+    "target_operation WriteProperty preserved",
+    "payload_messages=1 per issue",
+    "multi_step_stateful shape"
+  ],
+  "issue_safety_notes": "DO NOT EXECUTE. These sequences are synthetic VK-only test inputs for crash reproduction only. Sending to live systems may cause unavailability, data corruption, or denial-of-service. Use only in isolated lab environment with the exact commit 932e347 1.5.0 server and AddressSanitizer. All hex is illustrative per supplied issue PoC patterns; real exploitation requires full client implementation.",
+  "sequence_sha256": "2d912690791055eea0921f56430182e0ed3de3f468d1d17166efa2578b0269f7",
+  "total_bytes": 81,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1399"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4b7e79cddb82cfcb68b2be77afd4348e16638a3454dde369a82def01deef6ac3",
+    "encoded_bytes": 81,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 27,
+        "payload_offset": 27,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 54,
+        "payload_offset": 54,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "013-c7cf29fd27a9-066851b8",
+      "corpus_file": "013-066851b8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

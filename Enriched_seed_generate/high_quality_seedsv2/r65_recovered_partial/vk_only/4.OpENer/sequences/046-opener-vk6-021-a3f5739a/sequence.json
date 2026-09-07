@@ -1,0 +1,80 @@
+{
+  "plan_id": "vk-plan-021",
+  "seed_id": "opener-vk6-021",
+  "title": "VK-only ListIdentity boundary-shaped discovery sequence",
+  "strategy": "length_boundary_valid",
+  "target_operation": "ListIdentity",
+  "purpose": "Exercise discovery command with valid empty request followed by second valid request carrying nonzero sender-context bytes, preserving simple stateful two-message shape while exploring header-field boundaries adjacent to issue-relevant explicit-message corruption themes.",
+  "evidence_ids": [
+    "issue:576:576-summary:bc3710455616",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:567:567-summary:1255c28909d7",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:569:569-summary:84e873f1b910",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "listidentity-empty-baseline",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "listidentity-alt-context",
+      "hex": "630000000000000000000000112233445566778800000000",
+      "byte_length": 24,
+      "sha256": "d099b133e21654e46bda083ffb546443327d2c74526e540729cda4a9d178481e"
+    }
+  ],
+  "expected_behavior": "Target implementing discovery parses both as ListIdentity-style messages and either responds consistently or ignores unsupported context variations without desynchronization.",
+  "constraints_preserved": [
+    "Target operation preserved as ListIdentity",
+    "24-byte encapsulation header used",
+    "Little-endian payload length retained at zero",
+    "No external protocol document relied upon",
+    "Distinct two-message stateful shape preserved from the plan"
+  ],
+  "issue_safety_notes": "This candidate stays on discovery surface and does not embed historical explicit-message payload structure from cited issues; it is an issue-informed boundary seed rather than crash copy.",
+  "sequence_sha256": "fdce0cf6d3bf49830bb7a457ddd195afe929a5736887a2856768ead1e731f006",
+  "total_bytes": 48,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "576"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2030288cb5f2cf0c4977e4b159e9df3f1523eaa5ecfadba6e3f1950b3684645d",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "046-opener-vk6-021-a3f5739a",
+      "corpus_file": "046-a3f5739a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

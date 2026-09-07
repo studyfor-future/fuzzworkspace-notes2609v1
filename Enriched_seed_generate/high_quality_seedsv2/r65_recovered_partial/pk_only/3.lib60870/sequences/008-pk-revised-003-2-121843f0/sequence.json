@@ -1,0 +1,60 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-003-2",
+  "title": "Spontaneous step-position measurement",
+  "strategy": "function_code_coverage",
+  "target_operation": "M_ST_NA_1 Step-position information",
+  "purpose": "Cover a server-to-client monitoring ASDU with a non-command TypeID, spontaneous cause, step value, and quality descriptor.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:d8995aeae15b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "M_ST_NA_1 spontaneous measurement",
+      "hex": "6812000000000000050103000100010000000000",
+      "byte_length": 20,
+      "sha256": "25a4116d02d01bb057a3ddca9477e363a69a89866cb2e81c2b21784825cac8d6"
+    }
+  ],
+  "expected_behavior": "The receiver parses TypeID 5 as M_ST_NA_1 step-position information with spontaneous cause 3, one information object at common address 1 and IOA 1, step value 0, and a clear quality descriptor.",
+  "constraints_preserved": [
+    "The I-format APCI length 0x0f equals four control bytes plus the 11-byte ASDU.",
+    "TypeID 5 is M_ST_NA_1 in the supplied monitoring-direction catalog.",
+    "VSQ is 1 and the ASDU uses cause 3 for spontaneous transmission.",
+    "The information object carries a one-byte step-position value followed by a one-byte quality descriptor.",
+    "No CP24Time2a or CP56Time2a field is added because this TypeID has no time tag."
+  ],
+  "issue_safety_notes": "PK-only monitoring seed; direction and spontaneous semantics are represented without malformed framing or issue-specific payload reuse.",
+  "sequence_sha256": "c8fb47305ec4b406dc1a35d5a925ff39d840bd755b1ace84454e3a004d46650a",
+  "total_bytes": 20,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "25a4116d02d01bb057a3ddca9477e363a69a89866cb2e81c2b21784825cac8d6",
+    "encoded_bytes": 20,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-pk-revised-003-2-121843f0",
+      "corpus_file": "008-121843f0.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

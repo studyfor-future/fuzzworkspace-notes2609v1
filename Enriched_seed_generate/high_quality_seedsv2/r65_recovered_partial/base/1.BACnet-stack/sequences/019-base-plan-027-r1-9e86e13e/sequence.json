@@ -1,0 +1,59 @@
+{
+  "plan_id": "base-plan-027",
+  "seed_id": "base-plan-027-r1",
+  "title": "Base ReadRange variant 3 revised",
+  "strategy": "parser_depth",
+  "target_operation": "ReadRange",
+  "purpose": "Reach deeper parser logic with a confirmed ReadRange request that includes object and property selection plus a nested range form carrying a signed start position and item count.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet/IP Confirmed ReadRange request with nested range selection",
+      "hex": "810a001c0104020226c40008000319553e0cfffffffe1c000000053f",
+      "byte_length": 28,
+      "sha256": "1500f064fa72d5ee7b83591ce1d090b7efac53b91856a817ceb3330dd1d6eece"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP server should parse the message as a confirmed ReadRange request, process the nested range selector, and then return a range result or a protocol-conforming error.",
+  "constraints_preserved": [
+    "BVLC total length 0x001d matches the full encoded message length",
+    "BVLC, NPDU, and confirmed APDU layering follow a common BACnet/IP arrangement",
+    "Object identifier and property identifier precede nested range data",
+    "Nested opening and closing tags are balanced in the range selector",
+    "Hex is lowercase and has an even number of characters"
+  ],
+  "issue_safety_notes": "No known issue is being targeted. This deeper form is a conservative structural seed based on model prior and should not be treated as externally verified protocol evidence.",
+  "sequence_sha256": "fde061e4edb445de8ad2491a6dac5555c0ab6a1509971a4baf59db412ce09217",
+  "total_bytes": 28,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 99.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1500f064fa72d5ee7b83591ce1d090b7efac53b91856a817ceb3330dd1d6eece",
+    "encoded_bytes": 28,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "019-base-plan-027-r1-9e86e13e",
+      "corpus_file": "019-9e86e13e.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

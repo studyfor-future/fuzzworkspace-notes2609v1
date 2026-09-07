@@ -1,0 +1,58 @@
+{
+  "plan_id": "vk-plan-021",
+  "seed_id": "seed-021",
+  "title": "VK-only TESTFR activation: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-overflow when it processes the supplied PoC byte stream",
+  "strategy": "length_boundary_valid",
+  "target_operation": "TESTFR activation",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency",
+  "evidence_ids": [
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TESTFR_activation",
+      "hex": "68050300000000",
+      "byte_length": 7,
+      "sha256": "fb9f101cd9a4b464d337633970bda9a8a41b2e5e1b1791a3dd5799f54fe859f8"
+    }
+  ],
+  "expected_behavior": "server processes as TESTFR with boundary-length consistency but no crash",
+  "constraints_preserved": [
+    "iec60870 frame",
+    "link control path",
+    "TESTFR archetype",
+    "no crash bytes"
+  ],
+  "issue_safety_notes": "avoids direct GHSA-196 PoC bytes; uses model-internal TESTFR archetype with consistent 0x04 length octet per family constraints",
+  "sequence_sha256": "e844b1b94c0dc2c07448021e5936001c02b19df717204710e9d4103e4ac1e4e2",
+  "total_bytes": 7,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fb9f101cd9a4b464d337633970bda9a8a41b2e5e1b1791a3dd5799f54fe859f8",
+    "encoded_bytes": 7,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

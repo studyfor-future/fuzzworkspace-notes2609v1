@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-010",
+  "seed_id": "seed-read-file-record-depth-02",
+  "title": "Read File Record dual-subrequest parser depth",
+  "strategy": "parser_depth",
+  "target_operation": "Read File Record",
+  "purpose": "Reach nested record parsing with two complete subrequests so mutations can independently target aggregate byte count, reference type, file number, record number, and record length fields.",
+  "evidence_ids": [
+    "issue:748:748-summary:90052b7dfbe9",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:763:763-summary:e75d690140f2",
+    "issue:612:612-summary:7b008d4bca1d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "read_file_record_two_subrequests",
+      "hex": "20010000001102140e0600010000000206000200030001",
+      "byte_length": 23,
+      "sha256": "51a4c9671c14ad345ba634d357ff397c09f925199c62baa0dcb3dc602ffe1064"
+    }
+  ],
+  "expected_behavior": "The server should parse the complete Read File Record request and either return data for the requested records or issue a standard exception for unsupported or unavailable file access.",
+  "constraints_preserved": [
+    "The message has a seven-byte Modbus/TCP MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 0011 equals the unit identifier plus the sixteen-byte PDU",
+    "Read File Record byte count 0e equals two seven-byte subrequests",
+    "Each nested subrequest contains reference type 06 and three two-byte fields",
+    "No bytes follow the declared ADU"
+  ],
+  "issue_safety_notes": "The nested structure is an issue-guided parser analogue and is not the historical PoC. It preserves aggregate and nested length relationships and does not claim direct reachability of modbus_mapping_free.",
+  "sequence_sha256": "2df61f33600952a460ddd3296cf7e2a9dfffcf8f21e8148b31047dfcf4294e88",
+  "total_bytes": 23,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "748"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "51a4c9671c14ad345ba634d357ff397c09f925199c62baa0dcb3dc602ffe1064",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "015-seed-read-file-record-de-d2ad2739",
+      "corpus_file": "015-d2ad2739.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

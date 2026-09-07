@@ -1,0 +1,85 @@
+{
+  "plan_id": "plan-058",
+  "seed_id": "seed-058",
+  "title": "Function coverage for RequestDomainUpload",
+  "strategy": "function_code_coverage",
+  "target_operation": "RequestDomainUpload",
+  "purpose": "Generate a valid request centered on this documented operation so the initial corpus covers more parser entry points.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:d64a03d5852a",
+    "function_code:function:operation-catalog:ecc66f95fee4",
+    "function_code:function:operation-catalog:8c2d1b34818b",
+    "function_code:function:operation-catalog:9bb344dfd383",
+    "function_code:function:function-text:d319479344be",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300000a03010002f000",
+      "byte_length": 10,
+      "sha256": "2a98c30bb4c0805c99d10b141f5e30e27a76904a416c747f79ed94dae71838e2"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "MMS Initiate",
+      "hex": "a801000100000101",
+      "byte_length": 8,
+      "sha256": "52684efcb48094c3ee81baa246fa2da7e6f2ca014bc9364f4913d2c388b3377d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Confirmed-Request-PDU for RequestDomainUpload",
+      "hex": "a001000c060400010000010032",
+      "byte_length": 13,
+      "sha256": "0d16b6f193f86b98ce89c317a30b551883197d867326fc47ec4d01f9c8460754"
+    }
+  ],
+  "expected_behavior": "The MMS parser in libiec61850 should process the confirmed service tag for RequestDomainUpload correctly, incrementing the confirmed service tag coverage without triggering oversized allocation paths.",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths."
+  ],
+  "issue_safety_notes": "The structural analogue uses the confirmed-request-pdu wrapper and service tag path from the request-domain-upload operation entry in the function catalog; no negative maxSize or octet-string allocation is introduced, avoiding the CVE-2026-18583 oversized calloc path entirely.",
+  "sequence_sha256": "6e15139f1bfe1825bd0847dfb07a0543fea6823d374b7f9a0ae6f59c011e6cfd",
+  "total_bytes": 31,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1dedb3a95a405ae18fc8017016a8cf0768c758af64d4dfac705738a92471b1d6",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ]
+  }
+}

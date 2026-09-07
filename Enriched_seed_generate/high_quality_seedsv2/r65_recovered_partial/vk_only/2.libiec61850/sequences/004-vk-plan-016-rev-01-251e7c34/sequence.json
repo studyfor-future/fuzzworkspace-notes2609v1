@@ -1,0 +1,59 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-plan-016-rev-01",
+  "title": "Server-to-client dataset attribute response analogue with reduced first item identifier",
+  "strategy": "parser_depth",
+  "target_operation": "GetNameList",
+  "purpose": "Cover the client-side response parsing state implicated by reduced domain-specific item identifiers, using a concise response-like frame that is easy to mutate around the first itemId field.",
+  "evidence_ids": [
+    "issue:599:599-summary:806eef562ec3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "server_to_client",
+      "label": "tpkt_cotp_mms_dataset_attr_res_like",
+      "hex": "0300001b02f080a112020101a20d1a036c64311a01241a03616263",
+      "byte_length": 27,
+      "sha256": "a9c72b730ff7c2da77955e346a92ad81c6f351fcf33635963c992daeab020289"
+    }
+  ],
+  "expected_behavior": "Client should reject or safely process the response analogue; mutations that shrink the first identifier further should not lead to fixed-offset reads beyond the short string.",
+  "constraints_preserved": [
+    "tpkt header begins with 03",
+    "tpkt total-length field is consistent with the complete message",
+    "server-to-client response direction used for real state diversity",
+    "response-like discovery/dataset path covered",
+    "no exact MITM-rewritten historical payload copied"
+  ],
+  "issue_safety_notes": "Targets the issue 599 pattern through a reduced-itemId structural analogue only; it is intentionally not the published patched response and uses a different compact layout.",
+  "sequence_sha256": "c78a323585b939aa3adfb743fe7c321692c6a27c7a1bd02bad9b795040e192be",
+  "total_bytes": 27,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a9c72b730ff7c2da77955e346a92ad81c6f351fcf33635963c992daeab020289",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-vk-plan-016-rev-01-251e7c34",
+      "corpus_file": "004-251e7c34.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "plan_id": "vk-plan-028",
+  "seed_id": "vk-rev-028-001",
+  "title": "Parser-depth SetAttributeSingle followed by session teardown",
+  "strategy": "parser_depth",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Reach a deeper explicit-message parse shape for SetAttributeSingle using an unconnected wrapper and path padding, then exercise teardown with UnregisterSession for extra state coverage.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request third handle path",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response third handle",
+      "hex": "650004000df0ad0b0000000000000000707172737475767701000000",
+      "byte_length": 28,
+      "sha256": "e5ce4276b3a73fde221d0695da3cdd7fd1a3cdfd6e1de9ff8b8710337cd50a5c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData with deeper SetAttributeSingle path and bounded data",
+      "hex": "6f0024000df0ad0b000000000000000078797a303132333400000000000000000200000000000000b200100010052001240130032401300001020304",
+      "byte_length": 60,
+      "sha256": "f2998c6078564726bc3decb78b93066f52bfdb7a2f0fc5f2b9d5d7e6904ea152"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request",
+      "hex": "660004000df0ad0b0000000000000000756e72656769737400000000",
+      "byte_length": 28,
+      "sha256": "461824e9376e3809c424dd83b205910ccd7a1d88c91ae907f827fb3f1c93d46a"
+    }
+  ],
+  "expected_behavior": "The parser should traverse session handling, CPF decoding, and a slightly deeper SetAttributeSingle request body, then accept teardown without unsafe pointer movement or decoder over-read.",
+  "constraints_preserved": [
+    "24-byte encapsulation headers selected consistently",
+    "Little-endian visible lengths preserved",
+    "Stateful explicit-message chain plus teardown",
+    "Different path depth and request-body shape than other sequences",
+    "Lowercase even-length hex and unique sequence content"
+  ],
+  "issue_safety_notes": "The deeper path is bounded and intentionally conservative. It targets parser-depth coverage only and avoids historically reported oversized path values or exact exploit framing.",
+  "sequence_sha256": "62c0ebedf9133775a104cc97e6de54597d4072fdb114d565bfd1caed58462034",
+  "total_bytes": 144,
+  "message_count_hint": 4,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2022-43604"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "c60ed4e4e4c1351dc0a698d09483f953600e7e8cc26db9304f48949b0ff57756",
+    "encoded_bytes": 144,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 60,
+        "frame_length": 60
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 116,
+        "payload_offset": 116,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "026-vk-rev-028-001-896102a7",
+      "corpus_file": "026-896102a7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

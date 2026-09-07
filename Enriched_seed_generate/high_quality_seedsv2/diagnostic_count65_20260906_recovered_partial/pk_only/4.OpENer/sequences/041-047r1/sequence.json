@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-047",
+  "seed_id": "047r1",
+  "title": "Apply_Attributes plan revised as SendRRData explicit-message transport",
+  "strategy": "function_code_coverage",
+  "target_operation": "SendRRData",
+  "purpose": "Cover the documented unconnected explicit-message transport path with valid encapsulation and CPF structure while avoiding unsupported claims about undocumented Apply_Attributes service bytes.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "SendRRData with Null Address Item and Unconnected Data Item",
+      "hex": "6f001200000000000000000000000000000000000000000000000000020000000000b200040001000000",
+      "byte_length": 42,
+      "sha256": "f75d6ea2a9602c758d3ca5ad62fc5b7a8560de2698fbdcd1846c99be537688e7"
+    }
+  ],
+  "expected_behavior": "Peer parses a valid SendRRData frame, recognizes the documented CPF item pair, and hands the unconnected data item to the next-layer explicit-message parser.",
+  "constraints_preserved": [
+    "24-byte encapsulation header",
+    "Length field 0x0014 matches 20-byte command-specific payload",
+    "Command-specific area includes 4-byte interface handle and 2-byte timeout",
+    "CPF item count is 2 in little-endian",
+    "First CPF item is Null Address Item with zero length",
+    "Second CPF item is Unconnected Data Item with length 4",
+    "All multi-byte fields encoded little-endian"
+  ],
+  "issue_safety_notes": "PK-only safe structural analogue. The unconnected data payload is intentionally minimal and not presented as a verified Apply_Attributes request.",
+  "sequence_sha256": "1a104b05cd902cc8495f79ad9203540bcb4dc176c0b32b5f414277510405897b",
+  "total_bytes": 42,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f75d6ea2a9602c758d3ca5ad62fc5b7a8560de2698fbdcd1846c99be537688e7",
+    "encoded_bytes": 42,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 42,
+        "frame_length": 42
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-010",
+  "seed_id": "plan-010-readproperty-safe",
+  "title": "Issue-guided safe ReadProperty analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "ReadProperty",
+  "purpose": "Exercise confirmed property-read handling and ACK construction paths related to the reported closing-tag reservation issue while requesting a simple property in a compact valid form.",
+  "evidence_ids": [
+    "issue:1398:1398-summary:200993baa464",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "function_code:function:function-text:d3664eeda33b",
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ReadProperty-confirmed",
+      "hex": "810b000f000005040c020000000119",
+      "byte_length": 15,
+      "sha256": "b1985f5fa290c69ee28bfb20874d95ea9d7564e4437a252245a830af782186f9"
+    }
+  ],
+  "expected_behavior": "Target parses a Confirmed-Request-PDU for ReadProperty and returns either a valid ComplexACK-PDU with the property value or a protocol-level error for an unsupported object/property combination.",
+  "constraints_preserved": [
+    "BVLC total length 0x0011 matches message size",
+    "APDU uses confirmed service choice 0x0c for ReadProperty",
+    "Object identifier and property identifier fields kept short and internally consistent",
+    "No malformed closing-tag construction is injected in the request"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue only; it does not reproduce any exact crash payload or malformed ACK-size trigger.",
+  "sequence_sha256": "1775b198cd00fa50bdfb671c728a7f16f40c899430d268cacf5d1e280d5ad28a",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1398"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b1985f5fa290c69ee28bfb20874d95ea9d7564e4437a252245a830af782186f9",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

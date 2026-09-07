@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-002",
+  "seed_id": "modbustcp-read-discrete-inputs-high-address-002",
+  "title": "Read Discrete Inputs at a high address with quantity one",
+  "strategy": "field_interaction",
+  "target_operation": "Read Discrete Inputs",
+  "purpose": "Preserve the issue-guided high-address plus quantity-one relationship in a different but recognizable read operation to explore address interpretation and narrow-quantity handling without reproducing historical bytes.",
+  "evidence_ids": [
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:867:867-summary:58115ace3a65"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "high-address discrete input read",
+      "hex": "2201000000060302fcca0001",
+      "byte_length": 12,
+      "sha256": "07378667554d3d6649b3fb6215c52827b500b941966f9fe10dcfc850a41bd68e"
+    }
+  ],
+  "expected_behavior": "The target should parse a valid Read Discrete Inputs request for one item at a high address and then either produce normal data or a protocol-level exception according to available mapping.",
+  "constraints_preserved": [
+    "Message uses a 7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+    "Function code 02 request layout is address plus quantity",
+    "Quantity is positive and conservative"
+  ],
+  "issue_safety_notes": "This keeps only the high-address interaction as a structural analogue. It avoids the historical function/transaction combination and makes no claim about externally verified device semantics.",
+  "sequence_sha256": "95212cf8d106785ca20cb17e383aa740657a66b7708d5aeb4ead9fe8c867dc77",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "466"
+  ],
+  "_selection_score": 101.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "07378667554d3d6649b3fb6215c52827b500b941966f9fe10dcfc850a41bd68e",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "045-modbustcp-read-discrete--532b83a3",
+      "corpus_file": "045-532b83a3.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

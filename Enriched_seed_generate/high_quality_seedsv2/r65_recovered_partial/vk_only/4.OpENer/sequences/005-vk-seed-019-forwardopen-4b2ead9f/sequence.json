@@ -1,0 +1,91 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-019-forwardopen",
+  "title": "Discovery followed by ForwardOpen connection-manager parsing",
+  "strategy": "parser_depth",
+  "target_operation": "ForwardOpen",
+  "purpose": "Combine a discovery frame with session registration and a distinct ForwardOpen request to exercise connection-manager fields and deeper path parsing.",
+  "evidence_ids": [
+    "issue:574:574-summary:ec096521bf63",
+    "issue:570:570-summary:0b4cbe808107"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity discovery request",
+      "hex": "63000400000000000000000000000000000000000000000000000000",
+      "byte_length": 28,
+      "sha256": "9e2de27b4cdcc1829ebd1e1f72bd70c96caa50fe66dc67c99e82b70ca30e6bf9"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData ForwardOpen Connection Manager request",
+      "hex": "6f003d00c000000000000000000000000000000000000000000000000000000000000000010000000000000000b2002400540220062401112233445566010000000200000010270000102700001027000000000100",
+      "byte_length": 85,
+      "sha256": "46c0f1e651b7de5248d1451c99bc38b7800f684b308db85a5cafeb910d55cc21"
+    }
+  ],
+  "expected_behavior": "The server should parse the discovery frame, establish the explicit-message session, then validate the ForwardOpen service and connection parameters, returning a normal response or a protocol-level rejection for unsupported values.",
+  "constraints_preserved": [
+    "ListIdentity uses a 24-byte encapsulation header with zero payload length",
+    "RegisterSession precedes the explicit request",
+    "SendRRData uses a 24-byte encapsulation header",
+    "all encapsulation and CPF lengths are little-endian and internally consistent",
+    "ForwardOpen is routed to Connection Manager class 6 instance 1",
+    "connection parameters remain bounded within the declared data item"
+  ],
+  "issue_safety_notes": "This is a parser-depth analogue of issues 574 and 570. It avoids the historical 32-bit logical-segment combination, trailing oversized simple segment, underflowing path budget, and exact reproduction bytes.",
+  "sequence_sha256": "7964577ca3d914f6843a3115e46a8eb95d700059434d1e2c3890e5b9d99db6f7",
+  "total_bytes": 141,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "32eb888b4d584630e5778e1d4fc5921e151a1ff83d8725e24f20893b652fcab9",
+    "encoded_bytes": 141,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 85,
+        "frame_length": 85
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-vk-seed-019-forwardopen-4b2ead9f",
+      "corpus_file": "005-4b2ead9f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

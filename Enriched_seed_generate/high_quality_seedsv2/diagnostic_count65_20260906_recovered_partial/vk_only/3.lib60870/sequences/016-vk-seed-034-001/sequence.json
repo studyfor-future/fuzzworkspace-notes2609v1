@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-034",
+  "seed_id": "vk-seed-034-001",
+  "title": "VK-only STOPDT activation: single U-frame with L=4 using STOPDT_ACT (0x13)",
+  "strategy": "field_interaction",
+  "target_operation": "STOPDT activation",
+  "purpose": "Exercise issue-supported field interactions in STOPDT activation path using conservative model-prior framing and address parsing analogue without copying exact crash payload.",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "stopdt_activation_Uframe",
+      "hex": "68051300000000",
+      "byte_length": 7,
+      "sha256": "1bf72c9ebeb38de1ed1de7cfbc8236613c23785bdc521dc8e1c0c9ee9c93f512"
+    }
+  ],
+  "expected_behavior": "U-frame STOPDT_ACT accepted by parser; triggers field interaction in connectionEventHandler path leading to SEGV on malformed structure",
+  "constraints_preserved": [
+    "iec60870 family constraints",
+    "0x68 length octets consistent",
+    "FT1.2 / iec104 framing preferred",
+    "single_request shape",
+    "message budget 1"
+  ],
+  "issue_safety_notes": "Issue-supported field interaction preserved; no exact crash bytes copied; distinct from other plans; VK-only",
+  "sequence_sha256": "8c10eb940a7ccf747eb7fb85639c9819403d5015d291737bd84ccc87ea3a8110",
+  "total_bytes": 7,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1bf72c9ebeb38de1ed1de7cfbc8236613c23785bdc521dc8e1c0c9ee9c93f512",
+    "encoded_bytes": 7,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

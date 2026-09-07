@@ -1,0 +1,102 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-004",
+  "title": "STOPDT and TESTFR control exchange",
+  "strategy": "function_code_coverage",
+  "target_operation": "STOPDT activation and TESTFR activation",
+  "purpose": "Cover distinct IEC 60870-5-104 U-format control functions and their confirmations without adding an ASDU payload.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:3cbe16bf065a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STOPDT activation request",
+      "hex": "680413000000",
+      "byte_length": 6,
+      "sha256": "9dfc071e1785e69a36c6baa4cb06d7747baf04eb1ed29d79cb2babbd5545806e"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STOPDT activation confirmation",
+      "hex": "680423000000",
+      "byte_length": 6,
+      "sha256": "8f6e3acb539f1f622bc8d8cb1b8bd2c88e2975ab14f8389e430466526c2a9d38"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "TESTFR activation request",
+      "hex": "680443000000",
+      "byte_length": 6,
+      "sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "TESTFR activation confirmation",
+      "hex": "680483000000",
+      "byte_length": 6,
+      "sha256": "54ea5a2733da8909fcac91ad2ac0763f45c0f70a0edfb50e593a30fee0277b6e"
+    }
+  ],
+  "expected_behavior": "The peer parses valid U-format STOPDT activation and confirmation followed by TESTFR activation and confirmation, with no ASDU bytes present in any control frame.",
+  "constraints_preserved": [
+    "Each U-format APDU has start byte 0x68 and length 0x04",
+    "Each frame contains exactly four APCI control bytes after the length field",
+    "STOPDT and TESTFR control values are kept distinct",
+    "No I-format sequence or ASDU fields are appended to U-format frames"
+  ],
+  "issue_safety_notes": "PK-only control-path coverage with standard U-format exchanges; no historical issue payload, malformed length, or vulnerability assertion is included.",
+  "sequence_sha256": "2327eec2febb29fcd8bd3a317f7abf07c8ef0adc6038898bbc4657495d8ca4d8",
+  "total_bytes": 24,
+  "message_count_hint": 4,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0b25ef72b14610024ba3f422562a1c8790d5b9b52057bc62ce2e4164fe216c94",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 18,
+        "payload_offset": 18,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "003-pk-revised-004-1fbd08e5",
+      "corpus_file": "003-1fbd08e5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

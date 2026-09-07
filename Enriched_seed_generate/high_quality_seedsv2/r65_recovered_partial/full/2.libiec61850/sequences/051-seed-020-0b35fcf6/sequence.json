@@ -1,0 +1,88 @@
+{
+  "plan_id": "plan-020",
+  "seed_id": "seed-020",
+  "title": "Issue-guided analogue for MMS over ISO-on-TCP (plan-020)",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover sensitive structure from Issue 193 OOB read while using safer valid analogue",
+  "evidence_ids": [
+    "issue:193:193-summary:1451e58436f0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300001603000000e00000030000000d00f300000000",
+      "byte_length": 22,
+      "sha256": "dcc5d4338f15b4ecb68e3e2dd508d0fb0fefc4dba32eafe72185e8443dab2c1b"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "MMS Initiate",
+      "hex": "e000001100010000000000000000000000",
+      "byte_length": 17,
+      "sha256": "bd8e977f2463b5ea99e9937e03bc2b240bed6e90c8f89899cb88413ce996e888"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "GetVariableAccessAttributes",
+      "hex": "a000000f0601000000000000000000000000000000",
+      "byte_length": 21,
+      "sha256": "53206e038848af51ec35d3882f29244ead84a129a939034f3ed8a1316e0dd3d3"
+    }
+  ],
+  "expected_behavior": "Valid MMS response without crash; no OOB access",
+  "constraints_preserved": [
+    "TPKT header version 0x03",
+    "TPKT total-length consistent with complete message",
+    "IEC61850 MMS PDU tags preserved",
+    "No contradicted protocol sources"
+  ],
+  "issue_safety_notes": "Analogue replaces negative maxSize in MmsValue_newOctetString with positive value; fuzzing crash avoided",
+  "sequence_sha256": "b9494769c78c03d750913aa1b65a93b9cd25c95ef73e3eefbf044cd641a266a1",
+  "total_bytes": 60,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "543"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0a1d46878927dc7a990a56e96736122020048d2079aa5fd3760e5180fbcdd2cd",
+    "encoded_bytes": 60,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 39,
+        "payload_offset": 39,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "051-seed-020-0b35fcf6",
+      "corpus_file": "051-0b35fcf6.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

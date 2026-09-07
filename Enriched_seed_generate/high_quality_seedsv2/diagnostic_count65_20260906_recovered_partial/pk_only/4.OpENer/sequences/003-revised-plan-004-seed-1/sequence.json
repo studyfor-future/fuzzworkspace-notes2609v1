@@ -1,0 +1,58 @@
+{
+  "plan_id": "",
+  "seed_id": "revised-plan-004-seed-1",
+  "title": "SendUnitData connected explicit request",
+  "strategy": "field_interaction",
+  "target_operation": "SendUnitData with GetAttributeSingle",
+  "purpose": "Cover the connected CPF path and interaction between a connected address, sequence number, connected data item, and nested attribute path.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:f14ecde0d175",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "SendUnitData with Connected Address and Connected Data items",
+      "hex": "7000280000000000000000000000000000000000000000000000000000000000000000000000000002000100040001000000b1000c0000000e03200124013001",
+      "byte_length": 64,
+      "sha256": "6a4a6ee863a02e7697983de65787c8d2412694ab33fdc5f1b2825d56ed622be4"
+    }
+  ],
+  "expected_behavior": "The server parses a SendUnitData payload with two CPF items, a four-byte connected address, a sequence number, and a nested explicit GetAttributeSingle-shaped request.",
+  "constraints_preserved": [
+    "SendUnitData command is 0x0070 in a 24-byte encapsulation header",
+    "Encapsulation payload length is 34 bytes and matches the complete payload",
+    "CPF item count is two",
+    "CPF item order is Connected Address Item followed by Connected Data Item",
+    "Connected Address Item type is 0x0100 and Connected Data Item type is 0x00b1",
+    "Connected Data Item length includes the two-byte sequence number and nested data"
+  ],
+  "issue_safety_notes": "No issue evidence is enabled. The GetAttributeSingle service byte and EPATH target are conservative model-prior completion for a gap in the supplied excerpt, not an exact historical payload or vulnerability claim.",
+  "sequence_sha256": "c94ef89a5ed6b2e2d93bf79876f94f560dae4b8e4de1c306e7fec8cab4bb443f",
+  "total_bytes": 64,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6a4a6ee863a02e7697983de65787c8d2412694ab33fdc5f1b2825d56ed622be4",
+    "encoded_bytes": 64,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 64,
+        "frame_length": 64
+      }
+    ]
+  }
+}

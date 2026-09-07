@@ -1,0 +1,55 @@
+{
+  "plan_id": "vk-plan-059",
+  "seed_id": "vk-rev-059-200-c",
+  "title": "VK-only Single Command with short conservative command ASDU",
+  "strategy": "stateful_valid",
+  "target_operation": "Single Command",
+  "purpose": "Cover a command-oriented I-frame using a compact command body that remains structurally plausible and can be mutated toward count or object-address edge cases linked to short-ASDU parsing issues.",
+  "evidence_ids": [
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "single_command_small_iframe",
+      "hex": "680f000000002d01060001000100008100",
+      "byte_length": 17,
+      "sha256": "f17c526c2b140b8f8c7c232cc1a89d79b93d6cbcee253fa9c350eeb79ebfb944"
+    }
+  ],
+  "expected_behavior": "A parser should treat this as a small command-like I-frame and either process or reject it cleanly, with no out-of-bounds access when later mutations vary count, IOA, or qualifier bytes.",
+  "constraints_preserved": [
+    "IEC 60870-5-104 style I-frame",
+    "length octet matches payload size",
+    "command path coverage",
+    "target operation preserved as Single Command"
+  ],
+  "issue_safety_notes": "This keeps a full visible IOA and minimal body to avoid the exact missing-IOA crash structure while remaining close enough for safe mutation toward issue-related boundaries.",
+  "sequence_sha256": "1cb94f4cb3d6433c800b32dd8468c34be0ebe988ed9ac1198f242485b78da7e8",
+  "total_bytes": 17,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "200"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f17c526c2b140b8f8c7c232cc1a89d79b93d6cbcee253fa9c350eeb79ebfb944",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

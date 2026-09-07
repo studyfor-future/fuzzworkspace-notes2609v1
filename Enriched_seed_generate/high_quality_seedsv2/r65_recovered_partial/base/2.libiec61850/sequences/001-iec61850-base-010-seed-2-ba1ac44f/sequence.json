@@ -1,0 +1,73 @@
+{
+  "plan_id": "base-plan-010",
+  "seed_id": "iec61850-base-010-seed-2",
+  "title": "Base MMS Initiate variant 2",
+  "strategy": "stateful_valid",
+  "target_operation": "MMS Initiate",
+  "purpose": "Provide a plausible stateful association sequence with COTP data transfer followed by an MMS initiate-style confirmed request APDU carried over RFC1006.",
+  "evidence_ids": [
+    "base_model_prior:constraints:39ec8f040df1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_dt_x224_session_data",
+      "hex": "0300000702f080",
+      "byte_length": 7,
+      "sha256": "bfcf49dd1b4e985d4393f2d2f1b8b822ae411f98acd93334d9eb6414a493edae"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "tpkt_cotp_dt_mms_initiate_req",
+      "hex": "0300001c02f080610f8002000181010082020000a407800100810101",
+      "byte_length": 28,
+      "sha256": "918498eec38a1e46d25aad100cd07b750ec8429659b0b16bbe1aeb3a937e22f2"
+    }
+  ],
+  "expected_behavior": "A peer already prepared for data transfer may accept the DT framing and parse the second frame as an initiate-style MMS request, or reject it cleanly if additional presentation/session wrapping is required by that stack.",
+  "constraints_preserved": [
+    "Used the specified target operation exactly once.",
+    "Kept TPKT version byte at 0x03.",
+    "Kept TPKT total length fields consistent with complete messages.",
+    "Used lowercase hexadecimal without separators.",
+    "Used a two-message setup_then_request style sequence within budget.",
+    "Cited the supplied base constraint source id."
+  ],
+  "issue_safety_notes": "No external issue knowledge or external validation was available. The MMS initiate encoding is based on fallible model prior and is intended as a conservative structural seed only.",
+  "sequence_sha256": "dce155af65362016dde247af6b87a5b6474672b30c76a941774c9823ccbc745c",
+  "total_bytes": 35,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "9b8602fa50bac02463a5cf0e4b993450e4c631769724aaeebc3d2db4e2bcc11e",
+    "encoded_bytes": 35,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 28,
+        "frame_length": 28
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-iec61850-base-010-seed-2-ba1ac44f",
+      "corpus_file": "001-ba1ac44f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

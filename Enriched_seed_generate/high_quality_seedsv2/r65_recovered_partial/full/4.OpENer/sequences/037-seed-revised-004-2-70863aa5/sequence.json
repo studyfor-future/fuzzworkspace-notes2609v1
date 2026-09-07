@@ -1,0 +1,92 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-004-2",
+  "title": "Explicit SetAttributeSingle and session teardown",
+  "strategy": "field_interaction",
+  "target_operation": "SendRRData SetAttributeSingle followed by UnregisterSession",
+  "purpose": "Combine a valid-session unconnected explicit request with a distinct CIP service and an active-session teardown command.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "issue:314:314-summary:3abfe4f839d0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession_protocol_version_1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData_SetAttributeSingle",
+      "hex": "6f0026000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000b2000a0010022004240130030100",
+      "byte_length": 62,
+      "sha256": "43f981aa2ca6522fef64676d223eb5e8a62b4f248d8fa65d0bdba64756892d97"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnregisterSession_runtime_handle",
+      "hex": "660000000100000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "0e7273a12208c55b76c5b0cee0f1380ec21168702a4fbb87b5a1a7d1098c940a"
+    }
+  ],
+  "expected_behavior": "After the harness substitutes the negotiated handle in messages 1 and 2, the server parses the SetAttributeSingle request, may return a normal CIP response or an object-specific error, and then processes UnregisterSession for the active session.",
+  "constraints_preserved": [
+    "SendRRData payload length is 0x001c bytes",
+    "CPF contains a Null Address Item followed by one Unconnected Data Item",
+    "The unconnected data item length is 10 bytes and matches the encoded service, path, and two-byte data value",
+    "The SetAttributeSingle path uses a two-word class/instance/attribute path in the inferred CIP layout",
+    "UnregisterSession uses command 0x0066, zero payload length, and the active runtime session handle",
+    "All three messages have complete 24-byte encapsulation headers"
+  ],
+  "issue_safety_notes": "Uses a bounded ordinary SetAttributeSingle request and valid-session teardown to provide state diversity. It does not reproduce the GetAttributeList count-80 condition, malformed lengths, or optional sockaddr structures.",
+  "sequence_sha256": "4f4605910afdb4eb6d649f33b00cbf0fd4715fcc117025f7549262a3bcabff90",
+  "total_bytes": 114,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 86.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fdd9c4a4f9af7f1852973d3cb195d7fb7f51153f989dcf6e2420518a96c69b54",
+    "encoded_bytes": 114,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 62,
+        "frame_length": 62
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 90,
+        "payload_offset": 90,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "037-seed-revised-004-2-70863aa5",
+      "corpus_file": "037-70863aa5.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

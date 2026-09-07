@@ -1,0 +1,56 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-revised-004-2",
+  "title": "Clock Synchronization activation",
+  "strategy": "field_interaction",
+  "target_operation": "C_CS_NA_1 Clock synchronization command",
+  "purpose": "Exercise a timed control ASDU combining command semantics, addresses, activation cause, and CP56Time2a field parsing.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:c32f2366ef50",
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:d8995aeae15b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "C_CS_NA_1 clock synchronization activation",
+      "hex": "681600000000000067010600010000000000000000010118",
+      "byte_length": 24,
+      "sha256": "d3e754cdc1b2b568e62ad4259f8a59d74ad032264fc150bd9709e51f54a132d6"
+    }
+  ],
+  "expected_behavior": "The peer parses TypeID 103 as a clock synchronization command with activation cause 6 and a seven-byte CP56Time2a value representing 2024-01-01 00:00:00.000.",
+  "constraints_preserved": [
+    "The I-format APCI length 0x14 equals four control bytes plus the 16-byte ASDU.",
+    "TypeID 103 is C_CS_NA_1 according to the supplied operation catalog.",
+    "VSQ is 1, cause is 6, common address is 1, and IOA is 0.",
+    "The final seven bytes are reserved for CP56Time2a and encode zero milliseconds, minute, and hour, day 1, month 1, and year 24.",
+    "The frame uses a distinct timed control layout rather than a monitoring or single-command payload."
+  ],
+  "issue_safety_notes": "PK-only valid structural analogue; timestamp and addresses are ordinary values, with no exact historical payload collision or vulnerability assertion.",
+  "sequence_sha256": "f3931618a5a252c70805470203a8e2941b0f5c23e1f1fefa0ea37e7fe9a739ee",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 99.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d3e754cdc1b2b568e62ad4259f8a59d74ad032264fc150bd9709e51f54a132d6",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ]
+  }
+}

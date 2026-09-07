@@ -1,0 +1,87 @@
+{
+  "plan_id": "plan-005",
+  "seed_id": "seq-005-001",
+  "title": "Issue-guided analogue for MMS over ISO-on-TCP (COTP Connection Request)",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP association path",
+  "purpose": "Recover historically sensitive structure while replacing negative maxSize trigger with valid positive octet-string size",
+  "evidence_ids": [
+    "issue:193:193-summary:1451e58436f0",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300000a030500000100",
+      "byte_length": 10,
+      "sha256": "f7044f5b1f93defe2a0522c2eb808180aae1515f3ebd9861aecc4eea7723d232"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ACSE A-ASSOCIATE",
+      "hex": "0101000000",
+      "byte_length": 5,
+      "sha256": "b3844634762d8e075473fc1cd774d0f251c6512e27e67e43e7b9ae69efff56f3"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Initiate-Request (positive octet-string size analogue)",
+      "hex": "a800000007010101000101",
+      "byte_length": 11,
+      "sha256": "518628fd8684dc32e4e24605ea2b6005b038b34b4abafcda83f8b12b06ce8702"
+    }
+  ],
+  "expected_behavior": "Parser accepts valid positive maxSize octet-string allocation; AddressSanitizer passes; complete MMS confirmed request framing per protocol sources",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths."
+  ],
+  "issue_safety_notes": "Replaces concrete negative maxSize crash with valid positive octet-string size; no exact historical payload collision; structural analogue only",
+  "sequence_sha256": "8000e2e6a00541cdc2a7db64538d8a0a3338b40e1a27bd1c4791e96e180b87d9",
+  "total_bytes": 26,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "193"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6f2196dac2653ce0590c7d97650e4433239752c3ba655ce45e6c49ade2cc85ad",
+    "encoded_bytes": 26,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 10,
+        "payload_offset": 10,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 15,
+        "payload_offset": 15,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

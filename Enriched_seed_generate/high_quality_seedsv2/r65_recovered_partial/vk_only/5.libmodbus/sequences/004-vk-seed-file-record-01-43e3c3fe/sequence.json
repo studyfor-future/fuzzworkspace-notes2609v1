@@ -1,0 +1,79 @@
+{
+  "plan_id": "vk-plan-034",
+  "seed_id": "vk-seed-file-record-01",
+  "title": "VK-only Read File Record: In libmodbus/tests/unit-test-server, requests with incorrect length field values were accepted",
+  "strategy": "parser_depth",
+  "target_operation": "Read File Record",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+  "evidence_ids": [
+    "issue:810:810-summary:da5167fd5137",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:466:466-summary:691a17c4c14a",
+    "vk_task_context:task-contract:950d6d207e6c",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:279:279-summary:f8623682ccd7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read File Record request",
+      "hex": "00020000000a01140706000100000002",
+      "byte_length": 16,
+      "sha256": "d5fa0410508f16ee2e53598e391520b40ddf9180df39cc9a0b167e472f36869d"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Repeated Read File Record request with alternate file and record",
+      "hex": "00030000000a02140706000200010001",
+      "byte_length": 16,
+      "sha256": "d1371d8fa04940042904151bde38495afd7c15f3cf9437b3b32123bc8d8df5af"
+    }
+  ],
+  "expected_behavior": "Each request should be parsed as a complete Read File Record transaction; a compliant server may return file-record data or a defined exception for unavailable references",
+  "constraints_preserved": [
+    "Each message has a 7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP lengths equal the unit identifier plus the complete PDU",
+    "Read File Record byte count matches the nested record descriptor",
+    "Nested reference type, file number, record number, and record length fields are present"
+  ],
+  "issue_safety_notes": "The sequence explores length-field and parser-depth relations reported in the evidence without reproducing any exact historical trigger bytes. Model-prior field semantics are not externally verified",
+  "sequence_sha256": "e8e3a607d6bdc7d1cd9046113fd16767f7480080c5d2c803fdd02c94ed2bbe83",
+  "total_bytes": 32,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "810"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f0d21e6336724571cd1604c516071f6824329602839914d18e3e9f3b08ecb8e6",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 16,
+        "frame_length": 16
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-vk-seed-file-record-01-43e3c3fe",
+      "corpus_file": "004-43e3c3fe.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

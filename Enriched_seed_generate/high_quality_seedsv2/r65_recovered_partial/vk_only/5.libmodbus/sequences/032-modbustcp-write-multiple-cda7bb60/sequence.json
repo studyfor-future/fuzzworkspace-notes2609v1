@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-044",
+  "seed_id": "modbustcp-write-multiple-registers-0004",
+  "title": "VK-only Write Multiple Registers: field_interaction protocol sequence for intermittent crash relation",
+  "strategy": "field_interaction",
+  "target_operation": "Write Multiple Registers",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:683:683-summary:fbe9b8a5a160",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:498:498-summary:43dc6fe7600e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write two registers at address 0x0020",
+      "hex": "00040000000b1910002000020412345678",
+      "byte_length": 17,
+      "sha256": "73c2290ef5a35387ce83744dfd3a03675359e369b10696b951c28484600fb706"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse two 16-bit register values and return a normal function 10 confirmation. Repeating the same framed request should remain independently parseable, with transport timing behavior left to the harness.",
+  "constraints_preserved": [
+    "Modbus/TCP ADU uses a seven-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 000b equals one unit byte plus a ten-byte PDU",
+    "Register quantity 0002 and byte count 04 agree",
+    "Payload contains exactly four data bytes"
+  ],
+  "issue_safety_notes": "This seed targets issue-related length and repeated-operation interactions without asserting the reported intermittent crash mechanism. It uses a conservative valid request and does not reproduce exact historical bytes.",
+  "sequence_sha256": "b1390a39464c82dc4d68e1d1e8e31fa0691d3e3c2bba84856bf75232e391d3cd",
+  "total_bytes": 17,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "738"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "73c2290ef5a35387ce83744dfd3a03675359e369b10696b951c28484600fb706",
+    "encoded_bytes": 17,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "032-modbustcp-write-multiple-cda7bb60",
+      "corpus_file": "032-cda7bb60.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

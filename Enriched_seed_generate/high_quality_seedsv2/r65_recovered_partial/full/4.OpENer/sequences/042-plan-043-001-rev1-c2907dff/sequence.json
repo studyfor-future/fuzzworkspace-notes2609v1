@@ -1,0 +1,79 @@
+{
+  "plan_id": "plan-043",
+  "seed_id": "plan-043-001-rev1",
+  "title": "Bounded SendRRData unconnected explicit-message analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendRRData",
+  "purpose": "Exercise the SendRRData and CPF unconnected-data parser path under a valid-session placeholder, preserving the issue-relevant outer structure while keeping inner CIP bytes bounded and internally length-consistent.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:314:314-summary:3abfe4f839d0"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData with Null Address Item and bounded Unconnected Data Item",
+      "hex": "6f0016000100000000000000000000000000000000000000000000000000020000000000b20006000e0220012401",
+      "byte_length": 46,
+      "sha256": "e9f4ecbd03833e2bfdfb5e683fbce3e788bac10b96e439cd8cfa7a378e7dd4d7"
+    }
+  ],
+  "expected_behavior": "After session registration, the second message should enter SendRRData parsing with a valid encapsulation header, six command-specific zero bytes, CPF item count 2, a Null Address Item of length 0, and an Unconnected Data Item carrying 6 bytes of bounded CIP data. The target may answer with a normal CIP error, encapsulation error, or implementation-specific response, but it should not require malformed-length recovery.",
+  "constraints_preserved": [
+    "SendRRData command 0x006F encoded little-endian.",
+    "Encapsulation length 0x0016 matches the 22-byte command-specific plus CPF payload.",
+    "Six zero command-specific bytes are present before CPF, matching the issue path precondition receive_data->data_length >= 6.",
+    "CPF item count is 2.",
+    "First CPF item is Null Address Item type 0x0000 with length 0.",
+    "Second CPF item is Unconnected Data Item type 0x00B2 with length 6.",
+    "Inner CIP bytes are length-consistent: service 0x0E, path size 0x02 words, followed by exactly 4 path bytes.",
+    "Session handle 0x01000000 is a negotiated-handle placeholder to be replaced by the harness when replaying statefully."
+  ],
+  "issue_safety_notes": "This is a safe structural analogue for the documented SendRRData/EPath issue path. It avoids the historical collision by not using a short declared CIP payload with oversized forged path_size, not appending excess trailing path bytes, and not using the published 240-word value.",
+  "sequence_sha256": "04fd6e5abad28eaf740c9ce58889fbbad02e400feaedc59bf7c651e6363b0b92",
+  "total_bytes": 74,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6a7100ed606d8ac328289c37e3b3e553bf551022b8641738330996cd3d2ef4d3",
+    "encoded_bytes": 74,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "042-plan-043-001-rev1-c2907dff",
+      "corpus_file": "042-c2907dff.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "plan_id": "plan-033",
+  "seed_id": "seed-033-rev1",
+  "title": "Association-oriented initiate request with safe CR TPDU-size option",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU",
+  "purpose": "Exercise early RFC1006/COTP parsing and MMS initiate entry while preserving a safe structural analogue of the TPDU-size option path referenced by the enabled issue.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request with valid TPDU-size code and minimal Initiate-Request-PDU",
+      "hex": "0300001b11e00000000100c1020000c2020001c0010aa803020100",
+      "byte_length": 27,
+      "sha256": "631f0ab55d82a6ac87697605daa47c14796d21afe80836da6145814f351170c5"
+    }
+  ],
+  "expected_behavior": "Parser accepts the TPKT/COTP framing, processes the CR variable part without undefined shift behavior, and reaches the MMS Initiate-Request-PDU entry path without crashing.",
+  "constraints_preserved": [
+    "TPKT header begins with version 0x03",
+    "TPKT total-length field matches the full message length 0x0019",
+    "COTP Connection Request archetype preserved",
+    "TPDU-size option 0xC0 uses parameterLen 0x01 with a safe code 0x0a instead of the historical invalid shift exponent payload",
+    "MMS PDU tag 0xA8 is used for Initiate-Request-PDU per supplied catalog",
+    "All hex strings are even-length lowercase with no separators"
+  ],
+  "issue_safety_notes": "Safe structural analogue only: retains the C0/01 TPDU-size parsing shape from issue 589 but replaces the crashing attacker-controlled code with a conservative valid value and does not reuse the exact historical payload.",
+  "sequence_sha256": "f9b23d4c161930197eda6bc7154453b537f3a0112c07cf3e465625c2bf9001a9",
+  "total_bytes": 27,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "631f0ab55d82a6ac87697605daa47c14796d21afe80836da6145814f351170c5",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "041-seed-033-rev1-9b7feee8",
+      "corpus_file": "041-9b7feee8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

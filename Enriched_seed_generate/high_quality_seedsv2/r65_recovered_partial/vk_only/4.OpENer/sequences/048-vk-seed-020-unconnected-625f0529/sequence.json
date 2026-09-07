@@ -1,0 +1,77 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-020-unconnected",
+  "title": "UnconnectedSend with nested attribute request and CPF interaction",
+  "strategy": "field_interaction",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Exercise nested Message Router forwarding, timeout fields, CPF item lengths, and an embedded GetAttributeSingle request in one distinct explicit-message structure.",
+  "evidence_ids": [
+    "issue:567:567-summary:1255c28909d7",
+    "issue:569:569-summary:84e873f1b910"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData UnconnectedSend with nested GetAttributeSingle",
+      "hex": "6f002900c000000000000000000000000000000000000000000000000000000000000000010000000000000000b20010005202200624010a0e0320012401300800",
+      "byte_length": 65,
+      "sha256": "980c81c00e125f67fb723fc2c95692d445887127dacd5795f7a569e7d96854e3"
+    }
+  ],
+  "expected_behavior": "The server should parse the outer CPF, recognize the UnconnectedSend service and its embedded Message Router request, then return a bounded response or a deterministic protocol error without exceeding any declared item or message length.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "RegisterSession precedes SendRRData",
+    "CPF contains one null address item and one unconnected data item",
+    "outer data-item length equals the complete UnconnectedSend request",
+    "nested service and route fields are present within the declared item",
+    "all message hex strings have even length"
+  ],
+  "issue_safety_notes": "This covers issue 567 through safe CPF and nested-response structure variation. It does not copy the reported malformed item count, oversized attribute count, destination overflow, or historical crash bytes.",
+  "sequence_sha256": "eefc9bf3e88f29fd60367dff3ed8cf55b8584b1ad0b743f9c52998c81eeb9d2e",
+  "total_bytes": 93,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b7b903c42687fd0ee41821ef37718b188110e6f8c093739990baadd558d27c4d",
+    "encoded_bytes": 93,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 65,
+        "frame_length": 65
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "048-vk-seed-020-unconnected-625f0529",
+      "corpus_file": "048-625f0529.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

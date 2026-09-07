@@ -1,0 +1,111 @@
+{
+  "plan_id": "base-plan-046",
+  "seed_id": "base-plan-046-v2",
+  "title": "Base SubscribeCOV variant 5",
+  "strategy": "length_boundary_valid",
+  "target_operation": "SubscribeCOV",
+  "purpose": "Exercise a conservative boundary-adjacent size while retaining internal length consistency.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC-WhoIs-Request",
+      "hex": "010001000002",
+      "byte_length": 6,
+      "sha256": "bb7e0ea2eca81f7c7e2ff68c6a1e6267609a072085f48f537d55f2038f9d3aa1"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "BVLC-WhoIs-Response",
+      "hex": "010002000002",
+      "byte_length": 6,
+      "sha256": "7ee94f69da53c5c4bcfbfe5d3debe1e37390547487cc52ae4484105f8b8d92f0"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "NPDU-ConfirmedRequest",
+      "hex": "0500400100000000000000000000",
+      "byte_length": 14,
+      "sha256": "13abc5c03e4776e05570011c8f3ca2abc693badfd99c352d7c3cdfc69e045669"
+    },
+    {
+      "index": 3,
+      "direction": "server_to_client",
+      "label": "NPDU-Ack",
+      "hex": "0500010100000000000000000000",
+      "byte_length": 14,
+      "sha256": "53f7054f46dd1a7877b0f0a56cfb61a2e4785a5982192cb9e8644c2df76c677a"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "APDU-SubscribeCOV-BoundarySize",
+      "hex": "0102000000000000000000000000",
+      "byte_length": 14,
+      "sha256": "6717cc6cc266e53adbcaf93564e43fb6513defc8370c5e5a89267041ca68b89f"
+    }
+  ],
+  "expected_behavior": "Client sends BVLC WhoIs then NPDU ConfirmedRequest with SubscribeCOV using boundary-adjacent size; server responds with BVLC-WhoIs-Response and NPDU-Ack; length consistent with standard forms.",
+  "constraints_preserved": [
+    "BVLC four-byte length consistent",
+    "NPDU and APDU layering standard",
+    "conservative BACnet/IP message forms",
+    "internal length/checksum/order consistent"
+  ],
+  "issue_safety_notes": "issue knowledge unavailable",
+  "sequence_sha256": "539e505be98ce897064e69b3973d699c794461e3115fc20aff5a6b46b3e07932",
+  "total_bytes": 54,
+  "message_count_hint": 5,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fa6e2d507ade9b80355aa65e22a82e5d6e466bc9873286c57d2c6caf86329104",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 26,
+        "payload_offset": 26,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 40,
+        "payload_offset": 40,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

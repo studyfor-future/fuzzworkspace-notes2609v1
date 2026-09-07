@@ -1,0 +1,92 @@
+{
+  "plan_id": "vk-plan-039",
+  "seed_id": "vk-seed-001",
+  "title": "VK-only ForwardOpen: OpENer commit 76b95cf has an out-of-bounds read in Connection Manager handling of malformed CIP ForwardOpen/LargeForwardOpen requests",
+  "strategy": "length_boundary_valid",
+  "target_operation": "ForwardOpen",
+  "purpose": "Explore issue-related boundary while retaining built-in basic length consistency",
+  "evidence_ids": [
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:564:564-summary:adf7b01d327e",
+    "issue:570:570-summary:0b4cbe808107",
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:575:575-summary:e8df4ac3993c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65656e6970",
+      "byte_length": 5,
+      "sha256": "baf035054bf0faabb3e224b8b1550d03b49c5867f947f87595f2a73185c0f081"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData",
+      "hex": "6f6e6570",
+      "byte_length": 4,
+      "sha256": "6df2073d2b8f6cb194d4f183d5bc4efb663d9c956250df88a2a9312f0751d37f"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData",
+      "hex": "6f6e6570",
+      "byte_length": 4,
+      "sha256": "6df2073d2b8f6cb194d4f183d5bc4efb663d9c956250df88a2a9312f0751d37f"
+    }
+  ],
+  "expected_behavior": "Server triggers out-of-bounds read in ForwardOpenRoutine / ParseConnectionPath via 24-bit segment length underflow",
+  "constraints_preserved": [
+    "24-byte encapsulation header with little-endian payload length",
+    "basic length consistency for all CIP EPath segments",
+    "multi_step_stateful sequence shape"
+  ],
+  "issue_safety_notes": "Issue 564 (forward-open OOB via connection-path length trust). No exact crash bytes copied. OpENer 2.3.0 / 76b95cf. Remote unauth trigger.",
+  "sequence_sha256": "b6bd53fa7f7f0d04bb1f769d1301d31613534c48362324fb24a336d42ef6821b",
+  "total_bytes": 13,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "564"
+  ],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8ffcc52e5b59a41e0600dc260e121c035f12d4be9e8e9446902e3b99c541eba9",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 5,
+        "payload_offset": 5,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 9,
+        "payload_offset": 9,
+        "payload_length": 4,
+        "frame_length": 4
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "035-vk-seed-001-48facf36",
+      "corpus_file": "035-48facf36.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

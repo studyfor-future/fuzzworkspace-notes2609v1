@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-023",
+  "seed_id": "modbustcp-full-023-rev",
+  "title": "Function coverage for Write Single Register",
+  "strategy": "function_code_coverage",
+  "target_operation": "Write Single Register",
+  "purpose": "Cover the addressed single-register write path with a valid 0x06 request using a concrete register address and 16-bit value to expand parser entry-point diversity beyond control functions.",
+  "evidence_ids": [
+    "function_code:function:function-text:388a9f8cf2ff",
+    "function_code:function:operation-catalog:403195f9db74",
+    "function_code:function:function-text:c093c4ea4f67",
+    "function_code:function:function-text:48ef3b4dd565",
+    "function_code:function:function-text:869721545c59",
+    "protocol_format:modbustcp:format-overview:9821a13f1ada"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write_single_register_request",
+      "hex": "3301000000062306002a1234",
+      "byte_length": 12,
+      "sha256": "15de5e803d1644a627ff74c260b569aa4fd8f95eacea1de3d20e45d1d151debe"
+    }
+  ],
+  "expected_behavior": "The endpoint should parse function 0x06, interpret address 0x002a and value 0x1234 as a single holding-register write, and either echo the request fields on success or return a standard exception if unsupported.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP Length is 0006, matching unit identifier plus 5-byte PDU.",
+    "Function 0x06 is used as documented for Write Single Register.",
+    "The request preserves the 2-byte register address followed by the 2-byte register value layout.",
+    "Chosen address and value are benign coverage values, not copied from any historical issue payload."
+  ],
+  "issue_safety_notes": "This is a baseline valid write seed with no malformed counts, no truncation, and no issue-trigger replication.",
+  "sequence_sha256": "3b18de389a211374d6e235ea29a7c16dbcfc1a206d40b2e234b825ce65219f3d",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "15de5e803d1644a627ff74c260b569aa4fd8f95eacea1de3d20e45d1d151debe",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ]
+  }
+}

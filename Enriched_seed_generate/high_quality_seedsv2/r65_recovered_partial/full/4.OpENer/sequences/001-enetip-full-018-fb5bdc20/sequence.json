@@ -1,0 +1,94 @@
+{
+  "plan_id": "plan-018",
+  "seed_id": "enetip-full-018",
+  "title": "Unconnected SendRRData analogue with Null Address Item and bounded GetAttributeList plus socket info",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Null Address Item",
+  "purpose": "Exercise the unconnected explicit-message path cited by the issue using the documented Null Address Item plus Unconnected Data Item combination, while keeping the GetAttributeList request small and adding optional socket-address items for response-assembly coverage.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:576:576-summary:bc3710455616",
+    "issue:566:566-summary:204619312f9d",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:574:574-summary:ec096521bf63"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response template with session handle 0x00000001",
+      "hex": "65000400010000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "b59240ee5ef4d0e254b09f8f8620a8c0c2838b205c518b8d70c1714a60396c0b"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData with Null Address Item, Unconnected Data Item carrying small GetAttributeList, and two socket address items",
+      "hex": "6f00460001000000000000000000000000000000000000000000000000000000040000000000b2000c032003240107000200010001008000100002002222c0a8010a00000000000000008001100002002322c0a8010b0000000000000000",
+      "byte_length": 94,
+      "sha256": "811bef00652f0f89523199658970714682f3dd8045d5ce4e7da5eacaf071d4fa"
+    }
+  ],
+  "expected_behavior": "Target should parse SendRRData, accept the Null Address Item and Unconnected Data Item, traverse the embedded request, and either return a normal response or a clean CIP error. Optional socket-address items should be parsed as additional CPF items without destabilizing response assembly.",
+  "constraints_preserved": [
+    "Encapsulation command 0x006f and 24-byte header format follow supplied EtherNet/IP reference.",
+    "CPF item count is 4 and includes the documented common SendRRData pair of Null Address Item 0x0000 and Unconnected Data Item 0x00b2, plus additional socket address items observed in supplied issue evidence.",
+    "Null Address Item length is zero as documented by item structure semantics.",
+    "GetAttributeList-style payload is intentionally small: service 0x03 with a compact path and attribute count 2 instead of the issue's dangerous high count.",
+    "Socket address item bodies use 16-byte sockaddr-like layouts as conservative inferred assumptions from issue text; exact subfield semantics are not claimed as source-verified."
+  ],
+  "issue_safety_notes": "Avoids the historical corruption pattern by using only two repeated attribute IDs, bounded total lengths, and non-identical IP/port values; it is structurally similar but not a crash payload copy.",
+  "sequence_sha256": "d91457abb78b01a13b61592e090dddbddce24ab4118d138145d78cfc4249a786",
+  "total_bytes": 150,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "569"
+  ],
+  "_selection_score": 121.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e73e43449c2a8c5cdf0aa0128691dbae85ec1092060aef54fd081746a2fe4e61",
+    "encoded_bytes": 150,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 94,
+        "frame_length": 94
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "001-enetip-full-018-fb5bdc20",
+      "corpus_file": "001-fb5bdc20.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-011",
+  "seed_id": "vk-plan-011-seq-01",
+  "title": "VK-only Who-Is: ubasic tokenizer_string off-by-one stack overflow (plan 011)",
+  "strategy": "stateful_valid",
+  "target_operation": "Who-Is",
+  "purpose": "Use model-prior setup sequence for issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:cve-2026-21870:cve-2026-21870-summa:2c3ecd3da68a",
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-41503:cve-2026-41503-summa:324815060097",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:cve-2026-47258:cve-2026-47258-summa:9e85fa8903c6"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Who-Is discovery",
+      "hex": "810a002101040005010f0c0d400001193629013e0c0d40000119553c0200007b3f",
+      "byte_length": 33,
+      "sha256": "547ccf5a609fa3133e59e8315872446350147569e4da67e4bfd8633f40cb2f05"
+    }
+  ],
+  "expected_behavior": "Off-by-one in ubasic tokenizer_string affects stack-based buffer when handling malformed Who-Is payload.",
+  "constraints_preserved": [
+    "BVLC four-byte length consistent",
+    "NPDU/APDU standard layering",
+    "single-request shape",
+    "model internal prior preserved",
+    "visible lengths internally consistent"
+  ],
+  "issue_safety_notes": "Issue 2026-21870 evidence_ids used; stack overflow analogue only; does not copy exact crash bytes.",
+  "sequence_sha256": "59395b7fea9729e519cc1573588b1405fb41ada3f13c2fb9cb2299602c68ad48",
+  "total_bytes": 33,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-21870"
+  ],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "547ccf5a609fa3133e59e8315872446350147569e4da67e4bfd8633f40cb2f05",
+    "encoded_bytes": 33,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 33,
+        "frame_length": 33
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "027-vk-plan-011-seq-01-6cfc6caa",
+      "corpus_file": "027-6cfc6caa.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

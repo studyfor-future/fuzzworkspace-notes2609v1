@@ -1,0 +1,66 @@
+{
+  "plan_id": "plan-065",
+  "seed_id": "seed-065-001r",
+  "title": "Confirmed ReadRange request with bounded nested range parameters",
+  "strategy": "parser_depth",
+  "target_operation": "ReadRange",
+  "purpose": "Exercise a real confirmed-service parser entry point with object/property/range context structure that is mutation-friendly and safer than the previous invalid abort-reason construct, while still probing nested tag decoding paths adjacent to documented BACnet parser-length issues.",
+  "evidence_ids": [
+    "protocol_format:bacnet-stack:format-overview:d904ae1e3d82",
+    "protocol_format:bacnet-stack:section-common-heade:bcceb647fcf5",
+    "function_code:function:function-text:f1c980ef7dde",
+    "function_code:function:function-text:d3664eeda33b",
+    "issue:1270:1270-summary:f10b3cba62a1",
+    "issue:cve-2026-62973:cve-2026-62973-summa:046aed84ca32"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet/IP BVLC original-unicast-npdu + NPDU + Confirmed-Request-PDU ReadRange",
+      "hex": "810a001701040005011a0c02000001191a3e291e19004f",
+      "byte_length": 23,
+      "sha256": "ad9e25617a62e9bef3008bad1cbad924da5c0dd05a3f685ef383f16f03908cc5"
+    }
+  ],
+  "expected_behavior": "Frame is accepted as a syntactically valid BACnet/IP confirmed request and dispatched through BVLC, NPDU, and APDU parsing to the ReadRange service decoder; implementation should either process or reject semantics cleanly without crash or out-of-bounds read.",
+  "constraints_preserved": [
+    "BVLC header kept to four octets with total length 0x001b matching the full message size",
+    "Layering follows supplied structure: BVLC header, NPDU header, APDU payload",
+    "APDU first octet uses Confirmed-Request-PDU high nibble 0x00 from the supplied function-code table",
+    "Confirmed service choice 0x1a is ReadRange per supplied confirmed service catalog",
+    "NPDU included as a minimal common-header form using conservative model-prior completion only for undocumented octet values",
+    "Context-tag nesting is bounded and length-consistent; no oversized extended application length is used",
+    "Hex string has even length and represents one distinct non-duplicate seed"
+  ],
+  "issue_safety_notes": "This is a safe structural analogue only: it preserves nested tag-decoding pressure relevant to supplied parser issues but avoids malformed extended lengths, MAX_BVLC-sized padding, host-n-port crash bytes, and any exact historical payload collision.",
+  "sequence_sha256": "21f3108dd51d513d078f5c7f66196b8a1d03616c0d96d890244d19e46b3ac32e",
+  "total_bytes": 23,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 91.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ad9e25617a62e9bef3008bad1cbad924da5c0dd05a3f685ef383f16f03908cc5",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "037-seed-065-001r-45ceae35",
+      "corpus_file": "037-45ceae35.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

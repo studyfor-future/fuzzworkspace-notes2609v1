@@ -1,0 +1,88 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-059r1",
+  "title": "AtomicWriteFile stateful record-access append then short replace analogue",
+  "strategy": "stateful_valid",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Model a plausible state prerequisite with discovery followed by two distinct AtomicWriteFile record-access operations so mutators can explore append-style and shorter-replacement transitions linked to RAMFS record handling bugs.",
+  "evidence_ids": [
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:1400:1400-summary:b9facce5d476"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "who-is-setup",
+      "hex": "810b000c0120ffff00100800",
+      "byte_length": 12,
+      "sha256": "debc08d45aceac72772ab2689ae59f8bffc726885beaa780c54e4b7753348570"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "atomicwritefile-record-append-analogue",
+      "hex": "810b001b0120ffff00ff0703c4028000011f7fffffff0101414141",
+      "byte_length": 27,
+      "sha256": "fa6f237966dcfe1cdeabaf0d6dd60843fde267b4fdaaeedb41b5af274a7a1923"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "atomicwritefile-short-replace-analogue",
+      "hex": "810b00190120ffff00ff0704c4028000011f00000000010142",
+      "byte_length": 25,
+      "sha256": "1612857bbdcade5b0daa37034bce1d76dbeb7c39fc0456d3ebc983b2aa9afe08"
+    }
+  ],
+  "expected_behavior": "If a writable FILE object is present, the target may process the sequence and expose stateful backend transitions; otherwise it should fail gracefully without decoder desync. The pair is intended to reach append then shorter-replacement style paths conservatively.",
+  "constraints_preserved": [
+    "common BACnet/IP BVLC NPDU APDU layering",
+    "four-byte BVLC total length consistent",
+    "multi-step stateful sequence increases state diversity",
+    "lowercase even-length hexadecimal",
+    "target operation retained as AtomicWriteFile"
+  ],
+  "issue_safety_notes": "This is a safe analogue of the documented append and replacement record paths and does not copy the published packet sequence or exact bytes.",
+  "sequence_sha256": "10763814f2ab7518e77e2e1124bfa468b1bb38ff1a418ea931b5876af0137bb3",
+  "total_bytes": 64,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3cef39bffb174fd0415198d3839aab4b7210da51e66d1d313ca8a2f8dddc28f4",
+    "encoded_bytes": 64,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 39,
+        "payload_offset": 39,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-vk-seed-059r1-74e33f3b",
+      "corpus_file": "004-74e33f3b.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "plan_id": "",
+  "seed_id": "revised-plan-002-seed-1",
+  "title": "ListIdentity request and response-item parsing",
+  "strategy": "parser_depth",
+  "target_operation": "ListIdentity",
+  "purpose": "Cover discovery request handling and bidirectional Common Packet Format parsing with the documented List Identity Response Item type.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:f14ecde0d175",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity discovery request",
+      "hex": "630000000000000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "d98b4c95d89a83c72b8b3ef5e42fc38ceeb3b48d405166b2618472bd3f801f2e"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ListIdentity response with List Identity Response Item",
+      "hex": "63000600000000000000000000000000000000000000000001000c000000",
+      "byte_length": 30,
+      "sha256": "28d70b598a8d8395ef34fd0d6639f36a2f48e57a0036f3950c6eb443efe8514b"
+    }
+  ],
+  "expected_behavior": "The server recognizes the ListIdentity command; the response CPF contains one item with type 0x000c and a zero-length data field, allowing response-item framing and length handling to be exercised.",
+  "constraints_preserved": [
+    "Both frames use 24-byte encapsulation headers",
+    "The response payload length is 6 bytes, matching the CPF count and one four-byte item header",
+    "CPF item type 0x000c is the documented List Identity Response Item",
+    "All multi-byte encapsulation and CPF fields use little-endian encoding",
+    "Hex strings contain complete byte pairs without separators"
+  ],
+  "issue_safety_notes": "No issue evidence is enabled. The zero-length response item is a minimal structural parser seed and makes no claim about a complete device identity response.",
+  "sequence_sha256": "a8fa76931d75bdf93cf1d41f75f649df4710fb3465177d12e1d98c60f18adb8f",
+  "total_bytes": 54,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fed109a2f71f96d46ccb6defcec9893780664995daf86827575b12bfe6ff34f2",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ]
+  }
+}

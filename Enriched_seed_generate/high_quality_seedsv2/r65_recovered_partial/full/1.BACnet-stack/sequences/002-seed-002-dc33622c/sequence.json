@@ -1,0 +1,98 @@
+{
+  "plan_id": "plan-006",
+  "seed_id": "seed-002",
+  "title": "Issue-guided analogue for WriteProperty",
+  "strategy": "baseline_valid",
+  "target_operation": "WriteProperty",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:1304:1304-summary:e1e381ed7daa",
+    "issue:cve-2026-64675:cve-2026-64675-summa:1fb69ff6770d",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-58498:cve-2026-58498-summa:0998a9affbb6",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "BVLC Header",
+      "hex": "810b000500",
+      "byte_length": 5,
+      "sha256": "983077b8f4d5fe15903e9feceade19ee4e9466734310f117053365ec5d700a6a"
+    },
+    {
+      "index": 1,
+      "direction": "standalone",
+      "label": "NPDU Header",
+      "hex": "01020000020000",
+      "byte_length": 7,
+      "sha256": "2703f96453c3e42d8b0fc5f8e5c9f7313340cf99299353b14834d28efcf01968"
+    },
+    {
+      "index": 2,
+      "direction": "standalone",
+      "label": "APDU Confirmed Request",
+      "hex": "000005f02c0302010400000000000000000000",
+      "byte_length": 19,
+      "sha256": "472073f69f083a16bbc59d2452c5f152d338736d7515876e4210302f604f5b6e"
+    }
+  ],
+  "expected_behavior": "Valid WriteProperty request with priority field; wpm_decode_object_property and decode_unsigned complete safely without out-of-bounds read.",
+  "constraints_preserved": [
+    "BVLC 4-byte total length preserved",
+    "NPDU routing preserved",
+    "APDU confirmed PDU type preserved",
+    "Service choice for WriteProperty preserved",
+    "Property value tag structure preserved",
+    "Priority field tag structure preserved",
+    "Order and nesting of APDU/NPDU/BVLC preserved",
+    "All length/count/checksum rules preserved",
+    "Common BACnet/IP layering preserved"
+  ],
+  "issue_safety_notes": "Analogue replaces priority decode underflow trigger with safe value; no exact crash payload copied; does not trigger buffer over-read or ASan crash.",
+  "sequence_sha256": "bd8e23ad585f37cc55e9ac6c07c4bafa6a70cd68b2b65270cc4269e0fc9b54e6",
+  "total_bytes": 31,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1304"
+  ],
+  "_selection_score": 118.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2e0de776321c914724402c1df965c7a2751715b5fd76691fef6054d677094d14",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 5,
+        "payload_offset": 5,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-seed-002-dc33622c",
+      "corpus_file": "002-dc33622c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

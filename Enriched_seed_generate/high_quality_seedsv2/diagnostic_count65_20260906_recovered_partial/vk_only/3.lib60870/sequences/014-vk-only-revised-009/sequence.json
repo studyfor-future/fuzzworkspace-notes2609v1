@@ -1,0 +1,58 @@
+{
+  "plan_id": "vk-plan-009",
+  "seed_id": "vk-only-revised-009",
+  "title": "VK-only Read Command: lib60870 2.3.6 CS104 server-side code reportedly has a heap-buffer-...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "Read Command",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:196:196-summary:7e4abb310eea",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ReadCommand",
+      "hex": "6809010001000000000000",
+      "byte_length": 11,
+      "sha256": "7d542833a14c89a408b3c6344985dc4d789da248ad2c60f3f4c820b2663566d0"
+    }
+  ],
+  "expected_behavior": "lib60870-C parser accepts ASDU with VSQ object count exceeding body length; InformationObject_ParseObjectAddress reads past heap buffer.",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "prefer FT1.2/IEC 60870-5-104 APCI framing",
+    "ASDU family length validation",
+    "IEC 60870-5-104 I-frame"
+  ],
+  "issue_safety_notes": "Issue 196 heap-buffer-overflow in CS104 server (HighPriorityASDUQueue_hasUnconfirmedIMessages); issue 200 sequence-form M_SP_NA_1 validation bypass; no external docs used.",
+  "sequence_sha256": "b0dda80bf1a80aa04b9638e5c6fe30a60a5678afba45e179aba871720ff7237e",
+  "total_bytes": 11,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "196"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7d542833a14c89a408b3c6344985dc4d789da248ad2c60f3f4c820b2663566d0",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ]
+  }
+}

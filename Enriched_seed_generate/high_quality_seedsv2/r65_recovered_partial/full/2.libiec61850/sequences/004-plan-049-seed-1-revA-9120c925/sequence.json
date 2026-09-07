@@ -1,0 +1,92 @@
+{
+  "plan_id": "plan-049",
+  "seed_id": "plan-049-seed-1-revA",
+  "title": "Stateful association to discovery with safe COTP TPDU-size analogue and GetNameList",
+  "strategy": "stateful_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Exercise a deeper parser path by pairing a valid RFC1006/COTP Connection Request that includes the TPDU-size option with a minimal MMS Initiate request and a subsequent confirmed discovery request, while preserving only a safe structural analogue of the issue-589 option path.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request with valid TPDU-size option",
+      "hex": "0300001611e00000000100c1020000c2020001c0010a",
+      "byte_length": 22,
+      "sha256": "280da9bf09fe3b9bcbf6783292b05663867d9758e02cc6715ce2432dce4a942c"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Minimal MMS Initiate-Request-PDU",
+      "hex": "0300000c02f080a803020100",
+      "byte_length": 12,
+      "sha256": "e4b48c9083ef1f5f38311b5b5555502528a3dd147ac9fc731a4bcf445a62a568"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Confirmed-Request-PDU with GetNameList service tag",
+      "hex": "0300000c02f080a003a10100",
+      "byte_length": 12,
+      "sha256": "f763333e331755e064d481fac69a0fbb11ccdea943811389e4d92ca40cadf4df"
+    }
+  ],
+  "expected_behavior": "A tolerant MMS/IEC61850 parser should accept the layered framing, parse the valid TPDU-size option without entering the invalid shift path, then recognize an Initiate request followed by a confirmed GetNameList discovery request.",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths.",
+    "Use only a safe structural analogue of the issue-589 TPDU-size parameter path and not the historical invalid exponent byte."
+  ],
+  "issue_safety_notes": "This sequence intentionally covers the COTP 0xC0 option path using parameterLen 0x01 and a small valid TPDU-size code 0x0a instead of the documented invalid value 0xa2. It preserves framing structure relevant to parsing coverage but removes the exact undefined-behavior trigger.",
+  "sequence_sha256": "19700c5b22ac3569e18fc5a8e3787f6b8a48550f3d21ce073ab9f141f051f417",
+  "total_bytes": 46,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f3d9256d3a028c3a7b3070222c8983ce47d416286772d4108be3ad2e4ff4e542",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 34,
+        "payload_offset": 34,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-plan-049-seed-1-revA-9120c925",
+      "corpus_file": "004-9120c925.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

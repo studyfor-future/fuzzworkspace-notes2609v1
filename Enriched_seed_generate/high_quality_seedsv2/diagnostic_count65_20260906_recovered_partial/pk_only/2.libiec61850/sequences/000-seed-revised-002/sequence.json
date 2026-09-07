@@ -1,0 +1,70 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-revised-002",
+  "title": "Initiate then Read state transition",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate-Request-PDU followed by Read",
+  "purpose": "Cover association setup followed by a distinct confirmed Read operation, preserving request ordering and changing the invoke identifier between states.",
+  "evidence_ids": [
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT/COTP MMS Initiate-Request-PDU",
+      "hex": "0300000e02f080a8050201010200",
+      "byte_length": 14,
+      "sha256": "0f9682e6c6b690491d8c7614d89b9d7dd53f472f8085f5b5b606fd8751b6ff35"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "TPKT/COTP MMS Confirmed-Request-PDU for Read",
+      "hex": "0300001102f080a008020102a403020104",
+      "byte_length": 17,
+      "sha256": "6e2dc9c74451a1cb5d1adc53efc44c9cb2989aa4f793ad5435543b43ab56115c"
+    }
+  ],
+  "expected_behavior": "The first message establishes the MMS initiation path; the second presents a subsequent confirmed Read request with invoke identifier 2 and service choice 4.",
+  "constraints_preserved": [
+    "Both TPKT headers use version 0x03.",
+    "The first TPKT length is 0x000e and the second is 0x0011; each matches its complete message.",
+    "MMS Initiate-Request-PDU uses outer tag 0xA8.",
+    "Read is service index 4 in the supplied confirmed-service catalog.",
+    "The second request follows the initiation message and uses a distinct invoke identifier.",
+    "Nested length fields match their encoded contents."
+  ],
+  "issue_safety_notes": "No issue evidence is supplied and no historical payload is reproduced; stateful sequencing is a safe structural analogue.",
+  "sequence_sha256": "d53f6d5f14ad00d7fa8dc44a779bbe029ca24177874e5b00a96f7846b44d8351",
+  "total_bytes": 31,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "773e3729eb869c652b6e0f0b91d1cbdd795e2632693956bb6970c370eb25a773",
+    "encoded_bytes": 31,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 17,
+        "frame_length": 17
+      }
+    ]
+  }
+}

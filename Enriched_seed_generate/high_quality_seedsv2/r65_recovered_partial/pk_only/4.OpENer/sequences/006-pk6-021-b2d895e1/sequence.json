@@ -1,0 +1,65 @@
+{
+  "plan_id": "plan-021",
+  "seed_id": "pk6-021",
+  "title": "SendRRData explicit request for Remove_Member coverage",
+  "strategy": "function_code_coverage",
+  "target_operation": "Remove_Member",
+  "purpose": "Exercise the SendRRData plus CPF plus Message Router parsing path with a minimally structured unconnected explicit request using the plan's named CIP operation as the service byte.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a8ab6b7392b2",
+    "function_code:function:function-text:3b15ec1ab4ca",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "function_code:function:function-text:d62ad498ac4f",
+    "function_code:function:operation-catalog:a6b9b629463c",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "sendrrdata_remove_member_minimal",
+      "hex": "6f001400000000000000000000000000000000000000000000000000020000000000b2000800090220012401",
+      "byte_length": 44,
+      "sha256": "72d5ea44a7e0a6fcb4e03c92b45cae1d972b1bb67529b1f3d3507d2bca2fe612"
+    }
+  ],
+  "expected_behavior": "Parser should accept the EtherNet/IP encapsulation header and Common Packet Format structure as well formed and route the embedded explicit request for normal service handling or a protocol-level service/path status response.",
+  "constraints_preserved": [
+    "Used documented EtherNet/IP command 0x006f for SendRRData in little-endian.",
+    "Used documented 24-byte encapsulation header with length field set to 0x0014 for the 20-byte payload.",
+    "Used documented common SendRRData item combination: Null Address Item followed by Unconnected Data Item.",
+    "CPF item lengths are internally consistent: null item length 0 and unconnected item length 8.",
+    "Embedded CIP request uses service byte 0x09 as an inferred mapping for Remove_Member from plan context; this byte-value association was not verified in supplied sources.",
+    "Embedded CIP path uses 0x20 class and 0x24 instance logical segments as conservative CIP prior; segment encoding details were not explicitly verified in supplied sources.",
+    "Session handle left at zero as a conservative request seed because no supplied source defined a mandatory prior RegisterSession sequence for this corpus entry."
+  ],
+  "issue_safety_notes": "Seed is intended for normal parser coverage only and does not assert any vulnerability behavior.",
+  "sequence_sha256": "8fd114c2f48f2e20053cf67a842dd18723fe7882dc1e893e98751ce878264c8a",
+  "total_bytes": 44,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "72d5ea44a7e0a6fcb4e03c92b45cae1d972b1bb67529b1f3d3507d2bca2fe612",
+    "encoded_bytes": 44,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 44,
+        "frame_length": 44
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "006-pk6-021-b2d895e1",
+      "corpus_file": "006-b2d895e1.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

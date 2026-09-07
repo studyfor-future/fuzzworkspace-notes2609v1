@@ -1,0 +1,80 @@
+{
+  "plan_id": "plan-044",
+  "seed_id": "plan-044-001-rev1",
+  "title": "Connected-data CPF coverage with SendUnitData",
+  "strategy": "function_code_coverage",
+  "target_operation": "SendUnitData",
+  "purpose": "Add a distinct connected-data parser entry point using the documented SendUnitData command and the documented CPF pair of Connected Address Item plus Connected Data Item, improving frame-shape diversity beyond discovery and unconnected explicit messaging.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf",
+    "protocol_format:opener:section-common-heade:540b84623d2f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendUnitData with Connected Address Item and Connected Data Item",
+      "hex": "70001a00010000000000000000000000000000000000000000000000000002000001040044332211b100060001000e022001",
+      "byte_length": 50,
+      "sha256": "16a672d641edc74ff7322d6b3d5132ea27fa0423f5dc14e8ebdafef39b6c96c4"
+    }
+  ],
+  "expected_behavior": "After session registration, the second message should be parsed as SendUnitData with a valid connected-address/connected-data CPF layout. Because no prior ForwardOpen is established in the supplied evidence, ordinary connection-related rejection or other benign protocol error handling is acceptable after successful parsing.",
+  "constraints_preserved": [
+    "SendUnitData command 0x0070 encoded little-endian.",
+    "Encapsulation length 0x0016 matches the 22-byte payload after the 24-byte header.",
+    "Six zero command-specific bytes are present before CPF.",
+    "CPF item count is 2.",
+    "First CPF item is Connected Address Item type 0x0100 with length 4 and a 4-byte connection identifier placeholder.",
+    "Second CPF item is Connected Data Item type 0x00B1 with length 6.",
+    "Inner connected-data bytes are bounded and internally consistent rather than claiming application success.",
+    "Session handle 0x01000000 is a negotiated-handle placeholder to be replaced by the harness when replaying statefully."
+  ],
+  "issue_safety_notes": "Safe connected-data coverage only. No attempt is made to fake a real ForwardOpen-created connection or to reproduce any historical malformed connected-data payload.",
+  "sequence_sha256": "71733b2c4bd4519001ac4a6793ac5df06c7d26321168f10bcd1c5ed33ca6f1a9",
+  "total_bytes": 78,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "51aecc6872e4b185995298554d5b3810b335cdf5b45bdec5ced00187186928fe",
+    "encoded_bytes": 78,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "043-plan-044-001-rev1-e1d2df94",
+      "corpus_file": "043-e1d2df94.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

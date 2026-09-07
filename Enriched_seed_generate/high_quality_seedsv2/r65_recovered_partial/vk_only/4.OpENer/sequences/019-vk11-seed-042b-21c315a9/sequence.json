@@ -1,0 +1,91 @@
+{
+  "plan_id": "",
+  "seed_id": "vk11-seed-042b",
+  "title": "RegisterSession then SendRRData GetAttributeSingle with bounded CPF",
+  "strategy": "stateful_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Exercise the explicit TCP unconnected path through session setup and CPF parsing using a conservative GetAttributeSingle-style request that is mutation-friendly without reproducing known crash payloads.",
+  "evidence_ids": [
+    "issue:567:567-summary:1255c28909d7",
+    "issue:569:569-summary:84e873f1b910",
+    "issue:575:575-summary:e8df4ac3993c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response analogue with session handle 0x11223344",
+      "hex": "65000400443322110000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "9b6fe5649bae1302f5ade0fbe139cca2aaec861c071d4c50ba3e31ee26faabd3"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData with null address and unconnected data item carrying GetAttributeSingle-style CIP",
+      "hex": "6f001a0044332211000000000000000000000000000000000000000000000000020000000000b20008000e03200124013001",
+      "byte_length": 50,
+      "sha256": "269363cb2f7de6b44f185cff3eda4c7e3d068c24a6468cda2276446b9d7e6e79"
+    }
+  ],
+  "expected_behavior": "The server should treat the session as registered, parse the CPF container, and route a small unconnected explicit request rather than failing on framing.",
+  "constraints_preserved": [
+    "24-byte encapsulation headers on all messages",
+    "little-endian payload lengths kept visible-consistent",
+    "stateful sequence with session setup before explicit message",
+    "CPF uses conservative item_count 2 with null address and data item",
+    "target operation diversified from discovery"
+  ],
+  "issue_safety_notes": "Uses a short bounded CPF and CIP payload as an issue-guided analogue for issue 567 rather than an oversized attribute-list response trigger; exact PoC bytes are not reused.",
+  "sequence_sha256": "f63929958c9f46d4a618d0d9b8d008b1f9e71c1b9b77462898e3b8b4111b7bd6",
+  "total_bytes": 106,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ec73f6a888d2ac38ce3958692c81191a98ef5d59065948bcce7f5c82ff3898a9",
+    "encoded_bytes": 106,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 50,
+        "frame_length": 50
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "019-vk11-seed-042b-21c315a9",
+      "corpus_file": "019-21c315a9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

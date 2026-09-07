@@ -1,0 +1,92 @@
+{
+  "plan_id": "vk-plan-053",
+  "seed_id": "vk-053-r1",
+  "title": "Stateful write path with decoder-stressing value fields",
+  "strategy": "stateful_valid",
+  "target_operation": "Write",
+  "purpose": "Exercise a plausible association prerequisite followed by a write carrying compact integer or bit-string-like data fields that can be mutated toward issue-609 style left-shift or signed-decoder edge cases, without copying direct reproducer bytes.",
+  "evidence_ids": [
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "cotp_connection_request",
+      "hex": "0300001611e00000000100c1020100c2020102c0010a",
+      "byte_length": 22,
+      "sha256": "56ec831c21f793ddb087e59cc39c62fefd953deaac65ddff3f8839a04c6e6a59"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "initiate_like_request",
+      "hex": "0300001902f080610fa10d020103a208020101020101be0000",
+      "byte_length": 25,
+      "sha256": "d637fd0858c83ff9182549d1c981f615ac00f5c247d73ad880eb86170a427e98"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "write_request_with_mutable_small_value",
+      "hex": "0300002a02f080a029020105a024a02280044c443031a10a1a085641522431303031a206840400810001",
+      "byte_length": 42,
+      "sha256": "edafaee68fc49ee65427daa0e6ba6710a77416218b9ead3d1bb8a1dea0c412b7"
+    }
+  ],
+  "expected_behavior": "A tolerant target may advance through basic association handling and parse the final write container. Mutations around the final value bytes, lengths, or tags may drive decoder edge behavior for integer, binary-time, or bit-string related code paths.",
+  "constraints_preserved": [
+    "tpkt version starts with 03",
+    "tpkt total lengths are consistent per message",
+    "messages remain recognizable as cotp plus mms-like sequence",
+    "stateful setup precedes write operation",
+    "hex is lowercase and even-length"
+  ],
+  "issue_safety_notes": "Uses a safe analogue for decoder-sensitive value parsing and avoids the exact issue-609 direct BER test buffers or any historical crash packet.",
+  "sequence_sha256": "68be32b161a3be38924329c39b55b24ae20fba4fa379cca2ec5cc12d3eb5f911",
+  "total_bytes": 89,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "609"
+  ],
+  "_selection_score": 86.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "e180eeec8ec4bacfd9fc2519198e87a8015e8047c492e4dd88c148f80ff17841",
+    "encoded_bytes": 89,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 25,
+        "frame_length": 25
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 47,
+        "payload_offset": 47,
+        "payload_length": 42,
+        "frame_length": 42
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "018-vk-053-r1-e94e4ea8",
+      "corpus_file": "018-e94e4ea8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

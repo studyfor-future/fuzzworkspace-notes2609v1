@@ -1,0 +1,76 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-018-setattr",
+  "title": "SetAttributeSingle with short request-data boundary variation",
+  "strategy": "length_boundary_valid",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Cover the settable-attribute decoder path using a small, explicitly present value whose size can be mutated without changing the outer framing.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:572:572-summary:4cac5b77f97f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData SetAttributeSingle TCP/IP interface attribute 13",
+      "hex": "6f002400c00000000000000000000000000000000000000000000000000000000000000010000000000000000b2000c00100320f52401300aabbccdd",
+      "byte_length": 60,
+      "sha256": "7f050e7c2dbde9b13589ae4551d6143be7554867f6d7826cf120576b357d9432"
+    }
+  ],
+  "expected_behavior": "The server should decode the SetAttributeSingle request and either apply the four-byte value or return a deterministic CIP status for the selected attribute, while honoring the declared CPF and encapsulation lengths.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "registered session handle is used for SendRRData",
+    "CPF data item length equals the complete CIP request",
+    "CIP service, path size, class, instance, and attribute fields are present",
+    "request data contains a bounded four-byte value"
+  ],
+  "issue_safety_notes": "The sequence models issue 569 through request-data sensitivity but avoids the historical oversized path and truncated decoder input. Mutations should adjust the value and declared lengths together.",
+  "sequence_sha256": "d67925323e7afbbf8f1b0df6ca36c25c01b8be57ec8d6c4fb28493b804e6dde5",
+  "total_bytes": 88,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "65b174e9d26dc3b5e9af7f677c25e7adc7a020145251a895273fa5b7bd7cde1a",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 60,
+        "frame_length": 60
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "014-vk-seed-018-setattr-cba37082",
+      "corpus_file": "014-cba37082.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "plan_id": "base-plan-055",
+  "seed_id": "opener-base-055-02",
+  "title": "Base SendRRData variant 7",
+  "strategy": "parser_depth",
+  "target_operation": "SendRRData",
+  "purpose": "Use a deeper or nested message form likely to reach additional parser logic.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "send_rr_data_unconnected_explicit",
+      "hex": "6f00190011111111000000000000000000000000000000000000000000000000020000000000b200080e03200624013003",
+      "byte_length": 49,
+      "sha256": "4652418fceb7aa36e10b4e38e113c97a76125eddddd5189bf0157c43bef53bac"
+    }
+  ],
+  "expected_behavior": "A plausible target either parses the CPF structure and dispatches the nested explicit request or rejects it cleanly at the application level while accepting the outer encapsulation framing.",
+  "constraints_preserved": [
+    "Uses EtherNet/IP-style 24-byte encapsulation header.",
+    "Uses little-endian encapsulation length 0018 matching the 24-byte SendRRData payload.",
+    "Includes a conservative interface handle of zero and timeout of zero in the command-specific area.",
+    "Uses two CPF items with lengths consistent with the included item data.",
+    "Maintains single_request shape within the 1-message budget."
+  ],
+  "issue_safety_notes": "No external issue knowledge is available. This deeper parser seed is based only on model-prior protocol structure and is intended as a conservative structural coverage input.",
+  "sequence_sha256": "8cf76ac85744b8e2af89eb1f4907e467e8028e7fae120212730db8b7d5447581",
+  "total_bytes": 49,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 80.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4652418fceb7aa36e10b4e38e113c97a76125eddddd5189bf0157c43bef53bac",
+    "encoded_bytes": 49,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 49,
+        "frame_length": 49
+      }
+    ]
+  }
+}

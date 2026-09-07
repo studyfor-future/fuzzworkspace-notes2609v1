@@ -1,0 +1,55 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-057r1",
+  "title": "ReadRange compact boundary analogue with non-empty range selector",
+  "strategy": "length_boundary_valid",
+  "target_operation": "ReadRange",
+  "purpose": "Probe a compact ReadRange decode path with a visible range-selector tail and boundary-like count values while keeping framing coherent and mutation-friendly.",
+  "evidence_ids": [
+    "issue:cve-2026-62974:cve-2026-62974-summa:f8b3896dc1cb",
+    "issue:cve-2026-62974:cve-2026-62974-summa:0505ea62a0e3"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "readrange-boundary-request",
+      "hex": "810b001d0120ffff00ff0f01c4020001111905c40280000129009f0001",
+      "byte_length": 29,
+      "sha256": "a04fc9ab82a8cbaee965dda4c9dae0a5d3436a44db05ffc154ced0cc796d6d34"
+    }
+  ],
+  "expected_behavior": "Target should either reject the request cleanly or exercise ReadRange boundary parsing without desynchronizing the frame decoder.",
+  "constraints_preserved": [
+    "common BACnet/IP BVLC NPDU APDU layering",
+    "four-byte BVLC total length consistent",
+    "single request shape preserved",
+    "lowercase even-length hexadecimal",
+    "target operation retained as ReadRange"
+  ],
+  "issue_safety_notes": "Uses a safe structural analogue for boundary-sensitive range parsing and does not reproduce any exact historical crash datagram.",
+  "sequence_sha256": "1bc32936020a371cfe4a98815eaa5c5e6b5aa855c8b952d1cd1861fc8a77da1c",
+  "total_bytes": 29,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a04fc9ab82a8cbaee965dda4c9dae0a5d3436a44db05ffc154ced0cc796d6d34",
+    "encoded_bytes": 29,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ]
+  }
+}

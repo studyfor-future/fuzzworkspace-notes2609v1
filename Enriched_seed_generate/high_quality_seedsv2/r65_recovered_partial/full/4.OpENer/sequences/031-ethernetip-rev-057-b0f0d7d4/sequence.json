@@ -1,0 +1,79 @@
+{
+  "plan_id": "plan-057",
+  "seed_id": "ethernetip-rev-057",
+  "title": "RegisterSession plus bounded SendRRData ForwardOpen analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "ForwardOpen",
+  "purpose": "Safely exercise the same high-level path named in the issue summary: RegisterSession followed by SendRRData with Null Address Item and Unconnected Data Item carrying a Connection Manager ForwardOpen-family request, while keeping all nested lengths consistent and avoiding underlength data.",
+  "evidence_ids": [
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:314:314-summary:3abfe4f839d0",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession-request",
+      "hex": "65000400000000000000000001020304050607080000000001000000",
+      "byte_length": 28,
+      "sha256": "c7038d9e0ff5beb478c979bfccb5ef38425330f0cb7e30b540b2032b723b8d5e"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata-forwardopen-analogue",
+      "hex": "6f001c00ffffffff0000000010203040506070800000000000000000020000000000b2001000540220062401aabbccddeeff1122",
+      "byte_length": 52,
+      "sha256": "d45c7cc77f7313df659528d1faae772467b7cfcbd58b9c313dc086b91f1a2211"
+    }
+  ],
+  "expected_behavior": "After a successful RegisterSession response, the harness should substitute the negotiated session handle into the second message. The target should parse the SendRRData header, the two CPF items, and the bounded UCMM payload as a Connection Manager request. Ordinary CIP-level rejection, unsupported-service handling, or object/path errors are acceptable; parser overread or framing failure is not expected from the seed itself.",
+  "constraints_preserved": [
+    "The issue summary explicitly identifies the reproduction family as RegisterSession followed by SendRRData using Null and UCMM CPF items; that structure is preserved.",
+    "SendRRData command 0x006F is encoded little-endian with payload Length 0x001e, matching 30 CPF bytes.",
+    "CPF item count is 2, followed by Null Address Item type 0x0000 length 0 and Unconnected Data Item type 0x00B2 length 16.",
+    "The UCMM payload is intentionally nontruncated and exactly 16 bytes long.",
+    "CIP details beyond the service family are conservative inferred assumptions: service 0x54 is used as ForwardOpen per the issue text; path bytes 20 06 24 01 are a common Connection Manager class/instance form; trailing request data bytes are bounded filler for mutation-friendly coverage.",
+    "The placeholder session handle ffffffff in message 1 is intended for runtime substitution from the RegisterSession reply."
+  ],
+  "issue_safety_notes": "This is a structural analogue, not a reproduction. It preserves the documented parser path but removes the dangerous historical condition by supplying a bounded non-underlength UCMM payload and by not copying any reported PoC bytes or exact malformed field pattern.",
+  "sequence_sha256": "8787c9c7edade6f69d61cc391d09099ab9992c30c4a219572f29b63c45d9500a",
+  "total_bytes": 80,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "354b407c6c0d9cecd828b1eeabd08217deb0deb70c56d27b610c80553c8e9972",
+    "encoded_bytes": 80,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 52,
+        "frame_length": 52
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-ethernetip-rev-057-b0f0d7d4",
+      "corpus_file": "031-b0f0d7d4.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

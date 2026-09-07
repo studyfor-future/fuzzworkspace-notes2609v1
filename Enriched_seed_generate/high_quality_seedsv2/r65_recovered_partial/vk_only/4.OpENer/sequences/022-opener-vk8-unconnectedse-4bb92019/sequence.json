@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-030",
+  "seed_id": "opener-vk8-unconnectedsend-02",
+  "title": "Nested UnconnectedSend with embedded attribute request",
+  "strategy": "field_interaction",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Exercise UCMM nesting, Connection Manager routing, and an embedded Message Router request with independently mutable outer and inner lengths.",
+  "evidence_ids": [
+    "issue:567:567-summary:1255c28909d7",
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:570:570-summary:0b4cbe808107"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession version 1",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData carrying nested UnconnectedSend",
+      "hex": "6f001f0001000000000000000000000000000000000000000000000000000000000200000000b20e005202200624010e02200124010000",
+      "byte_length": 55,
+      "sha256": "891a80a61731689791afadbbb165ddb69c5a5754bd5cf265415d2fd7bb9c3314"
+    }
+  ],
+  "expected_behavior": "The server should decode the two CPF items and nested UnconnectedSend structure, then return a normal response or a clean explicit error for the embedded request.",
+  "constraints_preserved": [
+    "The sequence preserves RegisterSession state.",
+    "The SendRRData frame has a 24-byte encapsulation header and a two-item CPF.",
+    "The UCMM data item length equals the 14-byte nested request.",
+    "The nested request uses recognizable service and path segments.",
+    "All hexadecimal strings are even-length lowercase raw bytes."
+  ],
+  "issue_safety_notes": "The sequence targets nested parser reachability and length-field interaction rather than a crash condition. It does not copy the issue 567 stream or reproduce its oversized-count trigger.",
+  "sequence_sha256": "8b8c15454f5cb7956d82c0c891f45d124ead8e8a7d742232ef0a50a3cb8486e7",
+  "total_bytes": 83,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2022-43606"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "2826854e22d171bf3cc24d8100da021d7dd52e42f693a0a015c9244817e72c7d",
+    "encoded_bytes": 83,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 55,
+        "frame_length": 55
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "022-opener-vk8-unconnectedse-4bb92019",
+      "corpus_file": "022-4bb92019.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

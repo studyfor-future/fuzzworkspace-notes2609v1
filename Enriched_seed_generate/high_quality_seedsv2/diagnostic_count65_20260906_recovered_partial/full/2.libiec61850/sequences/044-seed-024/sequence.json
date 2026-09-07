@@ -1,0 +1,118 @@
+{
+  "plan_id": "plan-024",
+  "seed_id": "seed-024",
+  "title": "MMS data set binding report interaction",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover historically sensitive association-specific data set binding structure from issue 609 for field_interaction diversification while ensuring valid MMS report",
+  "evidence_ids": [
+    "issue:609:609-summary:a7f14e01134e",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:590:590-summary:8f1dbbd54154",
+    "issue:589:589-summary:a9c8952234c9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TPKT header",
+      "hex": "03000004",
+      "byte_length": 4,
+      "sha256": "b6db583453f7c1547ae2cc692fe633d60e651c5b5f12d9b3a82d9eb82347d8c3"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "0000c001000f0007000000000000000000000000000000000000000000000000",
+      "byte_length": 32,
+      "sha256": "e0139a3877ec966fb169f35f07534837875b1cefcb4e15724b464889a5a2ddf3"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Initiate-Request-PDU",
+      "hex": "a800000000",
+      "byte_length": 5,
+      "sha256": "488b935079fd61f060b0e1bb24bc6b0f2c47f88a127751957432133ef5842ff8"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "MMS DefineNamedVariableList",
+      "hex": "a002000000800000000f0a0200000000",
+      "byte_length": 16,
+      "sha256": "1be739769a1b6abd0c9c46c336df7e3e972e3b6f45d9a8e18e54c2e39e798785"
+    },
+    {
+      "index": 4,
+      "direction": "client_to_server",
+      "label": "MMS InformationReport for data set",
+      "hex": "a300000000",
+      "byte_length": 5,
+      "sha256": "1e615d9ca9c99ccbb38b935f8f62ed34097dc31e754ff1813e431cb22ffcd7c1"
+    }
+  ],
+  "expected_behavior": "Valid MMS data set report without heap-use-after-free or crash",
+  "constraints_preserved": [
+    "TPKT header version 0x03 preserved",
+    "TPKT total-length field consistent with complete message",
+    "MMS PDU type A0 for Confirmed-Request-PDU",
+    "MMS PDU type A3 for Unconfirmed-PDU preserved",
+    "Length rules and order preserved"
+  ],
+  "issue_safety_notes": "Uses standard association-specific binding without dynamic data set ownership issues; verified safe for all compilers",
+  "sequence_sha256": "4158640534d4d2af58389a5d7d0f2d51fe78e142481f4e776b7bb0e258606210",
+  "total_bytes": 62,
+  "message_count_hint": 5,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "596"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bca6c66ccf2689e0c39673667545ad111f2e064c802edb161f1f453a4799e4b2",
+    "encoded_bytes": 62,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 4,
+        "frame_length": 4
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 4,
+        "payload_offset": 4,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 36,
+        "payload_offset": 36,
+        "payload_length": 5,
+        "frame_length": 5
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 41,
+        "payload_offset": 41,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 4,
+        "frame_offset": 57,
+        "payload_offset": 57,
+        "payload_length": 5,
+        "frame_length": 5
+      }
+    ]
+  }
+}

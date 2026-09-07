@@ -1,0 +1,81 @@
+{
+  "plan_id": "plan-021",
+  "seed_id": "full-576-plan021-001-rev",
+  "title": "Bounded GetAttributeList analogue on SendRRData with optional CPF items",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendRRData",
+  "purpose": "Exercise the documented RegisterSession to SendRRData unconnected explicit-message path and CPF item assembly around a safe, bounded GetAttributeList-shaped request with optional sockaddr items, while avoiding the historical repeated-attribute high-count payload.",
+  "evidence_ids": [
+    "issue:576:576-summary:bc3710455616",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData bounded GetAttributeList analogue with optional sockaddr CPF items",
+      "hex": "6f001f00010000000000000000000000000000000000000000000000040000000000b20c00030420012401300201008000000080010000",
+      "byte_length": 55,
+      "sha256": "49b52925e1f584daa7e0773de5bef9ac026fb29514c4daa6a61e797f0f1ab44e"
+    }
+  ],
+  "expected_behavior": "Server should parse a complete RegisterSession and then process SendRRData through CPF decoding. Depending on implementation support and object model, it may return success, a normal CIP error, or an encapsulation-level error, but it should not corrupt outer metadata or crash.",
+  "constraints_preserved": [
+    "Encapsulation header uses documented 24-byte form",
+    "RegisterSession command 0x0065 with 4-byte payload",
+    "SendRRData command 0x006F with little-endian payload length",
+    "CPF includes Null Address Item 0x0000 and Unconnected Data Item 0x00B2",
+    "Optional CPF items use issue-described sockaddr item positions as bounded zero-length structural analogues",
+    "CIP body is bounded and avoids the historical repeated attribute-1 count=80 pattern",
+    "Session handle field is a placeholder for negotiated runtime substitution"
+  ],
+  "issue_safety_notes": "This is a structural analogue only: it keeps the affected SendRRData and CPF assembly context but reduces the attribute request to a single bounded entry and replaces optional sockaddr bodies with zero-length placeholders, avoiding the exact crash-inducing payload described in the issue.",
+  "sequence_sha256": "36480021502977891d6884a8dc4b567f985be6489036b7eb27bd610cbabdb085",
+  "total_bytes": 83,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "572"
+  ],
+  "_selection_score": 122.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "beaeb7e0125ac774d7c8f9dd98a2ec0d781ef8b89826a0ff2fa40d7e4e1669bb",
+    "encoded_bytes": 83,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 55,
+        "frame_length": 55
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "000-full-576-plan021-001-rev-e239f488",
+      "corpus_file": "000-e239f488.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

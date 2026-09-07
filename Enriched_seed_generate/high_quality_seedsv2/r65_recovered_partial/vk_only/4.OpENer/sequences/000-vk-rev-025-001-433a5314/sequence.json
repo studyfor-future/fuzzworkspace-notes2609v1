@@ -1,0 +1,94 @@
+{
+  "plan_id": "vk-plan-025",
+  "seed_id": "vk-rev-025-001",
+  "title": "Stateful SendRRData with conservative CPF analogue and SetAttributeSingle tail",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "SendRRData",
+  "purpose": "Exercise the unconnected explicit-message parser after session setup using a conservative CPF structure with mutation-friendly item_count and request-body fields related to historical CPF and decode issues.",
+  "evidence_ids": [
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121",
+    "issue:569:569-summary:84e873f1b910",
+    "issue:567:567-summary:1255c28909d7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response",
+      "hex": "65000400112233440000000000000000414243444546474801000000",
+      "byte_length": 28,
+      "sha256": "50708f8ee3ef18a55bc35a799aab2a371e4c4281da2953ecc96b8d979e1c60c8"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendRRData with null-address and unconnected-data items carrying SetAttributeSingle analogue",
+      "hex": "6f001d00112233440000000000000000494a4b4c4d4e4f5000000000000000000200000000000000b200080010032001240130aa55",
+      "byte_length": 53,
+      "sha256": "c56027df298a59c9db469c3bfb77fd2d180275c8ee6d2c11db1038a1daf08b8e"
+    }
+  ],
+  "expected_behavior": "A conservative stateful request should reach CPF and explicit-message handling paths. Robust implementations should either process or reject it cleanly without overrunning CPF arrays or reading beyond short request data.",
+  "constraints_preserved": [
+    "24-byte encapsulation header used for each message",
+    "Little-endian visible payload lengths",
+    "Stateful sequence includes session registration before SendRRData",
+    "Distinct session handle and sender context values",
+    "Lowercase even-length hexadecimal only",
+    "No exact historical crash payload copied"
+  ],
+  "issue_safety_notes": "Uses only a safe structural analogue of CPF and short request-data interaction. Item counts and lengths remain bounded and internally visible-consistent; no oversized crash-derived bytes are reproduced.",
+  "sequence_sha256": "c43c1ee220d1d820327cee9af0d8d46d90dddc6f57100faa6a26b74bf4e5f37d",
+  "total_bytes": 109,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2020-13530"
+  ],
+  "_selection_score": 119.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "557dc0ab64ddad42a8525eb55b594a54cc564501d390ec27f26db5aac255e81f",
+    "encoded_bytes": 109,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "000-vk-rev-025-001-433a5314",
+      "corpus_file": "000-433a5314.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

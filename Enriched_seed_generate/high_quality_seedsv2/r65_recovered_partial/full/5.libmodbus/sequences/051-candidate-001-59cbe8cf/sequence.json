@@ -1,0 +1,92 @@
+{
+  "plan_id": "plan-005",
+  "seed_id": "candidate-001",
+  "title": "Issue-guided analogue for Read Holding Registers",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Holding Registers",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:279:279-summary:f8623682ccd7",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:612:612-summary:7b008d4bca1d",
+    "issue:614:614-summary:e89105d3aaf7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "First Write Holding Registers",
+      "hex": "0000000000081106000100000001",
+      "byte_length": 14,
+      "sha256": "087cedb63b01ea79569015d77840315a4d128ca367eb55ebf237ff575d6f86f5"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Write Response",
+      "hex": "00000000000411060101",
+      "byte_length": 10,
+      "sha256": "bbba8d5f333df4f9e9991abbf2bc40f32a1bbafe1082b059267b99f5b9257ff5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Second Write Holding Registers",
+      "hex": "0000000000081106000200000001",
+      "byte_length": 14,
+      "sha256": "91da4b62c8b9066a332872d97a9112209810979178f2d7ab641f64bd4b101c54"
+    }
+  ],
+  "expected_behavior": "First request succeeds with complete confirmation response; second request returns connection timeout on select without crash or data loss.",
+  "constraints_preserved": [
+    "Prefer Modbus/TCP ADUs with a 7-byte MBAP header.",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent.",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions."
+  ],
+  "issue_safety_notes": "Structural analogue only from repeated modbus_write_registers loopback test; no crash trigger preserved, full framing and length rules followed, no exact historical payloads used.",
+  "sequence_sha256": "84d2a307e98465a8400df8f43214d27c11b0833c772ae6b77d24fb120900e41e",
+  "total_bytes": 38,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "279"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f22d21c41b906c323010fa5d32337f1c1cbdeb175d83b3acdf55b8bcfeac494e",
+    "encoded_bytes": 38,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 14,
+        "payload_offset": 14,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "051-candidate-001-59cbe8cf",
+      "corpus_file": "051-59cbe8cf.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

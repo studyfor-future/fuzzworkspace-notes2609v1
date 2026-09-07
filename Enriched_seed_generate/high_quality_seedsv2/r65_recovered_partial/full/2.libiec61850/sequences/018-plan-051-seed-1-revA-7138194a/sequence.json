@@ -1,0 +1,60 @@
+{
+  "plan_id": "plan-051",
+  "seed_id": "plan-051-seed-1-revA",
+  "title": "Unconfirmed reporting path with InformationReport-style PDU",
+  "strategy": "function_code_coverage",
+  "target_operation": "InformationReport",
+  "purpose": "Add unconfirmed/reporting-path diversity absent from the four candidate plans by using the documented MMS Unconfirmed-PDU tag, improving parser coverage beyond repeated confirmed-service requests.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "Unconfirmed-PDU for reporting path",
+      "hex": "0300000c02f080a303010000",
+      "byte_length": 12,
+      "sha256": "19cf32ecbcb5b2108f5bb5ae3058386377b465c7e3b17df7d879c433ed23401a"
+    }
+  ],
+  "expected_behavior": "A parser with MMS unconfirmed-service support should recognize the 0xA3 Unconfirmed-PDU path and continue into reporting-style message handling rather than confirmed-service dispatch.",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths.",
+    "Use a distinct MMS PDU type tag from confirmed-request coverage."
+  ],
+  "issue_safety_notes": "This is a safe reporting-path seed using a short, well-formed unconfirmed MMS wrapper. It does not reuse any historical crash payload and introduces no malformed octet-string or invalid shift-exponent condition.",
+  "sequence_sha256": "3e210cb929b175cee6d097c580a4c4c8776a750ae1f752bed15d187c9cc40e24",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "19cf32ecbcb5b2108f5bb5ae3058386377b465c7e3b17df7d879c433ed23401a",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "018-plan-051-seed-1-revA-7138194a",
+      "corpus_file": "018-7138194a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

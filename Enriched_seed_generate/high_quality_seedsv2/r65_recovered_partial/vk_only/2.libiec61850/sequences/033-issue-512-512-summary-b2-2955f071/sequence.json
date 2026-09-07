@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-012",
+  "seed_id": "issue-512-512-summary-b25e9a524acd",
+  "title": "VK-only Read: libIEC61850 parseAarqPdu out-of-bounds read",
+  "strategy": "parser_depth",
+  "target_operation": "Read",
+  "purpose": "Create a distinct mutation-friendly issue analogue using conservative model-prior framing.",
+  "evidence_ids": [
+    "issue:512:512-summary:b25e9a524acd",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23",
+    "issue:509:509-summary:228be3676e7d",
+    "issue:196:196-summary:55a2cfa7c1b1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "ACSE AARQ with malformed tag parsing",
+      "hex": "60023002303030300230303030003000003002303030003002303030a700",
+      "byte_length": 30,
+      "sha256": "864cad88c511951e652369498c5a4015170a6c7dde64f111efd80aacd6bed27d"
+    }
+  ],
+  "expected_behavior": "Out-of-bounds read after BerDecoder_decodeLength advances bufPos past end",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length field consistent",
+    "ACSE AARQ PDU with tags 0xa7 00",
+    "no external protocol documents",
+    "model internal prior enforced"
+  ],
+  "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Association setup preserved. OOB read expected.",
+  "sequence_sha256": "b881b0f898796a975e04b4d78cc883ab63942e465182de93dfae29fe0967f8ef",
+  "total_bytes": 30,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "512"
+  ],
+  "_selection_score": 77.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "864cad88c511951e652369498c5a4015170a6c7dde64f111efd80aacd6bed27d",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "033-issue-512-512-summary-b2-2955f071",
+      "corpus_file": "033-2955f071.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

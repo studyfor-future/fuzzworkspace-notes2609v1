@@ -1,0 +1,57 @@
+{
+  "plan_id": "vk-plan-053",
+  "seed_id": "vk_seed_53_001",
+  "title": "VK-only Clock Synchronization: On the latest source code from /mz-automation/lib60870/, the lib608...",
+  "strategy": "stateful_valid",
+  "target_operation": "Clock Synchronization",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:53:53-summary:9148432dbf39",
+    "issue:175:175-summary:1d1910f22105",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "clock_sync_req",
+      "hex": "68320f00000000000000000000008300fa000000008300fa00e2680a00000000670006fa00e2eb008000000000010083000483f0",
+      "byte_length": 52,
+      "sha256": "55e1ec3c1378033b7640f643f38caafb2716babadbfc07b35c4e49308a32f544"
+    }
+  ],
+  "expected_behavior": "Model-prior server processes clockSyncHandler leading to CP56Time2a_getHour read at 0x13 address (ASAN SEGV per issue:53)",
+  "constraints_preserved": [
+    "0x68 length octet consistent with 26-byte frame",
+    "FT1.1 APCI header preserved",
+    "TypeID 106 with sequence-bit set, VSQ=1, COT=0",
+    "Sequence-form IOA structure respected",
+    "Single-request shape with internal state transition"
+  ],
+  "issue_safety_notes": "Sequence form with claimed elements 2 but only 1 provided (issue:200 analogue); no payload copied from any reported PoC",
+  "sequence_sha256": "77c8a2ae4abbe1c1cd5623e50a0503b8e95933f876dbf57e4d5032c23572a50a",
+  "total_bytes": 52,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "54"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "55e1ec3c1378033b7640f643f38caafb2716babadbfc07b35c4e49308a32f544",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 52,
+        "frame_length": 52
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-019",
+  "seed_id": "seed-003-2",
+  "title": "Issue-guided analogue for ReadProperty",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "ReadProperty",
+  "purpose": "Recover historically sensitive structure for rpm_decode_object_id() / apdu_len < 5 check (CVE-2026-41502/CVE-2026-41475/CVE-2026-47257) while using safer valid analogue",
+  "evidence_ids": [
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BVLC + NPDU + ReadProperty with valid property id",
+      "hex": "8101000d00000000000a01100c",
+      "byte_length": 13,
+      "sha256": "fc0ae6ac549c912c855ecf34af05ad11f88780380c1898bdf3e458bbf0b59129"
+    }
+  ],
+  "expected_behavior": "BVLC length 1 + NPDU function 0x0A + ReadProperty service 0x0C; decodes with proper length check and no out-of-bounds",
+  "constraints_preserved": [
+    "Complete documented framing preserved (BVLC total length 4 bytes)",
+    "Order and checksum rules followed",
+    "Primary sources not contradicted"
+  ],
+  "issue_safety_notes": "Replaces original sensitive structure with valid BVLC/NPDU/APDU analogue; no version-specific risk, avoids copy of historical crash payloads",
+  "sequence_sha256": "4ad18047c6dd9075e3c557a31141bd891eceadf87faf29c10fd281a38addc996",
+  "total_bytes": 13,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-41502"
+  ],
+  "_selection_score": 103.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fc0ae6ac549c912c855ecf34af05ad11f88780380c1898bdf3e458bbf0b59129",
+    "encoded_bytes": 13,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 13,
+        "frame_length": 13
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "040-seed-003-2-74cfce08",
+      "corpus_file": "040-74cfce08.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

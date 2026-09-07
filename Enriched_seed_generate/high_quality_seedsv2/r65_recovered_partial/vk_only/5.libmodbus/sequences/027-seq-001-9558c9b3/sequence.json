@@ -1,0 +1,92 @@
+{
+  "plan_id": "vk-plan-017",
+  "seed_id": "seq-001",
+  "title": "VK-only Write Single Coil: In src/modbus.c, modbus_reply() unconditionally reads req[offset+1]...",
+  "strategy": "stateful_valid",
+  "target_operation": "Write Single Coil",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:466:466-summary:691a17c4c14a",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:743:743-summary:1fc7e97d059a",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:683:683-summary:fbe9b8a5a160"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Write Single Coil Request",
+      "hex": "000000000006ff0f00000001",
+      "byte_length": 12,
+      "sha256": "34c1e7c69dadaf66fab34ce26946ed2e2d71f9da748a533a7fd515fe861ce43f"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "Write Single Coil Response",
+      "hex": "000000000002ff0f",
+      "byte_length": 8,
+      "sha256": "dd5bd3f43901c6776753d9c879ef35860cf5c4af7c1744b83ee13faa4765585d"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "Second Write Single Coil Request",
+      "hex": "000000000006ff0f00000001",
+      "byte_length": 12,
+      "sha256": "34c1e7c69dadaf66fab34ce26946ed2e2d71f9da748a533a7fd515fe861ce43f"
+    }
+  ],
+  "expected_behavior": "Server replies with exception or success based on mapping; first message completes normally while second times out consistent with 279 loopback behavior.",
+  "constraints_preserved": [
+    "Prefer Modbus/TCP ADUs with 7-byte MBAP header",
+    "Use protocol identifier 0x0000 and keep MBAP length consistent",
+    "Diversify unit identifiers, read/write/diagnostic and file-record functions"
+  ],
+  "issue_safety_notes": "Preserves issue-supported trigger relations (unconditional reads in modbus_reply and stateful writes) without copying exact crash bytes from any evidence_id; model-prior framing ensures consistent lengths/counts with basic repair runs possible.",
+  "sequence_sha256": "c5df9f1ac54bf4b140783e1a778024fe6d35e372ddcf3672ff2ec807da206944",
+  "total_bytes": 32,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "837"
+  ],
+  "_selection_score": 99.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ab5d48ae58b409901e52a942ea8b3fd1b11a56357bcb609988a99e4e11f1727b",
+    "encoded_bytes": 32,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 8,
+        "frame_length": 8
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 20,
+        "payload_offset": 20,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "027-seq-001-9558c9b3",
+      "corpus_file": "027-9558c9b3.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

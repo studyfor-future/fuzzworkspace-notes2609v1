@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-007",
+  "seed_id": "modbustcp-write-multiple-coils-003",
+  "title": "VK-only Write Multiple Coils with alternate unit and packed boundary-adjacent data",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Write Multiple Coils",
+  "purpose": "Exercise coil-count, byte-count, packed-bit data, and unit-identifier interactions in a valid multi-coil request related structurally to the reported read-IO-status unit mutation evidence.",
+  "evidence_ids": [
+    "issue:683:683-summary:fbe9b8a5a160",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:743:743-summary:1fc7e97d059a"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write nine packed coils from alternate unit identifier",
+      "hex": "0003000000097c0f000a0009025501",
+      "byte_length": 15,
+      "sha256": "b13f19cecfa8386e56f92b8ea25ab0860ba01c1c9c60018ededfc463731c55fa"
+    }
+  ],
+  "expected_behavior": "A conforming server should parse nine coil values from two data bytes and return the normal Write Multiple Coils acknowledgment or an address/value exception response.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is 7 bytes.",
+    "Protocol identifier is 0000.",
+    "MBAP length 0008 equals unit identifier plus the seven-byte request PDU.",
+    "Quantity 0009 requires byte count 02, and two packed data bytes are present.",
+    "Unit identifier 7c varies the response-routing field without changing PDU layout."
+  ],
+  "issue_safety_notes": "The unit-identifier variation is an issue-supported structural relation, not a reproduction claim. Historical crash bytes are not copied; the request remains internally length-consistent and valid.",
+  "sequence_sha256": "dfdab08e904b16f0ca19a1b54e6313e045e7085d2ae1f9d1beba7c580e40bfcc",
+  "total_bytes": 15,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "683"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b13f19cecfa8386e56f92b8ea25ab0860ba01c1c9c60018ededfc463731c55fa",
+    "encoded_bytes": 15,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "006-modbustcp-write-multiple-75e0eba4",
+      "corpus_file": "006-75e0eba4.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "plan_id": "vk-plan-027",
+  "seed_id": "596",
+  "title": "VK-only GetNameList: libiec61850 v1.6.1 has a server-side memory corruption issue in the...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency.",
+  "evidence_ids": [
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:596:596-summary:baa99ae7e6b9",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:598:598-summary:43fd2ace5ec4",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP CR",
+      "hex": "0300001711e0000000000100c1020000c2020001c001a2",
+      "byte_length": 23,
+      "sha256": "96d4ccc3c64ecaecb90cdae012d35198843dd931efccde95ee1113b105573071"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ACSE AARQ",
+      "hex": "03000024030000240103000102e0000001020100000102030405060708090a0b0c0d0e0f",
+      "byte_length": 36,
+      "sha256": "3f762de3df2829621696a1896a63b71185b864a24b1d36ca931763cf5b846a0c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS GetNameList",
+      "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+      "byte_length": 29,
+      "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+    }
+  ],
+  "expected_behavior": "Memory corruption on report send path.",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length",
+    "MMS GetNameList"
+  ],
+  "issue_safety_notes": "Length boundary in GetNameList per CVE-2026-18582; multi-step.",
+  "sequence_sha256": "8382e46bb3a0b0fdc3a0c6e4b43e29f14788dd48f388f895b11335ab218aaf75",
+  "total_bytes": 88,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-18582"
+  ],
+  "_selection_score": 83.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8e259a800e4fdd10b270f103f3beeb05cc56d61b00eeacae763ee8b5af3b1de6",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 23,
+        "payload_offset": 23,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 59,
+        "payload_offset": 59,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "023-596-be6b5b71",
+      "corpus_file": "023-be6b5b71.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

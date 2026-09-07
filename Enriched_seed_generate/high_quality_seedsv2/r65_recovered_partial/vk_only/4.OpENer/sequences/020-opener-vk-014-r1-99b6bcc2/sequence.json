@@ -1,0 +1,89 @@
+{
+  "plan_id": "",
+  "seed_id": "opener-vk-014-r1",
+  "title": "Bounded GetAttributeSingle explicit request",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Exercise the complete RegisterSession to SendRRData to GetAttributeSingle chain with a compact three-segment EPATH, providing a valid stateful baseline for mutation around attribute and path parsing.",
+  "evidence_ids": [
+    "issue:569:569-summary:84e873f1b910",
+    "issue:573:573-summary:f08f497b1daa",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request_variant",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "register_session_response_placeholder",
+      "hex": "65000400222222220000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "00db15c54b57885b46e340754c0376a4e96cbcd51fef6b210f880489967145fb"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "sendrrdata_get_attribute_single",
+      "hex": "6f001800222222220000000000000000000000000000000000000000000000020000000000b200080e03200624013003",
+      "byte_length": 48,
+      "sha256": "d78d7080fd64a0d16af22ec28b248b582e15f6e798e801546f0b0065498dcf26"
+    }
+  ],
+  "expected_behavior": "After session registration, the target should parse the null-address and unconnected-data CPF items, decode the bounded GetAttributeSingle path, and return either an attribute response or a clean unsupported/invalid-request error.",
+  "constraints_preserved": [
+    "Complete 24-byte encapsulation headers are retained",
+    "Little-endian payload length is internally consistent",
+    "Session response and subsequent request use the same session handle",
+    "The CPF contains exactly two correctly sized items",
+    "The EPATH declares three words and visibly contains six path bytes"
+  ],
+  "issue_safety_notes": "This baseline intentionally supplies no undersized attribute value and uses a short path. It is an issue-related parser analogue without the reported large path-size value or truncated decoder input.",
+  "sequence_sha256": "6974b79538216313e5329cf6e0d9ed187a24faec7f12fa5b934884f8a5b85df9",
+  "total_bytes": 104,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f54c4b1b91167251f0ae51119113ad202274e81320b0b9cb7d88c004dc3e0f2b",
+    "encoded_bytes": 104,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 48,
+        "frame_length": 48
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "020-opener-vk-014-r1-99b6bcc2",
+      "corpus_file": "020-99b6bcc2.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

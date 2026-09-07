@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-012",
+  "seed_id": "vk-plan-012-seed-sa-04",
+  "title": "Connected SetAttributeSingle CPF variant",
+  "strategy": "field_interaction",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Exercise connected CPF parsing and attribute-write field interactions with distinct connection and sequence values, enabling safe mutations across connected-data boundaries.",
+  "evidence_ids": [
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:574:574-summary:ec096521bf63"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendUnitData-SetAttributeSingle",
+      "hex": "700031000200000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000a100040078563412b1000a003412100220042401aabb",
+      "byte_length": 73,
+      "sha256": "1f4c9511cb5e4e09b5ee699c6befa5539ae935ffb33ac7fb85886d75d538e80d"
+    }
+  ],
+  "expected_behavior": "The server should parse the connected-address and connected-data CPF items, then return a normal response or deterministic service error after validating the SetAttributeSingle path and request data.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "registered session precedes connected explicit messaging",
+    "connected CPF address and data item lengths match visible bytes",
+    "connected sequence count and attribute data remain within the declared item"
+  ],
+  "issue_safety_notes": "This is a bounded connected-message analogue for state and field-interaction coverage. It avoids the issue reports' long path, empty request-body, and out-of-bounds trigger conditions, and does not copy historical payloads.",
+  "sequence_sha256": "3f1fd171f335d6e0a71b497bbac5db7fd77053790322498a0822ea8fcbae5e73",
+  "total_bytes": 101,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "567"
+  ],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3d7db3edfa4f784da8e466958d2c7c15ab5742fe0c094eef756e6fd166b28542",
+    "encoded_bytes": 101,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 73,
+        "frame_length": 73
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "028-vk-plan-012-seed-sa-04-5d4e4cce",
+      "corpus_file": "028-5d4e4cce.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

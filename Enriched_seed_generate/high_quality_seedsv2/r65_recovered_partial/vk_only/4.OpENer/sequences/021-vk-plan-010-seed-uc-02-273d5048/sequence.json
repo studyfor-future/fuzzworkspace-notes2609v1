@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-010",
+  "seed_id": "vk-plan-010-seed-uc-02",
+  "title": "Nested UnconnectedSend explicit-message variant",
+  "strategy": "parser_depth",
+  "target_operation": "UnconnectedSend",
+  "purpose": "Reach a deeper UCMM parser path with a distinct nested service layout and controlled embedded-message fields for parser-depth and field-interaction mutations.",
+  "evidence_ids": [
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:574:574-summary:ec096521bf63"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData-UnconnectedSend-nested",
+      "hex": "6f002b0003000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000001000520220062401000100000e022001",
+      "byte_length": 67,
+      "sha256": "a1b66c7a798f0ded6eefbd0a703f3619a846f624f59718309e890da56464000a"
+    }
+  ],
+  "expected_behavior": "The server should accept or reject the nested UnconnectedSend according to ordinary service and path validation, while keeping CPF and embedded-message parsing within the supplied frame boundaries.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "registered session state",
+    "two CPF items with explicit null and unconnected-data types",
+    "nested CIP bytes have an explicit visible item length"
+  ],
+  "issue_safety_notes": "The sequence uses issue-related nested parser structure only as a safe analogue. It avoids oversized padded paths, zero-body handler triggers, and exact issue-reproduction bytes.",
+  "sequence_sha256": "0472c405366d188627c73909309901d00a69893fe8b29378a73c690c64ee6b87",
+  "total_bytes": 95,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "565"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "335a034a5b620aa5440a8fa07d3713810037a3ae1e71543fab96284efef38811",
+    "encoded_bytes": 95,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 67,
+        "frame_length": 67
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "021-vk-plan-010-seed-uc-02-273d5048",
+      "corpus_file": "021-273d5048.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

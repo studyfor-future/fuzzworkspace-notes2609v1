@@ -1,0 +1,54 @@
+{
+  "plan_id": "plan-050",
+  "seed_id": "iec60870-full-050-cbo-na1",
+  "title": "Untimed bitstring command request",
+  "strategy": "function_code_coverage",
+  "target_operation": "C_BO_NA_1",
+  "purpose": "Exercise the shorter bitstring command path with a distinct type identifier and reduced ASDU length.",
+  "evidence_ids": [
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:function-text:3cbe16bf065a",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "I-format C_BO_NA_1 activation request",
+      "hex": "68110000000033010600010001000000000000",
+      "byte_length": 19,
+      "sha256": "098762a5d3b6c3646bcaccb907688f1c80366da4058466caf1bebdb3cf464f77"
+    }
+  ],
+  "expected_behavior": "The receiver should parse a valid untagged bitstring command activation and process or acknowledge it according to configured IEC60870 control behavior without process termination.",
+  "constraints_preserved": [
+    "0x68 APCI start byte is used.",
+    "The APCI length 0x11 represents four APCI control bytes plus a 13-byte ASDU.",
+    "The ASDU type identifier 51 denotes C_BO_NA_1 according to supplied function-code documentation.",
+    "The ASDU uses VSQ 1, COT 6, common address 1, one three-byte information object address, and a four-byte bitstring command value.",
+    "APCI I-format control-field ordering and sequence-number semantics are inferred from widely recognized IEC 60870-5-104 framing and are not independently verified by the supplied excerpts."
+  ],
+  "issue_safety_notes": "This seed uses issue 13 only as structural parser-risk guidance. It is not the historical crash payload and differs in ASDU type, APDU length, and field composition.",
+  "sequence_sha256": "5db1063562df3d38cbf5e344831f1bc9af39c86b55de91ec7bcf31a27b0bf1ba",
+  "total_bytes": 19,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 110.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "098762a5d3b6c3646bcaccb907688f1c80366da4058466caf1bebdb3cf464f77",
+    "encoded_bytes": 19,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ]
+  }
+}

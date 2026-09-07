@@ -1,0 +1,77 @@
+{
+  "plan_id": "plan-052",
+  "seed_id": "plan-052-seed-1-revA",
+  "title": "Attribute access followed by domain content service",
+  "strategy": "field_interaction",
+  "target_operation": "GetVariableAccessAttributes and StoreDomainContent",
+  "purpose": "Increase semantic diversity by combining an attribute/read-style request with a domain-management confirmed service, giving the corpus two different confirmed service tags and parser branches in one sequence without relying on cosmetic framing changes.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "function_code:function:function-text:d319479344be",
+    "function_code:function:function-text:2e18df2c8f6c",
+    "function_code:function:operation-catalog:8c2d1b34818b",
+    "function_code:function:operation-catalog:d64a03d5852a",
+    "function_code:function:operation-catalog:ecc66f95fee4",
+    "function_code:function:operation-catalog:9bb344dfd383"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Confirmed-Request-PDU with GetVariableAccessAttributes service tag",
+      "hex": "0300000c02f080a003a10600",
+      "byte_length": 12,
+      "sha256": "599bfea76170a30ba2908621fb455e5239ec0129e13b3606f65506642d3c08fc"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Confirmed-Request-PDU with StoreDomainContent service tag",
+      "hex": "0300000c02f080a003a12300",
+      "byte_length": 12,
+      "sha256": "07eed1c9b53ba2fe9ab4a94525ac1e0fb319ed77cba835c967018e0defa6b1bc"
+    }
+  ],
+  "expected_behavior": "The target should parse two valid confirmed requests in sequence, first entering variable-access-attribute handling and then entering the StoreDomainContent confirmed-service path.",
+  "constraints_preserved": [
+    "For MMS over RFC1006, prefer a TPKT header beginning with version 0x03.",
+    "Keep the TPKT total-length field consistent with the complete message.",
+    "Diversify association, discovery, read, write and reporting paths.",
+    "Use documented confirmed service tag values [6] and [35] to maximize parser entry-point diversity."
+  ],
+  "issue_safety_notes": "The sequence stays within compact, valid confirmed-service wrappers and does not attempt malformed sizes, negative-length analogues, or exact reproduction of any issue payload. The pair is intended for safe branch coverage only.",
+  "sequence_sha256": "dc12e9fc71fbee21975da95b9d96b291a72885c8c2ebbe65dc3a3c646f3afd14",
+  "total_bytes": 24,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d999989cc50167b02a280c1815b5219d30bb9fb61e91bfd0384582f478c5b783",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "011-plan-052-seed-1-revA-a59160e9",
+      "corpus_file": "011-a59160e9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

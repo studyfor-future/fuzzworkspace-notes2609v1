@@ -1,0 +1,76 @@
+{
+  "plan_id": "vk-plan-034",
+  "seed_id": "197",
+  "title": "VK-only Measured Value: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave imple...",
+  "strategy": "parser_depth",
+  "target_operation": "Measured Value",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "parser_depth_measured_value_setup",
+      "hex": "680707000000006830",
+      "byte_length": 9,
+      "sha256": "8e541b070d40453a733f8f4a209e1f96b6b9f8d9ce7c09a942c19b18cd645efe"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "parser_depth_measured_value_body",
+      "hex": "68070f000000006830",
+      "byte_length": 9,
+      "sha256": "4ef904fcc58289e2a1769c86b671ba490806921170ca369519f2f923a905a2e3"
+    }
+  ],
+  "expected_behavior": "server crashes with deadlock in CS104 slave when connectionEventHandler calls close while holding lock, triggered via measured value path",
+  "constraints_preserved": [
+    "0x68 length octets consistent",
+    "IEC 60870-5-104 APCI framing preferred",
+    "Stateful multi-step sequences",
+    "Preserve target_operation Measured Value"
+  ],
+  "issue_safety_notes": "Issue-supported parser depth relation preserved; U-frame and measured value combination reaches deadlock without exact crash bytes",
+  "sequence_sha256": "fbfa4b18ab621e88be989f9b23ad808592eb2b74b13028e52d05dd0ffa502cd1",
+  "total_bytes": 18,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "eb3a35d6ee41646df94e48a57316d9ef6abe41b797f845605a6c1aa390d325c5",
+    "encoded_bytes": 18,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 9,
+        "frame_length": 9
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 9,
+        "payload_offset": 9,
+        "payload_length": 9,
+        "frame_length": 9
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "018-197-8bcbb4c1",
+      "corpus_file": "018-8bcbb4c1.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

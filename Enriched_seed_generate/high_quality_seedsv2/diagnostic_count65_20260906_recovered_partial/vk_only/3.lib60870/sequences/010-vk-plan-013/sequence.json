@@ -1,0 +1,60 @@
+{
+  "plan_id": "vk-plan-013",
+  "seed_id": "vk-plan-013",
+  "title": "VK-only General Interrogation: In lib60870-C v2.4.0, parsing a crafted IEC 60870-5-104 I-frame for...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "General Interrogation",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:197:197-summary:287854ab1555"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "General Interrogation request",
+      "hex": "680c000000000068050100000068",
+      "byte_length": 14,
+      "sha256": "d85b3da4a1070cd516405c8bd2f6e8cdf40f6d1209162a456135195c81317216"
+    }
+  ],
+  "expected_behavior": "Parser accepts VSQ object count=0x64 (100 objects) despite short ASDU body after header; InformationObject_ParseObjectAddress called with invalid startIndex leads to out-of-bounds read in TestCommand_getFromBuffer path (crashes with heap over-read under ASAN)",
+  "constraints_preserved": [
+    "0x68 start/end octets consistent with FT1.1 framing",
+    "APDU length octet L=10 preserved",
+    "Single-request sequence_shape",
+    "message_budget=1",
+    "VSQ=0x64 (max objects claimed)",
+    "IOA structure omitted to force parser to read past body end"
+  ],
+  "issue_safety_notes": "Traces exact vulnerability trigger from GHSA-G3W7-X5RX-83XM (TypeID 104 C_TS_NA_1, VSQ exceeding ASDU body) and GHSA-7V97-JMWV-W5J7; no crash bytes copied; uses model-prior conservative form",
+  "sequence_sha256": "55f12ea864b35862cfa91fa322dd6f474e29a2a5b109ab54583f4f1a2de575d8",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-G3W7-X5RX-83XM"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d85b3da4a1070cd516405c8bd2f6e8cdf40f6d1209162a456135195c81317216",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ]
+  }
+}

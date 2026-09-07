@@ -1,0 +1,77 @@
+{
+  "plan_id": "plan-045",
+  "seed_id": "045r1",
+  "title": "Connection Manager plan revised as stateful session register and unregister",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession and UnregisterSession",
+  "purpose": "Exercise session-oriented parser states with a minimal valid registration payload followed by a matching unregister message using the established session handle.",
+  "evidence_ids": [
+    "function_code:function:function-text:d62ad498ac4f",
+    "function_code:function:operation-catalog:e8810af4c6bf",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request with established handle",
+      "hex": "660000001111111100000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "9607b8edb1e1f0827689507f72861a61b1f683a5af5e099995814c7a188f05ad"
+    }
+  ],
+  "expected_behavior": "First message should be accepted as a minimal RegisterSession request; second message should be parsed as an UnregisterSession request referencing the active session handle.",
+  "constraints_preserved": [
+    "Both messages use 24-byte encapsulation headers",
+    "Little-endian command and length fields",
+    "RegisterSession payload length is 4 bytes with a minimal protocol version/options style body based on conservative prior",
+    "UnregisterSession carries zero payload length",
+    "Session handle relationship preserved across sequence by reusing a nonzero handle in the second message",
+    "Status and options fields remain zero"
+  ],
+  "issue_safety_notes": "PK-only stateful analogue. The specific RegisterSession 4-byte body is conservative model-prior completion because the supplied sources name the command but do not provide a full byte template; no claim is made about server-side acceptance beyond structural validity.",
+  "sequence_sha256": "cb16c2f2c0e3f4c3a01c875395d210e6b24573a578f5653eb4ea2263f64f4bb3",
+  "total_bytes": 52,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1dd7d3a9930bd6a1528788433f0335de4f4112416911982fbca3139182b33332",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "042-045r1-d19ea7a6",
+      "corpus_file": "042-d19ea7a6.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

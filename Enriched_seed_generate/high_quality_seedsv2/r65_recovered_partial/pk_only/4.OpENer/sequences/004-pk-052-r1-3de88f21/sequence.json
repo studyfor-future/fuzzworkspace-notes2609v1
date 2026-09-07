@@ -1,0 +1,76 @@
+{
+  "plan_id": "plan-052",
+  "seed_id": "pk-052-r1",
+  "title": "Unknown Modbus Error analogue with stateful unregister path",
+  "strategy": "stateful_valid",
+  "target_operation": "Unknown Modbus Error",
+  "purpose": "Introduce explicit session-state interaction by pairing RegisterSession with UnregisterSession, improving lifecycle coverage and handle propagation diversity beyond single-frame requests.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:a6b9b629463c",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "registersession setup request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "unregistersession using established handle analogue",
+      "hex": "660000007856341200000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "66e3409e2ae51efc13f68deef92fe2c1af4801a58dbce9688cfc1a684f894db6"
+    }
+  ],
+  "expected_behavior": "The receiver should parse a RegisterSession request followed by a valid UnregisterSession frame carrying a nonzero session handle; if the handle is recognized, the session may be torn down, otherwise an encapsulation-status error may be returned by the implementation.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header used for both messages",
+    "Commands 0x0065 RegisterSession and 0x0066 UnregisterSession taken from supplied command catalog",
+    "Little-endian fields preserved throughout",
+    "State relationship preserved by reusing a nonzero session handle in the second message",
+    "UnregisterSession carries zero-length payload as a conservative analogue",
+    "Lowercase hexadecimal without separators"
+  ],
+  "issue_safety_notes": "PK-only seed; no vulnerability claim. The chosen session handle is a benign placeholder for stateful corpus growth and not a replay of any historical issue payload.",
+  "sequence_sha256": "d0215ed8b6394c75febafc72a5bc2a46ef6f66b7f512e9f7fa8929c42625e2c8",
+  "total_bytes": 52,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "a4af1c124580fcf6cde3a87ae3aaaee643d0d46228aa80ff00975c5fcb9bce50",
+    "encoded_bytes": 52,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-pk-052-r1-3de88f21",
+      "corpus_file": "004-3de88f21.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

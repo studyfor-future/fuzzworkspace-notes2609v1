@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-022",
+  "seed_id": "seed-022",
+  "title": "VK-only General Interrogation: lib60870 2.4.0 has a reproducible deadlock in the CS104 slave implementation",
+  "strategy": "parser_depth",
+  "target_operation": "General Interrogation",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure",
+  "evidence_ids": [
+    "issue:197:197-summary:287854ab1555",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:178:178-summary:01c5b607cf00"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "GI_init",
+      "hex": "68050300000000",
+      "byte_length": 7,
+      "sha256": "fb9f101cd9a4b464d337633970bda9a8a41b2e5e1b1791a3dd5799f54fe859f8"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "GI_activation",
+      "hex": "68050300000000",
+      "byte_length": 7,
+      "sha256": "fb9f101cd9a4b464d337633970bda9a8a41b2e5e1b1791a3dd5799f54fe859f8"
+    }
+  ],
+  "expected_behavior": "deeper GI parser path triggered with consistent lengths but no crash",
+  "constraints_preserved": [
+    "multi_step_stateful shape",
+    "GI archetype",
+    "parser_depth path",
+    "no crash bytes"
+  ],
+  "issue_safety_notes": "avoids direct GHSA-197 PoC bytes; uses model-internal GI sequence with deeper structure per family constraints",
+  "sequence_sha256": "8840c14464d320528379667e239ffac58329f693a0a4546d881b905cdf9f213e",
+  "total_bytes": 14,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "197"
+  ],
+  "_selection_score": 104.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b1e6dfda62a4f64cf5667adc21471908c1e92e2b1c067c7f85be28177dea308c",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 7,
+        "frame_length": 7
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 7,
+        "payload_offset": 7,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-seed-022-ebd3ae9c",
+      "corpus_file": "031-ebd3ae9c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

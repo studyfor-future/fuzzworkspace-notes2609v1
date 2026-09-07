@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-065",
+  "seed_id": "opener-sendrrdata-padded-epath-mutation-01",
+  "title": "VK-only SendRRData stateful setup with full padded EPath for issue 557 analogue",
+  "strategy": "stateful_valid",
+  "target_operation": "SendRRData",
+  "purpose": "Establish a session and exercise the explicit messaging path with a structurally valid multi-segment padded EPath (path_size=236) that can be mutated on path size, field values, or CPF count while staying within model-prior archetypes.",
+  "evidence_ids": [
+    "issue:557:557-summary:f58da6326195",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:567:567-summary:1255c28909d7",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData with null address and unconnected CIP request (padded EPath path_size=236)",
+      "hex": "6f00230001000000000000000000000000000000000000000000000000000200000000000000b212000e0820012401280028002800280028002800",
+      "byte_length": 59,
+      "sha256": "3c79690ef9d57aca03660a02d7f30e5480d7053a080ab319a042a157f83f35aa"
+    }
+  ],
+  "expected_behavior": "Server registers session then parses the SendRRData CPF and unconnected Message Router request (normal service response or error acceptable); no crash under model-prior constraints.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian payload lengths",
+    "two-message stateful RegisterSession to SendRRData sequence",
+    "CPF item count exactly 2",
+    "internal visible lengths and item counts consistent",
+    "target operation SendRRData preserved"
+  ],
+  "issue_safety_notes": "Conservative structural analogue only; full padded EPath present for declared size; no oversized attribute counts, malformed CPF item_count, truncated paths, or historical crash bytes; safe for real operation and mutation utility.",
+  "sequence_sha256": "49c9130ec1016488d2b6b4850bf25168362ebe8dc9dc16c41cefab111660e77a",
+  "total_bytes": 87,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "557"
+  ],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "32b3e8b980f8230b81be5e9d436e2942c108ebcb1bb0cac1e022397961d23ed3",
+    "encoded_bytes": 87,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 59,
+        "frame_length": 59
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "016-opener-sendrrdata-padded-d451525a",
+      "corpus_file": "016-d451525a.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

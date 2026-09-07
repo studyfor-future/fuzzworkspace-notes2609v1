@@ -1,0 +1,92 @@
+{
+  "plan_id": "",
+  "seed_id": "revised-plan-001-seed-1",
+  "title": "Register and unregister an encapsulation session",
+  "strategy": "stateful_valid",
+  "target_operation": "RegisterSession and UnregisterSession",
+  "purpose": "Exercise session establishment, propagation of the returned session handle, and orderly session teardown across multiple encapsulation frames.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:f14ecde0d175",
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "6500080000000000000000000000000000000000000000000000000001000000",
+      "byte_length": 32,
+      "sha256": "6983cffdac899cdcca1776f61a2e1768fccd2f16ba96bc81f0b872f2c0b5d57c"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response with session handle",
+      "hex": "6500080001000000000000000000000000000000000000000000000001000000",
+      "byte_length": 32,
+      "sha256": "8f93c3a2d39cab1ec33762b6972bbc658246c8cbfa5f7c620b5248cfc310bb2c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "UnregisterSession request using returned handle",
+      "hex": "660000000100000000000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "0e7273a12208c55b76c5b0cee0f1380ec21168702a4fbb87b5a1a7d1098c940a"
+    }
+  ],
+  "expected_behavior": "The server processes RegisterSession, returns a session handle, and accepts UnregisterSession addressed with that handle.",
+  "constraints_preserved": [
+    "Each encapsulation frame uses a 24-byte header",
+    "Command and payload length fields are little-endian",
+    "RegisterSession payload length is 4 bytes and UnregisterSession payload length is zero",
+    "The UnregisterSession session handle matches the preceding response handle",
+    "Hex strings contain complete byte pairs without separators"
+  ],
+  "issue_safety_notes": "No issue evidence is enabled. The response session handle and registration payload interpretation are conservative protocol-model assumptions, not historical vulnerability payloads.",
+  "sequence_sha256": "e64d566f3e3fe7d9a0bd42415da00a1916b6e6214cc36314adf3d48858a3c027",
+  "total_bytes": 88,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "78d8bdc7dca951baa4a5e9aee4ac26319458a7ee595a4d10d6adb8068ab53fc1",
+    "encoded_bytes": 88,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 32,
+        "payload_offset": 32,
+        "payload_length": 32,
+        "frame_length": 32
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 64,
+        "payload_offset": 64,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "000-revised-plan-001-seed-1-e08ece23",
+      "corpus_file": "000-e08ece23.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

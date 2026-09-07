@@ -1,0 +1,94 @@
+{
+  "plan_id": "plan-017",
+  "seed_id": "enetip-full-017",
+  "title": "Connected SendUnitData analogue with minimal connected CPF",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Connected Data Item",
+  "purpose": "Reach the historically sensitive SendUnitData connected explicit-message structure using a valid-looking connected address item and a short bounded connected data payload instead of a crash-oriented size interaction.",
+  "evidence_ids": [
+    "issue:568:568-summary:6fa072929d36",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:576:576-summary:bc3710455616",
+    "issue:574:574-summary:ec096521bf63"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession request",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "RegisterSession response template with session handle 0x00000001",
+      "hex": "65000400010000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "b59240ee5ef4d0e254b09f8f8620a8c0c2838b205c518b8d70c1714a60396c0b"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendUnitData with Connected Address Item and Connected Data Item carrying short explicit message payload",
+      "hex": "700019000100000000000000000000000000000000000000000000000200a100040011223344b100080052022001240130",
+      "byte_length": 49,
+      "sha256": "998708630501bf1eaf7111c9aa51c63936166a5c81b88a4a0fbf2c7c81910923"
+    }
+  ],
+  "expected_behavior": "Target should accept the registered session, parse a SendUnitData CPF containing a connected address item and connected data item, and then either process or cleanly reject the short embedded connected explicit-message payload without corrupting state.",
+  "constraints_preserved": [
+    "Encapsulation command 0x0070 and length field are little-endian and use a 24-byte header per supplied function reference.",
+    "CPF item count is 2, matching the documented common SendUnitData combination of Connected Address Item and Connected Data Item.",
+    "Connected Address Item type 0x00a1 and Connected Data Item type 0x00b1 use little-endian type and length fields.",
+    "Session handle reuse after RegisterSession is required by issue path summaries; static seed uses 01000000 as an inferred placeholder to be runtime-substituted if needed.",
+    "The embedded connected payload begins with what is conservatively inferred to be a sequence counter before a CIP service/path, which is common practice but not explicitly verified in supplied sources."
+  ],
+  "issue_safety_notes": "This is a structural analogue only: bounded CPF lengths, small connected-data length, and no crafted underflow-sized fields or exact historical trigger values are used.",
+  "sequence_sha256": "7dd176d64ad76cab203c402e51706cb55d7f7ca441abe9ee04524190ecde94b7",
+  "total_bytes": 105,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "568"
+  ],
+  "_selection_score": 120.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bda95fc402d030a73f79f87020405ae36a9f486537f62c7139e0b2f8cb1f7cdb",
+    "encoded_bytes": 105,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 56,
+        "payload_offset": 56,
+        "payload_length": 49,
+        "frame_length": 49
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "002-enetip-full-017-7ac5b264",
+      "corpus_file": "002-7ac5b264.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-016",
+  "seed_id": "vk-plan-016",
+  "title": "VK-only Measured Value: Against the latest source from /mz-automation/lib60870/ (exact rele...",
+  "strategy": "parser_depth",
+  "target_operation": "Measured Value",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:53:53-summary:9148432dbf39",
+    "issue:54:54-summary:bed996ddfd18",
+    "issue:55:55-summary:bc272cfe2177",
+    "issue:13:13-summary:187d3c5ead6c",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Measured Value request",
+      "hex": "680c000000000068010100000068",
+      "byte_length": 14,
+      "sha256": "6f517f900f4f1155b13e03efa8628e6d39bc128b0723dde6add95dd2ab273307"
+    }
+  ],
+  "expected_behavior": "Parser accepts deeper nested ASDU structure with VSQ claiming objects that force parser_depth into InformationObject_ParseObjectAddress (SEGV on cpXXtime2a path in cs104_server example)",
+  "constraints_preserved": [
+    "0x68 start/end octets consistent with FT1.1 framing",
+    "APDU length octet L=10 preserved",
+    "Single-request sequence_shape",
+    "message_budget=1",
+    "VSQ=0x10 (16 objects claimed)",
+    "Deeper parser path triggered by issue 53"
+  ],
+  "issue_safety_notes": "Traces exact vulnerability trigger from issue 53 and GHSA-G3W7-X5RX-83XM; no crash bytes copied; uses model-prior conservative form",
+  "sequence_sha256": "54e8bc94d89870dccced28032de01ac9eaf424d5a65bbd6979db400b4dcbac2d",
+  "total_bytes": 14,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "53"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "6f517f900f4f1155b13e03efa8628e6d39bc128b0723dde6add95dd2ab273307",
+    "encoded_bytes": 14,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 14,
+        "frame_length": 14
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "020-vk-plan-016-afb8f9d8",
+      "corpus_file": "020-afb8f9d8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

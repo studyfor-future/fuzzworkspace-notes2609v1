@@ -1,0 +1,76 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-017-getattr",
+  "title": "Session-backed GetAttributeSingle with bounded padded EPath variation",
+  "strategy": "stateful_valid",
+  "target_operation": "GetAttributeSingle",
+  "purpose": "Exercise the real session setup and SendRRData path while reaching a variable-length Identity attribute through a conservative, bounded CIP path.",
+  "evidence_ids": [
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:569:569-summary:84e873f1b910"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "65000400000000000000000000000000000000000000000001000000",
+      "byte_length": 28,
+      "sha256": "e3873535b8449e20d005bb04e7793b01a028d3e0d39253bdd0713f179d214544"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "SendRRData GetAttributeSingle Identity instance 1 attribute 8",
+      "hex": "6f002100c000000000000000000000000000000000000000000000000000000000000000010000000000000000b20008000e03200124013008",
+      "byte_length": 57,
+      "sha256": "d24fdf653570fc399788b5b626fb92cc5f9cfc8bd0d7dfd06e4d6d5ba2169980"
+    }
+  ],
+  "expected_behavior": "The server should parse the registered explicit-message request, decode the CPF and CIP path, and return a normal success or protocol error response without reading beyond the supplied request data.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian encapsulation payload length",
+    "RegisterSession precedes SendRRData",
+    "CPF contains a null address item and an unconnected data item",
+    "CIP path size matches three 2-byte logical segments",
+    "all message hex strings have even length"
+  ],
+  "issue_safety_notes": "This is a bounded structural analogue of issue 572. It does not reproduce the historical long padded path, omitted short-string length byte, buffer boundary, or exact crash payload.",
+  "sequence_sha256": "bb45af9edcba5dafd64cc29f90023bf31218a268e8e79088213209a64e56f6a8",
+  "total_bytes": 85,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 115.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b6d12de92d5649edbedaab544e9689aff8efe544fc1c012191557300c5da8e49",
+    "encoded_bytes": 85,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 57,
+        "frame_length": 57
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-vk-seed-017-getattr-79cc1195",
+      "corpus_file": "004-79cc1195.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

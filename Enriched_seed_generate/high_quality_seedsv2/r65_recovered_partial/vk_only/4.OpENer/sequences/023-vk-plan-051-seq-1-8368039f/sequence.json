@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-051",
+  "seed_id": "vk-plan-051-seq-1",
+  "title": "VK-only ListIdentity: OpENer v2.3 length boundary + response chain",
+  "strategy": "length_boundary_valid",
+  "target_operation": "ListIdentity",
+  "purpose": "Boundary check on identity response with full 24-byte header + diversified header variants",
+  "evidence_ids": [
+    "issue:576:576-summary:bc3710455616",
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:572:572-summary:4cac5b77f97f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ListIdentity",
+      "hex": "006e000000000000000000000000000000000001",
+      "byte_length": 20,
+      "sha256": "20047e1ae7bf0f5dd7990ee4a993e36fe7228080955a36d723f000dd2330c278"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ListIdentity response",
+      "hex": "006f12000000000000000000000000000000000001000000000000000000000000000000000000000000",
+      "byte_length": 42,
+      "sha256": "9fc44a110d60650b04d5bfd80cab5f4081df9af5db9fb843e73fcb5d70d3961c"
+    }
+  ],
+  "expected_behavior": "Server response parsed with boundary-checked length fields; short and padded headers varied",
+  "constraints_preserved": [
+    "24-byte ENIP header always",
+    "little-endian length",
+    "internal visible lengths",
+    "full header + response",
+    "length boundary maintained"
+  ],
+  "issue_safety_notes": "Boundary analogue only; no crash bytes; family constraints enforced",
+  "sequence_sha256": "1c1a13a98e338aa52871c799f69947948c8a57d165b42218deee8f0a72f482a7",
+  "total_bytes": 62,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "576"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8c3dfc1d984ea56c360712aee4231f13dfaa7d84eed002a377db0eb25dee5020",
+    "encoded_bytes": 62,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 20,
+        "frame_length": 20
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 20,
+        "payload_offset": 20,
+        "payload_length": 42,
+        "frame_length": 42
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "023-vk-plan-051-seq-1-8368039f",
+      "corpus_file": "023-8368039f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

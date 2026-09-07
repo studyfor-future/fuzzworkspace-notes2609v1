@@ -1,0 +1,59 @@
+{
+  "plan_id": "base-plan-028",
+  "seed_id": "base-plan-028-r1",
+  "title": "Base AtomicReadFile variant 3 revised",
+  "strategy": "other",
+  "target_operation": "AtomicReadFile",
+  "purpose": "Add a structurally distinct file-service seed using a confirmed AtomicReadFile request with stream-style parameters, a negative offset, and a bounded requested octet count.",
+  "evidence_ids": [
+    "base_model_prior:constraints:aceb70a59893"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "BACnet/IP Confirmed AtomicReadFile stream request",
+      "hex": "810a00190104020306c4000a00070e0cfffffffc1c00000020",
+      "byte_length": 25,
+      "sha256": "fb4ae8a7113ce1005d0ce839445e8657eb05b3f7c73c36af03f02803bfcb229d"
+    }
+  ],
+  "expected_behavior": "A BACnet/IP server should parse the frame as a confirmed AtomicReadFile request and then return file data or an error depending on file object state, permissions, and support for the requested access parameters.",
+  "constraints_preserved": [
+    "BVLC total length 0x001a matches the full encoded message length",
+    "Common BACnet/IP BVLC plus NPDU plus APDU layering is preserved",
+    "File object identifier appears before access parameters",
+    "Signed offset and unsigned count are each encoded with explicit value bytes",
+    "Hex is lowercase and has an even number of characters"
+  ],
+  "issue_safety_notes": "No vulnerability issue knowledge is available. This is a conservative model-prior file-service coverage seed, not a claim of verified protocol validity.",
+  "sequence_sha256": "7363e2514bedbb1bdb2ab2fd8774fbce51329174eaa53ec17b0333f5733aeea1",
+  "total_bytes": 25,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed BVLC length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 96.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "fb4ae8a7113ce1005d0ce839445e8657eb05b3f7c73c36af03f02803bfcb229d",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "016-base-plan-028-r1-e1291cd9",
+      "corpus_file": "016-e1291cd9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

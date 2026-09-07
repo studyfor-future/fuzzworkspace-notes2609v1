@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-019",
+  "seed_id": "enetip-full-019",
+  "title": "Connection Manager ForwardOpen-shaped unconnected request with bounded connection path",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Connection Manager Object",
+  "purpose": "Cover the Connection Manager parser path mentioned by the issue with a compact ForwardOpen-shaped request embedded in SendRRData, using a short well-bounded connection path instead of malformed path accounting.",
+  "evidence_ids": [
+    "issue:570:570-summary:0b4cbe808107",
+    "issue:571:571-summary:fe57e1bf0770",
+    "issue:564:564-summary:6b535e1b37b6",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:575:575-summary:e8df4ac3993c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession then SendRRData with Connection Manager ForwardOpen analogue",
+      "hex": "650048000000000000000000000000000000000000000000010000006f003000010000000000000000000000000000000000000000000000020000000000b2002006540220062401050607081111111122222222010000000200000020012401",
+      "byte_length": 96,
+      "sha256": "12960334235bda08593ca0f3187479c7629e12d83fce6b94f233d792e9f59b49"
+    }
+  ],
+  "expected_behavior": "A harness that splits the concatenated seed into sequential frames should first establish a session and then parse an unconnected explicit message aimed at Connection Manager. The target should either reject unsupported ForwardOpen details with a normal CIP error or continue safely through bounded connection-path parsing.",
+  "constraints_preserved": [
+    "Uses RegisterSession followed by SendRRData because issue summaries describe a reachable unconnected explicit-message path through encapsulation to CIP parsing.",
+    "SendRRData CPF uses exactly the documented common pair: Null Address Item and Unconnected Data Item.",
+    "Embedded CIP service 0x54 is treated as ForwardOpen-shaped based on common EtherNet/IP knowledge; this service assignment is an inferred assumption not explicitly present in supplied sources.",
+    "Path bytes 20062401 are a conservative inferred class/instance route to Connection Manager object instance 1, included to drive parser coverage without malformed path sizing.",
+    "The trailing connection path is short and even-length to avoid the parser-accounting defects described by the issue."
+  ],
+  "issue_safety_notes": "The connection path is deliberately tiny and internally bounded; no odd-sized, truncated, or count-mismatched path fields are used, and no exact historical malformed ForwardOpen payload is reproduced.",
+  "sequence_sha256": "61b162ba2db1c25592da38946031df8bee66011ebbf0f95ff219414b21f07bd2",
+  "total_bytes": 96,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "570"
+  ],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "12960334235bda08593ca0f3187479c7629e12d83fce6b94f233d792e9f59b49",
+    "encoded_bytes": 96,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 96,
+        "frame_length": 96
+      }
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "plan_id": "plan-011",
+  "seed_id": "seq-004",
+  "title": "Issue-guided analogue for IEC 60870-5-104 APDU start byte (single_request)",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "IEC 60870-5-104 APDU start byte",
+  "purpose": "Structural analogue recovery of NULL dereference in CS101_ASDU_getCOT path",
+  "evidence_ids": [
+    "issue:175:175-summary:1d1910f22105",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:197:197-summary:287854ab1555",
+    "issue:178:178-summary:01c5b607cf00",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "TESTFR activation",
+      "hex": "680400000000",
+      "byte_length": 6,
+      "sha256": "b6671a8c060128acf7fa06a21e4cec0930f4aafcee9dc4ce9d8f8a1f57cceb9a"
+    }
+  ],
+  "expected_behavior": "Client initiates session and sends valid test frame; parser handles framing without crash",
+  "constraints_preserved": [
+    "IEC 60870-5-104 APCI framing with 0x68 start",
+    "Length octets consistent with frame size",
+    "U-format control bytes for STARTDT/STOPDT/TESTFR",
+    "ASDU function codes and IOA ordering rules"
+  ],
+  "issue_safety_notes": "Analogue structure replaces historical trigger; no exact payload copy",
+  "sequence_sha256": "f5ea289f4b2cacc90a94bcbe7f5dd749f246e32ce947cf2fe160fbbea57e8f49",
+  "total_bytes": 12,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "175"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8100b43d9e258f7776ce199177b64ea1ddd4e2fd7e24f2e465edab752a518ab2",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "048-seq-004-7ef83411",
+      "corpus_file": "048-7ef83411.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

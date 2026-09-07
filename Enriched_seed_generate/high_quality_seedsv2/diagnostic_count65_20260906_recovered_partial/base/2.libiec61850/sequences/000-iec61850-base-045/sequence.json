@@ -1,0 +1,68 @@
+{
+  "plan_id": "base-plan-045",
+  "seed_id": "iec61850-base-045",
+  "title": "Base Write variant 6",
+  "strategy": "stateful_valid",
+  "target_operation": "Write",
+  "purpose": "Use a plausible setup-then-target sequence when protocol state is likely required.",
+  "evidence_ids": [
+    "base_model_prior:constraints:39ec8f040df1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "associate_request",
+      "hex": "0300001611e00000000100c1020001c0010ac2020001",
+      "byte_length": 22,
+      "sha256": "f8fd8e371b3af2db6daf27ba263f0e998ee0bcc67a57b6cd637cd9309c537b05"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "write_request",
+      "hex": "0300002f02f08030230201013e1e80036170708108646f312473742456616c81010a820101a309830100a402830105",
+      "byte_length": 47,
+      "sha256": "5b45938ecf059e46265fdbdc389993d2c51466cd0188faef1c560256373dd1c1"
+    }
+  ],
+  "expected_behavior": "A target that accepts or partially parses MMS over RFC1006 may first process the association request and then route the second message into write-related handling; rejection is acceptable if local state prerequisites differ.",
+  "constraints_preserved": [
+    "Followed the specified strategy stateful_valid and target_operation Write",
+    "Followed the setup_then_request sequence shape with 2 messages",
+    "TPKT version byte begins with 03",
+    "TPKT total lengths are internally consistent for both messages",
+    "Message directions are stateful and not cosmetic duplicates",
+    "Only supplied base constraint evidence id is cited"
+  ],
+  "issue_safety_notes": "No external vulnerability issue knowledge was available. This seed is based only on model-prior plausibility and base constraints, not on verified issue details or external protocol documentation.",
+  "sequence_sha256": "5047f17ff6a3ce9757abe95085778c5a94c6785fd5dfa44e71a197815d56a150",
+  "total_bytes": 69,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 112.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "d7cb9e021ab85d5338f49014bf3a4be18371f1a85c14ba6c1d5aad4e8e26d3b2",
+    "encoded_bytes": 69,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 47,
+        "frame_length": 47
+      }
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "plan_id": "plan-024",
+  "seed_id": "seq-024-001-r1",
+  "title": "Measured value with TESTFR handshake",
+  "strategy": "parser_depth",
+  "target_operation": "Measured Value",
+  "purpose": "Increase direction and parser diversity by combining a U-format test frame with a compact monitoring-direction measured-value ASDU returned from server to client.",
+  "evidence_ids": [
+    "function_code:function:function-text:d8995aeae15b",
+    "function_code:function:operation-catalog:b0db75237939",
+    "issue:13:13-summary:187d3c5ead6c"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "u-format testfr act",
+      "hex": "680443000000",
+      "byte_length": 6,
+      "sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "m_me_nc_1 measured short float",
+      "hex": "6811110002000d010300010001000000803f00",
+      "byte_length": 19,
+      "sha256": "e62a8fbe6cee9fcdf4b3191f56cad362e9ad5da8514e1b79261fc30850376d86"
+    }
+  ],
+  "expected_behavior": "Peer processes TESTFR activation at link level and then parses a monitoring ASDU carrying one short floating-point measured value without crash.",
+  "constraints_preserved": [
+    "First frame uses IEC 60870-5-104 U-format with 4-byte APCI and correct 0x68 length 0x04",
+    "Second frame uses documented TypeID 13 M_ME_NC_1",
+    "Second frame length 0x11 matches 4 APCI bytes plus 13 ASDU bytes",
+    "Monitoring ASDU uses one object, 3-byte IOA, 4-byte float value, and 1-byte quality descriptor in conservative common ordering"
+  ],
+  "issue_safety_notes": "Safe structural analogue adds parser depth and reverse direction coverage while remaining far from the exact crashing issue payload.",
+  "sequence_sha256": "2573077a149e8c6eefe79a6f9e994f88b94c2dd66cf7c937ff424c64a7f447cd",
+  "total_bytes": 25,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "ece833e8139ec6c1c2d161130f860bc2c86dc6f81fe0cedd38160ef1e77f6099",
+    "encoded_bytes": 25,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 19,
+        "frame_length": 19
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "006-seq-024-001-r1-2e9f78f9",
+      "corpus_file": "006-2e9f78f9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

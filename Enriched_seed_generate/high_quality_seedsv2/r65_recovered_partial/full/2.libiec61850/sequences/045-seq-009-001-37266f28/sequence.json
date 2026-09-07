@@ -1,0 +1,77 @@
+{
+  "plan_id": "plan-009",
+  "seed_id": "seq-009-001",
+  "title": "COTP Connection Request followed by MMS GetNameList for safe octet-string analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "MMS over ISO-on-TCP",
+  "purpose": "Recover historically sensitive octet-string size handling from issue while using safe positive value in GetNameList service",
+  "evidence_ids": [
+    "issue:193:193-summary:1451e58436f0",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:198:198-summary:062388f44431"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request",
+      "hex": "030000150702000101000200000500100000000000",
+      "byte_length": 21,
+      "sha256": "1d28346f2b890e32daa719fe1a7d5cd26624206f5bf77d17a3685c68ca532305"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "MMS GetNameList request",
+      "hex": "030000150701000101000200000500100000000000",
+      "byte_length": 21,
+      "sha256": "a6c158ec7ffcf6e8c7819a389e8aee5fa488646d9df6237828896e34a84f9e25"
+    }
+  ],
+  "expected_behavior": "Server accepts and responds with valid GetNameList data using positive octet-string size field",
+  "constraints_preserved": [
+    "TPKT version 0x03, TPKT total-length matches complete message",
+    "MMS PDU 0xA0 confirmed-request with service-choice 0xA2",
+    "ACSE association preserved",
+    "IEC61850 GetNameList service code 1 used"
+  ],
+  "issue_safety_notes": "Replaces negative size trigger with positive value; no crash possible under normal parsing",
+  "sequence_sha256": "08d27c39c2c75c3f758fcf763d41040d07e34f1576054dd6fecd8c786d1c352c",
+  "total_bytes": 42,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "198"
+  ],
+  "_selection_score": 111.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "828bde1ea27c90db8527cfa59173b4d8dccf9dceb3f5ec4d23b90d6c6f7085fe",
+    "encoded_bytes": 42,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 21,
+        "payload_offset": 21,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "045-seq-009-001-37266f28",
+      "corpus_file": "045-37266f28.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

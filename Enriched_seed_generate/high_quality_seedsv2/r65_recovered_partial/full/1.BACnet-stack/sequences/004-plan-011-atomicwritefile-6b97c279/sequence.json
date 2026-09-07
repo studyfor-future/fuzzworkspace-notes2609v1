@@ -1,0 +1,78 @@
+{
+  "plan_id": "plan-011",
+  "seed_id": "plan-011-atomicwritefile-stateful-safe",
+  "title": "Stateful safe AtomicWriteFile non-append analogue",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "AtomicWriteFile",
+  "purpose": "Retain the issue-relevant FILE record-service structure and statefulness while replacing the historical append trigger with a safe non-append write sequence to the same file object.",
+  "evidence_ids": [
+    "issue:1399:1399-summary:b7c84f7e0fc5",
+    "issue:1400:1400-summary:b9facce5d476",
+    "issue:cve-2026-41502:cve-2026-41502-summa:c282c210e609",
+    "issue:cve-2026-47257:cve-2026-47257-summa:15da3847dfe0",
+    "function_code:function:function-text:d3664eeda33b"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "AtomicWriteFile-record-write-0",
+      "hex": "810b001900000504070a000000010100000000010441414141",
+      "byte_length": 25,
+      "sha256": "3b3d49c3f7f392df1751a24948bc8b3e69fdab4b8e971d09d7be533702a8b023"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "AtomicWriteFile-record-write-1",
+      "hex": "810b001900000504070a000000010100000001010442424242",
+      "byte_length": 25,
+      "sha256": "261a7cceb2e58ab31a4358ac3ecb2c1e6fe47479ad64d8c6e26022c3026c3d66"
+    }
+  ],
+  "expected_behavior": "Target accepts two sequential confirmed AtomicWriteFile requests as ordinary record writes to explicit start records, replying with acknowledgments or application errors according to FILE object support and permissions.",
+  "constraints_preserved": [
+    "Each BVLC total length 0x0019 matches the corresponding message size",
+    "Confirmed service choice 0x07 preserved for AtomicWriteFile",
+    "Two-step stateful sequence targets the same FILE object instance",
+    "Explicit start records 0 and 1 are used instead of append sentinel semantics",
+    "Payload records are short fixed-length ASCII data for mutation-friendly fuzzing"
+  ],
+  "issue_safety_notes": "Exact append-collision semantics from the historical issue are removed: no fileStartRecord=-1, no repeated append path, and no intentionally malformed record-count interactions.",
+  "sequence_sha256": "cb686a8fcffb9716faae4163179e3157effde1873987a6403befcee3adc6230b",
+  "total_bytes": 50,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1399"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "1f896a9fabbad347cd6d551474c5634920798147c4f8ceea6c4a877c8516fe29",
+    "encoded_bytes": 50,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 25,
+        "frame_length": 25
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 25,
+        "payload_offset": 25,
+        "payload_length": 25,
+        "frame_length": 25
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "004-plan-011-atomicwritefile-6b97c279",
+      "corpus_file": "004-6b97c279.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

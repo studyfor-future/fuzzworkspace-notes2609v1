@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-047",
+  "seed_id": "vk12-modbustcp-047-01",
+  "title": "VK-only Read/Write Multiple Registers mixed-count valid state probe",
+  "strategy": "stateful_valid",
+  "target_operation": "Read/Write Multiple Registers",
+  "purpose": "Exercise the combined read/write register path with a plausible state-sensitive request that writes two registers while reading back one nearby register, targeting issue themes around repeated or mixed operations without requiring an external setup script.",
+  "evidence_ids": [
+    "issue:749:749-summary:29b9071582b0",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:763:763-summary:e75d690140f2",
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:750:750-summary:3dcb92ca7c5d"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "readwrite-registers-write2-read1",
+      "hex": "12030000000f7f1701200001013000020411112222",
+      "byte_length": 21,
+      "sha256": "bd77f4d6274fc6f205d163f287f736b51475c6aefc6b64dbacd6cbb622b31982"
+    }
+  ],
+  "expected_behavior": "The target should parse the mixed read/write layout, consume exactly the declared write byte count, and either perform the operation or return an exception without corrupting state.",
+  "constraints_preserved": [
+    "MBAP header is 7 bytes",
+    "Protocol identifier set to 0000",
+    "MBAP length 000f matches unit identifier plus 14-byte PDU",
+    "Target operation remains Read/Write Multiple Registers",
+    "Write quantity 0002 is consistent with byte count 04 and four data bytes"
+  ],
+  "issue_safety_notes": "Although inspired by state-sensitive issue reports, this sequence is a single internally consistent combined-operation request and avoids reproducing historical multi-frame crash material.",
+  "sequence_sha256": "244c8dacba489e7af6848408bdcf4c90fc01a938b3200063ee4bb54437e67944",
+  "total_bytes": 21,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "749"
+  ],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bd77f4d6274fc6f205d163f287f736b51475c6aefc6b64dbacd6cbb622b31982",
+    "encoded_bytes": 21,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 21,
+        "frame_length": 21
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "039-vk12-modbustcp-047-01-32435fe8",
+      "corpus_file": "039-32435fe8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

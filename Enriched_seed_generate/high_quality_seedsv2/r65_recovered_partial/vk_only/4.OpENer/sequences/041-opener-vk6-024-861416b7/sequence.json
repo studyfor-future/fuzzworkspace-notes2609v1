@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-024",
+  "seed_id": "opener-vk6-024",
+  "title": "VK-only UnregisterSession standalone session-end probe",
+  "strategy": "other",
+  "target_operation": "UnregisterSession",
+  "purpose": "Create distinct standalone session-end request using nonzero session handle and empty body so mutators can pivot between valid and invalid teardown states around issue-adjacent parser logic.",
+  "evidence_ids": [
+    "issue:593:593-summary:2b6de868ce19",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:557:557-summary:f58da6326195",
+    "issue:574:574-summary:ec096521bf63",
+    "issue:568:568-summary:6fa072929d36",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "vk_task_context:task-contract:23749a9ec3e7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "unregistersession-empty",
+      "hex": "660000007856341200000000000000000000000000000000",
+      "byte_length": 24,
+      "sha256": "66e3409e2ae51efc13f68deef92fe2c1af4801a58dbce9688cfc1a684f894db6"
+    }
+  ],
+  "expected_behavior": "Implementation treats this as session teardown request tied to supplied handle and either accepts, rejects, or silently ignores it without invoking deeper CIP parsing.",
+  "constraints_preserved": [
+    "Target operation preserved as UnregisterSession",
+    "Single-request shape preserved",
+    "24-byte encapsulation header used",
+    "Zero payload length retained",
+    "Distinct operation from other plans"
+  ],
+  "issue_safety_notes": "Although evidence references EPATH-size problems, this candidate does not embed EPATH data; it is deliberately distinct session-control seed for corpus breadth and safe mutation staging.",
+  "sequence_sha256": "14add2ad4e3e79e4f852e611db42c2c746b840d748e2b45414b5646f91321b38",
+  "total_bytes": 24,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "593"
+  ],
+  "_selection_score": 105.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "66e3409e2ae51efc13f68deef92fe2c1af4801a58dbce9688cfc1a684f894db6",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "041-opener-vk6-024-861416b7",
+      "corpus_file": "041-861416b7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

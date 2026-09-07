@@ -1,0 +1,66 @@
+{
+  "plan_id": "vk-plan-011",
+  "seed_id": "issue-599-599-summary-806eef562ec3",
+  "title": "VK-only GetNameList: libIEC61850 client response itemId rewrite",
+  "strategy": "stateful_valid",
+  "target_operation": "GetNameList",
+  "purpose": "Use a model-prior setup sequence for the issue-related state prerequisite.",
+  "evidence_ids": [
+    "issue:599:599-summary:806eef562ec3",
+    "issue:509:509-summary:228be3676e7d",
+    "issue:513:513-summary:4a07060941e2",
+    "issue:512:512-summary:b25e9a524acd",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:197:197-summary:e3308b450f23"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "GetNameList response with rewritten itemId",
+      "hex": "0300001e02f08001000061081d3020a018020103a40f020123a40a020120",
+      "byte_length": 30,
+      "sha256": "66b7c5e0f7bb5201032b1e4351bac120869277f2b6b6cdaf82531595ab187068"
+    }
+  ],
+  "expected_behavior": "Heap-buffer-overflow read after passing itemId to MmsMapping_varAccessSpecToObjectReference",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT total length field consistent",
+    "MMS GetNameList response with malformed itemId TLV",
+    "no external protocol documents",
+    "model internal prior enforced"
+  ],
+  "issue_safety_notes": "No crash bytes copied; relies on issue-reported undefined behavior path. Post-association state preserved. ASan heap overflow expected.",
+  "sequence_sha256": "bdcbfac1b576fb8427eb46cc8f7436a3e1f48dd2e4f57967fde19d14523d9032",
+  "total_bytes": 30,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "509"
+  ],
+  "_selection_score": 78.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "66b7c5e0f7bb5201032b1e4351bac120869277f2b6b6cdaf82531595ab187068",
+    "encoded_bytes": 30,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 30,
+        "frame_length": 30
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "031-issue-599-599-summary-80-a341b0c7",
+      "corpus_file": "031-a341b0c7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

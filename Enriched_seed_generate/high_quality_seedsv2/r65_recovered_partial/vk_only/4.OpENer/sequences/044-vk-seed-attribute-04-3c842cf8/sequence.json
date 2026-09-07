@@ -1,0 +1,91 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-attribute-04",
+  "title": "SetAttributeSingle with present short-string value and closed session",
+  "strategy": "field_interaction",
+  "target_operation": "SetAttributeSingle",
+  "purpose": "Exercise attribute, class, instance, and value-length field interaction through SendRRData, then cover the session shutdown command as a distinct terminal state.",
+  "evidence_ids": [
+    "issue:572:572-summary:4cac5b77f97f",
+    "issue:582:582-summary:a17fd2adbb9f"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "register_session_request",
+      "hex": "65000400010000000000000061626364656667680000000001000000",
+      "byte_length": 28,
+      "sha256": "9733664cca7c95f3b2a66da6ca621b437f3097d86864b963e4a7db40aa3094c6"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "sendrrdata_set_attribute_single",
+      "hex": "6f001800010000000000000071727374757677780000000000000000020000000000b2000a0010032001240130070178",
+      "byte_length": 48,
+      "sha256": "6202b2ca0fcceaf2f614fae1c02a5ca138365af3d4a2b687893898ad8dbc63f1"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "unregister_session_request",
+      "hex": "660000000100000000000000818283848586878800000000",
+      "byte_length": 24,
+      "sha256": "156773e78e25d414d124de2507c071707185c65cb871660772ab79d38d3e2b0b"
+    }
+  ],
+  "expected_behavior": "The server should parse the complete SetAttributeSingle request, return a normal CIP success or access/status error for the selected attribute, and then process the UnregisterSession command using the established session identifier.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP headers",
+    "little-endian payload lengths 4, 26, and 0",
+    "session identifier continuity through registration, request, and unregister",
+    "CPF item count 2 with Null Address and Unconnected Data items",
+    "CIP SetAttributeSingle path identifies class 1, instance 1, attribute 7",
+    "short-string value includes an explicit one-byte length and one value byte"
+  ],
+  "issue_safety_notes": "Uses issue 572 field relationships while supplying a bounded value byte and complete path. It avoids the reported end-of-buffer positioning, missing short-string length byte, long padded path, forged path size, and exact historical payload.",
+  "sequence_sha256": "dbc17aa136aeeb97f81ac56ab0c91d9a69fd28b2f90cfe57bb760cd8dd4270a2",
+  "total_bytes": 100,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bcb0cb0430b5f01cca589fa2de7bc902afc80bbe3846e615e5563d7fe3166945",
+    "encoded_bytes": 100,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 28,
+        "frame_length": 28
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 28,
+        "payload_offset": 28,
+        "payload_length": 48,
+        "frame_length": 48
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 76,
+        "payload_offset": 76,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "044-vk-seed-attribute-04-3c842cf8",
+      "corpus_file": "044-3c842cf8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

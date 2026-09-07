@@ -1,0 +1,59 @@
+{
+  "plan_id": "plan-059",
+  "seed_id": "ethernetip-rev-059",
+  "title": "SendUnitData connected-item encapsulation seed",
+  "strategy": "function_code_coverage",
+  "target_operation": "SendUnitData",
+  "purpose": "Add connected-data encapsulation coverage with the documented Connected Address Item plus Connected Data Item combination, distinct from the unconnected SendRRData path.",
+  "evidence_ids": [
+    "function_code:function:function-text:515064cfcdad",
+    "function_code:function:function-text:0d83a9cb1819",
+    "protocol_format:opener:format-overview:8e03e5bb8ecf"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "standalone",
+      "label": "sendunitdata-connected-seed",
+      "hex": "700016000403020100000000998877665544332200000000020000000001040078563412b1000600010000001122",
+      "byte_length": 46,
+      "sha256": "8011c6072b917446e78efed790927bf906e5056c876ed2f2674a65cde454be32"
+    }
+  ],
+  "expected_behavior": "A parser should accept the encapsulation header and CPF layout for SendUnitData, then parse a Connected Address Item carrying a 4-byte connection identifier and a Connected Data Item carrying 6 bytes of data. Because no real ForwardOpen-established connection is implied, higher-layer acceptance may fail normally after framing succeeds.",
+  "constraints_preserved": [
+    "Command 0x0070 SendUnitData encoded little-endian.",
+    "24-byte encapsulation header used with Length 0x0016 matching 22 CPF bytes.",
+    "CPF item count is 2, using the documented common SendUnitData combination: Connected Address Item type 0x0100 length 4, then Connected Data Item type 0x00B1 length 6.",
+    "Connected Address Item data is a 4-byte placeholder connection identifier; Connected Data Item begins with a 2-byte sequence-style value followed by payload bytes as a conservative connected-data shape.",
+    "Marked standalone because a real connected exchange would require prior connection establishment not supplied by the source material."
+  ],
+  "issue_safety_notes": "This seed is not derived from the historical crash path. It broadens parser coverage into connected CPF handling while remaining fully length-consistent and independent of malformed ForwardOpen parsing.",
+  "sequence_sha256": "2c699d3a015e2e92d6e45b9561218186369581467a906994b8ac94575f92b5f8",
+  "total_bytes": 46,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 109.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8011c6072b917446e78efed790927bf906e5056c876ed2f2674a65cde454be32",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 46,
+        "frame_length": 46
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "046-ethernetip-rev-059-0e63dee8",
+      "corpus_file": "046-0e63dee8.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

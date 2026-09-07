@@ -1,0 +1,65 @@
+{
+  "plan_id": "plan-017",
+  "seed_id": "SEED-017-R1",
+  "title": "Issue-guided analogue for Read Input Registers",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "Read Input Registers",
+  "purpose": "Exercise the documented 0x04 request path with the same general address-plus-quantity structure referenced by the issue while using a safe valid register range and fully consistent MBAP framing.",
+  "evidence_ids": [
+    "issue:763:763-summary:e75d690140f2",
+    "issue:738:738-summary:a2fd51730f5d",
+    "issue:867:867-summary:58115ace3a65",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:749:749-summary:29b9071582b0",
+    "issue:614:614-summary:e89105d3aaf7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Read Input Registers request",
+      "hex": "100100000006040400010003",
+      "byte_length": 12,
+      "sha256": "660b4e41e22899a41c888e1a27e33b36e3eefa95b53a51cfad77d54fd3ae57c2"
+    }
+  ],
+  "expected_behavior": "Server should parse a valid Read Input Registers request and return either normal register data or a protocol-level exception, without instability.",
+  "constraints_preserved": [
+    "7-byte MBAP header preserved",
+    "Protocol identifier set to 0x0000",
+    "MBAP length 0x0006 matches unit identifier plus 5-byte PDU",
+    "Function code 0x04 is documented for Read Input Registers",
+    "Request includes 2-byte starting address and 2-byte quantity fields",
+    "Quantity is nonzero and structurally valid"
+  ],
+  "issue_safety_notes": "Uses the issue-referenced read-input-registers shape but changes the concrete address and quantity away from the reported trigger; no malformed response shaping or exact crash payload reuse.",
+  "sequence_sha256": "33afbb9dd3b358b9400682cbfa90d3720fcd5d18c4c0e1cffd9dc99e2a311d6d",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "763"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "660b4e41e22899a41c888e1a27e33b36e3eefa95b53a51cfad77d54fd3ae57c2",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-SEED-017-R1-278e9ea7",
+      "corpus_file": "008-278e9ea7.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

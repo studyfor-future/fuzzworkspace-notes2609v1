@@ -1,0 +1,64 @@
+{
+  "plan_id": "vk-plan-062",
+  "seed_id": "ghsa-7v97-jmwv-w5j7-2",
+  "title": "VK-only Clock Synchronization: The issue was discovered in lib60870-C v2.4.0. A crafted IEC 60870-...",
+  "strategy": "field_interaction",
+  "target_operation": "Clock Synchronization",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure.",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:200:200-summary:348db1f37fe8",
+    "vk_task_context:task-contract:e5a446a8785a",
+    "issue:201:201-summary:798beefc9cab",
+    "issue:55:55-summary:bc272cfe2177"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Clock Synchronization U-frame",
+      "hex": "6809680a0000c003000068",
+      "byte_length": 11,
+      "sha256": "7d75175a34a6a19730966d1244d24eb4b4d855b8b4f81f9ace3f853a7384928b"
+    }
+  ],
+  "expected_behavior": "Parser reaches clockSyncHandler with malformed time field interaction; out-of-bounds read detected by ASan",
+  "constraints_preserved": [
+    "IEC 60870-5-104 I-frame APCI",
+    "FT1.2 start/end octets consistent",
+    "No external protocol docs"
+  ],
+  "issue_safety_notes": "Conservative analogue only; no exact crash bytes copied",
+  "sequence_sha256": "b53331b2812ed43307cb289b8b8be8a13977ea6495c8b0dec5a13f3a0c7bf939",
+  "total_bytes": 11,
+  "message_count_hint": 1,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 107.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7d75175a34a6a19730966d1244d24eb4b4d855b8b4f81f9ace3f853a7384928b",
+    "encoded_bytes": 11,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 11,
+        "frame_length": 11
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "021-ghsa-7v97-jmwv-w5j7-2-3eb2812d",
+      "corpus_file": "021-3eb2812d.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "plan_id": "vk-plan-056",
+  "seed_id": "vk-056-r1",
+  "title": "Report-control write followed by information-report style frame",
+  "strategy": "parser_depth",
+  "target_operation": "InformationReport",
+  "purpose": "Cover report-related server logic by pairing an oversized but moderate visible-string style write analogue for a report identifier with a follow-on information-report-like frame, supporting mutation toward report serialization and visible-string ownership edge cases related to CVE-2026-18582.",
+  "evidence_ids": [
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:573:573-summary:b7b57e9f1653"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "set_report_control_write_analogue",
+      "hex": "0300004702f080a044020108a03fa13a80044c443031a10f1a0d4c4c4e302452502452434231a2218a1f5250542d41414141414141414141414141414141414141414141414141",
+      "byte_length": 71,
+      "sha256": "a488ec9522268f5bdbc62a803ac073f0110e6e640fed84a48a51a1ce0d4c1c62"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "information_report_like_followup",
+      "hex": "0300002b02f080a127020109a122a12080044c443031a10d1a0b4556454e545352434231a20583030100ff",
+      "byte_length": 43,
+      "sha256": "6c28bd4309d11abf5c1a3d719732a7b450f3b12ff574b15b7ea8e09364615cae"
+    }
+  ],
+  "expected_behavior": "The target may accept or reject the write analogue, then parse the report-like follow-up if used in a replay, proxy, or bidirectional harness. Mutations of the visible-string size, object-name length, and report payload structure can explore stack or heap ownership assumptions in report-related code paths.",
+  "constraints_preserved": [
+    "tpkt version starts with 03",
+    "tpkt total lengths are consistent per message",
+    "covers reporting path distinct from dataset creation and discovery",
+    "uses moderate string size instead of exact historical oversized payload",
+    "hex is lowercase and even-length"
+  ],
+  "issue_safety_notes": "Avoids the exact historical overlong RptID write size and object path while preserving a safe analogue of report-control visible-string stress.",
+  "sequence_sha256": "b09a0e5cb03b185a4fa2c3e7cc8c7152b0a8df6c4bb0c759bfdfb07687ac1715",
+  "total_bytes": 114,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-18583"
+  ],
+  "_selection_score": 84.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f85bf7dd5d42e18fd6740666b6672cf0554f8c676887f96b497ac76e46a42f5e",
+    "encoded_bytes": 114,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 71,
+        "frame_length": 71
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 71,
+        "payload_offset": 71,
+        "payload_length": 43,
+        "frame_length": 43
+      }
+    ]
+  }
+}

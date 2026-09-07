@@ -1,0 +1,72 @@
+{
+  "plan_id": "plan-016",
+  "seed_id": "seed-004",
+  "title": "Issue-guided analogue for IEC 60870-5-104 APDU start byte",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "IEC 60870-5-104 APDU start byte",
+  "purpose": "Recover the historically sensitive structure, state, or field interaction from the issue while replacing the concrete crash trigger with a safer valid analogue.",
+  "evidence_ids": [
+    "issue:201:201-summary:798beefc9cab",
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "issue:ghsa-g3w7-x5rx-83xm:ghsa-g3w7-x5rx-83xm-:8bb9382fe4dc",
+    "issue:197:197-summary:287854ab1555",
+    "protocol_format:iec60870:object-or-data-templ:fd39c7c5f079",
+    "issue:200:200-summary:348db1f37fe8"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "Measured Value analogue with valid APDU start",
+      "hex": "680f060004006801010000000000000000",
+      "byte_length": 17,
+      "sha256": "29676f7b88630358044b0218b36235d8b2509b5bec4d1ef9eff348e26cf4a20a"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Follow-up stateful step",
+      "hex": "68050000020068",
+      "byte_length": 7,
+      "sha256": "ce5152801e8e54424eef745dbbfde35af43ff463a52f6d8524b3be9c0add3d95"
+    }
+  ],
+  "expected_behavior": "IEC 60870-5-104 CS104 server accepts and processes the Measured Value ASDU without heap-based buffer overflow in FileSegment information object encoding path",
+  "constraints_preserved": [
+    "Prefer widely recognized FT1.2 or IEC 60870-5-104 APCI framing",
+    "Keep 0x68 length octets consistent with the selected frame size",
+    "Diversify link control, interrogation, command and measurement paths"
+  ],
+  "issue_safety_notes": "Replaces crash trigger with valid analogue Measured Value; no concrete PoC payload copied; lib60870-C v2.4.0 heap-based buffer overflow in FileSegment encoding avoided",
+  "sequence_sha256": "106370f7550af4529ef77704cb4dfdff34b642d508d408b15d55fd99e4c00deb",
+  "total_bytes": 24,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "201"
+  ],
+  "_selection_score": 117.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "694ef0ebd30ccdc34e132bfcd6b5bdee5701819a73da6ff5764e74ecad6aaed3",
+    "encoded_bytes": 24,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 17,
+        "frame_length": 17
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 17,
+        "payload_offset": 17,
+        "payload_length": 7,
+        "frame_length": 7
+      }
+    ]
+  }
+}

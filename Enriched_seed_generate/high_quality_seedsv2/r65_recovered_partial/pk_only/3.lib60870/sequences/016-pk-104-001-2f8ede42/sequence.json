@@ -1,0 +1,93 @@
+{
+  "plan_id": "",
+  "seed_id": "pk-104-001",
+  "title": "STARTDT handshake followed by general interrogation",
+  "strategy": "stateful_valid",
+  "target_operation": "STARTDT activation + C_IC_NA_1",
+  "purpose": "Exercise a clean stateful 104 path with U-format activation before a valid-looking interrogation ASDU using the documented General Interrogation TypeID and qualifier.",
+  "evidence_ids": [
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:9662ce251be3",
+    "protocol_format:iec60870:format-overview:6fc14a471f76",
+    "protocol_format:iec60870:section-message-temp:82928a8cc718"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT act",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT con",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 general interrogation request",
+      "hex": "680d00000000640106000100140014",
+      "byte_length": 15,
+      "sha256": "2a7bdf4f7bd278e6ab3a00ce4f0b185c0f0e6e9673e1b2646ab1dbed54b21e1e"
+    }
+  ],
+  "expected_behavior": "Peer should accept STARTDT activation sequence, then parse the following I-format ASDU as C_IC_NA_1 with activation cause and station interrogation qualifier 20.",
+  "constraints_preserved": [
+    "Uses IEC 60870-5-104 APCI 0x68 framing consistently",
+    "U-format frames use 4-byte control field only with length 0x04",
+    "I-format frame length octet matches 4 control bytes plus 10-byte ASDU payload",
+    "General Interrogation uses documented TypeID 100 and qualifier 20",
+    "Single information object count encoded via VSQ 0x01",
+    "Common address placeholder kept consistent at 0x0001"
+  ],
+  "issue_safety_notes": "PK-only seed with no vulnerability claim. Uses safe canonical handshake and interrogation structure, not a historical exploit payload.",
+  "sequence_sha256": "7c7667a1551ca704a61d0f2a00fed037c06aa00b861162b03d573a1fc792a19a",
+  "total_bytes": 27,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 86.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5f2a41d3c6f3c6849cd9346724de52b464f503fb04815456712d53a52cf9a1c7",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "016-pk-104-001-2f8ede42",
+      "corpus_file": "016-2f8ede42.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

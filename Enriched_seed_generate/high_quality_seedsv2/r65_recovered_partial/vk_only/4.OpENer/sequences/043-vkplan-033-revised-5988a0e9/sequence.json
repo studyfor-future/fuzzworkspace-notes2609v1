@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-033",
+  "seed_id": "vkplan-033-revised",
+  "title": "VK-only RegisterSession: No affected version is identified in the report. The report states that UDP ListServices request handling on port 44818 can hit a stack overflow when it rece...",
+  "strategy": "length_boundary_valid",
+  "target_operation": "RegisterSession",
+  "purpose": "Explore an issue-related boundary while retaining built-in basic length consistency with diversified 24-byte ENIP header.",
+  "evidence_ids": [
+    "issue:445:445-summary:c1784b774e94",
+    "issue:374:374-summary:3d44e552a6bc",
+    "issue:577:577-summary:f41c11d4b1b8",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:582:582-summary:a17fd2adbb9f",
+    "issue:568:568-summary:6fa072929d36"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "650003000000000000000000000000000000000000000001000000",
+      "byte_length": 27,
+      "sha256": "bd5cca03aa2761eca7b436377d52870a88a9288dc35473dd3b3495551efa88ff"
+    }
+  ],
+  "expected_behavior": "Encapsulation header + command 0x65 succeeds with valid ENIP status 0x0064 and returns a session ID.",
+  "constraints_preserved": [
+    "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header when that form is selected",
+    "Diversify discovery, session and explicit-message paths",
+    "Model-prior message archetypes"
+  ],
+  "issue_safety_notes": "Low crash risk; only length boundary explored. Used with RegisterSession (evidence_ids 445/577/582/565) which does not reach DecodePaddedEPath. Full 24-byte hex alignment enforced.",
+  "sequence_sha256": "f0b5e3cecc9aa42613adfc087b8d57f4367ffc810e86b655304466f596c4214b",
+  "total_bytes": 27,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "445"
+  ],
+  "_selection_score": 102.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "bd5cca03aa2761eca7b436377d52870a88a9288dc35473dd3b3495551efa88ff",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "043-vkplan-033-revised-5988a0e9",
+      "corpus_file": "043-5988a0e9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

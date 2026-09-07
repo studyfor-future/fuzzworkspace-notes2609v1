@@ -1,0 +1,88 @@
+{
+  "plan_id": "",
+  "seed_id": "seed-056-001",
+  "title": "ForwardOpen followed by connected data",
+  "strategy": "parser_depth",
+  "target_operation": "ForwardOpen and SendUnitData",
+  "purpose": "Exercise nested ForwardOpen data followed by a connected CPF exchange with a connected address item and connected data item.",
+  "evidence_ids": [
+    "base_model_prior:constraints:5ce96f2b96d1"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "ForwardOpen request with timeout fields and connection parameters",
+      "hex": "6f003c0078563412000000000100000033445566778899aa0000000000000000000002000000040000000000b20024005402200624010a0000001122334455667788010002007856341200000000200020000000",
+      "byte_length": 84,
+      "sha256": "325141728b9784e7d54aee14983e9cc22f7617380d20298ea99761a4dca053b1"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "ForwardOpen success response",
+      "hex": "6f00360078563412000000000100000033445566778899aa0000000000000000000002000000040000000000b2001a00d40000004433221188776655010002007856341200000000000000000000",
+      "byte_length": 78,
+      "sha256": "acaa07c9b677f0976ec4299e461b9d1bd560399268e5fe8f40614c244eda6616"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "SendUnitData connected exchange with connected data item",
+      "hex": "7000240078563412000000000100000033445566778899aa0000000000000000000002000000040000000000a100040044332211b100040001000200",
+      "byte_length": 60,
+      "sha256": "97ef2e03d520b797dcb6c23d0cfb36c996fea6daca709bbeefe24df55df3b938"
+    }
+  ],
+  "expected_behavior": "A parser can traverse the ForwardOpen request and response, then process a SendUnitData frame containing a connected address item and connected data item with consistent nesting and lengths.",
+  "constraints_preserved": [
+    "EtherNet/IP encapsulation headers are 24 bytes before payload",
+    "ForwardOpen and connected data payload lengths are encoded little-endian",
+    "CPF item counts, item types, and item lengths match their encoded contents",
+    "The sequence covers nested explicit setup followed by connected messaging and includes timeout-related fields"
+  ],
+  "issue_safety_notes": "The frame shapes are conservative model-prior analogues and are not externally verified; no vulnerability, defect, or issue claim is made.",
+  "sequence_sha256": "fc641e00d1e02839e48ff7ff329fe275633369c3ed63fe76c60f612d5dff7532",
+  "total_bytes": 222,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed encapsulation length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 79.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "3cb8691df3b19dedb0c629417131544f961a54650853c7096e4c9139f34ef75b",
+    "encoded_bytes": 222,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 84,
+        "frame_length": 84
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 84,
+        "payload_offset": 84,
+        "payload_length": 78,
+        "frame_length": 78
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 162,
+        "payload_offset": 162,
+        "payload_length": 60,
+        "frame_length": 60
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "010-seed-056-001-48f20268",
+      "corpus_file": "010-48f20268.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

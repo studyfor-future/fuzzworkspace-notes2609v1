@@ -1,0 +1,63 @@
+{
+  "plan_id": "vk-plan-042",
+  "seed_id": "modbustcp-write-single-register-0002",
+  "title": "VK-only Write Single Register: other protocol sequence for heap-buffer layout analogue",
+  "strategy": "other",
+  "target_operation": "Write Single Register",
+  "purpose": "Create a distinct mutation-friendly request using conservative register value and unit identifier.",
+  "evidence_ids": [
+    "issue:614:614-summary:e89105d3aaf7",
+    "issue:498:498-summary:43dc6fe7600e",
+    "issue:764:764-summary:f5885d05eb76",
+    "issue:763:763-summary:e75d690140f2",
+    "issue:683:683-summary:fbe9b8a5a160",
+    "issue:499:499-summary:6268f95751ad"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "write single register at address 0x0102",
+      "hex": "00020000000607060102a55a",
+      "byte_length": 12,
+      "sha256": "5fe757a062067c2050297f8d547c4a1fa9da55bfb62271741fc3eb0350bfd869"
+    }
+  ],
+  "expected_behavior": "A conforming server should return a normal confirmation for function 06, or a well-formed Modbus exception if the register is unavailable; request parsing should remain bounded by the declared MBAP length.",
+  "constraints_preserved": [
+    "Modbus/TCP MBAP header is seven bytes",
+    "Protocol identifier is 0000",
+    "MBAP length 0007 matches the unit byte and six-byte function payload",
+    "Function code 06 carries one register address and one 16-bit value"
+  ],
+  "issue_safety_notes": "The seed explores the issue-supported crafted-request surface without using any supplied historical PoC bytes. It is intended as a mutation base, not as a claim that this value reproduces issue 614.",
+  "sequence_sha256": "f289e7e59c95d6d9346f7d7628c5d75bc35dcc7b1e67a080ba2df75d63744d39",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "614"
+  ],
+  "_selection_score": 100.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "5fe757a062067c2050297f8d547c4a1fa9da55bfb62271741fc3eb0350bfd869",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "050-modbustcp-write-single-r-dd6f8b7c",
+      "corpus_file": "050-dd6f8b7c.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

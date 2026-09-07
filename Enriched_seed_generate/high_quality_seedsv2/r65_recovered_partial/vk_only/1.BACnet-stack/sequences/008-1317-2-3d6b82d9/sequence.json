@@ -1,0 +1,65 @@
+{
+  "plan_id": "vk-plan-032",
+  "seed_id": "1317-2",
+  "title": "VK-only I-Am: In bacnet-stack v1.5.0, a WriteProperty request that updates OBJECT_STRUCTURED_VIEW / PROP_SUBORDINATE_LIST can trigger a NULL pointer dereference in bacnet_device_object_reference_decode()",
+  "strategy": "field_interaction",
+  "target_operation": "I-Am",
+  "purpose": "Exercise issue-supported field interactions inside a plausible model-prior message structure",
+  "evidence_ids": [
+    "issue:1317:1317-summary:4e832876df19",
+    "issue:1398:1398-summary:200993baa464",
+    "issue:cve-2026-41475:cve-2026-41475-summa:c7cf29fd27a9",
+    "issue:cve-2026-52790:cve-2026-52790-summa:88b78ec25e8e",
+    "issue:1342:1342-summary:cdc7c256554d",
+    "issue:cve-2026-62973:cve-2026-62973-summa:7487fbadc732"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "I-Am request with structured view property update",
+      "hex": "810d001700000000800b000a0001010000000c01000000",
+      "byte_length": 23,
+      "sha256": "b072efba4418a4be81b50a64079329b988686e7ae0b298538e5475ae68203de4"
+    }
+  ],
+  "expected_behavior": "Server processes I-Am request triggering NULL pointer dereference in bacnet_device_object_reference_decode()",
+  "constraints_preserved": [
+    "BVLC total length consistent",
+    "NPDU/APDU layering preserved",
+    "Model prior I-Am structure used",
+    "Issue trigger relations preserved",
+    "safe issue analogue only",
+    "no exact payload collisions"
+  ],
+  "issue_safety_notes": "Crash not reproducible with crafted I-Am; issue safety verified via reference decode path; family constraints and built-in prior enforced",
+  "sequence_sha256": "16b6ec21202c45cf79dded098a0c202232fbe61d3e925d6f7a347061e574e1b4",
+  "total_bytes": 23,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "1317"
+  ],
+  "_selection_score": 106.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "b072efba4418a4be81b50a64079329b988686e7ae0b298538e5475ae68203de4",
+    "encoded_bytes": 23,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "008-1317-2-3d6b82d9",
+      "corpus_file": "008-3d6b82d9.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

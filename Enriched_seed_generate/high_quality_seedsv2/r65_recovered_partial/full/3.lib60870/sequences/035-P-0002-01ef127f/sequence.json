@@ -1,0 +1,92 @@
+{
+  "plan_id": "plan-006",
+  "seed_id": "P-0002",
+  "title": "General Interrogation after STARTDT",
+  "strategy": "issue_structural_analogue",
+  "target_operation": "General Interrogation",
+  "purpose": "Preserve the issue-relevant I-frame/APDU parsing shape while using a standard, body-consistent interrogation ASDU so VSQ and ASDU size remain aligned.",
+  "evidence_ids": [
+    "issue:ghsa-7v97-jmwv-w5j7:ghsa-7v97-jmwv-w5j7-:1f798b317020",
+    "function_code:function:function-text:3cbe16bf065a",
+    "protocol_format:iec60870:format-overview:6fc14a471f76"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "STARTDT act",
+      "hex": "680407000000",
+      "byte_length": 6,
+      "sha256": "92933e47b8e6d55397d8a0396a4257911276c9811be81b40e0edaa013bee24a0"
+    },
+    {
+      "index": 1,
+      "direction": "server_to_client",
+      "label": "STARTDT con",
+      "hex": "68040b000000",
+      "byte_length": 6,
+      "sha256": "723b42eff651c7b12c60c7d74f4567d2256694940bf814c0d9e2e7942edcf9a5"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "C_IC_NA_1 general interrogation request",
+      "hex": "680d00000000640106000100000014",
+      "byte_length": 15,
+      "sha256": "76845e55d165a7c274af0f67d4c8b9ab63143ac8e16c1d8d1e0efebc412ae72f"
+    }
+  ],
+  "expected_behavior": "After session startup, server accepts the interrogation request and may respond with activation confirmation and interrogated data; parser should consume the I-frame cleanly.",
+  "constraints_preserved": [
+    "APCI start byte 0x68 and length 0x0e are consistent with 4 control bytes plus 10-byte ASDU",
+    "I-frame control field used instead of malformed hybrid framing",
+    "ASDU layout conservatively follows common 104 ordering: TypeID 0x64, VSQ 0x01, COT 0x0006, CA 0x0001, IOA 0x000000, QOI 0x14",
+    "Single-object VSQ matches available ASDU body and avoids the issue's overdeclared count"
+  ],
+  "issue_safety_notes": "Structurally analogous to the issue because it is a valid IEC 104 I-frame with ASDU parsing, but it removes the exact malformed VSQ/body mismatch and does not reuse the reported payload.",
+  "sequence_sha256": "a29b928fa77681712ce1c3992ae7c135c93f1b20267f9abe7c7a8708700d6f07",
+  "total_bytes": 27,
+  "message_count_hint": 3,
+  "repair_notes": [
+    "recomputed CS104 APCI length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "GHSA-7V97-JMWV-W5J7"
+  ],
+  "_selection_score": 120.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "39f75ca6f71da293c8383ebcba1d2feeeccb445ac7172ee6ee14655dc96b39e1",
+    "encoded_bytes": 27,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 6,
+        "payload_offset": 6,
+        "payload_length": 6,
+        "frame_length": 6
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 12,
+        "payload_offset": 12,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "035-P-0002-01ef127f",
+      "corpus_file": "035-01ef127f.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "plan_id": "vk-plan-003",
+  "seed_id": "modbustcp-diagnostics-echo-001",
+  "title": "Minimal Diagnostics request with compact subfunction body",
+  "strategy": "function_code_coverage",
+  "target_operation": "Diagnostics",
+  "purpose": "Increase real function coverage with a compact Diagnostics-style request that reaches a different parser path than the read operations while remaining fully framed and mutation-friendly.",
+  "evidence_ids": [
+    "issue:837:837-summary:c4fb6d28cc16",
+    "issue:499:499-summary:6268f95751ad",
+    "issue:614:614-summary:e89105d3aaf7"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "diagnostics request with subfunction and data",
+      "hex": "330100000006010800000001",
+      "byte_length": 12,
+      "sha256": "4d32bb8e65fbdcae581fe6deeebaf70c642bb5a6181499e57fd7f6c64159922a"
+    }
+  ],
+  "expected_behavior": "The target should parse one valid Diagnostics request and either return a function-specific response or a bounded exception if unsupported.",
+  "constraints_preserved": [
+    "Message uses a 7-byte MBAP header",
+    "Protocol identifier is 0000",
+    "MBAP length 0006 matches unit identifier plus 5-byte PDU",
+    "Function code 08 is accompanied by two-byte subfunction and two-byte data fields",
+    "No undeclared trailing bytes are present"
+  ],
+  "issue_safety_notes": "This seed broadens parser coverage using a conservative minimal body. It is not derived from an exact issue PoC and does not attempt to reproduce any out-of-bounds condition.",
+  "sequence_sha256": "e09a63cc7df8f851361b288c704ed6e3e73409505e924b1e798c1903ade8e914",
+  "total_bytes": 12,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "498"
+  ],
+  "_selection_score": 98.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4d32bb8e65fbdcae581fe6deeebaf70c642bb5a6181499e57fd7f6c64159922a",
+    "encoded_bytes": 12,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 12,
+        "frame_length": 12
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "028-modbustcp-diagnostics-ec-e4471a11",
+      "corpus_file": "028-e4471a11.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

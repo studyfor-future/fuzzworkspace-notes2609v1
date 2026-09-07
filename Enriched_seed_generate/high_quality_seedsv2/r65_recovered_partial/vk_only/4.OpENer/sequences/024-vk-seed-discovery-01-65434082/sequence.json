@@ -1,0 +1,73 @@
+{
+  "plan_id": "",
+  "seed_id": "vk-seed-discovery-01",
+  "title": "Discovery pair with complete ListIdentity and ListServices frames",
+  "strategy": "baseline_valid",
+  "target_operation": "ListIdentity",
+  "purpose": "Exercise conservative discovery commands using complete encapsulation headers and distinct contexts before mutation of command and option fields.",
+  "evidence_ids": [
+    "issue:573:573-summary:f08f497b1daa",
+    "issue:374:374-summary:3d44e552a6bc"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "listidentity_request",
+      "hex": "630000000000000000000000010203040506070800000000",
+      "byte_length": 24,
+      "sha256": "47b4ca3a73d8d60b07b0658a9f4d0edce984bbdec2f8d918361c6694df4bd628"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "listservices_request",
+      "hex": "640000000000000000000000111213141516171800000000",
+      "byte_length": 24,
+      "sha256": "e58d374f5e44b9745d4811e60219d63066041219f51956c4402f12a7d1bb8a06"
+    }
+  ],
+  "expected_behavior": "The discovery requests should be parsed as bounded zero-payload encapsulation commands; the target may return normal discovery responses or close the transport without an unsafe read.",
+  "constraints_preserved": [
+    "24-byte EtherNet/IP encapsulation header",
+    "little-endian zero payload length",
+    "lowercase hexadecimal without separators",
+    "distinct discovery commands and sender contexts",
+    "raw-binary concatenation suitable for stdin sequence replay"
+  ],
+  "issue_safety_notes": "Uses discovery framing as a conservative analogue to issue-related receive-buffer parsing. It does not reproduce the reported crafted stream, optional sockaddr item, oversized filler, or exact issue bytes.",
+  "sequence_sha256": "dbef9c2f3fef2b7b1901c88056ed81ba82a2b34e4943e4766516409e0cf6684a",
+  "total_bytes": 48,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 113.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "f1dfe8c147a436b90e3b3e11e0aa018f34182b5da34480ad0e7790967a9ed83c",
+    "encoded_bytes": 48,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 24,
+        "frame_length": 24
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 24,
+        "payload_offset": 24,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "024-vk-seed-discovery-01-65434082",
+      "corpus_file": "024-65434082.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

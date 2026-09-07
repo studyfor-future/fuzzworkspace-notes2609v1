@@ -1,0 +1,76 @@
+{
+  "plan_id": "plan-041",
+  "seed_id": "seed-r11-001",
+  "title": "Stateful association setup with COTP CR and MMS Initiate",
+  "strategy": "stateful_valid",
+  "target_operation": "Initiate",
+  "purpose": "Provide a conservative valid association-oriented seed that enters transport/session handling before minimal MMS initiate parsing.",
+  "evidence_ids": [
+    "protocol_format:iec61850:format-overview:c508483411ac",
+    "protocol_format:iec61850:section-message-temp:35b5427fecca",
+    "function_code:function:function-text:d319479344be"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP Connection Request over TPKT",
+      "hex": "0300001611e00000000100c1020100c2020101c0010a",
+      "byte_length": 22,
+      "sha256": "6adc228c0498a955d66d2a73efb2f898ade51369f09f6966df5d57c9e3ad0eda"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "Minimal MMS Initiate request in ACSE/UserInformation wrapper",
+      "hex": "0300001802f080610fa10d06052b0e010101be04a8028000",
+      "byte_length": 24,
+      "sha256": "c5cc670d0cbca1bfd55020034bcd9fe2f68f0dd87ab1baf72ba2b3922579ec79"
+    }
+  ],
+  "expected_behavior": "Server accepts transport/session establishment attempt and parses a minimal initiate request path without requiring malformed data handling.",
+  "constraints_preserved": [
+    "TPKT version byte is 0x03 on every message",
+    "TPKT total-length fields match complete message sizes",
+    "Layering follows supplied IEC 61850 overview with COTP then ACSE/UserInformation then MMS",
+    "MMS Initiate uses documented PDU type tag 0xA8",
+    "Conservative model-prior completion used only for minimal BER field arrangement because full ASN.1 layout was not supplied"
+  ],
+  "issue_safety_notes": "Safe valid analogue only; no malformed lengths, recursion tricks, or historical exploit payloads included.",
+  "sequence_sha256": "972e08c919da5d75b780197362f1482768adff200697088ecf55781d9bc8ea98",
+  "total_bytes": 46,
+  "message_count_hint": 2,
+  "repair_notes": [
+    "recomputed TPKT total length"
+  ],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 84.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "8589dbbc31d26b4d219b267065bafac13e47a3fa79b258a74c53ccff509b1743",
+    "encoded_bytes": 46,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 22,
+        "frame_length": 22
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 22,
+        "payload_offset": 22,
+        "payload_length": 24,
+        "frame_length": 24
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "005-seed-r11-001-63c83c25",
+      "corpus_file": "005-63c83c25.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-049",
+  "seed_id": "plan-049-testfr-act-104-001",
+  "title": "IEC 60870-5-104 TESTFR activation U-format",
+  "strategy": "function_code_coverage",
+  "target_operation": "Test operation",
+  "purpose": "Provide a clean U-format parser entry for 104 test handling without malformed ASDU mixing.",
+  "evidence_ids": [
+    "function_code:function:operation-catalog:b0db75237939",
+    "function_code:function:function-text:3cbe16bf065a",
+    "function_code:function:function-text:14a1385d5f57"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "TESTFR act",
+      "hex": "680443000000",
+      "byte_length": 6,
+      "sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc"
+    }
+  ],
+  "expected_behavior": "A 104 peer should recognize a valid TESTFR activation U-format APDU and either accept it as a keepalive/test control frame or answer with the corresponding TESTFR confirmation.",
+  "constraints_preserved": [
+    "Uses IEC 60870-5-104 APDU start byte 0x68 from supplied source",
+    "Uses standard 104 U-format shape with 4 control bytes and no ASDU",
+    "Length octet 0x04 matches the 4-byte control field exactly",
+    "No FT1.2 checksum, repeated-length, or end-delimiter fields were mixed into this 104 frame"
+  ],
+  "issue_safety_notes": "PK-only seed; no historical exploit payload retained. This is a safe structural control-frame analogue chosen to replace malformed prior test examples.",
+  "sequence_sha256": "081cbe579e8c07d68e9d5a92b72d1ad8d57dc14c3e146de2fe7a448a90eea7df",
+  "total_bytes": 6,
+  "message_count_hint": 1,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [],
+  "_selection_score": 76.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "7271cd771d19321d37f9a3252fd74cecd29cdfe1946a246024f4a8f30f4b8fdc",
+    "encoded_bytes": 6,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 6,
+        "frame_length": 6
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "028-plan-049-testfr-act-104--41995869",
+      "corpus_file": "028-41995869.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

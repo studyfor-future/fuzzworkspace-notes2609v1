@@ -1,0 +1,90 @@
+{
+  "plan_id": "vk-plan-022",
+  "seed_id": "vk-plan-022",
+  "title": "VK-only GetVariableAccessAttributes: libiec61850 v1.6.1 (v1.6 branch) and v1.6_develop commit 196bb76 co...",
+  "strategy": "parser_depth",
+  "target_operation": "GetVariableAccessAttributes",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:598:598-summary:43fd2ace5ec4",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:603:603-summary:4d033699b6cd",
+    "issue:599:599-summary:806eef562ec3",
+    "issue:513:513-summary:4a07060941e2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "association_request",
+      "hex": "603e0201008302010102020100040000",
+      "byte_length": 16,
+      "sha256": "8c6dbd5fd1b93d209c016df5d9b154334cdc373047d4a12b729cbd3f2a043d74"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "mms_get_named_variable_list_attributes_request",
+      "hex": "e2070283000102040000",
+      "byte_length": 10,
+      "sha256": "d3227d53a1a9999cd3587c25b8f5269441a75d9082fcde6d2bbd8d4d197bcc20"
+    },
+    {
+      "index": 2,
+      "direction": "server_to_client",
+      "label": "mms_get_named_variable_list_attributes_response",
+      "hex": "e2070283000102040000a20001024e",
+      "byte_length": 15,
+      "sha256": "01e6e7c6feadd0ac57195b5012a41f874784646893ca6652e27faba8eec7c559"
+    }
+  ],
+  "expected_behavior": "parser_depth reaches MmsMapping_varAccessSpecToObjectReference after proxy-rewrite of itemId to single-byte \"$\"; heap-buffer-overflow read detected by ASan on fixed-offset access past 2-byte heap string",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length matches complete message",
+    "Diversified association/discovery/read/reporting paths",
+    "IEC 61850 $FC$ suffix trigger preserved",
+    "message budget 1",
+    "single_request shape"
+  ],
+  "issue_safety_notes": "Uses documented proxy rewrite of first itemId TLV to \"$\" from issue 599; no external protocol doc used; TPKT/ASN.1 lengths internally consistent; target_operation preserved",
+  "sequence_sha256": "8d9825efcf73d113cf7c7b2cfbb789799e33ec157be13f941cc83a42b5137fc2",
+  "total_bytes": 41,
+  "message_count_hint": 3,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "598"
+  ],
+  "_selection_score": 114.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "07bdc18a8b61a3165392476eac9c273e1456252356079c6e7f0f063eaaa709a0",
+    "encoded_bytes": 41,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 16,
+        "frame_length": 16
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 16,
+        "payload_offset": 16,
+        "payload_length": 10,
+        "frame_length": 10
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 26,
+        "payload_offset": 26,
+        "payload_length": 15,
+        "frame_length": 15
+      }
+    ]
+  }
+}

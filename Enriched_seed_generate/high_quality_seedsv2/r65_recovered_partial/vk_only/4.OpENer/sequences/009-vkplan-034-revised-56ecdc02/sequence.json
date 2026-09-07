@@ -1,0 +1,78 @@
+{
+  "plan_id": "vk-plan-034",
+  "seed_id": "vkplan-034-revised",
+  "title": "VK-only UnregisterSession: During Peach fuzzing of the OpENer protocol implementation, the end...",
+  "strategy": "parser_depth",
+  "target_operation": "UnregisterSession",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure with varied CPF nesting.",
+  "evidence_ids": [
+    "issue:532:532-summary:1a523aa7a5f5",
+    "issue:563:563-summary:46d0a567a1d5",
+    "issue:cve-2022-43604:cve-2022-43604-summa:3f358fcce94a",
+    "issue:563:563-summary:b783074fb0e0",
+    "issue:575:575-summary:e8df4ac3993c",
+    "issue:cve-2020-13556:cve-2020-13556-summa:8e380334c121"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "RegisterSession",
+      "hex": "650003000000000000000000000000000000000000000001000000",
+      "byte_length": 27,
+      "sha256": "bd5cca03aa2761eca7b436377d52870a88a9288dc35473dd3b3495551efa88ff"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "UnregisterSession",
+      "hex": "660003000000000000000000000000000000000000000001000000",
+      "byte_length": 27,
+      "sha256": "150f08416c6e3699de8cc0a5b67d1577885500443ad3342b1a642a442b69d90d"
+    }
+  ],
+  "expected_behavior": "Valid RegisterSession followed by UnregisterSession that triggers parser-depth error with no crash.",
+  "constraints_preserved": [
+    "Prefer EtherNet/IP encapsulation headers with little-endian payload length",
+    "Use a 24-byte encapsulation header when that form is selected",
+    "Diversify discovery, session and explicit-message paths",
+    "Model-prior message archetypes"
+  ],
+  "issue_safety_notes": "Low crash risk; parser_depth path used. Avoids direct PaddedEPath/CPF read that triggers issue 557/569. Varied field values for diversity.",
+  "sequence_sha256": "89ccffcdc97e49eabf532a9271476e49b39c019d49d96acb6ac13091f203be18",
+  "total_bytes": 54,
+  "message_count_hint": 2,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "532"
+  ],
+  "_selection_score": 108.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "70a909d38537c47679d6f49f476d03073103e56d4fdcea7978877c222527754b",
+    "encoded_bytes": 54,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 27,
+        "frame_length": 27
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 27,
+        "payload_offset": 27,
+        "payload_length": 27,
+        "frame_length": 27
+      }
+    ],
+    "filesystem_naming": {
+      "sequence_directory": "009-vkplan-034-revised-56ecdc02",
+      "corpus_file": "009-56ecdc02.bin",
+      "policy": "short-hash-names-for-windows-path-safety"
+    }
+  }
+}

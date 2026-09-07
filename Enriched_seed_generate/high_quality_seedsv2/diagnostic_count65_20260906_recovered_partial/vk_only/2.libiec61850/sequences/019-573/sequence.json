@@ -1,0 +1,102 @@
+{
+  "plan_id": "vk-plan-028",
+  "seed_id": "573",
+  "title": "VK-only Read: A server-side memory-safety issue exists in the access-control path...",
+  "strategy": "parser_depth",
+  "target_operation": "Read",
+  "purpose": "Reach the issue-relevant parser path through a plausible deeper protocol structure.",
+  "evidence_ids": [
+    "issue:cve-2026-18583:cve-2026-18583-summa:3c0f8378f90e",
+    "issue:573:573-summary:b7b57e9f1653",
+    "issue:516:516-summary:13bbaeee92c9",
+    "issue:cve-2026-18582:cve-2026-18582-summa:89fe7c9c30c6",
+    "issue:596:596-summary:baa99ae7e6b9",
+    "issue:513:513-summary:4a07060941e2"
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "direction": "client_to_server",
+      "label": "COTP CR",
+      "hex": "0300001711e0000000000100c1020000c2020001c001a2",
+      "byte_length": 23,
+      "sha256": "96d4ccc3c64ecaecb90cdae012d35198843dd931efccde95ee1113b105573071"
+    },
+    {
+      "index": 1,
+      "direction": "client_to_server",
+      "label": "ACSE AARQ",
+      "hex": "03000024030000240103000102e0000001020100000102030405060708090a0b0c0d0e0f",
+      "byte_length": 36,
+      "sha256": "3f762de3df2829621696a1896a63b71185b864a24b1d36ca931763cf5b846a0c"
+    },
+    {
+      "index": 2,
+      "direction": "client_to_server",
+      "label": "MMS Define NVL",
+      "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+      "byte_length": 29,
+      "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+    },
+    {
+      "index": 3,
+      "direction": "client_to_server",
+      "label": "MMS Read",
+      "hex": "0300001d0300001903000102e000000102010000010203040506070809",
+      "byte_length": 29,
+      "sha256": "58bda94c903b86d75371efb0d4dd4433e22a25fbf012b6dff1c1fb61b3ec8262"
+    }
+  ],
+  "expected_behavior": "OOB read in access-control dataset path.",
+  "constraints_preserved": [
+    "TPKT version 0x03",
+    "TPKT length",
+    "MMS Read path"
+  ],
+  "issue_safety_notes": "Parser depth via Define NVL then Read per CVE-2026-18583; multi-step.",
+  "sequence_sha256": "9a70b0a36cb970898d445e086a23d7092804a6b632b990e19287f6349813c920",
+  "total_bytes": 117,
+  "message_count_hint": 4,
+  "repair_notes": [],
+  "exact_issue_collision": false,
+  "plan_issue_refs": [
+    "CVE-2026-18583"
+  ],
+  "_selection_score": 84.0,
+  "export": {
+    "sequence_encoding": "raw-binary-concat",
+    "sequence_file": "sequence.bin",
+    "encoded_sha256": "4e2f09d5beaf4648848b42c20ad05cd0134d8b96fb685cac77aab5c438ac8d36",
+    "encoded_bytes": 117,
+    "frames": [
+      {
+        "message_index": 0,
+        "frame_offset": 0,
+        "payload_offset": 0,
+        "payload_length": 23,
+        "frame_length": 23
+      },
+      {
+        "message_index": 1,
+        "frame_offset": 23,
+        "payload_offset": 23,
+        "payload_length": 36,
+        "frame_length": 36
+      },
+      {
+        "message_index": 2,
+        "frame_offset": 59,
+        "payload_offset": 59,
+        "payload_length": 29,
+        "frame_length": 29
+      },
+      {
+        "message_index": 3,
+        "frame_offset": 88,
+        "payload_offset": 88,
+        "payload_length": 29,
+        "frame_length": 29
+      }
+    ]
+  }
+}
